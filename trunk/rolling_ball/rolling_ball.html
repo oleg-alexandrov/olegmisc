@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- Created with XEmacs -->
+<head>
+  <title>
+    How I made this animated picture
+  </title>
+  <!-- Changed by: Oleg Alexandrov, Monday, December 02, at 20:19:58 -->
+    <!-- Created by htmlize-0.67 in css mode. -->
+    <style type="text/css">
+    <!--
+      body {
+        color: #000000;
+        background-color: #ffffff;
+      } /* default */
+      .string {
+        color: #00cd00;
+        background-color: #ffffff;
+      } /* font-lock-string-face */
+      .doc-string {
+        color: #00cd00;
+        background-color: #ffffff;
+      } /* font-lock-doc-string-face */
+      .comment {
+       color: #ee7600; 
+        background-color: #ffffff;
+      } /* font-lock-comment-face */
+      .reference {
+        color: #0f4500;
+        background-color: #ffffff;
+      } /* font-lock-reference-face */
+      .variable-name {
+        color: #9a2fff;
+        background-color: #ffffff;
+      } /* font-lock-variable-name-face */
+      .keyword {
+        color: #00000;
+        background-color: #ffffff;
+      } /* font-lock-keyword-face */
+    -->
+    </style>
+</head>
+  <body text="#000000" bgcolor="#ffffff">
+<center><b><font size="+3">How I made this animated picture</font></b></center>
+
+<center>
+<img src="rolling_ball.gif" border="0" alt="rolling_ball.gif" /></center>
+
+<p />Each individual picture frame was generated in <i>matlab</i>, see the source code below. Then the frames were put 
+together into a .gif file with the Unix program <i>convert</i> by typing 
+
+<pre>  convert -crop 1030x472+132+200 -antialias -loop 1000  -delay 5 -geometry 50% -compress LZW frame10*  rolling_ball.gif   </pre>   
+into an xterm in the directory where the matlab code was saved and run. Check the Unix manual page
+of <i>convert</i> for an explanation of the above options. Running  <i>convert</i> can take one minute
+even on a 1 GHz computer. 
+
+
+<p />Note that after running the matlab code a lot of picture files will be created, each of the form
+<i>frame1xxx.jpg</i>. The animated image itself will be called <i>rolling_ball.gif</i>, and after 
+<i>convert</i> has been run the individual picture frames can be deleted. There are other programs except 
+<i>convert</i>  which can be used to put the frames together, one can for instance use <i>the Gimp.</i>
+
+<p />Finally, here's the matlab source code.
+<pre>
+<span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+<span class="comment">% The matlab code starts here.</span>
+
+<span class="keyword">function</span> <span class="function-name">rolling_ball</span>()
+<span class="comment">% A matlab code to simulate a circle rolling on a curve.</span>
+
+<span class="comment">% Save all of this  (including the auxiliary functions) into a file called 'rolling_ball.m'.</span>
+<span class="comment">% To run it from matlab, type  'rolling_ball' (without the quotes).</span>
+
+   clear;                                 <span class="comment">% delete whatever variables exist in the memory</span>
+   <span class="type">set</span>(<span class="variable-name">gcf</span>, <span class="string">'color'</span>, <span class="string">'white'</span>); <span class="type">set</span>(<span class="variable-name">gcf</span>, <span class="string">'InvertHardCopy'</span>, <span class="string">'off'</span>); <span class="comment">% make the background white</span>
+   <span class="keyword">global</span> <span class="variable-name">R</span> <span class="variable-name">Bx</span> <span class="variable-name">By</span> <span class="variable-name">N</span> <span class="variable-name">L</span> <span class="variable-name">H</span>;                  <span class="comment">% declare some global variables</span>
+
+   N=1000;    <span class="comment">% a large number, used for plotting and other things</span>
+   nf=10;     <span class="comment">% 4*nf-2 is the number of frames (large nf makes the gif image large)</span>
+   L=5; H=2;  <span class="comment">% the curve the circle will roll onto is f(x)=0.5*H*(cos(2*pi*x/L)+1), 0 &lt;= x &lt;= L</span>
+   nr=10;     <span class="comment">% 4*nr is the total number of rotations the circle will make (going back and forth)</span>
+   R=arc_length(0, L<span class="type">/</span>2)<span class="type">/</span>nr; <span class="comment">% the circle radius -- so,  make the curve length a multiple of the circumference</span>
+
+<span class="comment">%  In this code we assume that the speed of the circle changes as if it is in free fall. This is</span>
+<span class="comment">%  clearly wrong since we are on a curve, but still, it makes some illusion that the circle</span>
+<span class="comment">%  accelerates as it goes down</span>
+   g=1; <span class="comment">% the gravitational constant. Note: changing g does not change the ball speed.</span>
+   t0=sqrt(H<span class="type">/</span>g); <span class="comment">% 4*t0 = the total time the circle is rolling (down, up, and then in reverse)</span>
+   tt=linspace(0, t0, nf); <span class="comment">% the i-th frame shows the position of the circle at time tt(i)</span>
+
+   Ty=max(H<span class="type">-</span>g<span class="type">*</span>tt<span class="type">.^</span>2, 0); Tx=(L<span class="type">/</span>2<span class="type">/</span><span class="reference">pi</span>)<span class="type">*</span>acos(2<span class="type">*</span>Ty<span class="type">/</span>H<span class="type">-</span>1); <span class="comment">% (Tx(i), Ty(i)) = the point on the circle tangent to the curve</span>
+   Dy=<span class="type">-</span>(<span class="reference">pi</span><span class="type">*</span>H<span class="type">/</span>L)<span class="type">*</span>sin(2<span class="type">*</span><span class="reference">pi</span><span class="type">*</span>Tx<span class="type">/</span>L); <span class="comment">% Dy(i) = the derivative at Tx(i)</span>
+   Cx=Tx<span class="type">+</span>R<span class="type">*</span>cos(<span class="reference">pi</span><span class="type">/</span>2<span class="type">+</span>atan(Dy)); Cy=Ty<span class="type">+</span>R<span class="type">*</span>sin(<span class="reference">pi</span><span class="type">/</span>2<span class="type">+</span>atan(Dy)); <span class="comment">% (Cx(i), Cy(i)) = the center of the circle</span>
+
+   <span class="comment">%extend these from [0, L/2] to [0, L]</span>
+   Tx=[Tx L<span class="type">-</span>Tx(1<span class="type">+</span>length(Tx)<span class="type">-</span>(2<span class="type">:</span>length(Tx)))];  Ty=0.5<span class="type">*</span>H<span class="type">*</span>(cos(2<span class="type">*</span><span class="reference">pi</span><span class="type">*</span>Tx<span class="type">/</span>L)<span class="type">+</span>1);
+   Cx=[Cx L<span class="type">-</span>Cx(1<span class="type">+</span>length(Cx)<span class="type">-</span>(2<span class="type">:</span>length(Cx)))];  Cy=[Cy Cy(1<span class="type">+</span>length(Cy)<span class="type">-</span>(2<span class="type">:</span>length(Cy)))];
+  
+   Fx=0<span class="type">:</span>(1<span class="type">/</span>N)<span class="type">:</span>L; Fy=0.5<span class="type">*</span>H<span class="type">*</span>(cos(2<span class="type">*</span><span class="reference">pi</span><span class="type">*</span>Fx<span class="type">/</span>L)<span class="type">+</span>1); <span class="comment">% the graph of the curve (used for plotting)</span>
+
+   Theta=0<span class="type">:</span>1<span class="type">/</span>N<span class="type">:</span>2<span class="type">*</span><span class="reference">pi</span>; <span class="comment">% a mesh on the interval [0, 2pi]</span>
+   Bx=R<span class="type">*</span>cos(Theta); By=R<span class="type">*</span>sin(Theta); <span class="comment">% the ball to be plotted</span>
+
+   cf=0; <span class="comment">%current frame</span>
+   <span class="keyword">for</span> <span class="reference">i</span>=<span class="reference">1</span><span class="type">:</span><span class="reference">(2</span><span class="type">*</span><span class="reference">nf</span><span class="type">-</span><span class="reference">1)</span>
+      <span class="comment">%prepare the screen</span>
+      clf; hold on; <span class="type">axis</span> equal; <span class="type">axis</span> off; <span class="type">axis</span>([<span class="type">-</span>1.1<span class="type">*</span>R L<span class="type">+</span>1.1<span class="type">*</span>R <span class="type">-</span>0.1<span class="type">*</span>R 2.1<span class="type">*</span>R<span class="type">+</span>H]);
+
+      theta=arc_length(Tx(1), Tx(<span class="reference">i</span>))<span class="type">/</span>R; <span class="comment">%the amount of rotation for the circle, depends on the length traveled so far</span>
+      plot(Fx,Fy,<span class="string">'LineWidth'</span>, 2, <span class="string">'color'</span>, [0 0 0]) <span class="comment">%plot the curve</span>
+      plot_ball(Cx(<span class="reference">i</span>), Cy(<span class="reference">i</span>), theta);  <span class="comment">%plot the ball</span>
+      pause(0.01)  <span class="comment">%take a break</span>
+
+      cf=cf<span class="type">+</span>1;
+      saveas(gcf, sprintf(<span class="string">'frame%d'</span>, 1000<span class="type">+</span>cf), <span class="string">'jpg'</span>) <span class="comment">%save the current frame.</span>
+      disp(sprintf(<span class="string">'frame%d'</span>, 1000<span class="type">+</span>cf)); <span class="comment">%show the frame number we are at</span>
+   <span class="keyword">end</span>
+
+   <span class="comment">%same thing as above, but in reverse</span>
+   <span class="keyword">for</span> <span class="reference">i</span>=<span class="reference">(2</span><span class="type">*</span><span class="reference">nf</span><span class="type">-</span><span class="reference">1)</span><span class="type">:</span><span class="reference">(</span><span class="type">-</span><span class="reference">1)</span><span class="type">:</span><span class="reference">1</span>
+      <span class="comment">%prepare the screen</span>
+      clf; hold on; <span class="type">axis</span> equal; <span class="type">axis</span> off; <span class="type">axis</span>([<span class="type">-</span>1.1<span class="type">*</span>R L<span class="type">+</span>1.1<span class="type">*</span>R <span class="type">-</span>0.1<span class="type">*</span>R 2.1<span class="type">*</span>R<span class="type">+</span>H]);
+
+      theta=arc_length(Tx(1), Tx(<span class="reference">i</span>))<span class="type">/</span>R; <span class="comment">%the amount of rotation for the circle, depends on the length traveled so far</span>
+      plot(Fx,Fy,<span class="string">'LineWidth'</span>, 2, <span class="string">'color'</span>, [0 0 0]) <span class="comment">%plot the curve</span>
+      plot_ball(Cx(<span class="reference">i</span>), Cy(<span class="reference">i</span>), theta);  <span class="comment">%plot the ball</span>
+      pause(0.01)  <span class="comment">%take a break</span>
+
+      cf=cf<span class="type">+</span>1;
+      saveas(gcf, sprintf(<span class="string">'frame%d'</span>, 1000<span class="type">+</span>cf), <span class="string">'jpg'</span>) <span class="comment">%save the current frame</span>
+      disp(sprintf(<span class="string">'frame%d'</span>, 1000<span class="type">+</span>cf)); <span class="comment">%show the frame number we are at</span>
+   <span class="keyword">end</span>
+
+<span class="comment">%  end of the main program.</span>
+<span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+  
+<span class="comment">%  an auxiliary function to plot the ball.</span>
+<span class="comment">%  Inputs: the coordinates of the center and angle of rotation</span>
+<span class="keyword">function</span> <span class="function-name">plot_ball</span>(<span class="variable-name">a</span>, <span class="variable-name">b</span>, <span class="variable-name">theta</span>)
+   <span class="keyword">global</span> <span class="variable-name">R</span> <span class="variable-name">Bx</span> <span class="variable-name">By</span>;
+
+   <span class="comment">%the triangle vertices</span>
+   x1=R<span class="type">*</span>cos(theta);       y1=<span class="type">-</span>R<span class="type">*</span>sin(theta); 
+   x2=(<span class="type">-</span>x1<span class="type">-</span>y1<span class="type">*</span>sqrt(3))<span class="type">/</span>2; y2=(<span class="type">-</span>y1<span class="type">+</span>x1<span class="type">*</span>sqrt(3))<span class="type">/</span>2;
+   x3=(<span class="type">-</span>x2<span class="type">-</span>y2<span class="type">*</span>sqrt(3))<span class="type">/</span>2; y3=(<span class="type">-</span>y2<span class="type">+</span>x2<span class="type">*</span>sqrt(3))<span class="type">/</span>2;
+
+   <span class="comment">%shift to put the center at (a, b)</span>
+   x1=x1<span class="type">+</span>a; x2=x2<span class="type">+</span>a; x3=x3<span class="type">+</span>a;
+   y1=y1<span class="type">+</span>b; y2=y2<span class="type">+</span>b; y3=y3<span class="type">+</span>b;
+
+   <span class="comment">%graph the triangle</span>
+   plot([x1 x2], [y1, y2], <span class="string">'LineWidth'</span>, 2, <span class="string">'color'</span>, [0 0 0]);
+   plot([x2 x3], [y2, y3], <span class="string">'LineWidth'</span>, 2, <span class="string">'color'</span>, [0 0 0]);
+   plot([x3 x1], [y3, y1], <span class="string">'LineWidth'</span>, 2, <span class="string">'color'</span>, [0 0 0]);
+
+<span class="comment">%  graph the circle</span>
+   plot(Bx<span class="type">+</span>a, By<span class="type">+</span>b, <span class="string">'LineWidth'</span>, 2, <span class="string">'color'</span>, [0 0 0]);
+<span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span>
+
+<span class="comment">%  an auxiliary function to find the length of the graph of f(x) for x1 &lt;= x &lt;= x2</span>
+<span class="keyword">function</span> <span class="variable-name">l</span>=<span class="function-name">arc_length</span>(<span class="variable-name">x1</span>, <span class="variable-name">x2</span>)
+   <span class="keyword">global</span> <span class="variable-name">N</span> <span class="variable-name">L</span> <span class="variable-name">H</span>;
+
+   M=floor(N<span class="type">*</span>(x2<span class="type">-</span>x1)); <span class="comment">% the number of intervals of size 1/N in the interval [x1, x2]</span>
+
+   l=0;
+   <span class="keyword">for</span> <span class="reference">i</span>=<span class="reference">1</span><span class="type">:</span><span class="reference">M</span>
+      x=x1<span class="type">+</span>(<span class="reference">i</span><span class="type">-</span>1)<span class="type">/</span>N;
+      s=<span class="type">-</span>(<span class="reference">pi</span><span class="type">*</span>H<span class="type">/</span>L)<span class="type">*</span>sin(2<span class="type">*</span><span class="reference">pi</span><span class="type">*</span>x<span class="type">/</span>L); <span class="comment">%the derivative of the curve</span>
+      l=l<span class="type">+</span>sqrt(1<span class="type">+</span>s<span class="type">^</span>2);
+   <span class="keyword">end</span>
+   l=l<span class="type">/</span>N;
+
+<span class="comment">% End of the matlab code</span>
+<span class="comment">%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%</span></pre>
+  
+
+<hr />
+<table width="100%">
+<tr>
+<td align="left" width="50%">
+
+<a href="http://www.math.umn.edu/~aoleg/">
+<img src="/~aoleg/icons/back.gif" border="0" alt="back.gif" />Oleg's web page</a>
+
+</td>
+<td align="right" width="50%">
+Updated: February 28, 2003
+</td>
+</tr>
+</table>
+</body>
+</html>

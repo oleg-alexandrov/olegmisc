@@ -1,0 +1,77 @@
+<p />
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre><span class="comment">; Paste this as 'my-toolbar.el' in '~/.xemacs', and put the icons in '~/.xemacs/icons'.
+; This line needs to be inserted in init.el: (load-file &quot;~/.xemacs/my-toolbar.el&quot;)</span>
+
+<span class="comment">; The contents of this file are based on the toolbar at
+; http://www.linguistik.uni-erlangen.de/~mxp/xemacs-toolbar
+; and on the latex toolbar at http://ee.usyd.edu.au/~thlai/emacs/index.html</span>
+
+<span class="comment">; the location of icons</span>
+(<span class="keyword">defvar</span> <span class="variable-name">my-toolbar-icon-directory</span> &quot;<span class="doc-string">~/.xemacs/icons</span>&quot;)
+
+<span class="comment">; define the action of the 'redo' button</span>
+(<span class="keyword">defcustom</span> <span class="variable-name">toolbar-redo-function</span> 'redo
+ &quot;<span class="doc-string">*Function to call when the redo icon is selected.</span>&quot;
+  <span class="reference">:type</span> '(radio (function-item redo) (function <span class="reference">:tag</span> &quot;<span class="string">Other</span>&quot;)) <span class="reference">:group</span> 'toolbar)
+(<span class="keyword">defun</span> <span class="function-name">toolbar-redo</span> ()
+  (interactive)
+  (call-interactively toolbar-redo-function))
+
+<span class="comment">; define the action of the 'search' button</span>
+(<span class="keyword">defcustom</span> <span class="variable-name">toolbar-search-function</span> 'isearch-forward
+  &quot;<span class="doc-string">*Function to call when the search icon is selected.</span>&quot;
+  <span class="reference">:type</span> '(radio (function-item search) (function <span class="reference">:tag</span> &quot;<span class="string">Other</span>&quot;)) <span class="reference">:group</span> 'toolbar)
+(<span class="keyword">defun</span> <span class="function-name">toolbar-search</span> ()
+  (interactive)
+  (call-interactively toolbar-search-function))
+
+<span class="comment">; a function which will make a toolbar button with a given icon file name</span>
+(<span class="keyword">defun</span> <span class="function-name">my-toolbar-make-button</span> (file)
+  (setq file (expand-file-name file my-toolbar-icon-directory))
+  (<span class="keyword">if</span> (file-readable-p file)
+      (toolbar-make-button-list file)
+    (error &quot;<span class="string">cannot find pixmap %s</span>&quot; file)))
+
+<span class="comment">;  making the buttons</span>
+(<span class="keyword">defconst</span> <span class="variable-name">toolbar-file-icon</span>      (my-toolbar-make-button &quot;<span class="string">file-cap-up.xpm</span>&quot;))
+(<span class="keyword">defconst</span> <span class="variable-name">toolbar-disk-icon</span>      (my-toolbar-make-button &quot;<span class="string">disk-cap-up.xpm</span>&quot;))
+(<span class="keyword">defconst</span> <span class="variable-name">toolbar-printer-icon</span>   (my-toolbar-make-button &quot;<span class="string">print-cap-up.xpm</span>&quot;))
+(<span class="keyword">defconst</span> <span class="variable-name">toolbar-cut-icon</span>       (my-toolbar-make-button &quot;<span class="string">cut-cap-up.xpm</span>&quot;))
+(<span class="keyword">defconst</span> <span class="variable-name">toolbar-copy-icon</span>      (my-toolbar-make-button &quot;<span class="string">copy-cap-up.xpm</span>&quot;))
+(<span class="keyword">defconst</span> <span class="variable-name">toolbar-paste-icon</span>     (my-toolbar-make-button &quot;<span class="string">paste-cap-up.xpm</span>&quot;))
+(<span class="keyword">defconst</span> <span class="variable-name">toolbar-undo-icon</span>      (my-toolbar-make-button &quot;<span class="string">undo-cap-up.xpm</span>&quot;))
+(<span class="keyword">defconst</span> <span class="variable-name">toolbar-redo-icon</span>      (my-toolbar-make-button &quot;<span class="string">redo-cap-up.xpm</span>&quot;))
+(<span class="keyword">defconst</span> <span class="variable-name">toolbar-spell-icon</span>     (my-toolbar-make-button &quot;<span class="string">spell-cap-up.xpm</span>&quot;))
+(<span class="keyword">defconst</span> <span class="variable-name">toolbar-replace-icon</span>   (my-toolbar-make-button &quot;<span class="string">replace-cap-up.xpm</span>&quot;))
+(<span class="keyword">defconst</span> <span class="variable-name">toolbar-search-icon</span>    (my-toolbar-make-button &quot;<span class="string">search-cap-up.xpm</span>&quot;))
+(<span class="keyword">defconst</span> <span class="variable-name">toolbar-mail-icon</span>      (my-toolbar-make-button &quot;<span class="string">mail-cap-up.xpm</span>&quot;))
+
+
+<span class="comment">; defining the toolbar</span>
+(<span class="keyword">defconst</span> <span class="variable-name">my-toolbar'(</span>
+   [toolbar-file-icon        toolbar-open      t   &quot;<span class="string">Open a file</span>&quot;]
+<span class="comment">;  [toolbar-folder-icon      toolbar-dired     t   &quot;Edit a directory&quot;]</span>
+   [toolbar-disk-icon        toolbar-save      t   &quot;<span class="string">Save buffer</span>&quot;]
+   [toolbar-printer-icon     toolbar-print     t   &quot;<span class="string">Print document</span>&quot;]
+   [toolbar-cut-icon         toolbar-cut       t   &quot;<span class="string">Kill region</span>&quot;]
+   [toolbar-copy-icon        toolbar-copy      t   &quot;<span class="string">Copy region</span>&quot;]
+   [toolbar-paste-icon       toolbar-paste     t   &quot;<span class="string">Paste from clipboard</span>&quot;]
+   [toolbar-undo-icon        toolbar-undo      t   &quot;<span class="string">Undo edit</span>&quot;]
+   [toolbar-redo-icon        toolbar-redo      t   &quot;<span class="string">Redo edit</span>&quot;]
+   [toolbar-spell-icon       toolbar-ispell    t   &quot;<span class="string">Check spelling</span>&quot;]
+   [toolbar-search-icon      toolbar-search    t   &quot;<span class="string">Search</span>&quot;]
+   [toolbar-replace-icon     toolbar-replace   t   &quot;<span class="string">Search &amp; Replace</span>&quot;]
+   [toolbar-mail-icon        toolbar-mail      t   &quot;<span class="string">Read mail</span>&quot;]
+<span class="comment">;  [toolbar-info-icon        toolbar-info      t   &quot;Info documentation&quot;]
+;  [toolbar-compile-icon     toolbar-compile   t   &quot;Start a compilation&quot;]
+;  [toolbar-debug-icon       toolbar-debug     t   &quot;Start a debugger&quot;]
+;  [toolbar-news-icon        toolbar-news      t   &quot;Read news&quot;]</span>
+  )
+)
+   
+<span class="comment">; installing the toolbar</span>
+(setq locale 'global)
+(set-specifier top-toolbar (cons locale my-toolbar))<span class="comment">; put the toolbar on top</span></pre>
+</td></tr></table>

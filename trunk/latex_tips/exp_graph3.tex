@@ -1,0 +1,15 @@
+\documentclass[12pt]{article}
+\pagestyle{empty}                       % don't show the page number
+\usepackage{psfrag}                     
+\usepackage{graphicx}
+
+\begin{document}
+
+\begin{figure}
+\psfrag{x}[l][][1][0] {$x$}             % usage: \psfrag{text}[posn][psposn][scale][rotate]{formula}
+\psfrag{y}[r][][1][45]{$\frac{5}{x+5}$} % replace 'y' by the formula $\frac{5}{x+5}$ rotated 45 deg
+\psfrag{function}[c][][1.7][0]{$y=e^x-1$} % replace 'function' by $y=e^x-1$ ([c] means 'center').
+\includegraphics[width=0.5\textwidth]{exp_graph2} % the picture to be processed
+\end{figure}
+
+\end{document}

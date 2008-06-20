@@ -1,0 +1,14 @@
+<p />
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre><span class="comment">; Saves a history of files opened previously (including other times XEmacs was used - very useful)</span>
+(<span class="keyword">require</span> `savehist)
+(setq savehist-file &quot;<span class="doc-string">~/.xemacs/history</span>&quot;)
+(setq savehist-length 1000)
+(savehist-load)
+
+<span class="comment">; Saves the position the cursor was in a file before the file was closed.</span>
+(load-library &quot;<span class="doc-string">saveplace</span>&quot;)
+(setq save-place-file &quot;<span class="doc-string">~/.xemacs/places</span>&quot;)
+(setq shadow-todo-file &quot;<span class="doc-string">~/.xemacs/shadow-todo</span>&quot;)</pre>
+</td></tr></table>

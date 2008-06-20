@@ -1,0 +1,7 @@
+(setq mas-file-history '
+(
+  ("/www/home/grad/aoleg/pub/html/emacs/test_emacs/.xemacs/htmlize.el"
+  ((point . 1) (attr) (visited . 2)))
+  ("/www/home/grad/aoleg/pub/html/emacs/test_emacs/.emacs"
+  ((point . 1497) (attr) (visited . 1)))
+))

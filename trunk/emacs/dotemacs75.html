@@ -1,0 +1,10 @@
+<p />
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre>(setq-default abbrev-mode t)                            <span class="comment">; enable abbreviations</span>
+(setq save-abbrevs t)                                   <span class="comment">; save abbreviations upon exiting xemacs</span>
+(setq abbrev-file-name &quot;<span class="doc-string">~/.xemacs/my-abbreviations.el</span>&quot;) <span class="comment">; the file storing the abbreviations</span>
+(<span class="keyword">if</span> (file-readable-p abbrev-file-name)                  <span class="comment">; read the abbreviations every</span>
+  (read-abbrev-file abbrev-file-name)                   <span class="comment">; time xemacs is started</span>
+  )</pre>
+</td></tr></table>

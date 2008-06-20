@@ -1,0 +1,19 @@
+<p />
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre><span class="keyword">\documentclass</span>[12pt]{article}
+<span class="keyword">\pagestyle</span>{empty}                       <span class="comment">% don't show the page number</span>
+<span class="keyword">\usepackage</span>{psfrag}                     
+<span class="keyword">\usepackage</span>{graphicx}
+
+<span class="keyword">\begin</span>{<span class="function-name">document</span>}
+
+<span class="keyword">\begin</span>{<span class="function-name">figure</span>}
+<span class="keyword">\psfrag</span>{x}[l][][1][0] {$<span class="string">x</span>$}             <span class="comment">% usage: \psfrag{text}[posn][psposn][scale][rotate]{formula}</span>
+<span class="keyword">\psfrag</span>{y}[r][][1][45]{$<span class="string">\frac{5}{x+5}</span>$} <span class="comment">% replace 'y' by the formula $\frac{5}{x+5}$ rotated 45 deg</span>
+<span class="keyword">\psfrag</span>{function}[c][][1.7][0]{$<span class="string">y=e^x-1</span>$} <span class="comment">% replace 'function' by $y=e^x-1$ ([c] means 'center').</span>
+<span class="keyword">\includegraphics</span>[width=0.5<span class="keyword">\textwidth</span>]{exp_graph2} <span class="comment">% the picture to be processed</span>
+<span class="keyword">\end</span>{<span class="function-name">figure</span>}
+
+<span class="keyword">\end</span>{<span class="function-name">document</span>}</pre>
+</td></tr></table>

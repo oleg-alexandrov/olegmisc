@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- Created with XEmacs -->
+<head>
+  <title>
+    Syntax highlighting in XEmacs: dark background
+  </title>
+  <link rel="stylesheet" href="/~aoleg/styles.css" type="text/css" />
+  <link href="xemacs.png" rel="icon" type="image/png"/>
+</head>
+
+<body text="#000000" bgcolor="#ffffff">
+
+<!--#include virtual="dotemacs99.html"-->
+
+
+<a href="http://www.math.umn.edu/~aoleg/emacs/syntax.shtml">
+<img src="/~aoleg/icons/back.gif" border="0" alt="Back: " />Syntax highlighting</a>
+
+</body>
+</html>

@@ -1,0 +1,35 @@
+<pre><span class="keyword">function</span> <span class="function-name">exp_graph</span> () <span class="comment">% draw a nice graph of an exponential function</span>
+
+   fontsize=20;    <span class="comment">% the font size for the x and y labels</span>
+   arrowsize=6;    <span class="comment">% how big to make the arrows</span>
+   thickness=1.5;  <span class="comment">% how thick to make the lines and curves</span>
+   small=0.1;      <span class="comment">% a small number used for text placement</span>
+<span class="comment">%  the parameters above need tweaking to obtain a good looking picture</span>
+  
+   x1=<span class="type">-</span>2; x2=2; y1=<span class="type">-</span>2; y2=2;          <span class="comment">% the viewing window is [x1, x2] x [y1, y2]</span>
+   x=x1<span class="type">:</span>0.01<span class="type">:</span>x2;                      <span class="comment">% a mesh between x1 and x2 with spacing 0.01</span>
+   c=1; y=exp(x)<span class="type">-</span>c;                   <span class="comment">% the function to be graphed is y=e^x-c</span>
+
+   <span class="type">figure</span>(1); clf; hold on; <span class="type">axis</span> equal; <span class="type">axis</span> off;           <span class="comment">% prepare the plotting window</span>
+
+   arrow([x1, 0], [x2, 0], thickness, arrowsize)            <span class="comment">% draw the x-axis and its arrow</span>
+   H=<span class="type">text</span>(x2, <span class="type">-</span>2<span class="type">*</span>small, sprintf(<span class="string">'x'</span>));                      <span class="comment">% label the x-axis</span>
+   <span class="type">set</span>(<span class="variable-name">H</span>, <span class="string">'FontSize'</span>, fontsize);                            <span class="comment">% the label font size</span>
+  
+   arrow([0, y1], [0, y2], thickness, arrowsize)            <span class="comment">% draw the y-axis and its arrow</span>
+   H=<span class="type">text</span>(<span class="type">-</span>3<span class="type">*</span>small, y2, sprintf(<span class="string">'y'</span>));                      <span class="comment">% label the y-axis</span>
+   <span class="type">set</span>(<span class="variable-name">H</span>, <span class="string">'FontSize'</span>, fontsize);                            <span class="comment">% the label font size</span>
+
+   plot(x, y, <span class="string">'LineWidth'</span>, thickness);                      <span class="comment">% draw the graph</span>
+   plot([x1, x2], [<span class="type">-</span>c, <span class="type">-</span>c], <span class="string">'--'</span>, <span class="string">'LineWidth'</span>, thickness<span class="type">/</span>2) <span class="comment">% draw the asymptote</span>
+   H=<span class="type">text</span>(<span class="type">-</span>3<span class="type">*</span>small, <span class="type">-</span>c<span class="type">-</span>2<span class="type">*</span>small, sprintf(<span class="string">'%2.0f'</span>, <span class="type">-</span>c));      <span class="comment">% label the asymptote</span>
+   <span class="type">set</span>(<span class="variable-name">H</span>, <span class="string">'FontSize'</span>, fontsize);                            <span class="comment">% the label font size</span>
+
+   H=<span class="type">text</span>(x2, y2, sprintf(<span class="string">'y=e^x-%2.0f'</span>, c));               <span class="comment">% label the graph</span>
+   <span class="type">set</span>(<span class="variable-name">H</span>, <span class="string">'FontSize'</span>, fontsize);                            <span class="comment">% the label font size</span>
+
+   small2=0.02; <span class="comment">% another small number. Extends the viewing window slightly, so that</span>
+   <span class="type">axis</span>([x1 x2<span class="type">+</span>small2 y1 y2<span class="type">+</span>small2]); <span class="comment">% arrows don't get blunted. Now set the viewing window</span>
+  
+   saveas(gcf, <span class="string">'exp_graph1.eps'</span>) <span class="comment">% save the resulting picture as an eps file</span>
+                                 <span class="comment">% also can save as jpg or bmp</span></pre>

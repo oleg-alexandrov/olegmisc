@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- Created with XEmacs -->
+<head>
+  <title>
+   Enabling syntax highlighting in XEmacs
+  </title>
+  <link rel="stylesheet" href="/~aoleg/styles.css" type="text/css" />
+  <link href="xemacs.png" rel="icon" type="image/png"/>
+  <meta name="Author" content="Oleg Alexandrov aoleg@math.umn.edu" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="description" content="XEmacs tips, XEmacs tutorial,
+   Customizing XEmacs, Xemacs customization, Syntax highlighting" />
+</head>
+
+  <body text="#000000" bgcolor="#ffffff">
+<center><h1>Syntax highlighting</h1></center>
+To enable color syntax highlighting in XEmacs one needs to enter in <i><a href="startup.shtml">init.el</a></i> the following line:
+
+
+<!--#include virtual="dotemacs95.html"-->
+
+<p /> By default XEmacs's colors are rather bleak. I prefer to have a
+dark background, this is a <a href="double3_dark.shtml">sample</a> of
+how the colors look like in my XEmacs. (<b>Note:</b> One needs to
+<i>enable cascading style sheets (CSS)</i> in the web browser to see
+the colors.)  To obtain these colors one needs to insert in <i><a
+href="startup.shtml">custom.el</a></i> the contents of <a
+href="colors_dark.shtml">this file</a>.
+
+<p />Some people prefer a light background. Here is an <a href="double3_light.shtml">example</a>, and <a href="colors_light.shtml">here</a> is the necessary piece of text to achieve these colors.
+
+<p />Of course, the above needs to be only a first step in setting up
+the colors. XEmacs has a user-friendly way of changing the colors,
+fonts, etc, attributes which in XEmacs lingo are called <i>faces</i>.
+Most colors you saw in the examples above are <i>font-lock
+faces</i>. To customize them select from the menu on the top of the
+XEmacs window <b>Options -> Customize -> Emacs -> Faces -> Font Lock
+Faces -> Font Lock Faces</b>. XEmacs also has a huge number of more
+obscure faces, to see them all select from the menu <b>Options ->
+Customize -> Face</b>, and hit the <i>Return</i> key.
+
+ 
+<p />By pressing on the small triangle to the right of each face,
+several lines with radio buttons will open. There one can change the
+colors, fonts, sizes, etc. After doing that, right-click with the
+mouse and choose <i>set</i> to apply the changes (non-permanently) and
+then open a file to see how the colors look like. To save the changed
+faces for future XEmacs sessions, go back to the list of faces, again
+right-click with the mouse and choose <i>save.</i>
+
+<p /> XEmacs accepts colors by name, that is, green, red, etc, or by their hexadecimal RGB number (like #ff0000 for
+red, etc). On Unix there is a nifty program called <i>xcolorsel</i> which will show all the available colors, their
+names and RGB numbers. Otherwise a list of colors can be found 
+<a href="http://www.geocities.com/kensanata/colors.html">here</a> (also mirrored <a
+href="emacs_colors.shtml">here</a>).
+
+<br />
+
+<hr />
+
+<table width="100%">
+<tr>
+<td align="left" width="20%">
+<a href="http://www.math.umn.edu/~aoleg/emacs">
+<img src="/~aoleg/icons/back.gif" border="0" alt="Back: " />XEmacs tips</a>
+</td>
+<td align="center"  width="20%">
+<a href="mailto:aoleg@math.umn.edu">aoleg@math.umn.edu</a>
+</td>
+
+<td align="center" width="15%">
+<a href="http://www.xemacs.org">
+<img src="/~aoleg/icons/cbxSmall.jpg" border="0" alt="Created with XEmacs" /></a>
+</td>
+
+
+<td align="center" width="15%">
+<a href="http://validator.w3.org/check?uri=http%3A%2F%2Fwww.math.umn.edu%2F~aoleg%2Femacs%2Fsyntax.shtml">
+<img src="/~aoleg/icons/valid-xhtml10.gif" border="0"  alt="Valid XHTML 1.0!" height="31" width="88" /></a>
+</td>
+
+<td align="right">
+Updated: July 03, 2004</td>
+</tr>
+</table>
+
+</body>
+</html>

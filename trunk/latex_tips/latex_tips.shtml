@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- Created with XEmacs -->
+<head>
+  <title>
+    On LaTeX and postscript figures
+  </title>
+  <link rel="stylesheet" href="/~aoleg/styles.css" type="text/css" />
+  <meta name="Author" content="Oleg Alexandrov aoleg@math.umn.edu" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="description" content="Keywords: LaTeX tips, postscript figures, draw figures,
+	labels in postscript figures, draw an arrow, drawing with matlab, spline interpolation" />
+
+  <link rel="stylesheet" href="/~aoleg/styles.css" type="text/css" />
+</head>
+<body>
+<center><h1>On LaTeX and postscript figures</h1></center>
+
+<p />
+<font size="+1">
+<a href="#latex2pdf">1. How to make pdf files, whose fonts are not blurry, out of LaTeX files</a>
+<br /><a href="#matlab2postcript">2. How to make postscript figures with matlab</a>
+<br /><a href="#psfrag">3. How to insert mathematical expressions into postscript figures</a>
+<br /><a href="#arrows">4. How to draw arrows in postscript figures</a>
+<br /><a href="#spline">5. How to draw a smooth closed curve</a>
+</font>
+
+<p /><a name="latex2pdf"><font size="+2" color="#ff0000">
+1. How to make pdf files, whose fonts are not blurry, out of LaTeX files
+</font></a>
+
+<p />Use the commands
+<pre>
+  dvips -Ppdf article.dvi 
+  ps2pdf article.ps
+</pre>
+
+The output will be <i>article.pdf</i>.
+
+<p /><a name="matlab2postcript"><font size="+2" color="#ff0000">
+2. How to make postscript figures with matlab
+</font></a>
+
+<p />Here is a shot of a postscript figure easily drawable with matlab. 
+<p />
+<center>
+<img src="exp_graph1.jpg" border="0" alt="exp_graph1.jpg" />
+</center>
+
+<p />The source code to the program which drew this graph is below, and
+is also <a href="exp_graph.m">here</a>. It needs to be saved as
+<i>exp_graph.m</i> . It uses the function <i>arrow.m</i> to draw the
+arrows of the coordinate axes. That is <a
+href="arrow.m">here</a>. Both of these codes need to be downloaded in
+the same directory. Then one starts matlab, goes in that directory,
+and types <i>exp_graph</i> to run it. The graph will be shown on the
+screen and will simultaneously be saved as
+<i>exp_graph1.eps</i>. 
+
+
+<p /><table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>  
+<!--#include virtual="exp_graph1.html"-->
+</td></tr></table>
+
+
+<p /><a name="psfrag"><font size="+2" color="#ff0000">
+3. How to insert mathematical expressions into postscript figures
+</font></a>
+
+<p />The graph created at the previous tip is not too bad. It has two
+big problems though. First, the fonts look ugly (at least when
+embedded in a LaTeX document), and second, matlab cannot handle well
+complicated formulas embedded in the figures. The solution is to
+post-process the obtained postscript figure from within LaTeX. It is
+easy to modify the matlab script from the previous tip to produce the
+following postscript figure
+
+<p /><center>
+<img src="exp_graph2.jpg" border="0" alt="exp_graph2.jpg" /></center>
+
+<p />Now, from within LaTeX we can replace the text fragments
+<i>'x'</i>, <i>'y'</i> and <i>'function'</i> above by whatever else we
+want. That is accomplished by using the <i>psfrag</i> package.  For
+example, if the postscript file created above is called
+<i>exp_graph2.eps,</i> then by creating a LaTeX file called
+<i>exp_graph3.tex</i> with the following contents
+
+<p />
+<!--#include virtual="exp_graph3.html"-->
+
+<p /> and by typing the commands 
+<pre>
+  latex exp_graph3
+  dvips -Ppdf exp_graph3
+  ps2epsi exp_graph3.ps exp_graph3.eps 
+</pre> 
+
+we obtain the nice looking picture below on the right with the name
+<i>exp_graph3.eps</i> (compare with the picture <i>exp_graph1.eps</i>  on the left obtained
+in the last tip).
+
+<p /><center>
+<img src="exp_graph1.jpg" border="0" alt="exp_graph1.jpg" />
+<img src="exp_graph3.jpg" border="0" alt="exp_graph3.jpg" /></center>
+
+<p /><table border="1" cellspacing="0" cellpadding="2"  width="100%">
+<tr><td> 
+
+<p /><b>Note:</b> After running <i>latex exp_graph3</i>, obviously a
+dvi file will be created, with the name <i>exp_graph3.dvi</i>. But it
+will not reflect correctly the picture on the right. One must convert
+the dvi file to postscript, as done above, to really see the
+replacements.
+
+</td></tr></table>
+
+<p />We see that the fonts look much better, and we can insert formulas of
+any complexity. More, those formulas can be rotated, scaled, centered
+(or shifted to the left or to the right). For more details see the
+documentation of the psfrag package on the internet, or <a
+href="psfrag.ps">here.</a>
+
+<p />The postscript figure can be converted to pdf, with the command
+<pre>
+  epstopdf exp_graph3.eps
+</pre>
+to get the file <i>exp_graph3.pdf</i>. This is useful if one uses <i>pdflatex</i>
+to create pdf files directly from LaTeX files, without going through dvi and postscript.
+
+<p /> <b>Note:</b> When viewed in a postscript or pdf viewer, the curves in a figure might look not very smooth.
+By looking carefully, one could even see the individual pixels making up the curves, which is 
+visually not very pleasing. This effect is called <i>aliasing</i>. Most viewers have an antialiasing feature,
+but for some reason some of them do not antialias by default. To turn on antialiasing in Adobe's Acrobat Reader, 
+go to preferences, and check the option "smooth line art". In <i>gv</i>, which is a Unix postscript and pdf viewer,
+select from the menu <b>State->Antialias</b>.
+
+<p /> And <a href="mypsfrag">here</a> can be found a small perl script which will read through a
+postscript figure to be modified, and create a preliminary LaTeX file looking as above, containing
+a psfrag entry for every piece of text encountered (this automation can be useful when a figure
+has many of pieces of text in it, as for example when one has coordinate axes with lots of numbers on them).
+
+<p /><a name="arrows"><font size="+2" color="#ff0000">
+4. How to draw arrows in postscript figures
+</font></a>
+
+<p />The script <i><a href="arrow.m">arrow.m</a></i> used in the
+previous tips can draw more sophisticated arrows. Here is a sample
+picture and the code necessary to draw it (note that the two filled
+arrows are not the same).
+
+<p /><center><img src="arrows.gif" border="0" alt="arrows.jpg" /></center>
+
+<p /><table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<!--#include virtual="arrows.html"-->
+</td></tr>
+</table>      
+
+
+<p /><a name="spline"><font size="+2" color="#ff0000">
+5. How to draw a smooth closed curve
+</font></a>
+
+<p />One can use spline interpolation. I found an example on the MathWorks web site
+which goes like this: use the left mouse button to select points, with the right mouse
+button selecting the last point. Draw a spline through these points. The result looks
+like this.
+
+<p /><center>
+<img src="spline1.gif" border="0" alt="spline1.gif" /><br /><br />
+</center>
+
+<p />The curve is clearly smooth, but not closed. One would say that first
+close the curve, and then interpolate, thus, instead of interpolating
+through ABC...GH, interpolate through ABC...GH<font
+color="#ff0000">A</font>. Here is the result.
+
+<p /><center>
+<img src="spline2.gif" border="0" alt="spline2.gif" /><br /><br />
+</center>
+
+<p />There is a corner at A. If you are a mathematician, you would have
+probably expected this. To extend a function F defined on [0, T] to a smooth
+periodic function with period T it is not enough to have F(0)=F(T), one also
+needs F'(0)=F'(T). But what if one interpolates through ABCDEFGH<font
+color="#ff0000">ABCDEFG</font>? Here is the result. As expected, there are overlaps.
+
+<p /><center>
+<img src="spline3.gif" border="0" alt="spline3.gif" /><br /><br />
+</center>
+
+<p />But then just delete some of the overlapping pieces, for example one of the curves
+going through ABCD, and one of those going through DEFG. Here is the result.
+
+<p /><center>
+<img src="spline4.gif" border="0" alt="spline4.gif" /><br /><br />
+</center>
+
+<p />And <a href="smooth_curve.m">here</a> is the matlab code which made this picture.
+
+<p /> Now one can place text anywhere on the figure with the following commands:
+
+<!--#include virtual="put_text.html"-->
+
+
+<hr />
+<table width="100%">
+<tr>
+<td align="left" width="50%">
+
+<a href="http://www.math.umn.edu/~aoleg/tips.shtml">
+<img src="/~aoleg/icons/back.gif" border="0" alt="back.gif" />Some tips</a>
+
+<td><center><a href="mailto:aoleg@math.umn.edu">aoleg@math.umn.edu</a></center>
+</td>
+</td>
+<td align="right" width="50%">
+Updated: February 28, 2004</td>
+</tr>
+</table>
+</body>
+</html>
