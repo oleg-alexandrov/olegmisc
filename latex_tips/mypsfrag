@@ -1,0 +1,47 @@
+#!/usr/bin/perl
+# type 'which perl' in a terminal to see if the above is the correct path to perl
+
+# A small perl script, which takes as input a postscript figure, and prints
+# a tex file containing a psfrag entry for every piece of text encountered in the 
+# figure. Usage: mypsfrag somefigure.eps
+
+use strict;                # 'strict' insists that all variables be declared
+use diagnostics;           # 'diagnostics' expands the cryptic warnings
+
+# the preamble
+print '
+\documentclass[12pt]{article}
+\pagestyle{empty}                    % don\'t show the page number
+\usepackage{psfrag}
+\usepackage{graphicx}
+
+\begin{document}
+\begin{figure}
+
+';
+
+undef $/; # enables reading all the input file in one line
+
+# read the postscript figure (which is a text file) into the variable $contents
+open (FILE, "<$ARGV[0]") || die "Cannot open the file \'$ARGV[0]\'. Check if the file exists and has right permissions!"; 
+my $contents=<FILE>;
+close(FILE);
+
+my @matches= ($contents =~ /\((..*?)\)/g);
+# this uses the fact that all pieces of text in a postscript figure will be in parantheses,
+# that is, looking like this: (some text)
+
+print '%The psfrag entries are below. They need to be modified to reflect correctly the replacements you intend.' . "\n";
+# create an entry of every piece of text
+foreach (@matches) {
+  print '\psfrag{' , $_ , '}[c][][1][0]{$' , $_ , '$}' , "\n";
+}
+
+# one would want to modify the width of the figure (that is, the scaling)
+print "\n" , '\includegraphics[width=1.0\textwidth]{' , $ARGV[0] , '}' , "% to scale the picture, change width here\n";
+
+# the end of the tex file
+print '
+\end{figure}
+\end{document}
+';

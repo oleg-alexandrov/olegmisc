@@ -1,0 +1,13 @@
+<p /> 
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%"> 
+<tr><td> <pre>
+<span class="comment">; A first attempt to make &quot;control z&quot; work as undo. 
+</span>(global-set-key [(control z)] 'undo)
+
+<span class="comment">; The above does not work on newer versions of XEmacs. Then, highjack 
+; Xemacs's zap-up-to-char function itself and force it to work as &quot;undo&quot;.</span>
+(<span class="keyword">defun</span> <span
+class="function-name">zap-up-to-char</span> () 
+  (interactive) 
+  (undo)
+)</pre> </td></tr></table>

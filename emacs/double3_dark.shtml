@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- Created with XEmacs -->
+<!-- Created by htmlize-0.67 in css mode. -->
+<head>
+  <title>
+    Xemacs with dark colors
+  </title>
+  <style type="text/css">
+    <!--
+      body {
+        color: #ffffff;
+        background-color: #000000;
+      } /* default */
+      .preprocessor {
+        color: #ff0000;
+        background-color: #000000;
+      font-weight: bold;
+
+      } /* font-lock-preprocessor-face */
+      .variable-name {
+        color: #ffff00;
+        background-color: #000000;
+      font-weight: bold;
+      } /* font-lock-variable-name-face */
+      .string {
+        color: #00cd00;
+        background-color: #000000;
+      } /* font-lock-string-face */
+      .type {
+        color: #886fff;
+        background-color: #000000;
+      font-weight: bold;
+      } /* font-lock-type-face */
+      .keyword {
+        color: #ffd700;
+        background-color: #000000;
+      } /* font-lock-keyword-face */
+      .function-name {
+        color: #5151fb;
+        background-color: #000000;
+       font-weight: bold;
+      } /* font-lock-function-name-face */
+
+
+    span.comment {
+        color: #cd8500;
+        background-color: #000000;
+      } /* font-lock-comment-face */
+
+
+
+      a {
+        color: inherit;
+        background-color: inherit;
+        font: inherit;
+        text-decoration: inherit;
+            }
+      a:hover {
+        text-decoration: underline;
+      }
+    -->
+    </style>
+</head>
+  <body text="#000000" bgcolor="#ffffff">
+    <pre><span class="preprocessor">#include</span> <span class="string">&lt;iostream&gt;</span>
+<span class="preprocessor">#include</span> <span class="string">&lt;cmath&gt;</span>
+<span class="preprocessor">#include</span> &quot;<span class="string">double3.h</span>&quot;
+<span class="type">using</span> <span class="type">namespace</span> <span class="variable-name">std</span>;
+
+<span class="comment">// create a class called double3 each object being a three component vector</span>
+
+<span class="function-name">double3::double3</span>(<span class="type">double</span> <span class="variable-name">x</span>, <span class="type">double</span> <span class="variable-name">y</span>, <span class="type">double</span> <span class="variable-name">z</span>) : x_(x), y_(y), z_(z){ }
+
+<span class="function-name">double3::double3</span>(<span class="type">const</span> <span class="variable-name">double3</span>&amp; r) : x_(r.x_), y_(r.y_), z_(r.z_){ }
+
+<span class="type">double</span>&amp; <span class="type">double3</span>::<span class="keyword">operator</span><span class="function-name">[]</span>(<span class="type">int</span> <span class="variable-name">i</span>){
+  <span class="keyword">if</span> (i == 0) <span class="keyword">return</span> x_;
+  <span class="keyword">if</span> (i == 1) <span class="keyword">return</span> y_;
+  <span class="keyword">if</span> (i == 2) <span class="keyword">return</span> z_;
+  cerr &lt;&lt; &quot;<span class="string">ERROR: index out of range\n</span>&quot;;
+  exit(0);
+}
+
+<span class="type">double3</span> <span class="keyword">operator</span><span class="function-name">+(</span><span class="type">const</span> <span class="variable-name">double3</span>&amp; r1, <span class="type">const</span> <span class="variable-name">double3</span>&amp; r2){
+  double3 r(r1.x_+r2.x_, r1.y_+r2.y_, r1.z_+r2.z_);
+  <span class="keyword">return</span> r;
+}
+
+<span class="type">double3</span> <span class="function-name">operator*</span>(<span class="type">const</span> <span class="type">double</span>&amp; <span class="variable-name">c</span>, <span class="type">const</span> <span class="variable-name">double3</span>&amp; r){
+  double3 rez(c*r.x_, c*r.y_, c*r.z_);
+  <span class="keyword">return</span> rez;
+}
+
+
+<span class="type">double3</span> <span class="keyword">operator</span><span class="function-name">-(</span><span class="type">const</span> <span class="variable-name">double3</span>&amp; r1, <span class="type">const</span> <span class="variable-name">double3</span>&amp; r2){
+  double3 r(r1.x_-r2.x_, r1.y_-r2.y_, r1.z_-r2.z_);
+  <span class="keyword">return</span> r;
+}
+
+<span class="type">double3</span>&amp; <span class="type">double3</span>::<span class="keyword">operator</span><span class="function-name">=(</span><span class="type">const</span> <span class="variable-name">double3</span>&amp; r)
+{
+  x_ = r.x_;
+  y_ = r.y_;
+  z_ = r.z_;
+  <span class="keyword">return</span> *<span class="keyword">this</span>;
+}
+
+<span class="type">ostream</span>&amp; <span class="keyword">operator</span><span class="function-name">&lt;&lt;</span>(ostream&amp; ostr, <span class="type">const</span> <span class="variable-name">double3</span>&amp; r){
+  <span class="keyword">return</span> ostr &lt;&lt; &quot;<span class="string">[ </span>&quot; &lt;&lt; r.x_ &lt;&lt; &quot;<span class="string">, </span>&quot; &lt;&lt; r.y_ &lt;&lt; &quot;<span class="string">, </span>&quot; &lt;&lt; r.z_ &lt;&lt; &quot;<span class="string"> ]\n</span>&quot;;
+}</pre>
+  
+
+<!--  Updated: September 14, 2003</hr> -->
+
+</body>
+</html>

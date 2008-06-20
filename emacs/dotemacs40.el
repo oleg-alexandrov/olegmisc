@@ -1,0 +1,3 @@
+(load-library "pc-select")    ; a package which enables text selection ...
+(pc-select-mode)              ; ... with the shift and arrow keys
+

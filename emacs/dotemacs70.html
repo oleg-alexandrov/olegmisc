@@ -1,0 +1,15 @@
+<p />
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre><span class="comment">; associate the files with the .tex extension with the LaTeX mode</span>
+(setq auto-mode-alist (append '((&quot;<span class="string">\\.tex$</span>&quot;  . LaTeX-mode)) auto-mode-alist))
+
+<span class="comment">; load the LaTeX mode</span>
+(<span class="keyword">require</span> '<span class="reference">tex-site</span>)
+
+<span class="comment">; Tell XEmacs to load `</span><span class="reference">my-latex.el</span><span class="comment">' when opening LaTeX files</span>
+(add-hook 'LaTeX-mode-hook
+  '(<span class="keyword">lambda</span>()
+     (load-file &quot;<span class="string">~/.xemacs/my-latex.el</span>&quot;)  <span class="comment">; load these LaTeX preferences</span>
+     ))</pre>
+</td></tr></table>

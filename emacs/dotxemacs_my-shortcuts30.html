@@ -1,0 +1,15 @@
+<p />
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre><span class="comment">; search forward with Ctrl-f</span>
+(global-set-key [(control f)] 'isearch-forward)
+(<span class="keyword">define-key</span> <span class="variable-name">isearch-mode-map</span> [(control f)] (lookup-key isearch-mode-map &quot;<span class="string">\C-s</span>&quot;))
+(<span class="keyword">define-key</span> <span class="variable-name">minibuffer-local-isearch-map</span> [(control f)]
+  (lookup-key minibuffer-local-isearch-map &quot;<span class="string">\C-s</span>&quot;))
+
+<span class="comment">; search backward with Alt-f</span>
+(global-set-key [(meta f)] 'isearch-backward)
+(<span class="keyword">define-key</span> <span class="variable-name">isearch-mode-map</span> [(meta f)] (lookup-key isearch-mode-map &quot;<span class="string">\C-r</span>&quot;))
+(<span class="keyword">define-key</span> <span class="variable-name">minibuffer-local-isearch-map</span> [(meta f)]
+  (lookup-key minibuffer-local-isearch-map &quot;<span class="string">\C-r</span>&quot;))</pre>
+</td></tr></table>

@@ -1,0 +1,8 @@
+<p />
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre>disp(<span class="string">'Please click with the mouse where you want the text placed'</span>);
+[x, y, but]=ginput(1);      <span class="comment">% read the input from the mouse</span>
+H=<span class="type">text</span>(x, y, <span class="string">'some text'</span>);  <span class="comment">% place the text</span>
+<span class="type">set</span>(<span class="variable-name">H</span>, <span class="string">'Fontsize'</span>, 15);     <span class="comment">% Set the text font size</span></pre>
+</td></tr></table>

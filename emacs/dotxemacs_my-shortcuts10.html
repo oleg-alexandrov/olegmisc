@@ -1,0 +1,17 @@
+<p />
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre>(global-set-key [(control o)] 'find-file)              <span class="comment">; use Ctrl-o to open a (new) file</span>
+(global-set-key [(control n)] 'find-file-other-frame)  <span class="comment">; open a file in a new window with Ctrl-n</span>
+(global-set-key [(control s)] 'save-buffer)            <span class="comment">; save with Ctrl-s</span>
+(global-set-key [(meta s)]    'write-file)             <span class="comment">; 'save file as...' with Alt-s ('meta' is</span>
+                                                       <span class="comment">; just another name for the 'Alt' key)</span>
+(global-set-key [(control q)] 'save-buffers-kill-emacs)<span class="comment">; exit XEmacs with Ctrl-q</span>
+(global-set-key [(meta q)]    'kill-this-buffer)       <span class="comment">; delete changes (don't save) with Alt-q</span>
+
+(global-set-key [(control t)] 'ispell-buffer)          <span class="comment">; spell-check with Ctrl-t</span>
+(global-set-key [(control r)] 'replace-string)         <span class="comment">; search and replace with Ctrl-r</span>
+
+(<span class="keyword">require</span> '<span class="reference">redo</span>)                                        <span class="comment">; load the 'redo' package</span>
+(global-set-key [(meta z)]    'redo)                   <span class="comment">; 'redo', that is, revert the last 'undo'</span></pre>
+</td></tr></table>
