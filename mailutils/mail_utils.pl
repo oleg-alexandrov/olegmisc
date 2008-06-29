@@ -6,11 +6,9 @@ undef $/; # undefines the separator. Can read one whole file in one scalar.
 $| = 1; # flush the buffer each line
 
 
-sub read_done_ids { # This routine is untested!!!!!!!!!!!!!!
-
-  # A routine useful to mark if a given action was already performed
-  # on a given message.
-  my ($done_file, $Done_hash, $id, $text);
+sub read_done_ids {
+  
+  my ($done_file, $Done_hash, $line, $id, $success, $text);
   
   $done_file = shift; $Done_hash = shift;
  
@@ -18,20 +16,29 @@ sub read_done_ids { # This routine is untested!!!!!!!!!!!!!!
   $text = <FILE>; 
   close (FILE);
  
-  foreach $id (split ("\n", $text)) {
-    next if ($id =~ /^\s*$/);
-    $Done_hash->{$id} = 1;
+  foreach $line (split ("\n", $text)) {
+    next if ($line =~ /^\s*$/);
+    
+    if ($line =~ /^(.*?)\s+(\d+)\s*$/){
+      $id = $1; $success = $2;
+      $Done_hash->{$id} = $success;
+    }else{
+      print "Error! Malformatted file $done_file!\n";
+      print "Bad line: $line\n";
+      exit(0);
+    }
   }
 }
 
-sub parse_mailbox { # Checked!
-  #                 # Use with split_in_header_body below each time at least once.
+
+sub parse_mailbox {
 
   # Split mailbox into messages. The big idea is that messages
   # are separated by a blank line (\n\n), and the first line
-  # is a "From " line with a date.
+  # is a "From " line with a date. Also the header is separated
+  # from the message body by a blank line too.
   
-  my ($folder, @mails, $text, $mail, $count, $header, $sep);
+  my ($folder, $text, @mails, $mail, $count, $header);
   
   $folder = shift; 
   print "Doing $folder\n";
@@ -40,11 +47,47 @@ sub parse_mailbox { # Checked!
   $text = <FILE>;
   close (FILE);
 
-  # Below is the trickiest part in in all these routines,
-  # splitting an email into individual messsages.
-  $sep = '  dfAF69Afkasl4534AkdDF4dafpord9HJLaFe  Fkas74LagDre  ';  # something very unlikely
-  $text =~ s/(\n\n)(From .*?\d:\d\d:\d\d)/$1$sep$2/g;
-  @mails = split ($sep, $text);
+  # Below is the trickiest part in the entire script,
+  # splitting an email into messsages
+  # Note that this removes whitespace between messages.
+  @mails = split ("(?=\n\nFrom .*?\\d:\\d\\d:\\d\\d)", $text);
+
+  # Lots of ugly heuristic below. Getting obsessed about the above
+  # line doing a good job at splitting messages
+  
+  $count = 0;
+  foreach $mail (@mails){
+    $mail =~ s/^\s*//g; # rm whitespace at the beginning
+
+    $count++;
+    #print "$count$mail\n\n*********************************\n\n";
+    
+    # Check if the message has a header
+    if ($mail =~ /^(.*?)(\n\n|$)/s){
+      $header = $1;
+    }else{
+      print "Can't locate header!\n";
+      print "$mail\n";
+      exit(0);
+    }
+
+    # Check if the message id is missing
+    if ($header !~ /\nMessage-ID:\s+\<.*?\>/i){
+      print "Error, no message id!\n";
+      print "Message is: $mail\n";
+      exit(0);
+    }
+
+    # check if there is more than one message id in the header    
+    if ( $header =~ /\nMessage-ID:\s+\<[^\n]*?\>.*?\nMessage-ID:\s+\<[^\n]*?\>/si ) {
+      print "Error, more than one message id!\n";
+      print "$mail\n";
+      exit(0);
+    }
+ 
+    #    print "$mail\n";
+    #    print "z" x 1000 . "\n"; 
+  } 
 
   return @mails;
 }
@@ -121,3 +164,4 @@ sub merge_header_body { # not checked!
   return $header . $body;
 }
 
+1;

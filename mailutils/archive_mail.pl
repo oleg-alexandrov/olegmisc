@@ -2,6 +2,7 @@
 use strict;		      # 'strict' insists that all variables be declared
 use diagnostics;	      # 'diagnostics' expands the cryptic warnings
 use Encode;
+require 'mail_utils.pl';
 
 undef $/; # undefines the separator. Can read one whole file in one scalar.
 $| = 1; # flush the buffer each line
@@ -10,6 +11,9 @@ $| = 1; # flush the buffer each line
 
 MAIN: {
 
+  print "Warning: this code was not tested after recent changes!  Use with care!\n";
+  exit(0); 
+  
   my ($mail_dir, $id, $message_file, $pause, $message);
   my ($output, $success, $folder, @folders, $done_file, %Done_hash, $line, $mailbox);
   my (@mails);
@@ -49,93 +53,6 @@ MAIN: {
       }
     }
   }
-}
-
-
-sub read_done_ids {
-  
-  my ($done_file, $Done_hash, $line, $id, $success, $text);
-  
-  $done_file = shift; $Done_hash = shift;
- 
-  open(FILE, "<$done_file") || die "Can't open file $done_file";
-  $text = <FILE>; 
-  close (FILE);
- 
-  foreach $line (split ("\n", $text)) {
-    next unless ($line =~ /^(.*?)\s+(\d+)\s*$/);
-    $id = $1; $success = $2;
-    $Done_hash->{$id} = $success;
-  }
-}
-
-sub parse_mailbox {
-
-  # Split mailbox into messages. The big idea is that messages
-  # are separated by a blank line (\n\n), and the first line
-  # is a "From " line with a date. Also the header is separated
-  # from the message body by a blank line too.
-  
-  my ($folder, $text, @mails, $mail, $count, $header);
-  
-  $folder = shift; 
-  print "Doing $folder\n";
-
-  open (FILE, "<$folder");
-  $text = <FILE>;
-  close (FILE);
-  
-  # Get rid of carriage returns
-  $text =~ s/\r//g;
-
-  # Below is the trickiest part in the entire script,
-  # splitting an email into messsages
-  # Note that this removes whitespace between messages.
-  @mails = split ("(?=\n\nFrom .*?\\d:\\d\\d:\\d\\d)", $text);
-
-  # Lots of ugly heuristic below. Getting obsessed about the above
-  # line doing a good job at splitting messages
-  
-  $count = 0;
-  foreach $mail (@mails){
-    $mail =~ s/^\s*//g; # rm whitespace at the beginning
-
-    $count++;
-    #print "$count$mail\n\n*********************************\n\n";
-    
-    # Check if the message has a header
-    if ($mail =~ /^(.*?)(\n\n|$)/s){
-      $header = $1;
-    }else{
-      print "Can't locate header!\n";
-      print "$mail\n";
-      exit(0);
-    }
-
-    # Check if the message id is missing
-    if ($header !~ /\nMessage-ID:\s+\<.*?\>/i){
-      print "Error, no message id!\n";
-      print "Message is: $mail\n";
-      exit(0);
-    }
-
-    # check if there is more than one message id in the header    
-    if ( $header =~ /\nMessage-ID:\s+\<([^\n]*?)\>.*?\nMessage-ID:\s+\<([^\n]*?)\>/si ) {
-      my $id1 = $1; my $id2 = $2;
-      if ($id1 eq $id2){
-         print "\n\nDuplicate message id!!! Must be Thunderbird bug! Will continue!\n";
-      }else{
-         print "Error, more than one message id! Will exit!!!\n";
-         exit(0);
-      }
-      print "$mail\n\n";
-    }
- 
-    #    print "$mail\n";
-    #    print "z" x 1000 . "\n"; 
-  } 
-
-  return @mails;
 }
 
 sub send_message_to_gmail_via_procmail {
