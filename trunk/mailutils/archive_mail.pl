@@ -8,12 +8,12 @@ undef $/; # undefines the separator. Can read one whole file in one scalar.
 $| = 1; # flush the buffer each line
 
 # Split mailbox in individual messages, and forward to gmail using procmail. 
-# Sample procmail file:
-#:0
-#! me@mydomain.com
-#
+# Sample procmail file (sans "# ") is below.
+# :0
+# ! me@mydomain.com
+# 
 
-#MAIN: {
+MAIN: {
 
   my ($id, $message_file, $pause, $message);
   my ($output, $success, $folder, @folders, $done_file, %Done_hash, $line, $mailbox);
