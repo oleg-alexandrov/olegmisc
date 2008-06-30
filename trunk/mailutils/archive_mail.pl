@@ -11,49 +11,66 @@ $| = 1; # flush the buffer each line
 
 MAIN: {
 
-  print "Warning: this code was not tested after recent changes!  Use with care!\n";
-  exit(0); 
-  
-  my ($mail_dir, $id, $message_file, $pause, $message);
+  my ($id, $message_file, $pause, $message);
   my ($output, $success, $folder, @folders, $done_file, %Done_hash, $line, $mailbox);
   my (@mails);
 
-  # define some settings we will need later
-  $mail_dir = $ENV{HOME} . '/mail';
+  if ( $#ARGV < 0 ){
+    print "Usage: $0 MailFolder\n";
+    exit(0);
+  }
+  $folder = $ARGV[0];
+
+  my $do_debug = 0; # 1 for debugging, 0 for actual work
+  
   $message_file = 'Message_file';  # save here a message before calling the forwarding program
   $done_file = 'Sent_to_gmail.txt'; # Store message ids of mail forwarded earlier
   $pause = 30; # pause this many seconds between sending messages to gmail
 
   &read_done_ids ($done_file, \%Done_hash);
 
-  # start the fun, go through the folders, forward to gmail stuff which has not been forwarded yet
-  @folders = <$mail_dir/*>;
-  foreach $folder (@folders){
-
-    @mails = &parse_mailbox($folder);
-    foreach $message (@mails) {          
-      next unless ($message =~ /Message-ID:\s+\<(.*?)\>/i); # checked for message id earlier
-        
-      $id = $1; $id =~ s/\s+/_/g; # this last subst should not be necessary, is here just in case
-      next if ( ( exists $Done_hash{$id} ) && ( $Done_hash{$id} == 1 ) );
-      print "Will be doing message $id\n";
+  @mails = &read_mailbox($folder);
+  print "Number of messages is " . scalar (@mails) . "\n";
+  
+  foreach $message (@mails) {          
+    next unless ($message =~ /Message-ID:\s+\<(.*?)\>/i); # checked for message id earlier
+    
+    $id = $1;
+    $id =~ s/\s+/_/g; # make sure there are no spaces in the ID
+    next if ( ( exists $Done_hash{$id} ) && ( $Done_hash{$id} == 1 ) );
+    
+    print "Will be doing message $id\n";
+    
+    $message = &process_message($message);
+    
+    if ( !$do_debug ){
+      # Forward with procmail
+      &send_message_to_gmail_via_procmail($message);
+      $success = 1;
+      $Done_hash{$id} = $success;
+      open (DONE_FH, ">>$done_file") || die "Can't append to $done_file!\n";
+      print DONE_FH "$id $success\n";
+      close (DONE_FH);
       
-     my $action = 1;   # use $action == 0 for debugging
-     if ($action){
-        # Forward with procmail
-        &send_message_to_gmail_via_procmail($message);
-        $success = 1;
-        $Done_hash{$id} = $success;
-        open (DONE_FH, ">>$done_file") || die "Can't append to $done_file!\n";
-        print DONE_FH "$id $success\n";
-        close (DONE_FH);
-
-        print "Sleep for $pause seconds\n\n\n"; 
-        sleep $pause;
-      }
+      print "Sleep for $pause seconds\n\n\n"; 
+      sleep $pause;
+      
     }
+    
+  }
+
+  if ($do_debug ){ # debug
+    
+    # this will show what processing the messages underwent before being sent
+    my $outfile = "ProcessedMessages";
+    print "Writing processed messages to $outfile\n";
+    open(FILE, ">$outfile");
+    print FILE join ("\n", @mails); # I don't know why "\n" is necessary here
+    print FILE "\n";
+    close(FILE);
   }
 }
+
 
 sub send_message_to_gmail_via_procmail {
 
