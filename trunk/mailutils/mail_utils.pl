@@ -121,7 +121,7 @@ sub process_message{
 #     }
 #   }
 
-  $header =~ s/\nSubject:/\nSubject: \[fwd\]/i;
+  $header =~ s/\nSubject:/\nSubject: \[cdn\]/i;
   
   ($header, $body) = &fix_content_type($header, $body);
      
