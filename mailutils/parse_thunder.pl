@@ -3,6 +3,10 @@ use strict;		      # 'strict' insists that all variables be declared
 use diagnostics;	      # 'diagnostics' expands the cryptic warnings
 #use Mail::MboxParser;
 
+require 'mail_utils.pl';
+
+print "This code may not work!\n";
+
 undef $/; # undefines the separator. Can read one whole file in one scalar.
 $| = 1; # flush the buffer each line
 
@@ -121,84 +125,6 @@ sub split_text_into_messages {
   my @messages = split ($sep, $text);
   
   return @messages;
-}
-
-sub fix_content_type {
-
-  # Some attachments/message parts are in HTML, but Outlook (or
-  # Thuderbird) is stupid enough to claim it is text. Replace
-  # text/plain with text/html.
-
-  my ($header, $body) = @_;
-
-  my ($sep, @attachments, $attachment);
-
-  # Sometimes things are wrong in the header.
-  if ($body =~ /\<html/i && $header =~ /Content-Type:\s+text\/plain/i){
-    $header =~ s/Content-Type:\s+text\/plain/Content-Type: text\/html/ig;  
-  }
-
-  # Same thing with attachments. What is below is a silly way to parse
-  # attachments, I don't want to bother to learn MIME::PARSE or something
-  if ($header =~ /\nContent-Type:.*?\n\s+boundary=\"(.*?)\"/i){
-    $sep = $1;
-    #print "Separator is $sep\n";
-  }else{
-    return ($header, $body); 
-  }
-
-  # The attachment parser below does not do a perfect job, but is good enough.
-  @attachments = split ($sep, $body);
-
-  foreach $attachment (@attachments){
-
-    # It is very dumb to claim html is plain text. Same for ms-tnef, whatever that is.
-    if ($attachment =~ /\nContent-Type:\s+(text\/plain|application\/ms-tnef)/i && $attachment =~ /\n\<html/i){
-      $attachment =~ s/\nContent-Type:\s+(text\/plain|application\/ms-tnef)/\nContent-Type: text\/html/;
-    }
-    
-  }
-  
-  $body = join ($sep, @attachments);
-  return ($header, $body);
-
-}
-
-sub add_message_id_if_needed {
-
-  # Don't modify the way the ID is manufactured here,
-  # as this will yield to messages being duplicated on gmail
-  # if having different ids.
-  my ($header, $id);
-  $header = shift;
-
-  if ($header =~ /Message-ID:\s+\<.*?\>/i){
-    # nothing to do, id exists
-    return $header;
-  }
-  
-  # Manufacture an id from the "from" and "to" lines.
-  # Must be deterministic.
-  if ($header =~ /^From (.*?)\n/){
-    $id = $1;
-  }else{
-    print "Error! Missing \"From\" line in header!\n";
-    exit(0);
-  }
-
-  if ($header =~ /To:(.*?)\n/i){
-    $id = $id . $1;
-  }else{
-    print "Error! Missing \"To\" line in header!\n";
-    print "$header\n";
-    exit(0);
-  }
-
-  $id =~ s/[^a-zA-Z0-9]/-/g;
-
-  $header =~ s/^(.*?\n)(Date:.*?)$/$1Message-ID: \<$id\>\n$2/sg;
-
-  return $header;
 }
   
   

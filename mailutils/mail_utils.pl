@@ -31,12 +31,10 @@ sub read_done_ids {
 }
 
 
-sub parse_mailbox {
+sub read_mailbox {
 
-  # Split mailbox into messages. The big idea is that messages
-  # are separated by a blank line (\n\n), and the first line
-  # is a "From " line with a date. Also the header is separated
-  # from the message body by a blank line too.
+  # Split mailbox into messages. The big idea is that a message
+  # starts with "\nFrom " line with a date on that line. 
   
   my ($folder, $text, @mails, $mail, $count, $header);
   
@@ -47,52 +45,23 @@ sub parse_mailbox {
   $text = <FILE>;
   close (FILE);
 
-  # Below is the trickiest part in the entire script,
-  # splitting an email into messsages
-  # Note that this removes whitespace between messages.
-  @mails = split ("(?=\n\nFrom .*?\\d:\\d\\d:\\d\\d)", $text);
-
-  # Lots of ugly heuristic below. Getting obsessed about the above
-  # line doing a good job at splitting messages
+  # If the line below is uncommented, it is hard to see the result of processing
+  # the mails before forwarding to gmail.
+  # $text =~ s/\r\n/\n/g; # strip windows newline
   
-  $count = 0;
-  foreach $mail (@mails){
-    $mail =~ s/^\s*//g; # rm whitespace at the beginning
-
-    $count++;
-    #print "$count$mail\n\n*********************************\n\n";
-    
-    # Check if the message has a header
-    if ($mail =~ /^(.*?)(\n\n|$)/s){
-      $header = $1;
-    }else{
-      print "Can't locate header!\n";
-      print "$mail\n";
-      exit(0);
-    }
-
-    # Check if the message id is missing
-    if ($header !~ /\nMessage-ID:\s+\<.*?\>/i){
-      print "Error, no message id!\n";
-      print "Message is: $mail\n";
-      exit(0);
-    }
-
-    # check if there is more than one message id in the header    
-    if ( $header =~ /\nMessage-ID:\s+\<[^\n]*?\>.*?\nMessage-ID:\s+\<[^\n]*?\>/si ) {
-      print "Error, more than one message id!\n";
-      print "$mail\n";
-      exit(0);
-    }
- 
-    #    print "$mail\n";
-    #    print "z" x 1000 . "\n"; 
-  } 
+#   if ($text =~ /[^\n]\n(From .*?\d:\d\d:\d\d.*?)\n/i){
+#     print "Error: looks like malformatted mailbox. See the text:\n$1\n";
+#     exit(0);
+#   }
+  
+  my $tag = ' sld839X929Ax xAio97UaIaE '; # something unlikely
+  $text =~ s/(\n)(From .*?\d:\d\d:\d\d)/$1$tag$2/ig;
+  @mails = split ($tag, $text);
 
   return @mails;
 }
 
-sub write_mailbox{   # Checked!
+sub write_mailbox{
 
   my ($folder, $mails, $message);
   
@@ -113,55 +82,131 @@ sub write_mailbox{   # Checked!
   
 }
 
-sub split_in_header_body{ # checked!
+sub process_message{
   
   # Split message into header and body. Flag if there are problems.
   # Use the fact that the header is separated from the message body by a blank line.
 
-  # To do: Add more checks for problems below.
-  
   my ($message, $header, $body, $error);
 
   $message = shift;
+  $message =~ s/^\s*//g; # rm whitespace at the beginning
 
-  if ($message =~ /^(.*?\n\n)(.*?\s*)$/s){
+  # Check if the message has a header
+  if ($message =~ /^(.*?)(\n\n.*?)$/s){
     $header = $1;
     $body = $2;
   }else{
-    #empty message body
+    # message with no body, just a header
     $header = $message;
     $body = "";
   }
   
-  $error = 0;
-
-  # The "From " line is the most important. 
-  if ($header !~ /^From .*?\d:\d\d:\d\d/){
-    print "Error! Malformed From line!\n";
-    $error = 1;
-  }
-  
-  # Check if the message id is missing. Some of my utils rely on it.
+  # Check if the message id is missing
   if ($header !~ /\nMessage-ID:\s+\<.*?\>/i){
     print "Error, no message id!\n";
-    $error = 1;
+    print "Message is: $message\n";
+    exit(0);
   }
+  
+#   # check if there is more than one message id in the header
+#   my ($id1, $id2);
+#   if ( $header =~ /\nMessage-ID:\s+\<([^\n]*?)\>.*?\nMessage-ID:\s+\<([^\n]*?)\>/si ) {
 
-  # check if there is more than one message id in the header    
-  if ( $header =~ /\nMessage-ID:\s+\<[^\n]*?\>.*?\nMessage-ID:\s+\<[^\n]*?\>/si ) {
-    print "Error, more than one message id!\n";
-    $error = 1;
-  }
+#     $id1 = $1; $id2 = $2;
+#     if ($id1 ne $id2){
+#       print "Error, more than one message id!\n";
+#       print "$message\n";
+#       exit(0);
+#     }
+#   }
 
-  return ($header, $body, $error);
+  $header =~ s/\nSubject:/\nSubject: \[fwd\]/i;
+  
+  ($header, $body) = &fix_content_type($header, $body);
+     
+  $message = $header . $body;
+
+  return $message;
 }
 
-sub merge_header_body { # not checked!
 
-  my ($header, $body);
+sub fix_content_type {
 
-  $header = shift; $body = shift;
-  return $header . $body;
+  # Some attachments/message parts are in HTML, but Outlook (or
+  # Thuderbird) is stupid enough to claim it is text. Replace
+  # text/plain with text/html.
+
+  my ($header, $body) = @_;
+
+  my ($sep, @attachments, $attachment);
+
+  # Sometimes things are wrong in the header.
+  if ($body =~ /\<html/i && $header =~ /Content-Type:\s+text\/plain/i){
+    $header =~ s/Content-Type:\s+text\/plain/Content-Type: text\/html/ig;  
+  }
+
+  # Same thing with attachments. What is below is a silly way to parse
+  # attachments, I don't want to bother to learn MIME::PARSE or something
+  if ($header =~ /\nContent-Type:.*?\n\s+boundary=\"(.*?)\"/i){
+    $sep = $1;
+    #print "Separator is $sep\n";
+  }else{
+    return ($header, $body); 
+  }
+
+  # The attachment parser below does not do a perfect job, but is good enough.
+  @attachments = split ($sep, $body);
+
+  foreach $attachment (@attachments){
+
+    # It is very dumb to claim html is plain text. Same for ms-tnef, whatever that is.
+    if ($attachment =~ /\nContent-Type:\s+(text\/plain|application\/ms-tnef)/i && $attachment =~ /\n\<html/i){
+      $attachment =~ s/\nContent-Type:\s+(text\/plain|application\/ms-tnef)/\nContent-Type: text\/html/;
+    }
+    
+  }
+  
+  $body = join ($sep, @attachments);
+  return ($header, $body);
+
+}
+
+sub add_message_id_if_needed {
+
+  # Don't modify the way the ID is manufactured here,
+  # as this will yield to messages being duplicated on gmail
+  # if having different ids.
+  my ($header, $id);
+  $header = shift;
+
+  if ($header =~ /Message-ID:\s+\<.*?\>/i){
+    # nothing to do, id exists
+    return $header;
+  }
+  
+  # Manufacture an id from the "from" and "to" lines.
+  # Must be deterministic.
+  if ($header =~ /^From (.*?)\n/){
+    $id = $1;
+  }else{
+    print "Error! Missing \"From\" line in header!\n";
+    exit(0);
+  }
+
+  if ($header =~ /To:(.*?)\n/i){
+    $id = $id . $1;
+  }else{
+    print "Error! Missing \"To\" line in header!\n";
+    print "$header\n";
+    exit(0);
+  }
+
+  $id =~ s/[^a-zA-Z0-9]/-/g;
+
+  $header =~ s/^(.*?\n)(Date:.*?)$/$1Message-ID: \<$id\>\n$2/sg;
+
+  return $header;
 }
 
 1;
