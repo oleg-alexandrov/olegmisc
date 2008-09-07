@@ -140,7 +140,7 @@
     ))
 
 (define-abbrev-table 'matlab-mode-abbrev-table '(
-    ("dsp" "disp(sprintf('%'));" (lambda nil (search-backward "%") (forward-char 1) (indent-according-to-mode)) 125)
+    ("dsp" "disp(sprintf('%'));" (lambda nil (indent-according-to-mode) (search-backward "%") ) 125)
     (";dl" "dlmread" nil 0)
     (";p" "plot(" nil 0)
     ("dsi" "display(sprintf('%d'))" nil 1)
