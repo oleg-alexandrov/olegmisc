@@ -231,12 +231,6 @@
   (indent-region (point-min) (point-max) nil)
   )
 
-; (defun save-and-copy-to-blythe ()
-;   (interactive)
-;   (save-buffer)
-;   (copy-to-blythe)
-;   )
-
 (defun smart-down ()
   (interactive)
   (setq smart_equal_flag 0)
@@ -251,7 +245,7 @@
 (local-set-key [(control i)] 'indent-region)
 (local-set-key [(control t)] nil)
 ;(local-set-key [(control x) (\4)] 'left-part-cpp)
-;(local-set-key [(control x) (\2)] 'right-part-cpp)
+(local-set-key [(control x) (\2)] 'right-part-cpp)
 ;(local-set-key [(control x) (\3)] 'format-fun-dec)
 (local-set-key [(control y)] 'yank)
 (local-set-key [(meta a)] 'define-mode-abbrev)
@@ -264,12 +258,6 @@
 (local-set-key [(return)] 'reindent-then-newline-and-indent)
 (local-set-key [(meta j)] 'open-spq)
 (local-set-key [(control s)] 'save-buffer)
-
 ;(local-set-key [(meta \[)] 'c++-brace)
-;M-[ 7 ~
-      
-;(local-set-key [(meta \[) (\7)] 'beginning-of-line)
-;(local-unset-key [(meta \[)])
-;(local-set-key [(meta \[) (\7) (~)] 'beginning-of-line)
 ;(local-set-key "\e[7~" 'beginning-of-line)
 ;(local-set-key "\e[8~" 'end-of-line)
