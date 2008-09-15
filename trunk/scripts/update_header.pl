@@ -4,7 +4,7 @@ use diagnostics;	      # 'diagnostics' expands the cryptic warnings
 undef $/; # undefines the separator. Can read one whole file in one scalar.
 
 # Extract C++ function information from a .cpp file and
-# dump to corresponding .h file.
+# use that to update the corresponding .h file.
 
 MAIN: {
 
