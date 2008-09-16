@@ -1,0 +1,21 @@
+#!/bin/bash
+
+instanceCount=$(ps aux | grep `whoami` | grep xemacs | grep -v 'grep xemacs' | wc -l);
+if [ "$instanceCount" -eq "0" ]; then
+
+  xemacs -geo 90x51+0+0 &
+  instanceCount="";
+  
+  while [ "$instanceCount" = "" ]; do
+    instanceCount=$(ps aux | grep `whoami` | grep gnuserv | grep -v 'grep gnuserv' | wc -l);
+    echo "waiting for gnuserv";
+    sleep 1;
+  done;
+
+  sleep 1;
+
+else
+  #if [ "$1" != "-icon" ]; then
+  gnuclient -q $* &
+fi
+
