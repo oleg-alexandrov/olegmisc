@@ -46,9 +46,10 @@ sub parse_cpp {
     my $key = $1;
     my $fun = $1 . $2 . ";\n\n";
 
-    $key =~ s/\w+:://g;
-    $fun =~ s/\w+:://g;
-
+    # rm namespace from fun declaration
+    $key =~ s/(\w+::)//g;  
+    $fun =~ s/(\w+::)(\w+\s*\()/$2/g;
+    
     $key =~ s/\s+/ /g;
 
     $map{$key} = $fun;
@@ -68,7 +69,7 @@ sub parse_h {
   foreach $block (@blocks){
 
     #print "----\n$block\n---\n";
-    next unless ( $block =~ /(\w+[\s\*\&]+[\w]+)(\s*\(.*?\))/s );
+    next unless ( $block =~ /(\w+[\s\*\&]+[\w]+)(\s*\(.*\))/s );
     # matches: void  *  myfun ( double x, double y){
 
     my $key = $1;
@@ -77,7 +78,9 @@ sub parse_h {
     $key =~ s/\s+/ /g;
 
     # overwrite a .h entry with the corresponding .cpp entry
-    if (exists $map->{$key}){
+    if (exists $map->{$key} &&
+        $block !~ /=/ # ignore functions with preset params
+       ){
 
       #print "overwriting: $block\n";
       #print "with $map->{$key}\n";
