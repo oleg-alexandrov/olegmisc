@@ -76,10 +76,54 @@ sub write_mailbox{
   print "Writing to $folder\n";
   open(FILE, ">$folder");
   foreach $message (@$mails){
+
+    # make sure there is a newline bewteen messages
+    $message =~ s/^\s*//g;
+    $message =~ s/\s*$/\n\n/g;
+    
     print FILE $message;
   }
   close(FILE);
   
+}
+
+sub extract_header_body {
+
+  my $message = shift;
+  
+  $message =~ s/^\s*//g; # rm whitespace at the beginning
+
+  my ($header, $body);
+  
+  # Check if the message has a header
+  if ($message =~ /^(.*?)(\n\n.*?)$/s){
+    $header = $1;
+    $body = $2;
+  }else{
+    # message with no body, just a header
+    $header = $message;
+    $body = "";
+  }
+
+  return ($header, $body);
+  
+}
+
+sub combine_header_body{
+
+  my $header = shift;
+  my $body   = shift;
+
+  # make sure there is exactly one newline between header and body
+  $header =~ s/\s*$/\n\n/g;
+  $body =~ s/^\s*//g;
+  
+  # put an empty line after body
+  $body =~ s/\s*$/\n\n/g;
+  
+  my $message = $header . $body;
+
+  return $message;
 }
 
 sub process_message{
@@ -90,17 +134,8 @@ sub process_message{
   my ($message, $header, $body, $error);
 
   $message = shift;
-  $message =~ s/^\s*//g; # rm whitespace at the beginning
 
-  # Check if the message has a header
-  if ($message =~ /^(.*?)(\n\n.*?)$/s){
-    $header = $1;
-    $body = $2;
-  }else{
-    # message with no body, just a header
-    $header = $message;
-    $body = "";
-  }
+  ($header, $body) = &extract_header_body ($message);
   
   # Check if the message id is missing
   if ($header !~ /\nMessage-ID:\s+\<.*?\>/i){
@@ -124,8 +159,8 @@ sub process_message{
   $header =~ s/\nSubject:/\nSubject: \[cdn\]/i;
   
   ($header, $body) = &fix_content_type($header, $body);
-     
-  $message = $header . $body;
+
+  $message = &combine_header_body($header, $body);
 
   return $message;
 }
@@ -172,6 +207,21 @@ sub fix_content_type {
 
 }
 
+sub extract_message_id {
+
+  my $header = shift;
+  my $message_id;
+  
+  if ($header =~ /Message-ID:\s+\<(.*?)\>/i){
+    $message_id = $1;
+  }else{
+    print "No message id in header:\n$header";
+  }
+
+  return $message_id;
+  
+}
+
 sub add_message_id_if_needed {
 
   # Don't modify the way the ID is manufactured here,
@@ -184,7 +234,7 @@ sub add_message_id_if_needed {
     # nothing to do, id exists
     return $header;
   }
-  
+
   # Manufacture an id from the "from" and "to" lines.
   # Must be deterministic.
   if ($header =~ /^From (.*?)\n/){
@@ -199,12 +249,14 @@ sub add_message_id_if_needed {
   }else{
     print "Error! Missing \"To\" line in header!\n";
     print "$header\n";
-    exit(0);
+    #exit(0);
   }
 
   $id =~ s/[^a-zA-Z0-9]/-/g;
 
   $header =~ s/^(.*?\n)(Date:.*?)$/$1Message-ID: \<$id\>\n$2/sg;
+
+  print "Adding message id to:\n$header\n\n";
 
   return $header;
 }
