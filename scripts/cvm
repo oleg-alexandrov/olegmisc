@@ -26,8 +26,17 @@ MAIN:{
 
   $files   =~ s/^\s*//g;
   $subject =~ s/^\s*//g;
+
+  if ($subject !~ /^\s*$/){
+
+    my $command = '/usr/bin/cvs commit -m "' . $subject . '" ' . $files;
+    print "$command\n";
+    print `$command`;
+    
+  }else{
+    
+    print "Cannot commit with an empty subject\n";
+    
+  }
   
-  my $command = '/usr/bin/cvs commit -m "' . $subject . '" ' . $files;
-  print "$command\n";
-  print `$command`;
 }
