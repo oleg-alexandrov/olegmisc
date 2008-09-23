@@ -1,0 +1,33 @@
+#!/usr/bin/perl
+use strict;                   # 'strict' insists that all variables be declared
+use diagnostics;              # 'diagnostics' expands the cryptic warnings
+undef $/; # undefines the separator. Can read one whole file in one scalar.
+
+# Transform 
+#      cvm add new stuff myfile.cpp myfile.h 
+# into
+#      cvs commit -m "add new stuff" myfile.cpp myfile.h
+
+MAIN:{
+  
+  my ($subject, $files, $token);
+
+  $subject = "";
+  $files   = "";
+  
+  foreach $token (@ARGV){
+
+    if (-e $token){
+      $files   = $files . " " . $token;
+    }else{
+      $subject = $subject . " " . $token;
+    }
+  }
+
+  $files   =~ s/^\s*//g;
+  $subject =~ s/^\s*//g;
+  
+  my $command = '/usr/bin/cvs commit -m "' . $subject . '" ' . $files;
+  print "$command\n";
+  print `$command`;
+}
