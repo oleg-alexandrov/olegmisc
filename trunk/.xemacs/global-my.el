@@ -357,8 +357,8 @@
 (global-set-key [(control k)] 'kill-all-line)
 (global-set-key [(control l)] 'load-file)
 (global-set-key [(control meta a)] 'define-mode-abbrev)
-(global-set-key [(control meta left)] 'gse-bury-buffer)
-(global-set-key [(control meta right)] 'gse-unbury-buffer)
+;(global-set-key [(control meta left)] 'gse-bury-buffer)
+;(global-set-key [(control meta right)] 'gse-unbury-buffer)
 (global-set-key [(control o)] 'find-file) ; open a file or create a new file with Control-o
 (global-set-key [(control r)]  'query-replace)
 (global-set-key [(control s)] 'save-buffer) ; save with Control-s

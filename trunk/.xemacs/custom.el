@@ -77,6 +77,7 @@
  '(pc-select-meta-moves-sexps t t)
  '(cperl-comment-column 30)
  '(mouse-yank-at-point t)
+ '(mouse-track-rectangle-p nil)
  '(html-helper-new-buffer-template (quote ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <!DOCTYPE html 
      PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"

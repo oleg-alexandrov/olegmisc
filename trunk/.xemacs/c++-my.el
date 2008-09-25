@@ -244,7 +244,7 @@
 (local-set-key [(control \[)] 'insert-square-brackets)
 (local-set-key [(control i)] 'indent-region)
 (local-set-key [(control t)] nil)
-;(local-set-key [(control x) (\4)] 'left-part-cpp)
+(local-set-key [(control x) (\4)] 'left-part-cpp)
 (local-set-key [(control x) (\2)] 'right-part-cpp)
 ;(local-set-key [(control x) (\3)] 'format-fun-dec)
 (local-set-key [(control y)] 'yank)
