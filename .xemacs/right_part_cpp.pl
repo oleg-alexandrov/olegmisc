@@ -12,11 +12,17 @@ MAIN:{
   $_ = <>;
 
   s/\/\/.*?\n/\n/g; # strip comments
-  s/\n//g;          # strip newlines
+  s/\n/ /g;          # strip newlines
   s/\*//g;
   
-  $_ =~ /(^.*?)\((.*?)\)/; #}
-  my $a=$1; my $b=$2;#b is the list of args
+  if (! /(^.*?)\((.*?)\)/ ){
+    print "Failed to match myfun(T x)\n";
+    return;
+    exit(0);
+  }
+  
+  my $a=$1; my $b=$2; # $b is the list of args
+  
   ($junk, $a)=split(' ', $a) if (/ /);
   
   $b =~ s/\s*,\s*/,/g;
