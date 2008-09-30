@@ -211,6 +211,32 @@
   (insert " ")
   )
 
+(defun swap-cpp-h (filename)
+
+  (cond (
+         (string-match "\\.cpp" filename)
+         (setq filename (replace-match ".h" t t filename))
+         ) ; end of matching .cpp
+
+        (
+         (string-match "\\.h" filename)
+         (setq filename (replace-match ".cpp" t t filename))
+         ); endp of matching .h
+
+        ); end cond
+
+  filename ; return
+  )
+
+(defun toggle-cpp-h ()
+  "If the currently open file ends in .cpp, open instead the
+corresponding .h file, and vice-versa"
+  (interactive)
+
+  (if (string-match "\\(\\.cpp\\|\\.h\\)$" (buffer-file-name))
+      (find-file (swap-cpp-h (buffer-file-name)) )
+    )
+  )
 
 ; (defun my-htmlize-make-file-name (file)
 ;   "Make an HTML file name from FILE. Stolen from htmlize.el"
@@ -298,7 +324,15 @@
     
     )
   )
+
+(defun call-tkdiff ()
+  (interactive)
+
+  (shell-command (concat "/home/olegalex/bin/call_tkdiff.pl " (buffer-file-name) )  t)
   
+  )
+
+
 (defun un-define-mode-abbrev (name)
   "Define ABBREV as a mode-specific abbreviation for EXPANSION."
   (interactive "sUndefine mode abbrev: ")
@@ -390,6 +424,8 @@
 (global-set-key [(control return)] 'my-exit-mail)
 (global-set-key [(meta r)] 'copy-to-register)
 (global-set-key [(meta i)] 'insert-register)
+(global-set-key [(control x) (t)] 'call-tkdiff)
+(global-set-key [(meta t)] 'toggle-cpp-h)
 
 ;; terminal keys
 ;(global-set-key "\e[7~" 'beginning-of-line)
