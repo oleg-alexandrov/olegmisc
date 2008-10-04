@@ -33,7 +33,7 @@ MAIN: {
 
   &read_done_ids ($done_file, \%Done_hash);
 
-  @mails = &read_mailbox($folder);
+  &read_mailbox($folder, \@mails);
   print "Number of messages is " . scalar (@mails) . "\n";
   
   foreach $message (@mails) {          

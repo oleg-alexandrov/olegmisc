@@ -11,14 +11,18 @@ $| = 1; # flush the buffer each line
 
 MAIN: {
 
-  my $id_file = "old_mail_ids.txt";
+  #my $mode = "old_mail";
+  my $mode = "gmail";
+
+  my $id_file  = $mode . "_ids.txt";
+  my $mail_dir = "/home/aoleg/" . $mode;
 
   # make file blank before we start
   open(FILE, ">$id_file");
   print FILE "";
   close(FILE);
   
-  my $file_line = `find /home/aoleg/old_mail`;
+  my $file_line = `find $mail_dir`;
   my @files = split("\n", $file_line);
 
   my $file;
@@ -29,7 +33,15 @@ MAIN: {
       next;
     }
 
-    my @ids = &extract_ids($file);
+    if ($file =~ /All Mail/){
+      print "Skip $file as too big\n";
+      next;
+    }
+
+    print "Will do $file\n";
+    
+    my @ids;
+    @ids = &extract_ids($file);
 
     open(FILE, ">>$id_file");
     print "Appending ids to $id_file\n";
@@ -37,7 +49,8 @@ MAIN: {
       print FILE "$id\n";
     }
     close(FILE);
-        
+
+    print "\n";
   }
 
 }
@@ -47,11 +60,14 @@ sub extract_ids {
   my $folder = shift;
   my @ids = ();
   
-  my @mails = &read_mailbox($folder);
+  my @mails;
+  &read_mailbox($folder, \@mails);
 
   my $message;
   foreach $message (@mails){
 
+    next unless ($message =~ /^From /);
+    
     my ($header, $body) = &extract_header_body ($message);
 
     $header = &add_message_id_if_needed($header);
@@ -62,4 +78,37 @@ sub extract_ids {
   }
 
   return @ids;
+}
+
+
+sub write_missing {
+  
+  my $folder    = shift;
+  my $existing  = shift;
+  my $outfile   = shift;
+  
+  my @mails;
+  &read_mailbox($folder, \@mails);
+
+  my $message;
+  foreach $message (@mails){
+
+    next unless ($message =~ /^From /);
+    
+    my ($header, $body) = &extract_header_body ($message);
+
+    $header = &add_message_id_if_needed($header);
+       
+    my $id = extract_message_id($header);
+
+    if ( exists $existing->{$id} ) next;  
+
+    $message = &combine_header_body($header, $body);
+
+    open(FILE, ">>$outfile");
+    print FILE $message;
+    close(FILE);
+    
+  }
+
 }
