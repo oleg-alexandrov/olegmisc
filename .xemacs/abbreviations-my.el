@@ -14,76 +14,13 @@
     ))
 
 (define-abbrev-table 'mutt-mode-abbrev-table '(
-    ("oo" "Oleg" nil 170)
-    ("hh" "Have fun,
-
-Oleg
-" nil 1)
-    ("hi valeriu" "Buna ziua" nil 11)
-    ("aa" "All the best,
-
-Oleg
-" nil 26)
-    ("ily" "I love you!" nil 40)
     ("existance" "existence" nil 2)
-    ("ilyt" "I love you too!" nil 2)
-    ("cpr" "Cu prietenie,
-Oleg" nil 10)
-    ("\\cpr" "Cu prietenie,
-Oleg" nil 0)
-    ("hi kaul" "Hi Tina" nil 6)
-    ("kk" "Keep in touch,
-
-Oleg
-" nil 19)
     ("htis" "this " nil 0)
-    ("hi stanley" "Hi" nil 2)
-    ("gg" "Good luck,
-
-Oleg
-" nil 6)
-    ("hi kaul,," "Hi Tina," nil 0)
-    ("hi youngae," "Hi love," nil 4)
-    ("hi vgutu" "Buna ziua" nil 1)
-    ("cc" "Cheers,
-
-Oleg
-" nil 186)
     ("hte" "the " nil 7)
-    ("tt" "Thank you,
-
-Oleg
-" nil 67)
-    ("ts" "Thanks,
-
-Oleg
-" nil 54)
-    ("hi kaul," "Hi Tina" nil 0)
-    ("hi benjamin" "Hi Ben" nil 16)
     ("continous" "continuous " nil 0)
-    ("hi tar" "Hi Dani" nil 6)
-    ("hi ion" "Salut Ion" nil 2)
-    ("hi igor" "Salut Igor" nil 5)
-    ("hi youngae" "Hi Love" nil 26)
     ("riguros" "rigoros" nil 0)
-    ("param" "parametrization " nil 0)
     ("taht" "that " nil 14)
     ("wiht" "with " nil 0)
-    ("\\sig" "
---- 
-Oleg Alexandrov, CAM postdoc      Office: MS 7354
-UCLA, Department of Mathematics   Phone:  +1-310-825-4746
-520 Portola Plaza                 E-mail: aoleg@math.ucla.edu
-Math Sciences 6363                www.math.ucla.edu/~aoleg
-Los Angeles, CA 90095
-" nil 32)
-    ("hi ablazemarketing" "Hi Anthony" nil 3)
-    ("ss" "Sincerely yours,
-
-Oleg
-" nil 2)
-    ("analytical" "analytic " nil 0)
-    ("hi lancellotti" "Dear Dr. Lancellotti" nil 5)
     ))
 
 (define-abbrev-table 'c++-mode-abbrev-table '(
@@ -328,7 +265,6 @@ Oleg
     ))
 
 (define-abbrev-table 'text-mode-abbrev-table '(
-    ("oo" "Oleg" nil 4)
     ("\\ro" "\\rho" nil 5)
     ("neib" "neighborhood " nil 14)
     ("\\cs" "" latex-cases 39)
@@ -566,7 +502,6 @@ Oleg
     ("\\grad" "\\nabla" nil 17)
     ("\\z" "\\mathbb Z" nil 19)
     ("\\bct" "\\begin{center}" nil 5)
-    ("\\off" "MS 7354" nil 1)
     ("\\ct" "" latex-center 28)
     ("\\dd" "\\Delta" nil 1)
     ))
