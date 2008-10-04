@@ -35,10 +35,12 @@ sub read_mailbox {
 
   # Split mailbox into messages. The big idea is that a message
   # starts with "\nFrom " line with a date on that line. 
-  
-  my ($folder, $text, @mails, $mail, $count, $header);
+
+  my ($folder, $mails, $text);
   
   $folder = shift; 
+  $mails  = shift;
+
   print "Doing $folder\n";
 
   open (FILE, "<$folder");
@@ -56,9 +58,10 @@ sub read_mailbox {
   
   my $tag = ' sld839X929Ax xAio97UaIaE '; # something unlikely
   $text =~ s/(\n)(From .*?\d:\d\d:\d\d)/$1$tag$2/ig;
-  @mails = split ($tag, $text);
 
-  return @mails;
+  # pass the mailbox by reference
+  @$mails = split ($tag, $text);
+
 }
 
 sub write_mailbox{
