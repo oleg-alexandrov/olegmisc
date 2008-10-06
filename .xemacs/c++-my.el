@@ -238,6 +238,94 @@
   (next-line 1)
   )
 
+
+(defun swap-cpp-h-aux (filename)
+  (interactive)
+  (cond (
+         (string-match "\\.cpp" filename)
+         (setq filename (replace-match ".h" t t filename))
+         ) ; end of matching .cpp
+
+        (
+         (string-match "\\.h" filename)
+         (setq filename (replace-match ".cpp" t t filename))
+         ); endp of matching .h
+
+        ); end cond
+
+  filename ; return
+  )
+
+(defun swap-src_cpp-incl_h-aux (filename)
+  (interactive)
+  (cond (
+         ; replace src/myfile.cpp with include/myfile.h
+         (string-match "\\(^.*\\/\\)src\\(\\/[^\\/]*\\)\\.cpp" filename)
+         (setq filename (concat (match-string 1 filename) "include" 
+                                (match-string 2 filename) ".h") )
+         ) ; end of matching .cpp
+
+        (
+         (string-match "\\(^.*\\/\\)include\\(\\/[^\\/]*\\)\\.h" filename)
+         (setq filename (concat (match-string 1 filename) "src" 
+                                (match-string 2 filename) ".cpp") )
+         ); endp of matching .h
+
+        ); end cond
+
+  filename ; return
+  )
+
+(defun swap-cpp-h (file-to-swap)
+  "If the currently open file ends in .cpp, open instead the
+corresponding .h file, and vice-versa. If the corresponding file does not
+exist, try replacing 'src' with 'include' and vice-versa"
+  (interactive)
+  
+  (if (string-match "\\(\\.cpp\\|\\.h\\)$" file-to-swap)
+      
+      ; first attempt, call swap-cpp-h
+      (let ((swapped-file (swap-cpp-h-aux file-to-swap ) ))
+        
+        (if (file-exists-p swapped-file)
+            
+            swapped-file ; attempt succeeded, return current file
+
+          ; attempt failed, try swap-src_cpp-incl_h
+          (let (( swapped-file (swap-src_cpp-incl_h-aux file-to-swap ) ))
+              
+            swapped-file
+            
+            )
+          )
+        ) ; end let
+    ); end if
+
+  ) ; end function
+
+(defun toggle-cpp-h ()
+  (interactive)
+
+  (find-file (swap-cpp-h (buffer-file-name)))
+  
+  )
+
+(defun update-header-file ()
+
+  (interactive)
+
+  (let ((cur-file (buffer-file-name) ))
+
+    (if (string-match "\\.cpp$" cur-file)
+        (let ((command (concat "~/.xemacs/update_header.pl " cur-file " " (swap-cpp-h cur-file)) ))
+          (insert command)
+          (shell-command command)
+          )
+      )
+    
+    )
+  )
+
 (local-set-key [(control x) (l)] 'duplicate-line)
 (local-set-key [(=)] 'smart-equal)
 (local-set-key [(\<e)] 'c++-endl)
@@ -261,3 +349,5 @@
 ;(local-set-key [(meta \[)] 'c++-brace)
 ;(local-set-key "\e[7~" 'beginning-of-line)
 ;(local-set-key "\e[8~" 'end-of-line)
+(local-set-key [(meta t)] 'toggle-cpp-h)
+(local-set-key [(meta h)] 'update-header-file)
