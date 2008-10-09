@@ -1,15 +1,11 @@
 (custom-set-variables
  '(require-final-newline nil)
- '(ps-lpr-switches (quote ("-Pcam2ps")))
  '(mas-exclude-file-regexp-list (quote ("^/tmp" "^*.shadow" "^.*/history" "^.*/places")))
  '(font-lock-auto-fontify t)
- '(lpr-switches (quote ("-Pcone")))
  '(cperl-continued-statement-offset 3)
- '(toolbar-mail-commands-alist (quote ((pine toolbar-external "xterm" "-e" "pine") (elm toolbar-external "xterm" "-e" "elm") (mutt toolbar-external "xterm" "-e" "mutt") (send . mail))))
  '(abbrev-mode t t)
  '(font-menu-ignore-scaled-fonts nil)
  '(ps-paper-type (quote letter))
- '(ps-lpr-command "lpr -h -Pcam2ps")
  '(matlab-comment-region-s "%")
  '(save-place-version-control nil)
  '(temp-buffer-show-function (quote show-temp-buffer-in-current-frame))
@@ -43,7 +39,6 @@
  '(overwrite-mode nil)
  '(save-place-limit 1000)
  '(cperl-lazy-help-time (quote null))
- '(ps-printer-name-option "-Pcam2ps")
  '(lazy-lock-mode nil nil (lazy-lock))
  '(xdvi-logfile "~/.xemacs/.xdvi-log")
  '(recent-files-permanent-submenu t)
@@ -58,7 +53,6 @@
  '(zmacs-regions t)
  '(ps-print-color-p t)
  '(case-replace t)
- '(viper-load-hook (quote ((lambda nil (interactive) (global-set-key [(control z)] (quote undo))))))
  '(toolbar-print-function (quote lpr-buffer))
  '(buffers-tab-max-size 10)
  '(buffers-menu-sort-function (quote sort-buffers-menu-by-mode-then-alphabetically))
@@ -78,39 +72,6 @@
  '(cperl-comment-column 30)
  '(mouse-yank-at-point t)
  '(mouse-track-rectangle-p nil)
- '(html-helper-new-buffer-template (quote ("<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-<!DOCTYPE html 
-     PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\"
-     \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">
-
-<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">
-<!-- Created with XEmacs -->
-<head>
-  <title>" (p "Document Title: " title) "</title>
-  <meta name=\"Author\" content=\"Oleg Alexandrov aoleg@math.ucla.edu\" />
-  <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />
-  <meta name=\"description\" content=\"\" />
-  <link rel=\"stylesheet\" href=\"/~aoleg/styles.css\" type=\"text/css\" />
-</head>
-<body>
-
-<center><h1>" (s title) "</h1></center>" p "
-
-<hr />
-<table width=\"100%\">
-  <tr>
-    <td align=\"left\" width=\"50%\">
-      <a href=\"http://www.math.ucla.edu/~aoleg/\">
-      Oleg Alexandrov</a>
-    </td>
-    <td align=\"right\" width=\"50%\">
-      Updated: January 1, 2000 
-    </td>
-  </tr>
-</table>
-</body>
-</html>
-")))
  '(teach-extended-commands-timeout 4)
  '(cperl-hairy nil)
  '(complex-buffers-menu-p nil)
@@ -118,7 +79,7 @@
  '(hm--html-automatic-create-modified-line t)
  '(font-lock-mode-disable-list nil)
  '(highlight-headers-highlight-citation-too t)
- '(user-mail-address "aoleg@math.ucla.edu")
+ '(user-mail-address "aoleg@math.umn.edu")
  '(query-user-mail-address nil)
  '(font-lock-maximum-size 2560000)
  '(get-frame-for-buffer-default-instance-limit nil)
