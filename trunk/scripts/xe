@@ -1,5 +1,8 @@
 #!/bin/bash
 
+#run_loc="ssh aps-titan";
+run_loc="";
+
 instanceCount=$(ps aux | grep `whoami` | grep xemacs | grep -v 'grep xemacs' | wc -l);
 if [ "$instanceCount" -eq "0" ]; then
 
@@ -15,7 +18,9 @@ if [ "$instanceCount" -eq "0" ]; then
   sleep 1;
 
 else
-  #if [ "$1" != "-icon" ]; then
+  
+  echo gnuclient -q $* 
   gnuclient -q $* &
+
 fi
 
