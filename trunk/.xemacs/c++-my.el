@@ -318,7 +318,6 @@ exist, try replacing 'src' with 'include' and vice-versa"
 
     (if (string-match "\\.cpp$" cur-file)
         (let ((command (concat "~/.xemacs/update_header.pl " cur-file " " (swap-cpp-h cur-file)) ))
-          (insert command)
           (shell-command command)
           )
       )

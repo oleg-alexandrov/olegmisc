@@ -87,6 +87,7 @@
 		("\\.php$" . c++-mode)
 		("\\.s?html?\\'" . html-mode)
 		("\\.\\([pP][Llm]\\)\\'" . cperl-mode)
+		("\\.\\(acumask\\)\\'" . cperl-mode)
 		("\\.m\\'" . matlab-mode)
 		("muttrc\\'" . muttrc-mode)
 		("^\/tmp\/mutt" . mutt-mode)

@@ -7,7 +7,7 @@
 
 (defun subst-globally ()
   (interactive)
-  (insert "s///g;")
+  (insert "=~ s///g;")
   (backward-char 4)
   )
 

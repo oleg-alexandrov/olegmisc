@@ -8,16 +8,15 @@ undef $/;
 MAIN:{
   my $junk;
   my @anarray;
-  
+
   $_ = <>;
 
   s/\/\/.*?\n/\n/g; # strip comments
   s/\n/ /g;          # strip newlines
   s/\*//g;
-  
+
   if (! /(^.*?)\((.*?)\)/ ){
-    print "Failed to match myfun(T x)\n";
-    return;
+    print "Failed to match function prototype\n";
     exit(0);
   }
   
