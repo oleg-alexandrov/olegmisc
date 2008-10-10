@@ -398,6 +398,7 @@
 (global-set-key [(meta r)] 'copy-to-register)
 (global-set-key [(meta i)] 'insert-register)
 (global-set-key [(control x) (t)] 'call-tkdiff)
+(global-set-key [(meta v)] 'revert-buffer)
 
 ;; terminal keys
 ;(global-set-key "\e[7~" 'beginning-of-line)
