@@ -22,7 +22,7 @@ MAIN:{
   close(FILE);
 
   # Deal with the pecularities of the build system
-  #$prog_name =~ s/^(.*\/)(.*?)$/$1Linux_debug_64\/$2/g;
+  $prog_name =~ s/^(.*\/)(.*?)$/$1Linux_debug_64\/$2/g;
 
   # Run gdb on given program with commands from $gdb_file
   my $gdb_command = "gdb -x $gdb_file --args $prog_name $prog_args\n";
