@@ -16,21 +16,21 @@ MAIN:{
   my $prog_args  = join (" ", @ARGV);
 
   my $gdb_file    = "run.gdb";
-  my $gdb_command = "run $prog_args";
   
   open(FILE, ">$gdb_file");
-  print FILE "$gdb_command\n";
+  print FILE "run\n";
   close(FILE);
 
   # Deal with the pecularities of the build system
-  $prog_name =~ s/^(.*\/)(.*?)$/$1Linux_debug_64\/$2/g;
+  #$prog_name =~ s/^(.*\/)(.*?)$/$1Linux_debug_64\/$2/g;
 
   # Run gdb on given program with commands from $gdb_file
+  my $gdb_command = "gdb -x $gdb_file --args $prog_name $prog_args\n";
+
   print "\n";
-  print "gdb $prog_name -x $gdb_file\n";
   print "$gdb_command\n";
   print "\n";
+  system("$gdb_command");
   
-  system("gdb $prog_name -x $gdb_file\n");
   
 }
