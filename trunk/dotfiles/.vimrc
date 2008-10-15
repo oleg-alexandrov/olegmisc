@@ -9,7 +9,6 @@ set wrap nowrap
 :set nocompatible
 :set ignorecase
 
-:colorscheme darkslategray 
 :colorscheme desert
 
 " imap is interactive mode, unlike map
