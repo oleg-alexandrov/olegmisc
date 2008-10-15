@@ -29,6 +29,7 @@ map <Return> i<Return>
 map! <C-A> <Home>
 map! <C-E> <End>
 
+cabbrev Q  q
 cabbrev Wq wq 
 cabbrev nw set wrap nowrap 
 cabbrev dw set nowrap wrap 
