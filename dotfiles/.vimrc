@@ -36,3 +36,5 @@ cabbrev dw set nowrap wrap
 cabbrev sp set paste
 cabbrev np set nopaste
 
+" Make the backspace key delete newlines, etc.
+":set backspace=indent,eol,start
