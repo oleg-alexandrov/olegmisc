@@ -7,7 +7,7 @@ undef $/; # undefines the separator. Can read one whole file in one scalar.
 
 MAIN:{
 
-  if (scalar (@ARGV) <= 0  ){
+  if (scalar (@ARGV) <= 1  ){
     print "Usage: program_name program_arguments\n";
     exit(0);
   }
@@ -18,7 +18,9 @@ MAIN:{
   # Deal with the pecularities of the build system
   $prog_name =~ s/^(.*\/)(.*?)$/$1Linux_debug_64\/$2/g;
 
-  my $vg_prog = $ENV{HOME} . "/bin/valgrind";
+  # Full path to valgrid goes here
+  my $vg_prog = '/home/olegalex/bin/valgrind';
+  
   my $vg_opts = "--log-file=Log --leak-check=full";
   
   my $vg_command = "$vg_prog $vg_opts $prog_name $prog_args\n";
