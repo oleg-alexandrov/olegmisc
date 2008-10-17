@@ -70,6 +70,7 @@ sub parse_cpp {
     $key =~ s/\s+/ /g;
 
     $cpp_map->{$key} = $fun;
+
   }
 
 }
@@ -81,10 +82,11 @@ sub parse_h {
 
   # identify the namespace in the h class
   my $namesp;
-  if ($text =~ /\n\s*class\s+(\w+)\s*\{/){
-    $namesp = $1;
+  if ($text =~ /\n\s*(class|struct)\s+(\w+)\s*\{/){
+    $namesp = $2;
   }else{
     print "Can't identify the namespace!\n";
+    exit(0);
   }
 
   my (%h_map, $key);
@@ -126,8 +128,9 @@ sub parse_h {
   foreach $key (keys %$cpp_map){
 
     next if (exists $h_map{$key});
-    
+
     my $new_block = $cpp_map->{$key};
+
     next unless ($new_block =~ /$namesp\:\:/ ); # must be same namespace
 
     # rm the namespace and indent

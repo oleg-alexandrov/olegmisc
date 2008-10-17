@@ -352,6 +352,14 @@
   (shell-command-on-region (point-min) (point-max) "~/.xemacs/put_cat.pl" nil t)
   )
 
+(defun new-line-and-indent ()
+  (interactive)
+  (end-of-line)
+  (newline)
+  (indent-according-to-mode)
+  )
+
+
 (global-set-key     'button4 'scroll-down)
 (global-set-key     'button5 'scroll-up)
 (global-set-key [(control \')] 'my-delete-tail)
@@ -399,6 +407,7 @@
 (global-set-key [(meta i)] 'insert-register)
 (global-set-key [(control x) (t)] 'call-tkdiff)
 (global-set-key [(meta v)] 'revert-buffer)
+(global-set-key [(meta return)] 'new-line-and-indent)
 
 ;; terminal keys
 ;(global-set-key "\e[7~" 'beginning-of-line)
