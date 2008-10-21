@@ -8,6 +8,8 @@ set wrap nowrap
 :set autoindent
 :set nocompatible
 :set ignorecase
+:set wrap nowrap
+:set paste
 
 :colorscheme desert
 
