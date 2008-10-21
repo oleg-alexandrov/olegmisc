@@ -359,9 +359,29 @@
   (indent-according-to-mode)
   )
 
+  (require 'etags)
 
-(global-set-key     'button4 'scroll-down)
-(global-set-key     'button5 'scroll-up)
+  (defun isearch-yank-regexp (regexp)
+    "Pull REGEXP into search regexp." 
+    (let ((isearch-regexp nil)) ;; Dynamic binding of global.
+      (isearch-yank-string regexp))
+    (if (not isearch-regexp)
+	(isearch-toggle-regexp))
+    (isearch-search-and-update))
+
+  (defun isearch-yank-symbol ()
+    "Put symbol at current point into search string."
+    (interactive)
+    (let ((sym (find-tag-default)))
+      (if (null sym)
+	  (message "No symbol at point")
+	(isearch-yank-regexp
+	 (concat "\\_<" (regexp-quote sym) "\\_>")))))
+
+
+
+;(global-set-key     'button4 'scroll-down)
+;(global-set-key     'button5 'scroll-up)
 (global-set-key [(control \')] 'my-delete-tail)
 (global-set-key [(control b)] 'byte-compile-and-load-file)
 (global-set-key [(control backspace)] 'backward-kill-line)
@@ -392,7 +412,7 @@
 (global-set-key [(meta control a)] 'define-mode-abbrev)
 (global-set-key [(meta j)] 'open-spq)
 (global-set-key [(meta q)] 'kill-this-buffer)
-(global-set-key [(meta s)] 'write-file)	; 'save file as...' with Alt-s
+;(global-set-key [(meta s)] 'write-file)	; 'save file as...' with Alt-s
 (global-set-key [(meta space)] 'dabbrev-expand)
 (global-set-key [(meta t)] 'pop-prev-yank)
 (global-set-key [(meta u)] 'un-comment-region)
