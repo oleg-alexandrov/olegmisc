@@ -325,6 +325,13 @@ exist, try replacing 'src' with 'include' and vice-versa"
     )
   )
 
+(defun c++-break-line ()
+  (interactive)
+  (insert "\" << \"")
+  (backward-char 5)
+  (newline-and-indent)
+  )
+
 (local-set-key [(control x) (l)] 'duplicate-line)
 (local-set-key [(=)] 'smart-equal)
 (local-set-key [(\<e)] 'c++-endl)
@@ -350,3 +357,4 @@ exist, try replacing 'src' with 'include' and vice-versa"
 ;(local-set-key "\e[8~" 'end-of-line)
 (local-set-key [(meta t)] 'toggle-cpp-h)
 (local-set-key [(meta h)] 'update-header-file)
+(local-set-key [(control return)] 'c++-break-line)
