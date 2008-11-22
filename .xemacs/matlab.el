@@ -1834,7 +1834,8 @@ If there isn't one, then return nil, point otherwise."
 	(delete-horizontal-space)
 	(indent-to i))
       ;; If line contains a comment, format it.
-      (if () (if (matlab-lattr-comm) (matlab-comment))))
+      (if () (if (matlab-lattr-comm) (matlab-comment)))
+      )
     (if (<= c i) (move-to-column i))))
 
 (defun matlab-calc-indent ()
@@ -1867,9 +1868,10 @@ this line's indentation should be."
      ((matlab-ltype-comm)
       (cond
        ;; HELP COMMENT and COMMENT REGION
-       ((or (matlab-ltype-help-comm)
-	    (matlab-ltype-comm-ignore))
-	(list 'comment-help 0))
+;   Turning off the several lines below makes matlab indent comment like any other lines
+;       ((or (matlab-ltype-help-comm)
+;	    (matlab-ltype-comm-ignore))
+;	(list 'comment-help 0))
        ;; COMMENT Continued From Previous Line
        ((setq tmp (matlab-ltype-continued-comm))
 	(list 'comment tmp))
