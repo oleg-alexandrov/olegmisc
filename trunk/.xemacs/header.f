@@ -1,6 +1,0 @@
-      
-      implicit none
-
-
-      end
-      
