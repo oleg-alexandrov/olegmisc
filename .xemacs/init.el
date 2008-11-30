@@ -8,6 +8,11 @@
 ;;start gnuserv.
 (gnuserv-start)
 
+;; The very nifty ido package, that allows one to switch to a buffer by typing
+;; only a few consecutive characters of its name.
+(load-library "ido")
+(ido-mode t)
+
 ;; history menu
 ;(load-library "mas-file-history")
 ;(setq mas-file-history-menu-title "History")
