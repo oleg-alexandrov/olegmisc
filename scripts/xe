@@ -6,7 +6,7 @@ run_loc="";
 instanceCount=$(ps aux | grep `whoami` | grep xemacs | grep -v 'grep xemacs' | wc -l);
 if [ "$instanceCount" -eq "0" ]; then
 
-  xemacs -geo 90x51+0+0 &
+  /grid/common/pkgs/xemacs/v21.4.20/bin/xemacs -geo 90x51+0+0 &
   instanceCount="";
   
   while [ "$instanceCount" = "" ]; do
@@ -19,8 +19,7 @@ if [ "$instanceCount" -eq "0" ]; then
 
 else
   
-  echo gnuclient -q $* 
-  gnuclient -q $* &
+  /grid/common/pkgs/xemacs/v21.4.20/bin/gnuclient -q $* &
 
 fi
 
