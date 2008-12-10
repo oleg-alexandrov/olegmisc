@@ -30,6 +30,8 @@ MAIN:{
   my $gdb_command = "gdb -x $gdb_file --args $prog_name $prog_args\n";
 
   print "\n";
+  print "SANDBOX is " . $ENV{SANDBOX_BUILD_DIR} . "\n";
+  print "\n";
   print "$gdb_command\n";
   print "\n";
   system("$gdb_command");
