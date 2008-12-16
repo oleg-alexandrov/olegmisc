@@ -1,0 +1,57 @@
+############################################################################
+# MOUSE Setup
+
+# Field #2 (Context)
+# R Root
+# W Application window
+# D Desktop application (like kdeskdtop or Nautilus desktop)
+# T Titlebar
+# S Sidebar (side, top, or bottom)
+# F Frame (corners)
+# I Icon window
+# A Any
+# M Tear-off menu
+
+# Field #3 (Modifier)
+# N none
+# C control
+# S shift
+# M meta
+# L caps lock
+# A any
+
+# First, the root window.
+Mouse 1         R   A   Menu Quick-Menu Nop
+Mouse 1         R   S   SendToModule FvwmGtk Gnome-applications
+#Mouse 1         R   S   Menu Gnome-applications
+Mouse 2         R   A   Menu Window-Ops Nop
+Mouse 3   R     A   WindowList
+# Mouse 3         R   A   Menu System Nop
+
+# Title bar buttons
+# Leftmost has the pulldown the menu
+Mouse 1         1   A   Menu Window-Ops
+Mouse 2         1   A   Menu Window-Ops
+Mouse 3         1   A   Menu Window-Ops
+
+# Buttons 2-4 in TWM "native" order
+Mouse 1         3   A   Maximize 0 100
+Mouse 2         2   A   Maximize 100 0
+Mouse 3         2   A   Maximize
+Mouse 1         2   A   Delete
+Mouse 1         4   A   Iconify
+
+
+# Icons
+Mouse 1         I   A   Iconify
+Mouse 2         I   A   Move
+Mouse 3         I   A   Menu Window-Ops
+
+Mouse 1         FS  A   Resize-or-Raise
+Mouse 1         T   N   Move-or-Raise
+Mouse 2         T   A   WindowShade
+
+Mouse 1         TFS     C       Move-or-Raise
+Mouse 2         TFS     C       WindowList
+Mouse 3         TFS     C       Resize-or-Raise
+

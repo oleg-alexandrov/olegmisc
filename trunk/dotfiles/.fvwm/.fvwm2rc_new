@@ -1,0 +1,91 @@
+# The correct order for inserting configurations is:
+# 1. Colors
+# 2. Assorted configuration paramters such as ClickToFocus, or MWMBorders
+# 3. Path setup (ModulePath, ImagePath)
+# 4. Style settings, including the default style Style "*" ...
+# 5. InitFunction and ResetFunction definitions.
+# 6. Other Functions. Functions cannot be forward referenced from
+#	other functions, but they can be backward referenced.
+# 7. Menus definitions. Same caveats about forward referencing
+# 8. Key and Mouse Bindings.
+# 9. Module options.
+
+# The order of steps 5, 6, and 7 is not critical, as long as there are
+# no forward references to functions or menus.
+
+# If you get it wrong, the most common problem is that color or font settings
+# are ignored
+
+Style * SloppyFocus
+Style * TileCascadePlacement, MinOverlapPercentPlacement
+Style * DecorateTransient
+Style * IconBox 1200 800 1600 1400
+Style "xload"   NoTitle, NoHandles, Sticky, WindowListSkip
+Style "xbiff"   NoTitle, NoHandles, Sticky, WindowListSkip
+Style "Fvwm*"   NoTitle, NoHandles, Sticky, WindowListSkip
+
+OpaqueMoveSize  100
+EdgeScroll  100  100
+EdgeResistance  1000  50
+SnapAttraction 5
+EwmhBaseStruts 0 0 22 0
+
+MenuStyle * PopupDelayed, PopupDelay 200
+#CursorStyle ROOT plus
+
+SetEnv BaseDir $.
+ImagePath $[BaseDir]/images:$[BaseDir]/images/icons:$HOME/diverse/icons/
+
+# Read the decor _before_ the button and pager configs
+Read $./default.decor
+
+Read $./pager.fvwm
+Read $./button-taskbar.fvwm
+
+
+# Stuff to do at start-up
+
+DestroyFunc StartFunction
+AddToFunc StartFunction
++ I Module FvwmPager 0 0
++ I Module FvwmButtons
+
+DestroyFunc InitFunction
+AddToFunc InitFunction
+
+########################     MENUS     ##############################
+# Program menu (B1)
+Read $./menuB1.fvwm
+
+# Window ops menu (B2)
+Read $./menuB2.fvwm
+
+# Fvwm configuration menu (B3)
+Read $./menuB3.fvwm
+
+########################  COMPLEX FUNCTIONS  #############################
+
+AddToFunc Move-or-Raise         I Raise
++                               M Move
++                               D Lower
+
+AddToFunc Move-or-Iconify       M Move
++                               C Iconify
+
+AddToFunc Resize-or-Raise       I Raise
++                               M Resize
+
+AddToFunc PrintFunction         I Raise
++                               I Exec xdpr -id $w
+
+AddToFunc ReloadMenus
++ I PipeRead 'awk -f $./destroy-menus.awk $./menu*.fvwm'
++ I Read $./menuB1.fvwm
++ I Read $./menuB2.fvwm
++ I Read $./menuB3.fvwm
+
+Read $./mouse.fvwm
+
+
+Read $./keys.fvwm
+

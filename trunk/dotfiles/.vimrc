@@ -9,7 +9,7 @@ set wrap nowrap
 :set nocompatible
 :set ignorecase
 :set wrap nowrap
-:set paste
+":set paste
 
 :colorscheme desert
 
@@ -33,6 +33,7 @@ map! <C-E> <End>
 
 cabbrev Q  q
 cabbrev Wq wq 
+cabbrev WQ wq 
 cabbrev nw set wrap nowrap 
 cabbrev dw set nowrap wrap 
 cabbrev sp set paste
