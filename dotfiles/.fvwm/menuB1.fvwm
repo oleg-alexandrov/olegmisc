@@ -1,0 +1,72 @@
+############################################################################
+#
+# Left mouse button root menu
+AddToMenu Quick-Menu	"Programs"		Title
++    "gterm"      exec gnome-terminal
++    "Rxvt"      exec ~/bin/rxvt
++   "XEmacs"     exec  ~/bin/xe 
++    "Xterm"     exec xterm 
++   "Mail"       exec  /m1/aoleg/bin/rxvt -fn 8x16 -e mutt 
++    "" Nop
++    "Accessories"	Popup Accessories
++    "Graphic Tools"%mini/mini.palette.xpm%	Popup PictureTools
++    "Web Tools"	    Popup Web
++    "" Nop
++    "Quit"	Popup Quit
+
+AddToMenu Hosts Hosts Title
+Read $./Hosts.home
+#Read $./Hosts.fvwm
+
+AddToMenu Quit "Really Quit?" Title
++    "Refresh"	              Refresh
++    "Restart"	              Restart fvwm2 -f ~/.fvwm/rc.fvwm
++    "Restart Old"	      Restart fvwm2 -f ~/.fvwm/.fvwm2
++    "KDE"	              Restart startkde 
++    "Quit"		      Quit
+
+
+AddToMenu Accessories "Accessories (Sun)" Title
++    "Audio Control%mini/mini.sound.xpm%" exec audiocontrol
++    "XMMS%mini/mini.music.xpm%"	        exec xmms
++    "Calculator%mini/mini.calc2.xpm%"	exec xcalc
++    "TkShowKeys%mini/mini.xkeycaps.xpm%" exec tkshowkeys
++    "Xps"%mini/mini.eyes.xpm% exec xps
++    "Clocks"	Popup Clocks
+
+AddToMenu PictureTools "Graphics" Title
++	"XV"			exec xv
++	"Gimp"		exec gimp
++	"Magnifying Tool"%mini/mini.zoom.xpm%	exec xmag
++	"Choose Color"		exec choosexcolor
+
+AddToMenu Web "Internet Tools" Title
++	"Firefox" 	exec firefox
+
+AddToMenu Clocks "Clocks" Title
++    "OpenWin clock"    exec /usr/openwin/bin/clock
++    "Afterstep clock"  exec asclock
++    "Xclock"   	exec xclock
+
+
+AddToMenu MJLayouts "Layouts" Title
++    "arena"            exec xmahjongg --tileset dorothys --layout arena
++    "bridge"           exec xmahjongg --tileset dorothys --layout bridge
++    "deepwell"         exec xmahjongg --tileset dorothys --layout deepwell
++    "farandole"        exec xmahjongg --tileset dorothys --layout farandole
++    "papillon"         exec xmahjongg --tileset dorothys --layout papillon
++    "wedges"           exec xmahjongg --tileset dorothys --layout wedges
++    "arrow"            exec xmahjongg --tileset dorothys --layout arrow
++    "ceremonial"       exec xmahjongg --tileset dorothys --layout ceremonial
++    "default"          exec xmahjongg --tileset dorothys --layout default
++    "hourglass"        exec xmahjongg --tileset dorothys --layout hourglass
++    "theater"          exec xmahjongg --tileset dorothys --layout theater
+
+AddToFunc GimpIconBox
++ I Read $./gimpiconbox.fvwm
++ I Module FvwmIconBox GimpIcons
+
+AddToFunc AcquaIconBox
++ I Read $./acquaiconbox.fvwm
++ I Module FvwmIconBox AcquaIcons
+

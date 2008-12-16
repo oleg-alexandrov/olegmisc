@@ -1,0 +1,35 @@
+this is the command I use for screenshots
+  sleep 3 && import -window root screenshot.png
+
+-----------------
+"Pack windows", move them in some direction until they hit something, eg another window or the edge of the screen
+
+DestroyFunc PackWindowUp
+AddToFunc PackWindowUp
++ I SetEnv low_w 0
++ I All (CurrentPage !Iconic AcceptsFocus \
+        !Shaded ) PipeRead "test `expr $[w.y] + $[w.height]` -gt $$low_w \
+        -a `expr $[w.y] + $[w.height]` -lt $0 \
+        -a \\( \\( $[w.x] -gt $1 -a $[w.x] -lt `expr $1 + $2` \\) \
+            -o \\( $1 -gt $[w.x] -a $1 -lt `expr $[w.x] + $[w.width]` \\) \
+            -o \\( $1 -lt $[w.x] -a `expr $1 + $2` -gt `expr $[w.x] + $[w.width]` \\) \
+            -o \\( $[w.x] -lt $1 -a `expr $[w.x] + $[w.width]` -gt `expr $1 + $2` \\) \
+        \\) \
+        && echo SetEnv low_w `expr $[w.y] + $[w.height]` \
+        || echo Nop"
+
++ I WindowId $3 AnimatedMove keep $[low_w]p
+
+DestroyFunc PackWrapperUp
+AddToFunc PackWrapperUp
++ I NoWindow PackWindowUp $[w.y] $[w.x] $[w.width] $[w.id]
+
+Key Up W SM PackWrapperUp 
+
+-----------------
+Auto-hide
+use FvwmEvent to look for focus changes (focus_change) with PassId, you can use something like this in your function, after it has checked if its the buttons that have come into focus 
+
+# Where $0 is the windowid of the ButtonBar passed to the function from FvwmEvent
+WindowId $0 AnimatedMove Keep w-10p
+

@@ -1,0 +1,52 @@
+######################### Keyboard binding###########################
+Key F1    A   M   Exec  /m1/aoleg/bin/rxvt -e bash -l & 
+Key F1    A   N   Exec  ~/bin/rxvt -e bash -l & 
+Key F2    A   N   Exec  ~/bin/rxvt -fn 8x16 -e mutt &
+Key F3    A   N   Exec  ~/bin/xe &
+Key F3    A   M   Exec  ~/bin/xe &
+Key F4    A   N   Exec  firefox&
+Key F4    A   C   Exec  mozilla&
+#Key F5    A   N   Exec  konqueror http://www.math.umn.edu&
+#Key F6    A   N   Exec  mozilla& 
+Key F7    A   N   Exec /usr/local/bin/mathematica &
+Key F8    A   N   Exec ooffice &
+Key F9    A   N   Exec  gnumeric --geometry 1120x993+0+0&
+
+Key Delete A   CM   Quit
+Key End    A   CM  Exec /usr/bin/X11/xlock
+
+#Key F2   A   C   Exec xdaliclock
+#Key F8   A   C   Unstick
+Key F9    A   C   Resize 89 97
+Key F10   A   C   Move +0 +0
+Key F9    A   M   Resize 100 102 
+Key F11   A   C  Move
+Key F12   A   M   Restart Restart fvwm2 -f ~/.fvwm/rc.fvwm
+Key F12   A   N   Close
+Key F11   A   N   Iconify
+
+# arrow + control anywhere => scroll by a page
+Key Left  A   C   Scroll -100 0
+Key Right A   C   Scroll +100 +0
+Key Up    A   C   Scroll +0   -100
+Key Down  A   C   Scroll +0   +100
+# Key Left  A   C Module FvwmPager -transient
+# Key Right A   C Module FvwmPager -transient
+# Key Up    A   C Module FvwmPager -transient
+# Key Down  A   C Module FvwmPager -transient
+Key Space  A   C Module FvwmPager -transient
+Key F2     A   C Exec xterm -e ~/bin/ac2
+Key F1     A   C Exec xlock -nolock -mode blank 1>/dev/null 2>&1
+
+
+# arrow + shift + meta => move pointer by 1/10 of a page
+Key Left   A   SM   CursorMove -10 +0
+Key Right  A   SM   CursorMove +10 +0
+Key Up     A   SM   CursorMove +0 -10
+Key Down   A   SM   CursorMove +0 +10
+
+# arrow + meta + control => move pointer by 1/2 of a page
+Key Left   A   CM   CursorMove -50 +0
+Key Right  A   CM   CursorMove +50 +0
+Key Up     A   CM   CursorMove +0 -50
+Key Down   A   CM   CursorMove +0 +50

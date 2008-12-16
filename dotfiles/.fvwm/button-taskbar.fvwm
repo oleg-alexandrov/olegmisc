@@ -1,0 +1,87 @@
+#FvwmButtons, combined with FvwmIconMan, makes a GREAT task bar
+#DestroyModuleConfig	FvwmButtons
+
+# Start Menu
+Style "FvwmButtons"     Sticky, NoTitle, NoHandles, BorderWidth 0, WindowListSkip, StaysOnBottom
+Style "FvwmIconMan"	Sticky, NoTitle, NoHandles, BorderWidth 0, WindowListHit
+
+# IconMan taskbar
+DestroyModuleConfig	FvwmIconMan
+
+*FvwmIconMan: 1 Geometry +160+0
+# Color should match FvwmButtons
+*FvwmIconMan: 1 Colorset 0
+# Same as Inactive window
+*FvwmIconMan: 1 PlainColorset 0
+# Same as Active window
+*FvwmIconMan: 1 FocusColorset 1
+# The one highlighted on mouse-over.  Should have good readability.
+*FvwmIconMan: 1 SelectColorset 1
+
+*FvwmIconMan: 1 ReliefThickness 2
+*FvwmIconMan: 1 IconButton      Down
+*FvwmIconMan: 1 PlainButton     Up
+*FvwmIconMan: 1 FocusButton     RaisedEdge
+*FvwmIconMan: 1 SelectButton	Up
+
+*FvwmIconMan: 1 DrawIcons	always
+*FvwmIconMan: 1 Format		"%t"
+*FvwmIconMan: 1 ButtonGeometry	1024x125
+*FvwmIconMan: 1 ManagerGeometry	1x1
+*FvwmIconMan: 1 Resolution      Desk
+*FvwmIconMan: 1 FollowFocus	true
+
+*FvwmIconMan: 1 DontShow	class=FvwmButtons resource=FvwmPager
+#*FvwmIconMan: 1 DontShow	class=DClock resource=dclock
+
+*FvwmIconMan: action      Mouse   1 N sendcommand Focus, sendcommand "Iconify"
+*FvwmIconMan: action      Mouse   2 N sendcommand "Iconify 1"
+*FvwmIconMan: action      Mouse   3 N sendcommand "FvwmIdent"
+
+
+DestroyModuleConfig	FvwmButtons
+
+# FvwmButtons as Taskbar:
+*FvwmButtonsRows	1
+
+# This makes the background of the start and tray
+*FvwmButtons: Colorset 1
+*FvwmButtons: Frame 0
+*FvwmButtons: ButtonGeometry 18x120-0+0
+
+# Start Button
+*FvwmButtons(5x1, Size 75 525, Container(Rows 5, Frame -1))
+    *FvwmButtons(2x1, NoSize, Frame 1, Swallow 'xdaliclock' \
+      'Exec $HOME/bin/xdaliclock -noseconds -builtin0 -noseconds -transparent -cycle -geometry 25x22')
+
+    *FvwmButtons(1x1, Padding 0, Frame 1, Icon gnome-terminal.xpm, \
+	Action 'Exec xterm -fn lucidasanstypewriter-12 -geometry 125x50')
+
+    *FvwmButtons(1x1, Padding 0, Frame 1, Icon XEmacs.xpm, \
+	Action 'Exec ~/bin/xe2')
+
+#     *FvwmButtons(1x1, Padding 0, Frame 1, Icon mini/mozicon16.xpm, \
+# 	Action 'Exec mozilla')
+
+
+#     *FvwmButtons(1x1, Padding 0, Frame 1, Icon mini/mini.zoom.xpm, \
+# 	Action 'Exec xmag')
+
+#     *FvwmButtons(1x1, NoSize, Frame 1, Swallow 'asmail' \
+#       'Exec nice -4 $HOME/bin/asmail')
+
+
+#     *FvwmButtons(Id start, 2x1, Padding 0, Frame 1, Icon buttons/feline-light.xpm, \
+#         Action (Mouse 1) 'Menu Quick-Menu', \
+#         Action (Mouse 2) 'Menu Window-Ops', \
+#         Action (Mouse 3) 'Menu System)
+
+    *FvwmButtons(2x1, NoSize, Frame 1, Swallow 'xload' \
+      'Exec  xload -update 1 -bg "#B9B8C1" -fg "#7163CA" -nolabel -geo 25x25')
+
+*FvwmButtons(End)
+
+# # Taskbar build with FvwmIconMan
+# *FvwmButtons(32x1, Size 1024 25, Frame 0, Padding 0 0, \
+#     Swallow "FvwmIconMan" "FvwmIconMan")
+

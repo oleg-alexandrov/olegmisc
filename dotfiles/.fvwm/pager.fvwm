@@ -1,0 +1,30 @@
+DeskTopSize 3 12
+
+*FvwmPager: Rows 1
+*FvwmPager: Columns 1
+#*FvwmPager: DeskTopScale 30
+*FvwmPagerGeometry 130x520-0-0
+#*FvwmPagerGeometry 400x400
+*FvwmPager: SmallFont 5x8
+*FvwmPager: MiniIcons
+#*FvwmPager: UseSkipList
+
+# *FvwmPager: Colorset * 0
+# *FvwmPager: HilightColorset * 1
+
+# suppress desktop labels
+*FvwmPager: Font none
+
+# # ########################### Pager #########################################
+# # DeskTopSize 3x6
+# # *FvwmPagerGeometry 122x244-0-0
+# # *FvwmPagerBack  #1c5572  
+# # ##  was   #908090
+# # *FvwmPagerFore white 
+# # ## was   #484048
+# # *FvwmPagerFont:  -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+# # *FvwmPagerHilight #2c5570
+# # ## was cab3ca
+# # *FvwmPagerSmallFont 5x8
+# # *FvwmPager: SolidSeparators
+# # *FvwmPager: Label * 

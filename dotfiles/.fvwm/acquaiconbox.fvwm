@@ -1,0 +1,15 @@
+Colorset 10 fg black, bg white, NoShape, RootTransparent Buffer
+Colorset 11 fg black, bg white, NoShape, RootTransparent Buffer, Tint #5a8ade 60
+Colorset 12 fg black, bg white, NoShape, RootTransparent Buffer, Tint #f6f6f6 20
+
+Style "Acqua" NoIcon, WindowListSkip
+Style "AcquaIcons" Icon acqua.xpm, MiniIcon mini/mini.acqua.xpm, WindowListHit
+
+*AcquaIcons: Colorset 10
+*AcquaIcons: FrameWidth  2 2
+
+# These are bound to the icons inside the icon box
+*AcquaIcons: Mouse       1       Click           Iconify
+*AcquaIcons: Mouse       2       Click           Iconify -1, Focus
+*AcquaIcons: Mouse       3       Click           Module FvwmIdent
+
