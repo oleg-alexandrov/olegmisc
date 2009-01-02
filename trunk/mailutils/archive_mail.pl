@@ -37,8 +37,11 @@ MAIN: {
   print "Number of messages is " . scalar (@mails) . "\n";
   
   foreach $message (@mails) {          
-    next unless ($message =~ /Message-ID:\s+\<(.*?)\>/i); # checked for message id earlier
     
+    if ($message !~ /Message-ID:\s+\<(.*?)\>/i){ 
+      print "Missing message id\n" . $message . "\n";
+      exit(0);
+    }  
     $id = $1;
     $id =~ s/\s+/_/g; # make sure there are no spaces in the ID
     next if ( ( exists $Done_hash{$id} ) && ( $Done_hash{$id} == 1 ) );
