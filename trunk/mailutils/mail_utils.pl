@@ -96,6 +96,11 @@ sub extract_header_body {
   
   $message =~ s/^\s*//g; # rm whitespace at the beginning
 
+  if ($message !~ /^From /){
+    print "Invalid message.\n" . $message . "\n";
+    exit(0);
+  }
+
   my ($header, $body);
   
   # Check if the message has a header
