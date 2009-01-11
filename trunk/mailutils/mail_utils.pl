@@ -41,7 +41,7 @@ sub read_mailbox {
   $folder = shift; 
   $mails  = shift;
 
-  print "Doing $folder\n";
+  print "Reading $folder\n";
 
   open (FILE, "<$folder");
   $text = <FILE>;
