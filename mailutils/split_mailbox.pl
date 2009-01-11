@@ -23,12 +23,14 @@ MAIN: {
   my $small_mailbox = "";
   my $max_size = 5e+6; # 5MB
 
+  # Use a big number for $count so that files are sorted well later
+  $count = 1000;
+
   # Will read one line at a time from the big mailbox, rather than the
   # entire mailbox at once, since the mailbox can be huge
   
   open(FILE_BIG, "<$big_mailbox_file");
-
-  $count = 1000; # Use big number so that files are sorted well later
+  
   for ( ; ; ){
 
     $line = <FILE_BIG>;
