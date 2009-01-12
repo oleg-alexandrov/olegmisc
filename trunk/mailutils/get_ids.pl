@@ -37,20 +37,18 @@ MAIN: {
   
   my $folder;
 
-  # Make this file empty before appending to it
-  open(FILE, ">$missing_gmail"); print FILE ""; close(FILE);
-
-  # See mails that are not on gmail which are in old mail
+  # See mails that are on gmail, but which are not on old mail
+  open(FILE, ">$missing_old_mail"); print FILE ""; close(FILE); # empty b/f app
   foreach $folder (@gmail_files){
     print "Doing $folder\n";
-    &write_missing($folder, \%old_mail_ids, $missing_gmail);
+    &write_missing($folder, \%old_mail_ids, $missing_old_mail);
   }
 
-  # The other way around
-  open(FILE, ">$missing_old_mail"); print FILE ""; close(FILE);
+  # The other way around, files which are in old mail, but not on gmail
+  open(FILE, ">$missing_gmail"); print FILE ""; close(FILE); # emtpy b/f app
   foreach $folder (@old_mail_files){
     print "Doing $folder\n";
-    &write_missing($folder, \%gmail_ids, $missing_old_mail);
+    &write_missing($folder, \%gmail_ids, $missing_gmail);
   }
   
 }
