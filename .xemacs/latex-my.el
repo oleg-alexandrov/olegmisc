@@ -380,7 +380,17 @@ newline characters where necessary"
 (local-unset-key [(\")])
 
 
-;(flyspell-mode -1) ; turn this off
+;;(flyspell-mode -1) ; turn this off
+
+;(defun my-run-dvi ()
+;  (interactive)
+  
+;  (shell-command (concat                   ; concatenate 
+;                  "/home/user/myscript "   ; script name
+;                  (file-name-nondirectory (buffer-file-name)) ; file name
+;                  )  t)
+;  )
+;(local-set-key [(meta l) 'my-run-dvi])
 
 (local-set-key [(control \4)] 'latex-insert-double-dollars)
 (local-set-key [(control \\)] 'latex-insert-norm)

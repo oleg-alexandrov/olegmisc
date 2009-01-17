@@ -94,6 +94,6 @@
 (local-set-key [(meta u)] 'my-uncomment)
 (local-set-key [(space)] 'smart-space)
 (local-set-key [(control t)] nil)
-
+(local-set-key [(control j)] 'matlab-fill-paragraph)
 (local-set-key [(meta \2)] (lambda nil (interactive) (insert "^2")))
 (local-set-key [(meta i)] 'do-plot)

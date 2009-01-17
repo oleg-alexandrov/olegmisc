@@ -10,8 +10,9 @@
 
 ;; The very nifty ido package, that allows one to switch to a buffer by typing
 ;; only a few consecutive characters of its name.
-(load-library "ido")
-(ido-mode t)
+;; It does not work well with multiple windows though.
+;(load-library "ido")
+;(ido-mode t)
 
 ;; history menu
 ;(load-library "mas-file-history")
@@ -68,6 +69,10 @@
 (setq auto-insert-query nil)
 (load-library "autoinsert-my")
 
+; make the delete key work properly in tcl
+(add-hook 'tcl-mode-hook
+          (local-set-key [(delete)] 'backward-or-forward-delete-char)
+          )
 
 ;;to enable control-x to copy, control v to paste,  etc. 
 (load-library "cua-mode")
