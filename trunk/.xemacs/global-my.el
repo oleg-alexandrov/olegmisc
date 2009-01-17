@@ -359,29 +359,24 @@
   (indent-according-to-mode)
   )
 
-  (require 'etags)
 
-  (defun isearch-yank-regexp (regexp)
-    "Pull REGEXP into search regexp." 
-    (let ((isearch-regexp nil)) ;; Dynamic binding of global.
-      (isearch-yank-string regexp))
-    (if (not isearch-regexp)
-	(isearch-toggle-regexp))
-    (isearch-search-and-update))
+;; When in X, enable mouse wheel
+(defun mwheel-up () (interactive) (scroll-up 1))
+(defun mwheel-down () (interactive) (scroll-down 1))
 
-  (defun isearch-yank-symbol ()
-    "Put symbol at current point into search string."
-    (interactive)
-    (let ((sym (find-tag-default)))
-      (if (null sym)
-	  (message "No symbol at point")
-	(isearch-yank-regexp
-	 (concat "\\_<" (regexp-quote sym) "\\_>")))))
+;; Scroll one line at a time when moving cursor off-screen,
+;; instead of half a page.
+(setq scroll-step 1)
 
+(defun align-repeat (start end regexp)
+  "repeat alignment with respect to 
+     the given regular expression"
+  (interactive "r\nsAlign regexp: ")
+  (align-regexp start end 
+                (concat "\\(\\s-*\\)" regexp) 1 1 t))
 
-
-;(global-set-key     'button4 'scroll-down)
-;(global-set-key     'button5 'scroll-up)
+(global-set-key     'button4 'mwheel-up)
+(global-set-key     'button5 'mwheel-down)
 (global-set-key [(control \')] 'my-delete-tail)
 (global-set-key [(control b)] 'byte-compile-and-load-file)
 (global-set-key [(control backspace)] 'backward-kill-line)
@@ -428,6 +423,7 @@
 (global-set-key [(control x) (t)] 'call-tkdiff)
 (global-set-key [(meta v)] 'revert-buffer)
 (global-set-key [(meta return)] 'new-line-and-indent)
+(global-set-key [(meta l)] 'align-repeat)
 
 ;; terminal keys
 ;(global-set-key "\e[7~" 'beginning-of-line)

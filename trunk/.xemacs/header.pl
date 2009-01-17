@@ -1,10 +1,10 @@
 #!/usr/bin/perl
-use strict;		      # 'strict' insists that all variables be declared
-use diagnostics;	      # 'diagnostics' expands the cryptic warnings
-undef $/; # undefines the separator. Can read one whole file in one scalar.
+use strict;	   # insist that all variables be declared
+use diagnostics;   # expand the cryptic warnings
+undef $/;          # read one whole file in one scalar
 
-# use main to avoid the curse of global variables
-MAIN: {
-
-
+MAIN:{
+  
+  
+  
 }
