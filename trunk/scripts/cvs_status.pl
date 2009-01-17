@@ -1,15 +1,20 @@
 #!/usr/bin/perl
 use strict;		      # 'strict' insists that all variables be declared
 use diagnostics;	      # 'diagnostics' expands the cryptic warnings
+use Cwd;
 undef $/; # undefines the separator. Can read one whole file in one scalar.
 
 # use main to avoid the curse of global variables
 MAIN: {
 
   # Clean up cvs status
+
+  my $dir = getcwd;
+  $dir =~ s/^.*?(dev\/)/$1/g;
+  $dir = $dir . "/" unless ($dir =~ /\/$/);
   
   my @lines = split("===", <>);
-
+  
   my ($line, $file, $status, @files, @stats, $file_len);
 
   @files = ();
@@ -29,6 +34,8 @@ MAIN: {
     $file =~ s/^.*?(dev\/)/$1/g;
     $file =~ s/Attic\///g;
 
+    $file =~ s/$dir//g;
+    
     push(@files, $file);
     push(@stats, $status);
 
@@ -41,7 +48,8 @@ MAIN: {
   my $counter = 0;
 
   foreach $file (@files){
-    $status = $stats[$counter];
+
+    $status = $stats[$counter]; $counter++;
 
     # pad with spaces
     $file = $file . " " x ($file_len - length($file));
@@ -49,4 +57,5 @@ MAIN: {
     print "File: $file $status\n";
     
   }
+
 }
