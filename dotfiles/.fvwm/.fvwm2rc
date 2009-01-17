@@ -133,9 +133,9 @@ Key Delete    A   CM   Quit
 Key End    A   CM  Exec /usr/bin/X11/xlock
 
 Key F8   A   C   Move +0 +0
-Key F9   A   C   Move +51 +0 # Move window half a screen to the right
-Key F10   A   C   Resize 88 98
-Key F11   A   C   Resize 44 98
+Key F9   A   C   Move +50 +0 # Move window half a screen to the right
+Key F10   A   C   Resize 88 96
+Key F11   A   C   Resize 44 96
 Key F12   A   M   Restart fvwm2 -f ~/.fvwm/rc.fvwm
 Key F12   A   N   Close
 Key F11   A   N   Iconify
