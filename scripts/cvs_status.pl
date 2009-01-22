@@ -9,9 +9,15 @@ MAIN: {
 
   # Clean up cvs status
 
-  my $dir = getcwd;
-  $dir =~ s/^.*?(dev\/)/$1/g;
-  $dir = $dir . "/" unless ($dir =~ /\/$/);
+  my $pwd = getcwd;
+  $pwd = $pwd . "/" unless ($pwd =~ /\/$/);
+
+  my $user = $ENV{HOME};
+  $user =~ s/\/$//g;
+  $user =~ s/^.*\///g;
+
+  # Make path relative by stripping everyting before user name
+  $pwd =~ s/^.*?$user\///g;
   
   my @lines = split("===", <>);
   
@@ -31,10 +37,8 @@ MAIN: {
     next unless ($line =~ /Repository\s+revision:.*?(\/.*),/i);
     $file = $1;
 
-    $file =~ s/^.*?(dev\/)/$1/g;
-    $file =~ s/Attic\///g;
-
-    $file =~ s/$dir//g;
+    # Make file path relative
+    $file =~ s/^.*?\Q$pwd\E\/?//g;
     
     push(@files, $file);
     push(@stats, $status);
