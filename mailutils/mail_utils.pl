@@ -215,6 +215,31 @@ sub fix_content_type {
 
 }
 
+sub extract_ids {
+  
+  my $folder = shift;
+  my @ids = ();
+  
+  my @mails;
+  &read_mailbox($folder, \@mails);
+
+  my $message;
+  foreach $message (@mails){
+
+    next unless ($message =~ /^From /);
+    
+    my ($header, $body) = &extract_header_body ($message);
+
+    $header = &add_message_id_if_needed($header);
+       
+    my $id = extract_message_id($header);
+
+    push (@ids, $id);
+  }
+
+  return @ids;
+}
+
 sub extract_message_id {
 
   my $header = shift;
@@ -236,6 +261,7 @@ sub add_message_id_if_needed {
   # as this will yield to messages being duplicated on gmail
   # if having different ids.
   my ($header, $id);
+
   $header = shift;
 
   if ($header =~ /Message-ID:\s+\<.*?\>/i){

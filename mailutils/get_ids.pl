@@ -23,6 +23,8 @@ MAIN: {
   my $old_mail_ids_file = $old_mail_dir . "_ids.txt";
   #&get_ids($old_mail_dir, $old_mail_ids_file);
 
+  #exit(0);
+  
   my $id;
 
   my %gmail_ids    = &get_hash_from_disk($gmail_ids_file);
@@ -140,31 +142,6 @@ sub get_ids {
     print "\n";
   }
 
-}
-
-sub extract_ids {
-  
-  my $folder = shift;
-  my @ids = ();
-  
-  my @mails;
-  &read_mailbox($folder, \@mails);
-
-  my $message;
-  foreach $message (@mails){
-
-    next unless ($message =~ /^From /);
-    
-    my ($header, $body) = &extract_header_body ($message);
-
-    $header = &add_message_id_if_needed($header);
-       
-    my $id = extract_message_id($header);
-
-    push (@ids, $id);
-  }
-
-  return @ids;
 }
 
 
