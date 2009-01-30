@@ -118,8 +118,7 @@ void mexFunction( int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[] ){
   mxDestroyArray(matlabX[0]);
   mxDestroyArray(matlabCostFunVal[0]);
   mxDestroyArray(mxWorkspace);
-  //mxDestroyArray(costFunName); // what to do about this
-  //pointer?
+  /*mxDestroyArray(costFunName); */
     
   return;
 }
