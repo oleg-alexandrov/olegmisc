@@ -3,13 +3,12 @@ use strict;		      # 'strict' insists that all variables be declared
 use diagnostics;	      # 'diagnostics' expands the cryptic warnings
 use Encode;
 use File::stat;
-
 require 'mail_utils.pl';
-
-undef $/; # undefines the separator. Can read one whole file in one scalar.
-$| = 1; # flush the buffer each line
+undef $/;
 
 # Get the ids from a mailbox, put all of them in a file
+# Then use those ids to find which mails in one directory
+# are missing from the second one, and the other way around.
 
 MAIN: {
 

@@ -40,27 +40,41 @@ sub read_mailbox {
   
   $folder = shift; 
   $mails  = shift;
-
+  
   print "Reading $folder\n";
 
   open (FILE, "<$folder");
   $text = <FILE>;
   close (FILE);
 
-  # If the line below is uncommented, it is hard to see the result of processing
-  # the mails before forwarding to gmail.
-  # $text =~ s/\r\n/\n/g; # strip windows newline
-  
-#   if ($text =~ /[^\n]\n(From .*?\d:\d\d:\d\d.*?)\n/i){
-#     print "Error: looks like malformatted mailbox. See the text:\n$1\n";
-#     exit(0);
-#   }
-  
+  # The case of empty folders: return zero messages
+  if ($text =~ /^\s*$/){
+    @$mails = ();
+    return;
+  }
+
+  # Put a tag between messages. Care must be taken due to
+  # the fact that there may be carriage returns (\r) in places.
   my $tag = ' sld839X929Ax xAio97UaIaE '; # something unlikely
-  $text =~ s/(\n)(From .*?\d:\d\d:\d\d)/$1$tag$2/ig;
+  $text =~ s/(\r?\n\r?)(From .*?\d:\d\d:\d\d)/$1$tag$2/ig;
 
   # pass the mailbox by reference
   @$mails = split ($tag, $text);
+
+  # Verification. Strip any whitespace from message beginning.
+  my $mail;
+  foreach $mail (@$mails){
+
+    next if ($mail =~ /^\s*$/);
+
+    $mail =~ s/^\s*//g;
+    
+    if ($mail !~ /^From .*?\d:\d\d:\d\d/){
+      print "Invalid mail\n$mail\n";
+      exit(0);
+    }
+    
+  }
 
 }
 
@@ -226,12 +240,12 @@ sub extract_ids {
   my $message;
   foreach $message (@mails){
 
-    next unless ($message =~ /^From /);
+    if ($message !~ /^From /){
+      print "Invalid message\n$message\n";
+      exit(0);
+    }
     
     my ($header, $body) = &extract_header_body ($message);
-
-    $header = &add_message_id_if_needed($header);
-       
     my $id = extract_message_id($header);
 
     push (@ids, $id);
@@ -243,8 +257,11 @@ sub extract_ids {
 sub extract_message_id {
 
   my $header = shift;
+
   my $message_id;
   
+  $header = &add_message_id_if_needed($header);
+
   if ($header =~ /Message-ID:\s+\<(.*?)\>/i){
     $message_id = $1;
   }else{
