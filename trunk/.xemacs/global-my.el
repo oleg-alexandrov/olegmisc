@@ -375,8 +375,8 @@
   (align-regexp start end 
                 (concat "\\(\\s-*\\)" regexp) 1 1 t))
 
-(global-set-key     'button4 'mwheel-up)
-(global-set-key     'button5 'mwheel-down)
+(global-set-key     'button4 'mwheel-down)
+(global-set-key     'button5 'mwheel-up)
 (global-set-key [(control \')] 'my-delete-tail)
 (global-set-key [(control b)] 'byte-compile-and-load-file)
 (global-set-key [(control backspace)] 'backward-kill-line)
