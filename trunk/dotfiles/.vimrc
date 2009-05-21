@@ -31,6 +31,14 @@ map <Return> i<Return>
 map! <C-A> <Home>
 map! <C-E> <End>
 
+map  <C-F> <Esc>/
+imap <C-F> <Esc>/
+
+map <S-space> i
+imap <S-space> <Esc>
+
+
+cabbrev W  w
 cabbrev Q  q
 cabbrev Wq wq 
 cabbrev WQ wq 
