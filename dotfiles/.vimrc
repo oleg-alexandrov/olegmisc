@@ -31,12 +31,20 @@ map <Return> i<Return>
 map! <C-A> <Home>
 map! <C-E> <End>
 
+noremap <C-Home> <Esc>1gg
+
 map  <C-F> <Esc>/
 imap <C-F> <Esc>/
 
-map <S-space> i
-imap <S-space> <Esc>
+" Quit with Control-Q
+map <C-Q> <Esc>:q<CR>
+imap <C-Q> <Esc>:q<CR>
 
+" Save and quit with Control-S
+map <C-S> <Esc>:wq<CR>
+imap <C-S> <Esc>:wq<CR>
+
+imap <C-v> <Esc>l<C-v>
 
 cabbrev W  w
 cabbrev Q  q
@@ -46,6 +54,8 @@ cabbrev nw set wrap nowrap
 cabbrev dw set nowrap wrap 
 cabbrev sp set paste
 cabbrev np set nopaste
+
+ab st set shared::job::dbgTrackKaroList                      {0}
 
 " Make the backspace key delete newlines, etc.
 ":set backspace=indent,eol,start
