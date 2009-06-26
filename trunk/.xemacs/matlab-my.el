@@ -34,7 +34,7 @@
     (matlab-indent-line)
     (insert "\nend")
     (matlab-indent-line)
-    (previous-line 1)
+    (search-backward "if")
     (forward-char 3)
     ))
 
@@ -88,6 +88,12 @@
   (insert "'; do_plot('g', suff);")
   )
 
+(defun matlab-insert-quotes ()
+  (interactive)
+  (insert "''")
+  (backward-char 1)
+  )
+(local-set-key [(meta \')] 'matlab-insert-quotes)
 (local-set-key [(meta z)] 'redo)
 (local-set-key [(return)] 'reindent-then-newline-and-indent)
 (local-set-key [(meta c)] 'my-comment)

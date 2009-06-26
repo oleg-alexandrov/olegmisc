@@ -44,9 +44,24 @@ MAIN: {
   open(FILE, ">$header_file") || die "Cannot open $header_file\n";
   print FILE "$text";
   close(FILE);
-  
+
+  print "$header_file updated\n";
 }
 
+sub key_sig{
+
+  # Signature is the number of commas
+  
+  my $block = shift;
+  $block =~ s/\{.*?$//sg;
+
+  $block = $block . "\n";
+  $block =~ s/\/\/.*?\n//g;
+
+  $block =~ s/[^,]//g;
+
+  return $block;
+}
 
 sub parse_cpp {
 
@@ -60,13 +75,13 @@ sub parse_cpp {
 
     # Will match things like: void  *  myname::myfun ( double x, double y){
     next unless ( $block =~ /(\w+[\s\*\&]+[\w]+\:\:[\w]+)(\s*\(.*?\))\s*\{/s );
-    #print "----\n$block\n---\n";
 
     my $key = $1;
+    
     my $fun = $1 . $2 . ";\n\n";
 
     # rm namespace from fun declaration
-    $key =~ s/(\w+::)//g;  
+    $key =~ s/(\w+::)//;  
     $key =~ s/\s+/ /g;
 
     $cpp_map->{$key} = $fun;
@@ -82,7 +97,8 @@ sub parse_h {
 
   # identify the namespace in the h class
   my $namesp;
-  if ($text =~ /\n\s*(class|struct)\s+(\w+)\s*:*.*?\{/){
+  # Look at the last of all namespaces (this is a bit hackish)
+  if ($text =~ /^.*\n\s*(class|struct)\s+(\w+)\s*:*.*?\{/s){
     $namesp = $2;
   }else{
     print "Can't identify the namespace!\n";
@@ -106,9 +122,13 @@ sub parse_h {
     # We'll need this map later
     $h_map{$key} = $block; 
     
-    # Overwrite a .h entry with the corresponding .cpp entry.
     # Ignore functions with preset params (having the equal sign somehwere)
     next unless (exists $cpp_map->{$key} && $block !~ /=/);
+
+    # Ignore static functions
+    next unless (exists $cpp_map->{$key} && $block !~ /\bstatic\b/);
+    
+    # Overwrite a .h entry with the corresponding .cpp entry.
 
     #print "overwriting: $block\n";
     #print "with $cpp_map->{$key}\n";
@@ -116,7 +136,7 @@ sub parse_h {
     $block = $cpp_map->{$key};
     
     # rm the namespace and indent
-    $block =~ s/(\w+::)(\w+\s*\()/$2/g;
+    $block =~ s/(\w+::)(\w+\s*\()/$2/;
     $block = &indent_block ($block);
     
   }
@@ -134,30 +154,29 @@ sub parse_h {
     next unless ($new_block =~ /$namesp\:\:/ ); # must be same namespace
 
     # rm the namespace and indent
-    $new_block =~ s/(\w+::)(\w+\s*\()/$2/g;
+    $new_block =~ s/(\w+::)(\w+\s*\()/$2/;
+
+    $new_block =~ s/^\s*/  /g;
     $new_block = &indent_block ($new_block);
-    
+
     push (@new_blocks, $new_block);
     
   }
-  
-  # Append that new block to the private functions by appending
-  # them to the block with the "private" keyword
-  foreach $block (@blocks){
-    if ($block =~ /^\s*private:/){
 
-      if ( scalar (@new_blocks) != 0 ) {
-        $block = $block . join ("", @new_blocks); 
-      }
-
-      last;
-    }
+  my $new_chunk = "";
+  if ( scalar (@new_blocks) != 0 ) {
+    $new_chunk = join ("", @new_blocks);
   }
   
   $text = join ("", @blocks);
 
-  # Minor touchup
-  $text =~ s/\(\s*/\(/g;
+  # Append the new blocks under the very last private:
+  if ($new_chunk !~ /^\s*$/){
+
+    $text =~ s/^(.*private:\s*)(.*?)$/$1$new_chunk$2/sg;
+  }
+
+  $text =~ s/\s*$/\n/g;
   
   return $text;
 }
@@ -167,6 +186,25 @@ sub extract_blocks {
   my $text = shift;
 
   $text =~ s/\r//g; 
+  $text =~ s/\t/ /g; 
+
+  # Insert a newline after these keywords
+  $text =~ s/(public|private|protected)\s*:\s*([^\}])/$1:\n\n  $2/g;
+  
+  # If a line ends with comma (followed optionally by comments),
+  # remove any empty lines following that line,
+  # so that later we don't think the empty line separates two blocks
+  # Don't break the indentation.
+  
+  while ( $text =~ /(^.*?)(,[ ]*)(\/\/[^\n]*?\n|\n)([ ]*\n\s*)(.*?)$/s ){
+
+    my $before = $1 . $2 . $3;
+    my $spaces = $4;
+    my $after  = $5;
+
+    $spaces =~ s/^.*\n//g; 
+    $text = $before . $spaces . $after;
+  }
   
   my $sep = "x8o8A8newline";
   $text =~ s/(\n[ \t]*\n)/$1$sep/g;

@@ -360,6 +360,19 @@
   )
 
 
+(defun insert-brackets ()
+  (interactive)
+  (insert "\[\]")
+  (backward-char 1)
+  )
+
+(defun insert-semicolon-and-newline ()
+  (interactive)
+  (end-of-line)
+  (insert ";\n")
+  (indent-according-to-mode)
+  )
+
 ;; When in X, enable mouse wheel
 (defun mwheel-up () (interactive) (scroll-up 1))
 (defun mwheel-down () (interactive) (scroll-down 1))
@@ -424,6 +437,8 @@
 (global-set-key [(meta v)] 'revert-buffer)
 (global-set-key [(meta return)] 'new-line-and-indent)
 (global-set-key [(meta l)] 'align-repeat)
+(local-set-key [(meta \[)] 'insert-brackets)
+(global-set-key [(meta \;)] 'insert-semicolon-and-newline)
 
 ;; terminal keys
 ;(global-set-key "\e[7~" 'beginning-of-line)

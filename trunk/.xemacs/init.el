@@ -63,6 +63,9 @@
 ; switch buffers
 (load-library "wcy-swbuff")
 
+; turn on spelling for source code 
+(flyspell-prog-mode)
+
 ;;auto-insert stuff
 (add-hook 'find-file-hooks 'auto-insert)
 (setq auto-insert-directory "~/.xemacs/")

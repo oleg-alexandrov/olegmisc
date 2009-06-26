@@ -1,7 +1,9 @@
-;;; c++-my.el ---
+; c++-my.el
 
+(flyspell-prog-mode)      ; turn on `flyspell-mode' for comments and strings
 (c-toggle-hungry-state 1) ; delete space hungrily
-(pending-delete-mode 1) ; delete selected text when any character is touched
+(pending-delete-mode 1)   ; delete selected text when any character is touched
+
 (defun c++-if ()
   (interactive)
   (save-excursion
@@ -317,11 +319,11 @@ exist, try replacing 'src' with 'include' and vice-versa"
   (let ((cur-file (buffer-file-name) ))
 
     (if (string-match "\\.cpp$" cur-file)
-        (let ((command (concat "~/.xemacs/update_header.pl " cur-file " " (swap-cpp-h cur-file)) ))
+        (let ((command (concat "~/.xemacs/update_header.pl " cur-file " "
+                               (swap-cpp-h cur-file)) ))
           (shell-command command)
           )
       )
-    
     )
   )
 
