@@ -12,7 +12,8 @@ my $lines=<FILE>;
 close(FILE); 
 
 my $send_to;
-if ( $lines =~ /\#begin.*?\n.*?(To.*?)\n\#end/s ){
+my $beg_tag = "#begin";
+if ( $lines =~ /\Q$beg_tag\E.*?\n.*?(To.*?)\n\#end/s ){
   $send_to = $1;
   print "Will send mail to $send_to\n";
 }else{
@@ -29,6 +30,8 @@ my $rem;
 foreach (@rems) {
   $rem=$_; # store this
 
+  next if ($rem =~ /\Q$beg_tag\E/);
+
   s/\#.*?\n/\n/g;
   s/\#.*?$/\n/g;
   s/^\s*//g;
@@ -42,6 +45,9 @@ foreach (@rems) {
   $date=&format_date($date); # put the date in standard format
   
   if ($date eq $curdate) {
+
+    print "Will send reminder today\n";
+    print "$rem\n";
 
     $message = $message . "\n";
     $message =~ /(^.*?)\n(.*?$)/sg;
