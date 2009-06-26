@@ -19,6 +19,7 @@ sub indent_block {
       
       if ($line !~ /^(.*?\()/){
 	print "Error, can't match start of function\n";
+        print "$block\n";
         return $block;
       }
       
