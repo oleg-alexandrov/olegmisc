@@ -9,7 +9,6 @@ set wrap nowrap
 :set nocompatible
 :set ignorecase
 :set wrap nowrap
-":set paste
 
 :colorscheme desert
 
@@ -36,15 +35,21 @@ noremap <C-Home> <Esc>1gg
 map  <C-F> <Esc>/
 imap <C-F> <Esc>/
 
-" Quit with Control-Q
-map <C-Q> <Esc>:q<CR>
+" Save and quit with Control-S and Control-Q
+" For this to work need to first insert
+" stty stop undef # control s
+" stty start undef # control q
+" in .bashrc
+map  <C-S> <Esc>:wq<CR>
+imap <C-S> <Esc>:wq<CR>
+map  <C-Q> <Esc>:q<CR>
 imap <C-Q> <Esc>:q<CR>
 
-" Save and quit with Control-S
-map <C-S> <Esc>:wq<CR>
-imap <C-S> <Esc>:wq<CR>
-
 imap <C-v> <Esc>l<C-v>
+
+" Insert a comment with control-C
+map  <C-C> <Esc><Home>i#<Esc>
+imap <C-C> <Esc><Home>i#<Esc>
 
 cabbrev W  w
 cabbrev Q  q

@@ -141,8 +141,8 @@ Key F12   A   N   Close
 Key F11   A   N   Iconify
 
 # arrow + control anywhere => scroll by a page
-Key Left  A   C   Scroll -100 0
-Key Right A   C   Scroll +100 +0
+Key Left  A   C   Scroll -100    0
+Key Right A   C   Scroll +100   +0
 Key Up    A   C   Scroll +0   -100
 Key Down  A   C   Scroll +0   +100
 # Key Left  A   C Module FvwmPager -transient
@@ -150,6 +150,12 @@ Key Down  A   C   Scroll +0   +100
 # Key Up    A   C Module FvwmPager -transient
 # Key Down  A   C Module FvwmPager -transient
 
+# Use the left windows key for moving the cursor  
+# Put this in .bashrc: xmodmap -e  "add mod3 = Super_L"
+Key Left   A   3   CursorMove -50 +0
+Key Right  A   3   CursorMove +50 +0
+Key Up     A   3   CursorMove +0 -50
+Key Down   A   3   CursorMove +0 +50
 
 # arrow + shift + meta => move pointer by 1/10 of a page
 Key Left   A   SM   CursorMove -50 +0
