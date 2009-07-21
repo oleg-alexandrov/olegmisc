@@ -5,6 +5,10 @@ undef $/;          # read one whole file in one scalar
 
 MAIN:{
   
+  if (scalar(@ARGV) < 2){
+    print "Usage: $0 \n";
+    exit(0);
+  }
   
   
 }

@@ -439,7 +439,7 @@
 (global-set-key [(meta l)] 'align-repeat)
 (local-set-key [(meta \[)] 'insert-brackets)
 (global-set-key [(meta \;)] 'insert-semicolon-and-newline)
-
+(global-set-key [(meta o)] 'switch-to-buffer)
 ;; terminal keys
 ;(global-set-key "\e[7~" 'beginning-of-line)
 ;(global-set-key "\e[8~" 'end-of-line)
