@@ -71,7 +71,7 @@
     (setq empty (looking-at "[ ]*[\t]*[ ]*$")))
   (if (not empty)
       (insert "foreach ")
-    (insert "foreach (){")
+    (insert "foreach  (){")
     (cperl-indent-command)
     (insert "\n")
     (cperl-indent-command)
@@ -79,6 +79,7 @@
     (cperl-indent-command)
     (previous-line 2)
     (search-forward "(" nil t)
+    (backward-char 2)
     ))
 
 (defun perl-for ()
@@ -166,3 +167,4 @@
 (local-set-key [(right)] 'smart-forward)
 (local-set-key [(space)] 'smart-space)
 (local-set-key [(return)] 'reindent-then-newline-and-indent)
+(local-set-key [(meta \;)] 'insert-semicolon-and-newline)
