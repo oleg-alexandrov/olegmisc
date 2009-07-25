@@ -1,3 +1,14 @@
+(require 'ido)
+(ido-mode t)
+(setq ido-confirm-unique-completion t)
+(setq ido-default-buffer-method 'samewindow)
+(setq ido-use-filename-at-point t)
+(ido-mode t)
+
+;(set-face-background 'ido-first-match "white")
+;(set-face-foreground 'ido-subdir "blue3")
+(icomplete-mode 1)
+
 ;;bind keyboard-escape-quit to a sequence of 2 escapes instead of 3 of them.
 (when (console-on-window-system-p)
   (global-set-key '(meta escape) 'keyboard-escape-quit)
@@ -439,7 +450,7 @@
 (global-set-key [(meta l)] 'align-repeat)
 (local-set-key [(meta \[)] 'insert-brackets)
 (global-set-key [(meta \;)] 'insert-semicolon-and-newline)
-(global-set-key [(meta o)] 'switch-to-buffer)
+(global-set-key [(meta o)] 'iswitchb-buffer)
 ;; terminal keys
 ;(global-set-key "\e[7~" 'beginning-of-line)
 ;(global-set-key "\e[8~" 'end-of-line)
