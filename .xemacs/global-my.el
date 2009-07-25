@@ -413,7 +413,7 @@
 (global-set-key [(control meta a)] 'define-mode-abbrev)
 ;(global-set-key [(control meta left)] 'gse-bury-buffer)
 ;(global-set-key [(control meta right)] 'gse-unbury-buffer)
-(global-set-key [(control o)] 'find-file) ; open a file or create a new file with Control-o
+(global-set-key [(control o)] 'ido-find-file) ; open a file or create a new file with Control-o
 (global-set-key [(control r)]  'query-replace)
 (global-set-key [(control s)] 'save-buffer) ; save with Control-s
 (global-set-key [(control space)] 'jump-and-insert-space)
@@ -450,7 +450,7 @@
 (global-set-key [(meta l)] 'align-repeat)
 (local-set-key [(meta \[)] 'insert-brackets)
 (global-set-key [(meta \;)] 'insert-semicolon-and-newline)
-(global-set-key [(meta o)] 'iswitchb-buffer)
+(global-set-key [(meta o)] 'ido-switch-buffer)
 ;; terminal keys
 ;(global-set-key "\e[7~" 'beginning-of-line)
 ;(global-set-key "\e[8~" 'end-of-line)
