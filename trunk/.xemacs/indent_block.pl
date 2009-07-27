@@ -12,20 +12,15 @@ sub indent_block {
   my @lines = split("\n", $block);
   my $line;
   
-  my $is_first_line = 1;
+  my $is_first_paren_line = 1;
   foreach $line ( @lines ){
     
-    if ($is_first_line == 1){
-      
-      if ($line !~ /^(.*?\()/){
-	print "Error, can't match start of function\n";
-        print "$block\n";
-        return $block;
-      }
+    if ($line =~ /^(.*?\()/ && $is_first_paren_line == 1){
       
       $indent_spaces = " " x length($1);
-      $is_first_line = 0;
+      $is_first_paren_line = 0;
       next;
+      
     }
     
     $line =~ s/^\s*//g;
