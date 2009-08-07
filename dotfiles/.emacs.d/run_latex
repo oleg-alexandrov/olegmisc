@@ -1,0 +1,5 @@
+#!/bin/bash
+
+export TEXINPUTS=$TEXINPUTS:$HOME/libraries/prosper:$HOME/libraries/foils:$HOME/libraries/grant_texfiles:$HOME/libraries/prosper/img
+
+latex $*
