@@ -1,0 +1,78 @@
+;(setq fortran90-comment-indent-style 'relative)
+;(setq fortran90-continuation-string "*")
+;(setq fortran90-comment-region "c")
+
+;(defun fortran90-do ()
+;  (interactive)
+;  (save-excursion
+;    (beginning-of-line)
+;    (setq exp_ab (looking-at "[ ]*$")))
+;  (if (not exp_ab)
+;      (insert "do ")
+;    (insert "do ")
+;    (f90-indent-line)
+;    (insert "\nenddo")
+;    (f90-indent-line)
+;    (previous-line 1)
+;    (end-of-line)
+;    ))
+
+;(defun fortran90-if ()
+;  (interactive)
+;  (save-excursion
+;    (beginning-of-line)
+;    (setq exp_ab (looking-at "[ ]*$")))
+;  (if (not exp_ab)
+;      (insert "if ")
+;    (insert "if () then ")
+;    (f90-indent-line)
+;    (insert "\nendif")
+;    (f90-indent-line)
+;    (previous-line 1)
+;    (backward-char 1)
+;    ))
+
+
+;(defun fortran90-kill-line ()
+;        (interactive)
+;        (kill-line)
+;        (f90-indent-line)
+;)
+
+;;(defun fortran90-uncomment-region ()
+;;  (interactive)
+;;  (comment-region (mark) (-(point) 1) -1)
+;;  )
+
+;(defun smart-space ()
+;  (interactive)
+;  (if (not (expand-abbrev))
+;      (insert " ")
+;    )
+;  )
+
+
+;(defun my-xxx-uncomment-region  ()
+;  "the default function does a lousy job"
+;  (interactive)
+;(comment-region (min (mark) (point)) (max (mark) (point)) -1)
+;(narrow-to-region (mark) (point))
+;  (goto-char (min (mark) (point)))
+;  (while (re-search-forward "^[ \t]*!" nil t) (replace-match " "))
+;(widen)
+;;;  (indent-relative)
+;  (call-interactively 'indent-region)
+;;  (goto-char (mark))
+;  )
+
+
+;(local-set-key [(control return)] 'fortran90-split-line)
+;(local-set-key [(meta z)] 'redo)
+;(local-set-key [(control k)] 'fortran90-kill-line)
+;(local-set-key [(meta c)] 'comment-region)
+;(local-set-key [(meta u)] 'my-f90-uncomment-region)
+;(local-set-key [(space)] 'smart-space)
+;(local-set-key [(meta ?9)] 'my-insert-parantheses)
+
+(local-set-key [(meta backspace)] 'backward-kill-word)
+(local-set-key [(return)] 'reindent-then-newline-and-indent)
