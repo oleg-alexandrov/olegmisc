@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 use strict;		      # 'strict' insists that all variables be declared
 use diagnostics;	      # 'diagnostics' expands the cryptic warnings
+use POSIX;
 undef $/; # undefines the separator. Can read one whole file in one scalar.
 
 # Scale a polygon by a given amount
@@ -19,7 +20,7 @@ MAIN: {
   my $text = <FILE>; 
   close(FILE);
 
-  $text =~ s/\b(\d+)\b/$scale*$1/ges;
+  $text =~ s/(^|\n)([ \t]*)([\-\+\.\d]+)([ \t]+)([\-\+\.\d]+)/$1 . $2 . floor($scale*$3+0.5) . $4 . floor($scale*$5+0.5)/ge;
 
   open(FILE, ">$out_xg");
   print FILE "$text";

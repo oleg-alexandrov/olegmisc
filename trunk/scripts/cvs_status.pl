@@ -16,10 +16,7 @@ MAIN: {
   $user =~ s/\/$//g;
   $user =~ s/^.*\///g;
 
-  # Make path relative by stripping everyting before user name
-  $pwd =~ s/^.*?$user\///g;
-  
-  my @lines = split("===", <>);
+  my @lines = split("===", `cvs status`);
   
   my ($line, $file, $status, @files, @stats, $file_len);
 
@@ -38,8 +35,11 @@ MAIN: {
     $file = $1;
 
     # Make file path relative
-    $file =~ s/^.*?\Q$pwd\E\/?//g;
-    
+    $file =~ s/^.*?(matlabRD|doc_plan|dev)\///g;
+
+    # Strip some other odd markup
+    $file =~ s/Attic\///g;
+        
     push(@files, $file);
     push(@stats, $status);
 
@@ -55,11 +55,36 @@ MAIN: {
 
     $status = $stats[$counter]; $counter++;
 
-    # pad with spaces
+    $file = &make_local_to_cur_dir($pwd, $file);
+    
+    # pad with spaces after the file name
     $file = $file . " " x ($file_len - length($file));
-    
+
     print "File: $file $status\n";
-    
   }
 
+}
+
+sub make_local_to_cur_dir {
+
+  # if pwd is /lan/sso/grp_apsae_work01/olegalex/mpc/dev/modellib/libacusip/
+  # and file name is modellib/libacusip/src/acusipepc.h
+  # transform the file name into src/acusipepc.h
+
+  my $pwd  = shift;
+  my $file = shift;
+
+  my $pwd_len = length($pwd);
+
+  for (my $i = 0 ; $i < $pwd_len;  $i++){
+    
+    my $fragment = substr $pwd, $i;
+
+    if ($file =~ /^\Q$fragment\E(.*?)$/){
+      $file = $1;
+      return $file;
+    }
+  }
+
+  return $file;
 }
