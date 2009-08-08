@@ -360,6 +360,7 @@ exist, try replacing 'src' with 'include' and vice-versa"
 (local-set-key [("\M-t")] 'toggle-cpp-h)
 ;(local-set-key [(meta h)] 'update-header-file)
 (local-set-key [(control return)] 'c++-break-line)
+(local-set-key [(delete)] 'c-electric-delete-forward)
 
 (global-unset-key [("\M- ")])
 (global-set-key [("\M- ")] 'dabbrev-expand)
