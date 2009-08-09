@@ -2,7 +2,8 @@ function! ToggleTrueFalse()
 
 python << EOF
 
-# Replace 'true' with 'false' and vice-versa
+# Replace 'true' with 'false' and vice-versa (this is useful in
+# editing configuratin files).
 
 import vim
 import re
