@@ -2,7 +2,7 @@
 
 set wrap nowrap
 
-:set textwidth=65
+:set textwidth=10000 " don't break long lines
 :set hls
 :set incsearch
 :set autoindent
@@ -59,6 +59,9 @@ cabbrev nw set wrap nowrap
 cabbrev dw set nowrap wrap 
 cabbrev sp set paste
 cabbrev np set nopaste
+
+cabbrev tf s/true/false/
+cabbrev ft s/false/true/
 
 ab st set shared::job::dbgTrackKaroList                      {0}
 
