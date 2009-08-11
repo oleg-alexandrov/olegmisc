@@ -1,0 +1,33 @@
+#!/usr/bin/perl
+use strict;	   # insist that all variables be declared
+use diagnostics;   # expand the cryptic warnings
+undef $/;          # read one whole file in one scalar
+
+MAIN:{
+  
+  if (scalar(@ARGV) < 3){
+    print "Usage: $0 param val file\n";
+    exit(0);
+  }
+
+  my $param = $ARGV[0];
+  my $val   = $ARGV[1];
+  my $file  = $ARGV[2];
+
+  open(FILE, "<$file");
+  my $text = <FILE>;
+  close(FILE);
+  
+  my @lines = split("\n", $text);
+  foreach my $line (@lines){
+    next unless ($line =~ /^(.*?$param.*?\s+)(.*?)$/i);
+    $line = $1 . $val;
+    print "$line\n";
+ }
+
+  $text = join("\n", @lines);
+  open(FILE, ">$file");
+  print FILE $text;
+  close(FILE);
+  
+}
