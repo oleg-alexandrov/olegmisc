@@ -17,15 +17,14 @@ MAIN: {
 
   my ($id, $message_file, $pause, $message);
   my ($output, $success, $folder, @folders, $done_file, %Done_hash, $line, $mailbox);
-  my (@mails);
+  my (@mails, $debugMode);
 
-  if ( $#ARGV < 0 ){
-    print "Usage: $0 MailFolder\n";
+  if ( scalar(@ARGV) < 2 ){
+    print "Usage: $0 MailFolder debugMode\n";
     exit(0);
   }
-  $folder = $ARGV[0];
-
-  my $do_debug = 0; # 1 for debugging, 0 for actual work
+  $folder    = $ARGV[0];
+  $debugMode = $ARGV[1]; # 1 for debugging, 0 for actual work
   
   $message_file = 'Message_file';  # save here a message before calling the forwarding program
   $done_file = 'Sent_to_gmail.txt'; # Store message ids of mail forwarded earlier
@@ -50,7 +49,7 @@ MAIN: {
     
     $message = &process_message($message);
     
-    if ( !$do_debug ){
+    if ( !$debugMode ){
       # Forward with procmail
       &send_message_to_gmail_via_procmail($message);
       $success = 1;
@@ -61,23 +60,23 @@ MAIN: {
       
       print "Sleep for $pause seconds\n\n\n"; 
       sleep $pause;
-      
     }
-    
-  }
 
-  if ($do_debug ){ # debug
-    
+  } # end loop
+
+  # If in debug mode just write the processed messages to disk
+  if ($debugMode){ # debug
+
     # this will show what processing the messages underwent before being sent
-    my $outfile = "ProcessedMessages";
-    print "Writing processed messages to $outfile\n";
-    open(FILE, ">$outfile");
-    print FILE join ("\n", @mails); # I don't know why "\n" is necessary here
-    print FILE "\n";
-    close(FILE);
+     my $outfile = "ProcessedMessages";
+     print "Writing processed messages to $outfile\n";
+     open(FILE, ">$outfile");
+     print FILE join ("\n", @mails); # I don't know why "\n" is necessary here
+     print FILE "\n";
+     close(FILE);
   }
-}
 
+}
 
 sub send_message_to_gmail_via_procmail {
 
@@ -92,7 +91,7 @@ sub send_message_to_gmail_via_procmail {
 
   $procmailrc_file = $ENV{HOME} . '/gmail_procmailrc';
   if (!-e $procmailrc_file){
-    print "Error! $procmailrc_file does not exist!!! Exiting.\n";
+    print "Error! $procmailrc_file does not exist. Exiting.\n";
     exit(0);
   }
   
