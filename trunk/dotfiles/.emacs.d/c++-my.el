@@ -73,6 +73,8 @@
   (interactive)
   (if (= smart_equal_flag 0)
       (insert "=")
+
+    (setq smart_equal_flag 0)
     (insert " =")
     (forward-char 1)
     (save-excursion
@@ -364,3 +366,5 @@ exist, try replacing 'src' with 'include' and vice-versa"
 
 (global-unset-key [("\M- ")])
 (global-set-key [("\M- ")] 'dabbrev-expand)
+(local-set-key (kbd "SPC") 'smart-space)
+(local-set-key (kbd "C-SPC") 'smart-space)
