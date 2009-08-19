@@ -1,13 +1,19 @@
-(require 'ido)
-(ido-mode t)
-(setq ido-confirm-unique-completion t)
-(setq ido-default-buffer-method 'samewindow)
-(setq ido-use-filename-at-point t)
-(ido-mode t)
+(defun isearch-set-initial-string ()
+  (remove-hook 'isearch-mode-hook 'isearch-set-initial-string)
+  (setq isearch-string isearch-initial-string)
+  (isearch-search-and-update))
 
-;(set-face-background 'ido-first-match "white")
-;(set-face-foreground 'ido-subdir "blue3")
-(icomplete-mode 1)
+(defun isearch-forward-at-point (&optional regexp-p no-recursive-edit)
+  "Interactive search forward for the symbol at point."
+  (interactive "P\np")
+  (if regexp-p (isearch-forward regexp-p no-recursive-edit)
+    (let* ((end (progn (skip-syntax-forward "w_") (point)))
+           (begin (progn (skip-syntax-backward "w_") (point))))
+      (if (eq begin end)
+          (isearch-forward regexp-p no-recursive-edit)
+        (setq isearch-initial-string (buffer-substring begin end))
+        (add-hook 'isearch-mode-hook 'isearch-set-initial-string)
+        (isearch-forward regexp-p no-recursive-edit)))))
 
 ;;bind keyboard-escape-quit to a sequence of 2 escapes instead of 3 of them.
 (when (console-on-window-system-p)
@@ -99,7 +105,6 @@
   (backward-char 1)
   )
 
-
 ;; Rearrange the modeline so that everything is to the left of the
 ;; long list of minor modes, which is relatively unimportant but takes
 ;; up so much room that anything to the right is obliterated.
@@ -133,8 +138,8 @@
 (setq filladapt-mode-line-string "")
 ;; lazy-lock doesn't have a variable for its modeline name, so we have
 ;; to do a bit of surgery.
-(and (assoc 'lazy-lock-mode minor-mode-alist)
-     (setcdr (cdr (cadr (assoc 'lazy-lock-mode minor-mode-alist))) ""))
+;(and (assoc 'lazy-lock-mode minor-mode-alist)
+;     (setcdr (cdr (cadr (assoc 'lazy-lock-mode minor-mode-alist))) ""))
 
 (defun un-comment-region ()
   (interactive)
@@ -406,16 +411,14 @@
 (global-set-key [(control backspace)] 'backward-kill-line)
 (global-set-key [(control delete)] 'kill-line)
 (global-set-key [(control j)] 'my-fill-paragraph-or-region)
-(global-set-key (kbd "LFD") 'my-fill-paragraph-or-region)
-    
 (global-set-key [(control k)] 'kill-all-line)
 (global-set-key [(control l)] 'load-file)
 (global-set-key [(control meta a)] 'define-mode-abbrev)
 ;(global-set-key [(control meta left)] 'gse-bury-buffer)
 ;(global-set-key [(control meta right)] 'gse-unbury-buffer)
-(global-set-key [(control o)] 'ido-find-file) ; open a file or create a new file with Control-o
+(global-set-key [(control o)] 'find-file) 
 (global-set-key [(control r)]  'query-replace)
-(global-set-key [(control s)] 'save-buffer) ; save with Control-s
+(global-set-key [(control s)] 'save-buffer)
 (global-set-key [(control space)] 'jump-and-insert-space)
 (global-set-key [(control u)] 'yank)
 (global-set-key [(control x) (control d)] 'my-dummy-function)
@@ -450,11 +453,12 @@
 (global-set-key [(meta l)] 'align-repeat)
 (local-set-key [(meta \[)] 'insert-brackets)
 (global-set-key [(meta \;)] 'insert-semicolon-and-newline)
-(global-set-key [(meta o)] 'ido-switch-buffer)
+(global-set-key [(meta o)] 'iswitchb-buffer)
 ;; terminal keys
 ;(global-set-key "\e[7~" 'beginning-of-line)
 ;(global-set-key "\e[8~" 'end-of-line)
 
+(global-set-key [(control \8)] 'isearch-forward-at-point)
 
 ; A first attempt to make "control z" work as undo. 
 (global-set-key [(control z)] 'undo)

@@ -17,8 +17,6 @@
   (backward-char 4)
   )
 
-
-
 (defun perl-if ()
   (interactive)
   (save-excursion
@@ -168,3 +166,4 @@
 (local-set-key [(space)] 'smart-space)
 (local-set-key [(return)] 'reindent-then-newline-and-indent)
 (local-set-key [(meta \;)] 'insert-semicolon-and-newline)
+
