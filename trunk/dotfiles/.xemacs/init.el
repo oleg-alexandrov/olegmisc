@@ -5,6 +5,8 @@
 
 (fset 'yes-or-no-p 'y-or-n-p)  ;; Make all "yes or no" prompts show "y or n" instead
 
+(font-lock-mode 1)
+
 ;;start gnuserv.
 (gnuserv-start)
 
@@ -25,11 +27,10 @@
 ;;autosave
 (setq auto-save-directory "~/.xemacs/")
 
-;;load the redo package
+;load the redo package
 (require 'redo)
 
-
-;;Saves a history of commands used previously (including other times XEmacs was used). 
+;Saves a history of commands used previously (including other times XEmacs was used). 
 (require `savehist)
 (setq savehist-file "~/.xemacs/history")
 (setq savehist-length 1000)
@@ -41,9 +42,9 @@
 (setq shadow-todo-file "~/.xemacs/shadow-todo")
 
 ;; my toolbar with gnome icons
-(load-library "toolbar-my")
+;(load-library "toolbar-my")
 
-;;my abbreviations
+;; abbreviations
 (setq abbrev-file-name "~/.xemacs/abbreviations-my.el")
 (if (file-readable-p abbrev-file-name)
     (read-abbrev-file abbrev-file-name))
@@ -57,14 +58,32 @@
 ; to automatically remove annoying ^M from end of windows files. But this slows things down a bit
 ;;(add-hook 'find-file-hooks 'dos-to-unix) 
 
-(load-library "pc-select")
-(pc-select-mode)
-
 ; switch buffers
-(load-library "wcy-swbuff")
+(setq iswitchb-buffer-ignore '("^ " "^\\*"))
+(setq iswitchb-default-method 'samewindow)
+(require 'edmacro)
+(defun iswitchb-local-keys ()
+  (mapc (lambda (K) 
+          (let* ((key (car K)) (fun (cdr K)))
+            (define-key iswitchb-mode-map (edmacro-parse-keys key) fun)))
+        '(("<right>" . iswitchb-next-match)
+          ("<left>"  . iswitchb-prev-match)
+          ("<up>"    . ignore             )
+          ("<down>"  . ignore             ))))
+(add-hook 'iswitchb-define-mode-map-hook 'iswitchb-local-keys)
+
+; (require 'ido)
+; (ido-mode t)
+; (setq ido-confirm-unique-completion t)
+; (setq ido-default-buffer-method 'samewindow)
+; (setq ido-use-filename-at-point t)
+; (ido-mode t)
+; (set-face-background 'ido-first-match "white")
+; (set-face-foreground 'ido-subdir "blue3")
+; (icomplete-mode 1)
 
 ; turn on spelling for source code 
-;(flyspell-prog-mode)
+(flyspell-prog-mode)
 
 ;;auto-insert stuff
 (add-hook 'find-file-hooks 'auto-insert)
@@ -146,7 +165,7 @@
 
 
 ;TeX
-(require 'tex-site)
+;(require 'tex-site)
 (add-hook 'LaTeX-mode-hook 
 	  '(lambda()
 	     ;; LaTeX toolbar
@@ -205,3 +224,4 @@
 ;; never indent using tabs
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 8)
+
