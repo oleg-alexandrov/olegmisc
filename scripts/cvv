@@ -22,12 +22,13 @@ MAIN:{
   foreach my $line (@lines){
     next unless ($line =~ /^(.*?$param.*?\s+)(.*?)$/i);
     $line = $1 . $val;
+    $line =~ s/^\s*#\s*/ /g;
     print "$line\n";
  }
 
   $text = join("\n", @lines);
   open(FILE, ">$file");
-  print FILE $text;
+  print FILE $text . "\n";
   close(FILE);
   
 }

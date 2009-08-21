@@ -75,13 +75,14 @@ sub parse_cpp {
 
     $block =~ s/\/\*.*?\*\///sg; # get rid of C-style comments
 
-    # Will match things like: void  *  myname::myfun ( double x, double y){
-    next unless ( $block =~ /(\w+[\s\*\&]+\w+\:\:\w+)\s*(\(.*?\))\s*\{/s );
+    # Will match things like: void  *  myname::myfun ( double x, double y) const{
+    next unless ( $block =~ /(\w+[\s\*\&]+\w+\:\:\w+)\s*(\(.*?\)\s*\w*\s*)\{/s );
 
     my $key = $1;
-    
     my $fun = $1 . $2 . ";\n\n";
 
+    $fun =~ s/\s*;/;/g;
+    
     # rm namespace from fun declaration
     $key =~ s/(\w+::)//;  
     $key =~ s/\s+/ /g;
@@ -117,27 +118,47 @@ sub parse_h {
 
     $block =~ s/\/\*.*?\*\///sg; # get rid of C-style comments
 
+    my $is_static = ($block =~ /^\s*static\s+/);
+
+    # Strip the static keyword for now
+    my $static = "";
+    if ($is_static){
+      $block =~ s/^(\s*static\s+)//g;
+      $static = $1;
+    }
+    
     # match things like: void  *  myfun ( double x, double y){
-    next unless ( $block =~ /(\w+[\s\*\&]+[\w]+)(\s*\(.*\))/s );
-
-    $key = $1;
-    $key =~ s/\s+/ /g;
-
+    if  ( $block =~ /(\w+[\s\*\&]+[\w]+)(\s*\(.*\))/s ){
+      $key = $1;
+      $key =~ s/\s+/ /g;
+    }else{
+      # no match, put back the static and go on to the next block
+      $block = $static . $block;
+      next;
+    }
+    
+    $block = $static . $block;
+    
     # We'll need this map later
     $h_map{$key} = $block; 
     
-    # Ignore functions with preset params (having the equal sign somehwere)
-    next unless (exists $cpp_map->{$key} && $block !~ /=/);
-
-    # Ignore static functions
-    next unless (exists $cpp_map->{$key} && $block !~ /\bstatic\b/);
+    # Skip functions not having a match in the cpp file
+    next unless (exists $cpp_map->{$key});
     
+    # Ignore functions with preset params (having the equal sign somehwere)
+    next if ($block =~ /=/);
+
     # Overwrite a .h entry with the corresponding .cpp entry.
 
     #print "overwriting: $block\n";
     #print "with $cpp_map->{$key}\n";
     
     $block = $cpp_map->{$key};
+
+    # Put back the static keyword
+    if ($is_static){
+      $block = "static " . $block;
+    }
     
     # rm the namespace and indent
     $block =~ s/(\w+::)(\w+\s*\()/$2/;
@@ -176,7 +197,6 @@ sub parse_h {
 
   # Append the new blocks under the very last private:
   if ($new_chunk !~ /^\s*$/){
-
     $text =~ s/^(.*private:\s*)(.*?)$/$1$new_chunk$2/sg;
   }
 
