@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- Created with XEmacs -->
+<head>
+  <title>
+    The XEmacs start-up file
+  </title>
+  <link rel="stylesheet" href="styles.css" type="text/css" />
+  <link href="xemacs.png" rel="icon" type="image/png"/>
+  <meta name="Author" content="Oleg Alexandrov aoleg@math.umn.edu" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="description" content="XEmacs tips, XEmacs tutorial,
+   Customizing XEmacs, Xemacs customization, init.el, XEmacs start-up file, 
+  Xemacs preferences" />
+</head>
+<body text="#000000" bgcolor="#ffffff">
+<center><h1>The XEmacs start-up files</h1></center>
+
+<p> Every time XEmacs starts, it looks up the directory
+<i>.xemacs</i> (yes, that's "dot xemacs") in your home directory, and
+reads from there the file called <i>init.el</i>. It is in this file
+that  the XEmacs-related preferences are to be stored*.  To open the file <i>init.el</i>,
+or to create it if it does not exist, one can choose from the menu on the top of the XEmacs window
+<b>Options -> Edit Init File</b>.
+
+<p> After adding there a lot of your preferences, the file
+<i>init.el</i> becomes huge and messy. To keep that from happening it is
+better to store the preferences in several other files (for instance
+all the XEmacs preferences related to editing LaTeX documents in one
+file, the preferences related to writing matlab programs in another
+file, etc). But then one needs to tell XEmacs to read those files too,
+in addition to <i>init.el</i>. How to to that will be explained in every one
+of the tips.
+
+<p> XEmacs expects certain preferences to be stored in a file called <i>custom.el</i> 
+in the directory <i>.xemacs*</i>. It will be mentioned when that is
+the case.
+
+<p> 
+*Note for
+users of XEmacs prior to version 21.4: your XEmacs uses the file
+<i>.emacs</i> located in your home directory instead of <i>init.el</i>
+and <i>custom.el</i>.
+
+<hr />
+
+<table width="100%">
+<tr>
+<td align="left" width="20%">
+<a href="index">
+<img src="back.gif" border="0" alt="Back: " />XEmacs tips</a>
+</td>
+<td align="center"  width="20%">
+<a href="mailto:aoleg@math.umn.edu">aoleg@math.umn.edu</a>
+</td>
+
+<td align="center" width="15%">
+<a href="http://www.xemacs.org">
+<img src="cbxSmall.jpg" border="0" alt="Created with XEmacs" /></a>
+</td>
+
+
+<td align="center" width="15%">
+</td>
+
+<td align="right">
+Updated: July 03, 2004</td>
+</tr>
+</table>
+
+</body>
+</html>

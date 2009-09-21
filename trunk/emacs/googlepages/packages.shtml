@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- Created with XEmacs -->
+<head>
+  <title>
+    Enabling useful XEmacs packages
+  </title>
+  <link rel="stylesheet" href="styles.css" type="text/css" />
+  <link href="xemacs.png" rel="icon" type="image/png"/>
+  <meta name="Author" content="Oleg Alexandrov aoleg@math.umn.edu" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="description" content="XEmacs tips, XEmacs tutorial,
+   Customizing XEmacs, Xemacs customization" />
+</head>
+
+<body text="#000000" bgcolor="#ffffff"> 
+
+<center> <h1>Enabling useful XEmacs constants and packages</h1></center>
+
+First, lets deal with the constants. Insert the following in <i><a
+href="startup">custom.el</a></i> (any line you don't want can be
+commented out by inserting a semicolon, that is, the sign "<span
+class="comment">&nbsp;;&nbsp;</span>" before that line).
+
+<p>
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre>(custom-set-variables               <span class="comment">; only one entry with this name must exist in custom.el</span>
+ '(delete-key-deletes-forward t)    <span class="comment">; make the delete key delete the next character (as expected)</span>
+ '(line-number-mode t)              <span class="comment">; show the line and column number of the cursor in the ...</span>
+ '(column-number-mode t)            <span class="comment">; ... lower part of the screen (very useful)</span>
+ '(make-backup-files nil)           <span class="comment">; do not make back-up files (they just trash the directories)</span>
+ '(visible-bell t)                  <span class="comment">; flash the screen instead of beeping (which can be annoying)</span>
+ '(mouse-yank-at-point t)           <span class="comment">; paste where the cursor is, and not where the mouse clicks in</span>
+ '(user-mail-address &quot;<span class="string">my@email</span>&quot; t)  <span class="comment">; your e-mail address (otherwise XEmacs will nag)</span>
+ '(query-user-mail-address nil)     <span class="comment">; don't ask what my e-mail address is all the time</span>
+)                                   <span class="comment">; don't miss this closing parenthesis!</span></pre>
+</td></tr></table>
+
+<p> Check whether <i><a href="startup">custom.el</a></i> already
+has an entry called <i>custom-set-variables.</i> (That is by the way a
+<i>hash,</i> a collection of variables grouped together, each having
+its own value.) If so, append the lines above which start with the quoted
+parenthesis <span class="ltxcode">'(</span> to that hash, or just
+replace some or all of them. And don't forget that the hash has a
+closing parenthesis. For these preferences to take effect, XEmacs must be <i>restarted</i>.
+
+<p> Many preferences can also be tweaked through the <b>Options</b>
+menu at the top of the XEmacs window.  Don't forget to save the
+changes, for example by clicking on <b>Options -> Save Options</b>.
+
+<p>Next, let us make XEmacs load some packages every time it gets
+started. Insert the following in <i><a href="startup">init.el</a></i>
+
+<p>
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre><span class="comment">; Saves a history of files opened previously (including other times XEmacs was used - very useful)</span>
+(<span class="keyword">require</span> `savehist)
+(setq savehist-file &quot;<span class="doc-string">~/.xemacs/history</span>&quot;)
+(setq savehist-length 1000)
+(savehist-load)
+
+<span class="comment">; Saves the position the cursor was in a file before the file was closed.</span>
+(load-library &quot;<span class="doc-string">saveplace</span>&quot;)
+(setq save-place-file &quot;<span class="doc-string">~/.xemacs/places</span>&quot;)
+(setq shadow-todo-file &quot;<span class="doc-string">~/.xemacs/shadow-todo</span>&quot;)</pre>
+</td></tr></table>
+
+<p> This is how the history is to be used. Hit the command to open a
+file, which by default is <i>Ctrl-x Ctrl-f</i>, and which in the next
+tip will be changed to <i>Ctrl-o</i>.  Then use the <i>up-arrow</i>
+key on the keyboard to go through the history of the files opened
+previously. 
+
+<p> It is also possible to have a menu at the top of the XEmacs
+window, which, when clicked on, will show a list with the recently
+opened files.  For that one needs to use the package
+<i>mas-file-history</i> which can be downloaded <a
+href="http://www.hompo.co.jp/~mas/mas-file-history.tar.gz">here</a>
+(compressed as tar.gz) or <a href="mas-file-history.el">here</a>
+(uncompressed). (<b>Note:</b> I received reports that it does not work well on Microsoft Windows. 
+I contacted the author of the package, and hope that he/she will fix it). 
+One can save this package for instance as
+<i>mas-file-history.el</i> in the directory <i><a
+href="startup">.xemacs</a></i>. To use it insert in <i><a
+href="startup">init.el</a></i>
+
+<p>
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre>(load-file &quot;<span class="doc-string">~/.xemacs/mas-file-history.el</span>&quot;) <span class="comment">; creates a menu with a list of recently opened files</span>
+(setq mas-file-history-menu-path nil)       <span class="comment">; put the menu at the top of the XEmacs window</span>
+(setq mas-file-history-menu-title &quot;<span class="doc-string">History</span>&quot;)<span class="comment">; the name of the menu</span>
+(<span class="keyword">with-temp-buffer</span>)                          <span class="comment">; this hack seems to be necessary</span></pre>
+</td></tr></table>
+
+<p> To change some preferences for this package, click on
+<b>Options->Customize->Emacs->Files->File History</b>.  <p>
+
+<hr />
+
+<table width="100%">
+<tr>
+
+<td align="left" width="20%">
+<a href="index">
+<img src="back.gif" border="0" alt="Back: " />XEmacs tips</a>
+</td>
+
+<td align="center"  width="20%">
+<a href="mailto:aoleg@math.umn.edu">aoleg@math.umn.edu</a>
+</td>
+
+<td align="center" width="15%">
+<a href="http://www.xemacs.org">
+<img src="cbxSmall.jpg" border="0" alt="Created with XEmacs" /></a>
+</td>
+
+
+<td align="center" width="15%">
+</td>
+
+<td align="right">
+Updated: September 04, 2009</td>
+</tr>
+</table>
+
+</body>
+</html>
+

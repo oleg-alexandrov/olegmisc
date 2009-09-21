@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- Created with XEmacs -->
+<head>
+  <title>
+    Customizing the XEmacs Toolbar
+  </title>
+  <link rel="stylesheet" href="styles.css" type="text/css" />
+  <link href="xemacs.png" rel="icon" type="image/png"/>
+  <meta name="Author" content="Oleg Alexandrov aoleg@math.umn.edu" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="description" content="XEmacs tips, XEmacs tutorial,
+   Customizing XEmacs, Xemacs customization, xemacs toolbar" />
+</head>
+
+  <body text="#000000" bgcolor="#ffffff">
+    <center><h1>Customizing the XEmacs Toolbar</h1></center>
+
+I modified the XEmacs toolbar by changing the icons (I am using the
+KDE Crystal theme icons) and by adding the buttons which perform the
+<i>redo</i> and <i>search</i> functions, while removing some functions I never
+used, like <i>news</i> or <i>debug</i>. Here's the result.  <br /><br /> <img
+src="toolbar.jpg" border="0" alt="toolbar.jpg" /> <br /><br />The
+actions the buttons perform are (from left to right)<br />
+|open|save|print|cut|copy|paste|undo|redo|spell|search|replace|mail|
+
+<p>The emacs lisp code needed to install this toolbar is <a
+href="my-toolbar">here</a>.  The icons can be found <a
+href="./icons/">here</a>. One can install these for instance in the
+following way: save the file at the link above as 
+<i>my-toolbar.el</i> in the directory <i><a
+href="startup">.xemacs</a></i>. Put the
+icons in a directory called <i>icons</i> in <i><a
+href="startup">.xemacs</a></i>.  Insert the following
+line in <i><a href="startup">init.el</a></i>:
+
+<p>
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre>(load-file &quot;<span class="doc-string">~/.xemacs/my-toolbar.el</span>&quot;)<span class="comment">; load the toolbar</span></pre>
+</td></tr></table>
+
+<hr />
+
+<table width="100%">
+<tr>
+<td align="left" width="20%">
+<a href="index">
+<img src="back.gif" border="0" alt="Back: " />XEmacs tips</a>
+</td>
+<td align="center"  width="20%">
+<a href="mailto:aoleg@math.umn.edu">aoleg@math.umn.edu</a>
+</td>
+
+<td align="center" width="15%">
+<a href="http://www.xemacs.org">
+<img src="cbxSmall.jpg" border="0" alt="Created with XEmacs" /></a>
+</td>
+
+
+<td align="center" width="15%">
+</td>
+
+<td align="right">
+Updated: September 15, 2003</td>
+</tr>
+</table>
+
+
+
+</body>
+</html>

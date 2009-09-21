@@ -1,0 +1,103 @@
+body { 
+  background-color: white;
+  color: black;
+  font-family: verdana, arial, sans-serif;
+  /* font-size: small;  */
+  /*line-height: 1.3em; */
+} /* default */
+
+
+/* links behaviour  */
+a:link { 
+  text-decoration: none; 
+}
+a:active { 
+  text-decoration: none; 
+}
+a:visited { 
+  text-decoration: none; 
+}
+a:hover {
+  color: blue;
+  background-color: #eee;
+}
+
+
+.textBlueBold, .textBodyBlack, .textBodyBlackBold, .textBodyGrey, .textBodyReverse 
+{
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 80%;
+	line-height: 120%;
+}
+
+
+
+/*
+ The styles below are used in displaying htmlized source code.	 
+ Created by htmlize-0.67 in css mode. 
+ Modified later by Oleg.
+*/
+
+
+.string {
+  color: #00cd00;
+  background-color: #e0e0e0;
+} /* font-lock-string-face */
+
+.doc-string {
+  color: #00cd00;
+  background-color: #e0e0e0;
+} /* font-lock-doc-string-face */
+
+.comment {
+  color: #ee7600; 
+  background-color: #e0e0e0;
+} /* font-lock-comment-face */
+
+.reference {
+  color: #00cd00;
+  background-color: #e0e0e0;
+} /* font-lock-reference-face */
+
+.variable-name {
+  color: #9a2fff;
+  background-color: #e0e0e0;
+} /* font-lock-variable-name-face */
+
+.keyword {
+  color: #f939ff;
+  background-color: #e0e0e0;
+} /* font-lock-keyword-face */
+
+.function-name {
+  color: #231ce8;
+  background-color: #e0e0e0;
+} /* font-lock-function-name-face */
+
+.type {
+  color: #231ce8;
+  background-color: #e0e0e0;
+} /* font-lock-type-face */
+
+.cperl-hash {
+  color: #ff0000;
+  background-color: #e0e0e0;
+  font-weight: bold;
+} /* cperl-hash-face */
+
+.cperl-array {
+  color: #ff4500;
+  background-color: #e0e0e0;
+  font-weight: bold;
+} /* cperl-array-face */
+
+.cperl-nonoverridable {
+  color: #ffa500;
+  background-color: #e0e0e0;
+  font-weight: bold;
+} /* cperl-nonoverridable-face */
+
+.ltxcode {
+  color: #0000ff;
+  background-color: #ffffff;
+} /* used for pieces of latex code and other things */

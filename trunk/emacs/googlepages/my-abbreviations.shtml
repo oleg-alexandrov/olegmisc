@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- Created with XEmacs -->
+<head>
+  <title>
+    My XEmacs abbreviations file
+  </title>
+  <link rel="stylesheet" href="styles.css" type="text/css" />
+  <link href="xemacs.png" rel="icon" type="image/png"/>
+</head>
+<body text="#000000" bgcolor="#ffffff">
+
+
+<p />
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre><span class="comment">; my-abbreviations.el - a file to store abbreviations tables. So far
+; it has only a latex-mode abbreviation table, but it can contain
+; tables for many other languages (html, C++, etc).  Note that XEmacs
+; sometimes overwrites this file and then the nice order as now is
+; lost.</span>
+
+
+<span class="comment">; Define the table of abbreviations in latex-mode.  Note that we have
+; to use '\\' to stand for backslash, since, just like in LaTeX, in
+; emacs lisp the backslash character is special.  It would have been
+; logical for this table to be called latex-mode-abbrev-table, but for
+; some reason that does not work.</span>
+(<span class="keyword">define-abbrev-table</span> '<span class="function-name">text-mode-abbrev-table</span> '(
+
+  <span class="comment">; abbreviations to fix typos (i.e, to correct things like 'teh' into 'the')</span>
+    (&quot;<span class="string">teh</span>&quot;  &quot;<span class="string">the </span>&quot;  nil 0)
+    (&quot;<span class="string">hte</span>&quot;  &quot;<span class="string">the </span>&quot;  nil 0)
+    (&quot;<span class="string">htat</span>&quot; &quot;<span class="string">that </span>&quot; nil 0)
+
+   <span class="comment">; abbreviations to long words</span>
+    (&quot;<span class="string">abb</span>&quot;      &quot;<span class="string">abbreviation </span>&quot;    nil 0)
+    (&quot;<span class="string">approx</span>&quot;   &quot;<span class="string">approximation </span>&quot;   nil 0)
+    (&quot;<span class="string">contr</span>&quot;    &quot;<span class="string">contradiction </span>&quot;   nil 0)
+    (&quot;<span class="string">cont</span>&quot;     &quot;<span class="string">continuously </span>&quot;    nil 0)
+    (&quot;<span class="string">neib</span>&quot;     &quot;<span class="string">neighborhood </span>&quot;    nil 0)
+    (&quot;<span class="string">\\lra</span>&quot;    &quot;<span class="string">\\leftrightarrow</span>&quot; nil 0)
+   
+   <span class="comment">; abbreviations to long letters in the Green alphabet</span>
+    (&quot;<span class="string">\\a</span>&quot; &quot;<span class="string">\\alpha</span>&quot; nil 0)
+    (&quot;<span class="string">\\b</span>&quot; &quot;<span class="string">\\beta</span>&quot; nil 0)
+    (&quot;<span class="string">\\g</span>&quot; &quot;<span class="string">\\gamma</span>&quot; nil 0)
+    (&quot;<span class="string">\\d</span>&quot; &quot;<span class="string">\\delta</span>&quot; nil 0)
+    (&quot;<span class="string">\\e</span>&quot; &quot;<span class="string">\\epsilon</span>&quot; nil 0)
+    (&quot;<span class="string">\\ve</span>&quot; &quot;<span class="string">\\varepsilon</span>&quot; nil 0)
+    (&quot;<span class="string">\\t</span>&quot; &quot;<span class="string">\\theta</span>&quot; nil 0)
+    (&quot;<span class="string">\\vt</span>&quot; &quot;<span class="string">\\vartheta</span>&quot; nil 0)
+    (&quot;<span class="string">\\k</span>&quot; &quot;<span class="string">\\kappa</span>&quot; nil 0)
+    (&quot;<span class="string">\\l</span>&quot; &quot;<span class="string">\\lambda</span>&quot; nil 0)
+    (&quot;<span class="string">\\vp</span>&quot; &quot;<span class="string">\\varphi</span>&quot; nil 0)
+    (&quot;<span class="string">\\vs</span>&quot; &quot;<span class="string">\\varpsi</span>&quot; nil 0)
+    (&quot;<span class="string">\\s</span>&quot; &quot;<span class="string">\\sigma</span>&quot; nil 0)
+    (&quot;<span class="string">\\o</span>&quot; &quot;<span class="string">\\omega</span>&quot; nil 0)
+
+   <span class="comment">; abbreviations to mathbb R, etc</span>
+    (&quot;<span class="string">\\c</span>&quot; &quot;<span class="string">\\mathbb C</span>&quot; nil 0)
+    (&quot;<span class="string">\\q</span>&quot; &quot;<span class="string">\\mathbb Q</span>&quot; nil 0)
+    (&quot;<span class="string">\\r</span>&quot; &quot;<span class="string">\\mathbb R</span>&quot; nil 0)
+    (&quot;<span class="string">\\z</span>&quot; &quot;<span class="string">\\mathbb Z</span>&quot; nil 0)
+
+  <span class="comment">; abbreviations involving going back one character</span>
+    (&quot;<span class="string">\\bb</span>&quot; &quot;<span class="string">{\\bf }</span>&quot; backward-char 0)
+    (&quot;<span class="string">\\ee</span>&quot; &quot;<span class="string">\\emph{}</span>&quot; backward-char 0)
+    (&quot;<span class="string">\\ii</span>&quot; &quot;<span class="string">{\\it }</span>&quot; backward-char 0)
+    (&quot;<span class="string">\\ll</span>&quot; &quot;<span class="string">\\label{}</span>&quot; backward-char 0)
+    (&quot;<span class="string">\\mm</span>&quot; &quot;<span class="string">{\\mathbf }</span>&quot; backward-char 0)
+    (&quot;<span class="string">\\ss</span>&quot; &quot;<span class="string">\\section{}</span>&quot; backward-char 0)
+   <span class="comment">; ------------------------------------</span>
+    (&quot;<span class="string">\\bi</span>&quot; &quot;<span class="string">\\bibitem{}</span>&quot; backward-char 0)
+    (&quot;<span class="string">\\ci</span>&quot; &quot;<span class="string">\\cite{}</span>&quot; backward-char 0)
+    (&quot;<span class="string">\\lm</span>&quot; &quot;<span class="string">\\lim\\limits_{}</span>&quot; backward-char 0)
+    (&quot;<span class="string">\\sq</span>&quot; &quot;<span class="string">\\sqrt{}</span>&quot; backward-char 0)
+    (&quot;<span class="string">\\sb</span>&quot; &quot;<span class="string">\\subsection{}</span>&quot; backward-char 0)
+    (&quot;<span class="string">\\ssb</span>&quot; &quot;<span class="string">\\subsubsection{}</span>&quot; backward-char 0)
+
+   <span class="comment">; abbreviations calling functions (which are defined in my-latex.el)</span>
+    (&quot;<span class="string">\\co</span>&quot; &quot;&quot; my-latex-corollary 0)
+    (&quot;<span class="string">\\lm</span>&quot; &quot;&quot; my-latex-lemma 0)
+    (&quot;<span class="string">\\pr</span>&quot; &quot;&quot; my-latex-proof 0)
+    (&quot;<span class="string">\\th</span>&quot; &quot;&quot; my-latex-theorem 0)
+
+    (&quot;<span class="string">\\eq</span>&quot; &quot;&quot; my-latex-equation 0)
+    (&quot;<span class="string">\\ct</span>&quot; &quot;&quot; my-latex-center 0)
+    (&quot;<span class="string">\\en</span>&quot; &quot;&quot; my-latex-enumerate 0)
+    (&quot;<span class="string">\\ls</span>&quot; &quot;&quot; my-latex-list 0)
+
+    (&quot;<span class="string">\\su</span>&quot; &quot;&quot; my-latex-sum 0)
+    (&quot;<span class="string">\\in</span>&quot;  &quot;&quot; my-latex-int 0)
+
+    (&quot;<span class="string">\\il</span>&quot; &quot;&quot; my-latex-int-lim 0)
+    (&quot;<span class="string">\\sl</span>&quot; &quot;&quot; my-latex-sum-lim 0)
+   
+    (&quot;<span class="string">\\fr</span>&quot; &quot;&quot; my-latex-frac 0)
+    (&quot;<span class="string">\\rf</span>&quot; &quot;&quot; my-latex-ref 0)
+  ))</pre>
+</td></tr></table>
+
+<p /> <a href="latex">
+<img src="back.gif" border="0" alt="Back: " />Using XEmacs to edit LaTeX files</a>
+
+<!-- 
+   Updated: February 26, 2004<p />
+-->
+  </body>
+</html>

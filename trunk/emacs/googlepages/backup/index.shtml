@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- Created with XEmacs -->
+<head>
+  <title>
+    XEmacs tips -- Oleg's XEmacs customization page
+  </title>
+  <link rel="stylesheet" href="styles.css" type="text/css" />
+  <link href="xemacs.png" rel="icon" type="image/png"/>
+  <meta name="Author" content="Oleg Alexandrov aoleg@math.umn.edu" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="description" content="Keywords: XEmacs customization, XEmacs tutorial, 
+   Syntax highlighting, xemacs and latex, abbreviations, xemacs toolbar, xemacs keybindings, 
+   XEmacs tips, Xemacs preferences, customizing XEmacs, Xemacs keyboard shortcuts" />
+  </head>
+
+ <body text="#000000" background="xemacs.jpg">
+<center><h1>XEmacs tips</h1></center>
+
+I have found <a href="http://www.xemacs.org/">XEmacs</a> to be the
+best text editor on UNIX. It has very powerful editing features,  and virtually everything in
+XEmacs is customizable. The drawbacks are that the default XEmacs
+behavior is very unusual to a new user, and it takes a lot of time
+and knowledge to customize it.  In these pages I hope to give some tips
+about how to make XEmacs behave more predictably, while showing that 
+it has some features which make it a great choice for an editor. 
+
+<p> I believe everything here should work on XEmacs 24 or later. 
+Some things will not work on <a href="http://www.gnu.org/software/emacs/emacs.html">Gnu Emacs</a>.
+
+<p> Tip 0. (Introduction) <a href="startup.shtml">The XEmacs start-up files</a>
+<p>Tip 1. <a href="packages.shtml">Enabling some useful constants and packages</a>
+<p>Tip 2. <a href="shortcuts.shtml">Customizing the key bindings (keyboard shortcuts)</a>
+<p>Tip 3. <a href="syntax.shtml">Syntax highlighting</a>
+<p>Tip 4. <a href="latex.shtml">Using XEmacs to edit LaTeX files</a> 
+<p>Tip 5. <a href="toolbar.shtml">Customizing the XEmacs toolbar</a>
+<br />
+
+<p>The customizations described in these tips can also be
+downloaded here (<a href="xemacs_files.zip">zip</a> - 47K | <a
+href="xemacs_files.tar.gz">tar.gz</a> - 41K). I would be extremely happy to receive a note from you if you
+find bugs in the tips, have suggestions or questions, or just want to say that you found these pages useful.
+<br />
+
+<hr />
+<table width="100%">
+  <tr>
+    <td align="left" width="20%">
+    </td>
+    <td align="center"  width="20%">
+      <a href="mailto:aoleg@math.umn.edu">aoleg@math.umn.edu</a>
+    </td>
+
+    <td align="center" width="15%">
+      <a href="http://www.xemacs.org">
+	<img src="cbxSmall.jpg" border="0" alt="Created with XEmacs" /></a>
+    </td>
+
+
+    <td align="center" width="15%">
+      >
+    </td>
+
+    <td align="right">
+      Updated: July 03, 2004</td>
+  </tr>
+</table>
+
+ </body>
+</html>
