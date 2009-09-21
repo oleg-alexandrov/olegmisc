@@ -1,0 +1,308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- Created with XEmacs -->
+<head>
+  <title>
+    Using XEmacs to edit LaTeX files
+  </title>
+  <link rel="stylesheet" href="styles.css" type="text/css" />
+  <link href="xemacs.png" rel="icon" type="image/png"/>
+  <meta name="Author" content="Oleg Alexandrov aoleg@math.umn.edu" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="description" content="XEmacs tips, XEmacs tutorial, Customizing XEmacs, 
+    Xemacs customization, xemacs and latex, abbreviations" />
+</head>
+<body text="#000000" bgcolor="#ffffff">
+
+
+<center><h1>Using XEmacs to edit LaTeX files</h1></center> 
+
+The power of XEmacs becomes especially obvious when editing LaTeX files.
+LaTeX is a wonderful typesetting system, but sometimes it can require too much
+typing to do the job. Here I will explain how to make XEmacs do much of the typing for you, by using 
+<i>abbreviations</i>. And when I say abbreviations, I don't mean creating a preamble in the LaTeX document
+which will define short names for long commands. I mean one can actually teach XEmacs that whenever you type
+for instance <span class="ltxcode">\rla</span> and hit the space key, then you actually mean
+<span class="ltxcode">\rightleftarrow</span>, and have XEmacs replace the former with the latter.
+
+<p> That enough would already be great. But XEmacs can do more. What
+if one could type in <span class="ltxcode">\eq</span>, hit the space
+key, and get as a result the equation environment, <pre><span
+class="ltxcode">\begin{equation}\label{}
+
+\end{equation}</span></pre> and in addition the cursor would go right
+where it is supposed to be, in between the curly braces of <span
+class="ltxcode">\label{}</span>?  That is possible. We will need to
+write a small emacs lisp function to insert the above and then
+move the cursor back as many positions as needed to place it where it
+should be. Then we will make the <span class="ltxcode">\eq</span>
+abbreviation call this function. Below I explain how to implement
+all of this.
+
+
+<p>First, let us create a file where we will store all LaTeX-related
+preferences and functions for XEmacs. And then we need to tell XEmacs
+to load that file every time we edit a LaTeX file. We can for instance
+name that file <i>my-latex.el</i> and store it in the directory
+<i><a href="startup.shtml">.xemacs</a></i>. Then, paste the following in
+<i><a href="startup.shtml">init.el</a></i>
+
+<p>
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre><span class="comment">; associate the files with the .tex extension with the LaTeX mode</span>
+(setq auto-mode-alist (append '((&quot;<span class="string">\\.tex$</span>&quot;  . LaTeX-mode)) auto-mode-alist))
+
+<span class="comment">; load the LaTeX mode</span>
+(<span class="keyword">require</span> '<span class="reference">tex-site</span>)
+
+<span class="comment">; Tell XEmacs to load `</span><span class="reference">my-latex.el</span><span class="comment">' when opening LaTeX files</span>
+(add-hook 'LaTeX-mode-hook
+  '(<span class="keyword">lambda</span>()
+     (load-file &quot;<span class="string">~/.xemacs/my-latex.el</span>&quot;)  <span class="comment">; load these LaTeX preferences</span>
+     ))</pre>
+</td></tr></table>
+
+<p>Next, we will tell XEmacs to enable the <i>abbreviations</i> mode. 
+The abbreviations themselves will be stored in a file called <i>my-abbreviations.el</i>
+in the directory <i><a href="startup.shtml">.xemacs</a></i>. To do this, enter
+the following in  <i><a href="startup.shtml">init.el</a></i>.
+
+<p>
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre>(setq-default abbrev-mode t)                            <span class="comment">; enable abbreviations</span>
+(setq save-abbrevs t)                                   <span class="comment">; save abbreviations upon exiting xemacs</span>
+(setq abbrev-file-name &quot;<span class="doc-string">~/.xemacs/my-abbreviations.el</span>&quot;) <span class="comment">; the file storing the abbreviations</span>
+(<span class="keyword">if</span> (file-readable-p abbrev-file-name)                  <span class="comment">; read the abbreviations every</span>
+  (read-abbrev-file abbrev-file-name)                   <span class="comment">; time xemacs is started</span>
+  )</pre>
+</td></tr></table>
+
+<p> Here is how the file <i>my-abbreviations.el</i> can look like:
+
+<p><table border="1" cellspacing="0" cellpadding="0"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre><span class="comment">; Define the table of abbreviations in latex-mode.  Note that we have
+; to use '\\' to stand for backslash, since, just like in LaTeX, in
+; emacs lisp the backslash character is special.  It would have been
+; logical for this table to be called latex-mode-abbrev-table, but for
+; some reason that does not work.</span>
+(<span class="keyword">define-abbrev-table</span> '<span class="function-name">text-mode-abbrev-table</span> '(
+  (&quot;<span class="string">\\a</span>&quot; &quot;<span class="string">\\alpha</span>&quot; nil 0)                  <span class="comment">; define \a to be an abbreviation for \alpha    
+</span>  (&quot;<span class="string">\\b</span>&quot; &quot;<span class="string">\\beta</span>&quot; nil 0)                   <span class="comment">; and \b for \beta 
+</span>  (&quot;<span class="string">\\lra</span>&quot; &quot;<span class="string">\\leftrightarrow</span>&quot; nil 0)       <span class="comment">; and \rla for \leftrightarrow
+</span>  <span class="comment">; Other abbreviations go here. Note the closing parentheses below.
+</span> )
+)</pre>
+</td></tr>
+</table><p>
+
+
+Let us look at the syntax employed in the abbreviation table. It is
+clear that in every row of the table the first component defines the
+abbreviation, and that the second component defines the abbreviation
+expansion, that is, what we want the abbreviation replaced with. In
+the third position there is a <i>nil</i>. Actually, there we can put
+the name of an emacs lisp function, and then the abbreviation will
+call that function. And this is where all the power of abbreviations
+comes from. By calling a function it is possible to make much more
+complicated operations than just the simple replacement of an
+abbreviation with its expansion. That will be illustrated below.  So
+far, the third component is <i>nil</i>, which does nothing. Finally
+the fourth component is an integer number.  There XEmacs records how
+many times an abbreviation has been used so far. That is to say, that
+place keeps the <i>statistics</i> of abbreviations usage.
+
+<p> Now let us see how to define an abbreviation which upon being expanded will call a function. Consider the following 
+example. We want the abbreviation <span class="ltxcode">\ci</span> to get expanded into 
+<span class="ltxcode">\cite{}</span> and the cursor to be put inside the curly brackets. 
+That can be done with the following line in the abbreviation table:
+<p><table border="1" cellspacing="0" cellpadding="0"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre>  (&quot;<span class="string">\\ci</span>&quot; &quot;<span class="string">\\cite{}</span>&quot; backward-char 0)</pre>
+</td></tr>
+</table><p>
+
+After inserting <span class="ltxcode">\cite{}</span>, the standard emacs lisp function <i>backward-char</i>
+is called, which moves the cursor back one character and thus positioning it inside the curly brackets.
+
+<p>How about adding an entry in the abbreviation table to make <span
+class="ltxcode">\fr</span> expanded into <span
+class="ltxcode">\frac{}{}</span> and put the cursor inside the first
+pair of curly brackets?  Well, we could repeat the above, but move
+back the cursor three characters instead of one. Then we need to call
+<i>backward-char</i> with the argument 3 (move back 3
+chars). Unfortunately, the syntax of the abbreviation table does not
+allow for that, so we are out of luck.
+
+<p>But never give up. Let us make our own function to move the
+cursor back 3 characters. That could not be easier.
+
+<p><table border="1" cellspacing="0" cellpadding="0"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre><span class="comment">; define an emacs lisp function to move the cursor back three characters
+</span>(<span class="keyword">defun</span> <span class="function-name">move-back-three-chars</span> ()  <span class="comment">; the function is called 'move-back-three-chars'</span>
+  (interactive)                  <span class="comment">; all emacs lisp functions must have this line</span>
+  (backward-char 3)              <span class="comment">; this function will do nothing but move the cursor 3 chars</span> 
+  )</pre>
+</td></tr>
+</table><p>
+
+Along the way we learned the syntax of an emacs lisp function. Now the  abbreviation for the  fraction would 
+be defined as follows:
+
+<p><table border="1" cellspacing="0" cellpadding="0"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre>  (&quot;<span class="string">\\fr</span>&quot; &quot;<span class="string">\\frac{}{}</span>&quot; move-back-three-chars 0)</pre>
+</td></tr>
+</table><p>
+
+
+This could be done in a more elegant way. Define a function which will both do the insertion of 
+<span class="ltxcode">\frac{}{}</span> and move the cursor inside the first pair of curly brackets. 
+
+<p><table border="1" cellspacing="0" cellpadding="0"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre><span class="comment">; an emacs lisp function to insert '\frac{}{}' and then move the cursor back three characters
+</span>(<span class="keyword">defun</span> <span class="function-name">my-latex-fraction</span> ()
+  (interactive)
+  (insert &quot;<span class="string">\\frac{}{}</span>&quot;)    <span class="comment">; insert a piece of text</span>
+  (backward-char 3)        <span class="comment">; move the cursor back three characters </span>
+  )</pre>
+</td></tr>
+</table><p>
+
+Let us save this function in <i>my-latex.el</i>, as we will call it
+when in LaTeX mode. Define the corresponding abbreviation in
+<i>my-abbreviations.el</i>:
+
+<p><table border="1" cellspacing="0" cellpadding="0"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre>  (&quot;<span class="string">\\fr</span>&quot; &quot;<span class="string"></span>&quot; my-latex-fraction 0)</pre>
+</td></tr>
+</table><p>
+
+Note the empty quotes here. That is because when <span class="ltxcode">\fr</span> is expanded,
+at first nothing is inserted, and then the function <i>my-latex-fraction</i> is called which does all the work. 
+
+<p> Also note an important fact. The abbreviations are stored in
+<i>my-abbreviations.el</i>. If a given abbreviation needs to call a
+function, and the function is user defined, then the body of that
+function must be stored somewhere <i>outside</i> my-abbreviations.el.
+If that abbreviation and the corresponding function is to be called in
+LaTeX mode, then most appropriate place for the function to be stored
+is in <i>my-latex.el</i>. 
+
+
+<p>And here is the emacs lisp function necessary to insert the equation environment described at the beginning.
+
+<p><table border="1" cellspacing="0" cellpadding="0"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre>(<span class="keyword">defun</span> <span class="function-name">my-latex-equation</span> ()      <span class="comment">; a function to insert the equation environment
+</span>  (interactive)                  
+  (insert &quot;<span class="string">\\begin{equation}\\label{}\n</span>&quot;) <span class="comment">; \n is the newline character
+</span>  (insert &quot;<span class="string">  \n</span>&quot;)
+  (insert &quot;<span class="string">\\end{equation}</span>&quot;) 
+  (previous-line 3)              <span class="comment">; move back to the line containing \begin... 
+</span>  (forward-char 24)              <span class="comment">; move inside the curly brackets
+</span>  )</pre></td></tr>
+</table><p>
+
+<p> The last issue is how to tell XEmacs to expand a given abbreviation. A solution is the following: every time
+the <i>space</i> key is hit, check if the recently typed word is an abbreviation. If it is, expand it, if it is not, just
+insert an empty space, which is the normal behavior we would expect from the <i>space</i> key. I wrote
+a function called <i>smart-space</i> to do this job. Here is the code for that (this needs to go in <i>my-latex.el</i>).
+
+<p><table border="1" cellspacing="0" cellpadding="0"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre>(<span class="keyword">defun</span> <span class="function-name">smart-space</span> () <span class="comment">; make the space key behave in a smarter way
+</span>  (interactive)
+  (<span class="keyword">if</span> (not (expand-abbrev)) <span class="comment">; test if the current word is an abbrev. If yes, expand it.
+</span>      (insert &quot;<span class="string"> </span>&quot;)          <span class="comment">; If not, insert a plain space
+</span>    )                       <span class="comment">; Now you know how to use 'if' in emacs lisp
+</span>  )
+(local-set-key [(space)] 'smart-space) <span class="comment">; bind the 'smart-space' function to the 'space' key</span></pre>
+</td></tr>
+</table><p>
+
+Here is a <a href="my-latex.shtml"><i>my-latex.el</i></a> file which
+contains the functions we defined above and some other ones also
+useful in LaTeX-mode.  And here is the corresponding <a
+href="my-abbreviations.shtml"><i>my-abbreviations.el</i></a> file
+where the abbreviations (some calling functions from
+<i>my-latex.el</i>) are stored.  Two reminders: first is that in order
+for all this to work one must not forget to insert into the file
+<i><i><a href="startup.shtml">init.el</a></i></i> the two pieces of
+emacs lisp code at the beginning of this page. Second, the files
+<a href="my-latex.shtml"><i>my-latex.el</i></a> and 
+<a href="my-abbreviations.shtml"><i>my-abbreviations.el</i></a> need to go in the
+<i><a href="startup.shtml">.xemacs</a></i> directory.
+
+<p> But the tricks XEmacs has to offer are not over yet. One can define abbreviations on the fly,
+by using the command <i>define-mode-abbrev</i>. Let us bind it to the shortcut <i>Alt-a</i> by inserting the following
+in <i>my-latex.el</i>
+
+<p>
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre>(local-set-key [(meta a)] 'define-mode-abbrev)<span class="comment">; define abbrevs on the fly with Alt-a</span></pre>
+</td></tr></table>
+
+<p> Now, when you are typing a LaTeX document and notice that you
+write <span class="ltxcode">\mathbb R</span> way to often, just hit
+<i>Alt-a</i>, and set <span class="ltxcode">\r</span> to be an
+abbreviation for it. When you exit XEmacs it will ask whether to
+insert this abbreviation in <i>my-abbreviations.el</i> for future
+use.
+
+<p> Lastly, XEmacs also has <i>dynamic abbreviations</i>. If you for instance have the word <i>international</i>
+in your document, then the second time you need it you can just type <i>inter</i>, then tell XEmacs to go and look up a
+completion for you and finish the typing. The command for that is <i>dabbrev-expand</i>, which can be bound
+for example to <i>Alt-space</i> by inserting the following in <i>my-latex.el</i>
+<p>
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre>
+(local-set-key [(meta space)] 'dabbrev-expand) <span class="comment">; expand dinamic abbreviations with Alt-space</span></pre>
+</td></tr></table>
+
+<p> Of course, when you hit <i>Alt-space</i>, XEmacs might choose to expand <i>inter</i> to 
+<i>internal</i>, if that word is also in your document. But then one can just hit <i>Control-z</i>
+to undo this, type a couple more of letters in the word you want completed, and then try your luck again 
+with a dynamic expansion. In my experience, this works well 95% of the time. 
+
+
+
+<hr />
+
+<table width="100%">
+<tr>
+<td align="left" width="20%">
+<a href="index.shtml">
+<img src="back.gif" border="0" alt="Back: " />XEmacs tips</a>
+</td>
+<td align="center"  width="20%">
+<a href="mailto:aoleg@math.umn.edu">aoleg@math.umn.edu</a>
+</td>
+
+<td align="center" width="15%">
+<a href="http://www.xemacs.org">
+<img src="cbxSmall.jpg" border="0" alt="Created with XEmacs" /></a>
+</td>
+
+
+<td align="center" width="15%">
+</td>
+
+<td align="right">
+Updated: March 07, 2004</td>
+</tr>
+</table>
+
+</body>
+</html>

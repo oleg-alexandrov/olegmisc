@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- Created with XEmacs -->
+<head>
+  <title>
+   My LaTeX mode customizations for XEmacs
+  </title>
+  <link rel="stylesheet" href="styles.css" type="text/css" />
+  <link href="xemacs.png" rel="icon" type="image/png"/>
+</head>
+ <body text="#000000" bgcolor="#ffffff">
+
+
+<p />
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre><span class="comment">; this needs to be pasted in the directory .xemacs as my-latex.el</span>
+
+<span class="comment">; First let us make the space key expand the abbreviations</span>
+(<span class="keyword">defun</span> <span class="function-name">smart-space</span> () <span class="comment">; make the space key behave in a smarter way</span>
+  (interactive)
+  (<span class="keyword">if</span> (not (expand-abbrev)) <span class="comment">; test if the current word is an abbrev. If yes, expand it.</span>
+      (insert &quot;<span class="string"> </span>&quot;)          <span class="comment">; If not, insert a plain space</span>
+    )                       <span class="comment">; Now you know how to use 'if' in emacs lisp</span>
+  )
+(local-set-key [(space)] 'smart-space) <span class="comment">; bind the 'smart-space' function to the 'space' key</span>
+
+
+
+<span class="comment">; Let us boldly define lisp functions to make XEmacs do our will</span>
+
+(<span class="keyword">defun</span> <span class="function-name">my-latex-frac</span> ()  <span class="comment">; define a function to insert \frac{}{} and move the cursor back 3 chars</span>
+  (interactive)          <span class="comment">; every emacs lisp function must have this line</span>
+  (insert &quot;<span class="string">\\frac{}{}</span>&quot;)  <span class="comment">; do the job, insert a piece of text</span>
+  (backward-char 3)      <span class="comment">; move back 3 chars, that is, inside the first pair of braces</span>
+  )
+
+
+(<span class="keyword">defun</span> <span class="function-name">my-latex-equation</span> ()      <span class="comment">; a function to insert the equation environment</span>
+  (interactive)                 
+  (insert &quot;<span class="string">\\begin{equation}\\label{}\n</span>&quot;) <span class="comment">; \n is the newline character</span>
+  (insert &quot;<span class="string">  \n</span>&quot;)                         <span class="comment">; an empty line (with two spaces on it)</span>
+  (insert &quot;<span class="string">\\end{equation}</span>&quot;)
+  (previous-line 3)                       <span class="comment">; move back to the line containing \begin...</span>
+  (forward-char 24)                       <span class="comment">; move inside the curly brackets</span>
+  )
+
+
+<span class="comment">; Below are some other functions I find useful. To each of them there is
+; a corresponding line in  my-abbreviations.el  calling that function</span>
+
+(<span class="keyword">defun</span> <span class="function-name">my-latex-list</span> ()
+  (interactive)
+  (insert &quot;<span class="string">\\begin{list}{}\n</span>&quot;)
+  (insert &quot;<span class="string">\\item \n</span>&quot;)
+  (insert &quot;<span class="string">\\end{list}\n</span>&quot;)
+  (previous-line 2)
+  (forward-char 6)
+  )
+
+(<span class="keyword">defun</span> <span class="function-name">my-latex-enumerate</span> ()
+  (interactive)
+  (insert &quot;<span class="string">\\begin{enumerate}\n</span>&quot;)
+  (insert &quot;<span class="string">\\item \n</span>&quot;)
+  (insert &quot;<span class="string">\\end{enumerate}\n</span>&quot;)
+  (previous-line 2)
+  (forward-char 6)
+  )
+
+
+(<span class="keyword">defun</span> <span class="function-name">my-latex-theorem</span> ()
+  (interactive)
+  (insert &quot;<span class="string">\\begin{theorem}\\label{}\n\n\\end{theorem}</span>&quot;)
+  (previous-line 2)
+  (end-of-line)
+  (backward-char 1)
+  )
+
+
+(<span class="keyword">defun</span> <span class="function-name">my-latex-corollary</span> ()
+  (interactive)
+  (insert &quot;<span class="string">\\begin{corollary}\\label{}\n\n\\end{corollary}</span>&quot;)
+  (previous-line 2)
+  (end-of-line)
+  (backward-char 1)
+  )
+
+(<span class="keyword">defun</span> <span class="function-name">my-latex-lemma</span> ()
+  (interactive)
+  (insert &quot;<span class="string">\\begin{lemma}\\label{}\n\n\\end{lemma}</span>&quot;)
+  (previous-line 2)
+  (end-of-line)
+  (backward-char 1)
+  )
+
+(<span class="keyword">defun</span> <span class="function-name">my-latex-proof</span> ()
+  (interactive)
+  (insert &quot;<span class="string">\\begin{proof}\n\n\\end{proof}</span>&quot;)
+  (previous-line 1)
+  )
+
+
+(<span class="keyword">defun</span> <span class="function-name">my-latex-center</span> ()
+  (interactive)
+  (insert &quot;<span class="string">\\begin{center}\n\n\\end{center}</span>&quot;)
+  (previous-line 1)
+  )
+
+(<span class="keyword">defun</span> <span class="function-name">my-latex-ref</span> ()
+  (interactive)
+  (insert &quot;<span class="string">(\\ref{})</span>&quot;)
+  (backward-char 2)
+  )
+
+(<span class="keyword">defun</span> <span class="function-name">my-latex-int-lim</span> ()
+  (interactive)
+  (insert &quot;<span class="string">\\int\\limits_{}^{}\\!\\,d</span>&quot;)
+  (backward-char 9)  
+  )
+
+(<span class="keyword">defun</span> <span class="function-name">my-latex-int</span> ()
+  (interactive)
+  (insert &quot;<span class="string">\\int_{}^{}\\!\\,d</span>&quot;)
+  (backward-char 10)
+  )
+
+(<span class="keyword">defun</span> <span class="function-name">my-latex-sum-lim</span> ()
+  (interactive )
+  (insert &quot;<span class="string">\\sum\\limits_{}^{}</span>&quot;)
+  (backward-char 4)
+  )
+
+(<span class="keyword">defun</span> <span class="function-name">my-latex-sum</span> ()
+  (interactive )
+  (insert &quot;<span class="string">\\sum_{}^{}</span>&quot;)
+  (backward-char 4)
+  )
+
+<span class="comment">; Lastly, let us define two more useful shortcuts (which were described in the LaTeX tip)</span>
+(local-set-key [(meta a)] 'define-mode-abbrev) <span class="comment">; define abbrevs on the fly with Alt-a</span>
+(local-set-key [(meta space)] 'dabbrev-expand) <span class="comment">; expand dinamic abbreviations with Alt-space</span></pre>
+</td></tr></table>
+
+<p /> <a href="latex">
+<img src="back.gif" border="0" alt="Back: " />Using XEmacs to edit LaTeX files</a>
+
+
+<!--   
+ Updated: February 26, 2004<hr />
+-->
+  </body>
+</html>

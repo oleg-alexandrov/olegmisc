@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!-- Created with XEmacs -->
+<head>
+  <title>
+    Customizing the keybindings (keyboard shortcuts)
+  </title>
+  <link rel="stylesheet" href="styles.css" type="text/css" />
+  <link href="xemacs.png" rel="icon" type="image/png"/>
+  <meta name="Author" content="Oleg Alexandrov aoleg@math.umn.edu" />
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="description" content="XEmacs tips, XEmacs tutorial,
+   Customizing XEmacs, Xemacs customization, Xemacs keybindings,
+   xemacs keyboard shortcuts" />
+</head>
+
+  <body text="#000000" bgcolor="#ffffff">
+<center><h1>Customizing the keybindings (keyboard shortcuts)</h1></center>
+
+One of the things which is most unusual to a new XEmacs user is
+XEmacs's strange keyboard shortcuts. Who would think that in XEmacs
+one needs to type <i>Ctrl-x</i> followed by <i>Ctrl-f</i> to
+open a file, or <i>Ctrl-x</i> followed by typing the character
+<i>u</i> to undo changes, or that one can copy text with <i>Alt-w</i>?
+Here I will explain how to change the keyboard shortcuts to the ones
+used in most other editors, like <i>Ctrl-x</i> to cut,
+<i>Ctrl-s</i> to save, <i>Ctrl-z</i> to undo changes, etc.
+
+<p> To enable <i>Ctrl-x</i> to cut, <i>Ctrl-c</i> to copy, and
+<i>Ctrl-v</i> to paste, one can use the wonderous <i>cua-mode</i>
+package, which can be found 
+<a href="http://www.cua.dk/cua-mode-1.3-xemacs.el">here</a> (also
+mirrored <a href="cua-mode.el">here</a>). It can be saved in the
+directory <a href="startup.shtml">.xemacs</a> as <i>cua-mode.el</i>
+and called by inserting the following in <a
+href="startup.shtml">init.el</a>
+
+<p>
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre>(load-file &quot;<span class="doc-string">~/.xemacs/cua-mode.el</span>&quot;)  <span class="comment">; load cua-mode every time XEmacs is started</span>
+(CUA-mode 1) <span class="comment">; run cua-mode (a package to enable MS Windows type keyboard shortcuts)</span></pre>
+</td></tr></table>
+
+<p>The neat thing about this package, is that, with it one can still
+use most of the default XEmacs keyboard shortcuts, like <i>Ctrl-x
+Ctrl-c</i> to exit XEmacs, or <i>Ctrl-x Ctrl-w</i> to save a
+file with a new name, etc.  This because <i>Ctrl-x</i> and
+<i>Ctrl-c</i> will act as cut and copy respectively, only when a
+piece of text has been selected to be cut/copied. Otherwise the
+default XEmacs behavior will be used.
+
+<p>To enable XEmacs to select text with the shift and arrow keys, 
+one needs to enable the <i>pc-select</i> package. To call it, 
+insert in <a href="startup.shtml">init.el</a>
+
+<p>
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre>(load-library &quot;<span class="doc-string">pc-select</span>&quot;)    <span class="comment">; a package which enables text selection ...</span>
+(pc-select-mode)              <span class="comment">; ... with the shift and arrow keys</span></pre>
+</td></tr></table>
+
+<p> Let us define some other shortcuts. We will put the commands
+needed for that in a file called <i>my-shortcuts.el</i> in the directory
+<i><a href="startup.shtml">.xemacs</a></i>. We will let XEmacs know
+where that file is by entering the following line in <i><a
+href="startup.shtml">init.el</a></i>
+
+<p>
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre>(load-file &quot;<span class="doc-string">~/.xemacs/my-shortcuts.el</span>&quot;)  <span class="comment">; will load this file every time XEmacs is started</span></pre>
+</td></tr></table>
+
+<p> The text below, if inserted in <i>my-shortcuts.el</i>, will enable one to save with <i>Ctrl-s</i>,
+open a file with <i>Ctrl-o</i>, etc. 
+
+<p>
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre>(global-set-key [(control o)] 'find-file)              <span class="comment">; use Ctrl-o to open a (new) file</span>
+(global-set-key [(control n)] 'find-file-other-frame)  <span class="comment">; open a file in a new window with Ctrl-n</span>
+(global-set-key [(control s)] 'save-buffer)            <span class="comment">; save with Ctrl-s</span>
+(global-set-key [(meta s)]    'write-file)             <span class="comment">; 'save file as...' with Alt-s ('meta' is</span>
+                                                       <span class="comment">; just another name for the 'Alt' key)</span>
+(global-set-key [(control q)] 'save-buffers-kill-emacs)<span class="comment">; exit XEmacs with Ctrl-q</span>
+(global-set-key [(meta q)]    'kill-this-buffer)       <span class="comment">; delete changes (don't save) with Alt-q</span>
+
+(global-set-key [(control t)] 'ispell-buffer)          <span class="comment">; spell-check with Ctrl-t</span>
+(global-set-key [(control r)] 'replace-string)         <span class="comment">; search and replace with Ctrl-r</span>
+
+(<span class="keyword">require</span> '<span class="reference">redo</span>)                                        <span class="comment">; load the 'redo' package</span>
+(global-set-key [(meta z)]    'redo)                   <span class="comment">; 'redo', that is, revert the last 'undo'</span></pre>
+</td></tr></table>
+
+<p> To enable <i>Ctrl-z</i> to work as <i>undo</i>, one would ideally just use a <i>global-set-key</i>
+command as done above for 'redo'. Unfortunately, XEmacs, in its more recent versions, uses Ctrl-z
+for its own purposes, to call a <i>zap-up-to-char</i> function, and it ignores our request for using Ctrl-z for something else. 
+A solution is then to take over the zap-up-to-char function itself, to make
+it work as 'undo'. That is presented below (this text needs to go to <i>my-shortcuts.el</i>).
+ 
+<p> 
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%"> 
+<tr><td> <pre>
+<span class="comment">; A first attempt to make &quot;control z&quot; work as undo. 
+</span>(global-set-key [(control z)] 'undo)
+
+<span class="comment">; The above does not work on newer versions of XEmacs. Then, highjack 
+; Xemacs's zap-up-to-char function itself and force it to work as &quot;undo&quot;.</span>
+(<span class="keyword">defun</span> <span
+class="function-name">zap-up-to-char</span> () 
+  (interactive) 
+  (undo)
+)</pre> </td></tr></table>
+
+
+<p>Now we will make XEmacs search forward with Ctrl-f and backward with Alt-f. That requires a little more 
+than just the declaration of a global key. The following would need to go to <i>my-shortcuts.el</i>.
+
+<p>
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
+<tr><td>
+<pre><span class="comment">; search forward with Ctrl-f</span>
+(global-set-key [(control f)] 'isearch-forward)
+(<span class="keyword">define-key</span> <span class="variable-name">isearch-mode-map</span> [(control f)] (lookup-key isearch-mode-map &quot;<span class="string">\C-s</span>&quot;))
+(<span class="keyword">define-key</span> <span class="variable-name">minibuffer-local-isearch-map</span> [(control f)]
+  (lookup-key minibuffer-local-isearch-map &quot;<span class="string">\C-s</span>&quot;))
+
+<span class="comment">; search backward with Alt-f</span>
+(global-set-key [(meta f)] 'isearch-backward)
+(<span class="keyword">define-key</span> <span class="variable-name">isearch-mode-map</span> [(meta f)] (lookup-key isearch-mode-map &quot;<span class="string">\C-r</span>&quot;))
+(<span class="keyword">define-key</span> <span class="variable-name">minibuffer-local-isearch-map</span> [(meta f)]
+  (lookup-key minibuffer-local-isearch-map &quot;<span class="string">\C-r</span>&quot;))</pre>
+</td></tr></table>
+
+<p> Note that XEmacs searches as you type. This takes a bit used to,
+but eventually it is more efficient than the way other programs do, by
+opening a pop-up window, etc. To find the next occurrence of the
+expression you just searched for, hit <i>Ctrl-f</i> again (or
+<i>Alt-f</i> if searching backwards).  To search with the same
+expression as in the previous search operation, type <i>Ctrl-f</i> or
+<i>Alt-f</i> twice.
+
+<p> Lastly, one question a new XEmacs user might have, is how to
+cancel things. Most of the time one needs to use the shortcut
+<i>Ctrl-g</i>. In some specific cases, as when cancelling opening a
+file, hitting the <i>Esc</i> key two or three times does the job.
+
+<hr />
+<table width="100%">
+  <tr>
+    <td align="left" width="20%">
+      <a href="index.shtml">
+	<img src="back.gif" border="0" alt="Back: " />XEmacs tips</a>
+    </td>
+    <td align="center"  width="20%">
+      <a href="mailto:aoleg@math.umn.edu">aoleg@math.umn.edu</a>
+    </td>
+
+    <td align="center" width="15%">
+      <a href="http://www.xemacs.org">
+	<img src="cbxSmall.jpg" border="0" alt="Created with XEmacs" /></a>
+    </td>
+
+
+    <td align="center" width="15%">
+      >
+    </td>
+
+    <td align="right">
+      Updated: May 05, 2004</td>
+  </tr>
+</table>
+
+
+</body>
+</html>
