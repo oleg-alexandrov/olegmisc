@@ -50,6 +50,7 @@
     (read-abbrev-file abbrev-file-name))
 
 ;; dictionary
+;(setq ispell-prefer-aspell t)
 (setq ispell-personal-dictionary "~/.xemacs/ispell-dictionary")
 
 ;;some functions and global keys
@@ -129,7 +130,7 @@
 
 
 ;; mutt mode.
- (autoload 'mutt-mode "~/.xemacs/mutt.elc" "Major mode to compose mail" t)
+ (autoload 'mutt-mode "~/.xemacs/mutt.el" "Major mode to compose mail" t)
  (add-hook 'mutt-mode-hook 
  	  '(lambda()
  	     (load-library "mail-my")
@@ -150,7 +151,7 @@
 
 
 ;;matlab
-(autoload 'matlab-mode "~/.xemacs/matlab.elc" "matlab major mode." t)
+(autoload 'matlab-mode "~/.xemacs/matlab.el" "matlab major mode." t)
 (add-hook 'matlab-mode-hook 
 	  '(lambda()
 	     ;;my personal stuff
@@ -159,7 +160,7 @@
 	     
 
 ;; muttrc mode.
-(autoload 'muttrc-mode "muttrc-mode.elc"
+(autoload 'muttrc-mode "muttrc-mode.el"
   "Major mode to edit muttrc files" t)
 
 
