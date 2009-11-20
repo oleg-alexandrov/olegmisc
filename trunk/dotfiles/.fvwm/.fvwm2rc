@@ -119,9 +119,8 @@ DeskTopSize 3x12
 *FvwmPager: Label * 
  
 ######################### Keyboard binding###########################
-#Key F1    A   N   Exec  /u/joshua/h5/afa/aoleg/bin/rxvt& # -geo 138x48+10+10  -hc blue  -bdc -fn 8x16 &
 #Key F1    A   N   Exec /usr/bin/konsole& 
-Key F1    A   N   Exec /usr/bin/gnome-terminal  --geometry 122x48+0+0& 
+Key F1    A   N   Exec /usr/bin/gnome-terminal  --geometry 110x45+0+0& 
 #Key F1    A   N   Exec  /m1/aoleg/bin/rxvt & # -geo 140x61+10+10  -hc blue  -bdc -fn 8x16 &
 Key F2    A   N   Exec  /m1/aoleg/bin/rxvt -fn 8x16 -e mutt &
 Key F3    A   N   Exec  ~/bin/xe &
@@ -135,8 +134,8 @@ Key End    A   CM  Exec /usr/bin/X11/xlock
 
 Key F8   A   C   Move +0 +0
 Key F9   A   C   Move +50 +0 # Move window half a screen to the right
-Key F10   A   C   Resize 88 96
-Key F11   A   C   Resize 44 96
+Key F10   A   C   Resize 44 96
+Key F11   A   C   Resize 88 96
 Key F12   A   M   Restart fvwm2 -f ~/.fvwm/rc.fvwm
 Key F12   A   N   Close
 Key F11   A   N   Iconify

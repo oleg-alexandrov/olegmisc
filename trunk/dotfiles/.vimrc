@@ -67,3 +67,8 @@ ab st set shared::job::dbgTrackKaroList                      {0}
 
 " Make the backspace key delete newlines, etc.
 ":set backspace=indent,eol,start
+
+source ~/.vim/tf.vim
+map <C-i> call ToggleTrueFalse()
+map! <C-T> call ToggleTrueFalse()
+noremap <C-T> call ToggleTrueFalse()

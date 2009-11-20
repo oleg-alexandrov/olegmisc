@@ -157,7 +157,7 @@
 (local-set-key [(control x) (\2)] 'right-part-cpp)
 (local-set-key [(control x) (\3)] 'format-fun-dec)
 (local-set-key [(control y)] 'yank)
-;(local-set-key [(meta \[)] 'perl-brace)
+(local-set-key [(meta \[)] 'perl-brace)
 (local-set-key [(meta a)] 'define-mode-abbrev)
 (local-set-key [(meta c)] 'comment-region)
 (local-set-key [(meta q)] 'kill-this-buffer)
@@ -166,4 +166,4 @@
 (local-set-key [(space)] 'smart-space)
 (local-set-key [(return)] 'reindent-then-newline-and-indent)
 (local-set-key [(meta \;)] 'insert-semicolon-and-newline)
-
+(local-set-key [(control j)] 'my-fill-paragraph-or-region)
