@@ -11,7 +11,7 @@
   </title>
   <link rel="stylesheet" href="styles.css" type="text/css" />
   <link href="xemacs.png" rel="icon" type="image/png"/>
-  <meta name="Author" content="Oleg Alexandrov aoleg@math.umn.edu" />
+  <meta name="Author" content="Oleg Alexandrov oleg.alexandrov@gmail.com" />
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="description" content="Keywords: XEmacs customization, XEmacs tutorial, 
    Syntax highlighting, xemacs and latex, abbreviations, xemacs toolbar, xemacs keybindings, 
@@ -50,7 +50,7 @@ find bugs in the tips, have suggestions or questions, or just want to say that y
     <td align="left" width="20%">
     </td>
     <td align="center"  width="20%">
-      <a href="mailto:aoleg@math.umn.edu">aoleg@math.umn.edu</a>
+      <a href="mailto:oleg.alexandrov@gmail.com">oleg.alexandrov@gmail.com</a>
     </td>
 
     <td align="center" width="15%">
