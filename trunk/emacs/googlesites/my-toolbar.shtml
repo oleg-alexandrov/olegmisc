@@ -19,79 +19,79 @@
 <p />
 <table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
 <tr><td>
-<pre><span class="comment">; Paste this as 'my-toolbar.el' in '~/.xemacs', and put the icons in '~/.xemacs/icons'.
-; This line needs to be inserted in init.el: (load-file &quot;~/.xemacs/my-toolbar.el&quot;)</span>
+<pre><font color="#ee7600">; Paste this as 'my-toolbar.el' in '~/.xemacs', and put the icons in '~/.xemacs/icons'.
+; This line needs to be inserted in init.el: (load-file &quot;~/.xemacs/my-toolbar.el&quot;)</font>
 
-<span class="comment">; The contents of this file are based on the toolbar at
+<font color="#ee7600">; The contents of this file are based on the toolbar at
 ; http://www.linguistik.uni-erlangen.de/~mxp/xemacs-toolbar
-; and on the latex toolbar at http://ee.usyd.edu.au/~thlai/emacs/index.html</span>
+; and on the latex toolbar at http://ee.usyd.edu.au/~thlai/emacs/index.html</font>
 
-<span class="comment">; the location of icons</span>
-(<span class="keyword">defvar</span> <span class="variable-name">my-toolbar-icon-directory</span> &quot;<span class="doc-string">~/.xemacs/icons</span>&quot;)
+<font color="#ee7600">; the location of icons</font>
+(<font color="#f939ff">defvar</font> <font color="#9a2fff">my-toolbar-icon-directory</font> &quot;<font color="#00cd00">~/.xemacs/icons</font>&quot;)
 
-<span class="comment">; define the action of the 'redo' button</span>
-(<span class="keyword">defcustom</span> <span class="variable-name">toolbar-redo-function</span> 'redo
- &quot;<span class="doc-string">*Function to call when the redo icon is selected.</span>&quot;
-  <span class="reference">:type</span> '(radio (function-item redo) (function <span class="reference">:tag</span> &quot;<span class="string">Other</span>&quot;)) <span class="reference">:group</span> 'toolbar)
-(<span class="keyword">defun</span> <span class="function-name">toolbar-redo</span> ()
+<font color="#ee7600">; define the action of the 'redo' button</font>
+(<font color="#f939ff">defcustom</font> <font color="#9a2fff">toolbar-redo-function</font> 'redo
+ &quot;<font color="#00cd00">*Function to call when the redo icon is selected.</font>&quot;
+  <font color="#00cd00">:type</font> '(radio (function-item redo) (function <font color="#00cd00">:tag</font> &quot;<font color="#00cd00">Other</font>&quot;)) <font color="#00cd00">:group</font> 'toolbar)
+(<font color="#f939ff">defun</font> <font color="#0000ff">toolbar-redo</font> ()
   (interactive)
   (call-interactively toolbar-redo-function))
 
-<span class="comment">; define the action of the 'search' button</span>
-(<span class="keyword">defcustom</span> <span class="variable-name">toolbar-search-function</span> 'isearch-forward
-  &quot;<span class="doc-string">*Function to call when the search icon is selected.</span>&quot;
-  <span class="reference">:type</span> '(radio (function-item search) (function <span class="reference">:tag</span> &quot;<span class="string">Other</span>&quot;)) <span class="reference">:group</span> 'toolbar)
-(<span class="keyword">defun</span> <span class="function-name">toolbar-search</span> ()
+<font color="#ee7600">; define the action of the 'search' button</font>
+(<font color="#f939ff">defcustom</font> <font color="#9a2fff">toolbar-search-function</font> 'isearch-forward
+  &quot;<font color="#00cd00">*Function to call when the search icon is selected.</font>&quot;
+  <font color="#00cd00">:type</font> '(radio (function-item search) (function <font color="#00cd00">:tag</font> &quot;<font color="#00cd00">Other</font>&quot;)) <font color="#00cd00">:group</font> 'toolbar)
+(<font color="#f939ff">defun</font> <font color="#0000ff">toolbar-search</font> ()
   (interactive)
   (call-interactively toolbar-search-function))
 
-<span class="comment">; a function which will make a toolbar button with a given icon file name</span>
-(<span class="keyword">defun</span> <span class="function-name">my-toolbar-make-button</span> (file)
+<font color="#ee7600">; a function which will make a toolbar button with a given icon file name</font>
+(<font color="#f939ff">defun</font> <font color="#0000ff">my-toolbar-make-button</font> (file)
   (setq file (expand-file-name file my-toolbar-icon-directory))
-  (<span class="keyword">if</span> (file-readable-p file)
+  (<font color="#f939ff">if</font> (file-readable-p file)
       (toolbar-make-button-list file)
-    (error &quot;<span class="string">cannot find pixmap %s</span>&quot; file)))
+    (error &quot;<font color="#00cd00">cannot find pixmap %s</font>&quot; file)))
 
-<span class="comment">;  making the buttons</span>
-(<span class="keyword">defconst</span> <span class="variable-name">toolbar-file-icon</span>      (my-toolbar-make-button &quot;<span class="string">file-cap-up.xpm</span>&quot;))
-(<span class="keyword">defconst</span> <span class="variable-name">toolbar-disk-icon</span>      (my-toolbar-make-button &quot;<span class="string">disk-cap-up.xpm</span>&quot;))
-(<span class="keyword">defconst</span> <span class="variable-name">toolbar-printer-icon</span>   (my-toolbar-make-button &quot;<span class="string">print-cap-up.xpm</span>&quot;))
-(<span class="keyword">defconst</span> <span class="variable-name">toolbar-cut-icon</span>       (my-toolbar-make-button &quot;<span class="string">cut-cap-up.xpm</span>&quot;))
-(<span class="keyword">defconst</span> <span class="variable-name">toolbar-copy-icon</span>      (my-toolbar-make-button &quot;<span class="string">copy-cap-up.xpm</span>&quot;))
-(<span class="keyword">defconst</span> <span class="variable-name">toolbar-paste-icon</span>     (my-toolbar-make-button &quot;<span class="string">paste-cap-up.xpm</span>&quot;))
-(<span class="keyword">defconst</span> <span class="variable-name">toolbar-undo-icon</span>      (my-toolbar-make-button &quot;<span class="string">undo-cap-up.xpm</span>&quot;))
-(<span class="keyword">defconst</span> <span class="variable-name">toolbar-redo-icon</span>      (my-toolbar-make-button &quot;<span class="string">redo-cap-up.xpm</span>&quot;))
-(<span class="keyword">defconst</span> <span class="variable-name">toolbar-spell-icon</span>     (my-toolbar-make-button &quot;<span class="string">spell-cap-up.xpm</span>&quot;))
-(<span class="keyword">defconst</span> <span class="variable-name">toolbar-replace-icon</span>   (my-toolbar-make-button &quot;<span class="string">replace-cap-up.xpm</span>&quot;))
-(<span class="keyword">defconst</span> <span class="variable-name">toolbar-search-icon</span>    (my-toolbar-make-button &quot;<span class="string">search-cap-up.xpm</span>&quot;))
-(<span class="keyword">defconst</span> <span class="variable-name">toolbar-mail-icon</span>      (my-toolbar-make-button &quot;<span class="string">mail-cap-up.xpm</span>&quot;))
+<font color="#ee7600">;  making the buttons</font>
+(<font color="#f939ff">defconst</font> <font color="#9a2fff">toolbar-file-icon</font>      (my-toolbar-make-button &quot;<font color="#00cd00">file-cap-up.xpm</font>&quot;))
+(<font color="#f939ff">defconst</font> <font color="#9a2fff">toolbar-disk-icon</font>      (my-toolbar-make-button &quot;<font color="#00cd00">disk-cap-up.xpm</font>&quot;))
+(<font color="#f939ff">defconst</font> <font color="#9a2fff">toolbar-printer-icon</font>   (my-toolbar-make-button &quot;<font color="#00cd00">print-cap-up.xpm</font>&quot;))
+(<font color="#f939ff">defconst</font> <font color="#9a2fff">toolbar-cut-icon</font>       (my-toolbar-make-button &quot;<font color="#00cd00">cut-cap-up.xpm</font>&quot;))
+(<font color="#f939ff">defconst</font> <font color="#9a2fff">toolbar-copy-icon</font>      (my-toolbar-make-button &quot;<font color="#00cd00">copy-cap-up.xpm</font>&quot;))
+(<font color="#f939ff">defconst</font> <font color="#9a2fff">toolbar-paste-icon</font>     (my-toolbar-make-button &quot;<font color="#00cd00">paste-cap-up.xpm</font>&quot;))
+(<font color="#f939ff">defconst</font> <font color="#9a2fff">toolbar-undo-icon</font>      (my-toolbar-make-button &quot;<font color="#00cd00">undo-cap-up.xpm</font>&quot;))
+(<font color="#f939ff">defconst</font> <font color="#9a2fff">toolbar-redo-icon</font>      (my-toolbar-make-button &quot;<font color="#00cd00">redo-cap-up.xpm</font>&quot;))
+(<font color="#f939ff">defconst</font> <font color="#9a2fff">toolbar-spell-icon</font>     (my-toolbar-make-button &quot;<font color="#00cd00">spell-cap-up.xpm</font>&quot;))
+(<font color="#f939ff">defconst</font> <font color="#9a2fff">toolbar-replace-icon</font>   (my-toolbar-make-button &quot;<font color="#00cd00">replace-cap-up.xpm</font>&quot;))
+(<font color="#f939ff">defconst</font> <font color="#9a2fff">toolbar-search-icon</font>    (my-toolbar-make-button &quot;<font color="#00cd00">search-cap-up.xpm</font>&quot;))
+(<font color="#f939ff">defconst</font> <font color="#9a2fff">toolbar-mail-icon</font>      (my-toolbar-make-button &quot;<font color="#00cd00">mail-cap-up.xpm</font>&quot;))
 
 
-<span class="comment">; defining the toolbar</span>
-(<span class="keyword">defconst</span> <span class="variable-name">my-toolbar'(</span>
-   [toolbar-file-icon        toolbar-open      t   &quot;<span class="string">Open a file</span>&quot;]
-<span class="comment">;  [toolbar-folder-icon      toolbar-dired     t   &quot;Edit a directory&quot;]</span>
-   [toolbar-disk-icon        toolbar-save      t   &quot;<span class="string">Save buffer</span>&quot;]
-   [toolbar-printer-icon     toolbar-print     t   &quot;<span class="string">Print document</span>&quot;]
-   [toolbar-cut-icon         toolbar-cut       t   &quot;<span class="string">Kill region</span>&quot;]
-   [toolbar-copy-icon        toolbar-copy      t   &quot;<span class="string">Copy region</span>&quot;]
-   [toolbar-paste-icon       toolbar-paste     t   &quot;<span class="string">Paste from clipboard</span>&quot;]
-   [toolbar-undo-icon        toolbar-undo      t   &quot;<span class="string">Undo edit</span>&quot;]
-   [toolbar-redo-icon        toolbar-redo      t   &quot;<span class="string">Redo edit</span>&quot;]
-   [toolbar-spell-icon       toolbar-ispell    t   &quot;<span class="string">Check spelling</span>&quot;]
-   [toolbar-search-icon      toolbar-search    t   &quot;<span class="string">Search</span>&quot;]
-   [toolbar-replace-icon     toolbar-replace   t   &quot;<span class="string">Search &amp; Replace</span>&quot;]
-   [toolbar-mail-icon        toolbar-mail      t   &quot;<span class="string">Read mail</span>&quot;]
-<span class="comment">;  [toolbar-info-icon        toolbar-info      t   &quot;Info documentation&quot;]
+<font color="#ee7600">; defining the toolbar</font>
+(<font color="#f939ff">defconst</font> <font color="#9a2fff">my-toolbar'(</font>
+   [toolbar-file-icon        toolbar-open      t   &quot;<font color="#00cd00">Open a file</font>&quot;]
+<font color="#ee7600">;  [toolbar-folder-icon      toolbar-dired     t   &quot;Edit a directory&quot;]</font>
+   [toolbar-disk-icon        toolbar-save      t   &quot;<font color="#00cd00">Save buffer</font>&quot;]
+   [toolbar-printer-icon     toolbar-print     t   &quot;<font color="#00cd00">Print document</font>&quot;]
+   [toolbar-cut-icon         toolbar-cut       t   &quot;<font color="#00cd00">Kill region</font>&quot;]
+   [toolbar-copy-icon        toolbar-copy      t   &quot;<font color="#00cd00">Copy region</font>&quot;]
+   [toolbar-paste-icon       toolbar-paste     t   &quot;<font color="#00cd00">Paste from clipboard</font>&quot;]
+   [toolbar-undo-icon        toolbar-undo      t   &quot;<font color="#00cd00">Undo edit</font>&quot;]
+   [toolbar-redo-icon        toolbar-redo      t   &quot;<font color="#00cd00">Redo edit</font>&quot;]
+   [toolbar-spell-icon       toolbar-ispell    t   &quot;<font color="#00cd00">Check spelling</font>&quot;]
+   [toolbar-search-icon      toolbar-search    t   &quot;<font color="#00cd00">Search</font>&quot;]
+   [toolbar-replace-icon     toolbar-replace   t   &quot;<font color="#00cd00">Search &amp; Replace</font>&quot;]
+   [toolbar-mail-icon        toolbar-mail      t   &quot;<font color="#00cd00">Read mail</font>&quot;]
+<font color="#ee7600">;  [toolbar-info-icon        toolbar-info      t   &quot;Info documentation&quot;]
 ;  [toolbar-compile-icon     toolbar-compile   t   &quot;Start a compilation&quot;]
 ;  [toolbar-debug-icon       toolbar-debug     t   &quot;Start a debugger&quot;]
-;  [toolbar-news-icon        toolbar-news      t   &quot;Read news&quot;]</span>
+;  [toolbar-news-icon        toolbar-news      t   &quot;Read news&quot;]</font>
   )
 )
    
-<span class="comment">; installing the toolbar</span>
+<font color="#ee7600">; installing the toolbar</font>
 (setq locale 'global)
-(set-specifier top-toolbar (cons locale my-toolbar))<span class="comment">; put the toolbar on top</span></pre>
+(set-specifier top-toolbar (cons locale my-toolbar))<font color="#ee7600">; put the toolbar on top</font></pre>
 </td></tr></table>
 
 
