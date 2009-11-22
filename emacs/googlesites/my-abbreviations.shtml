@@ -18,89 +18,89 @@
 <p />
 <table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
 <tr><td>
-<pre><span class="comment">; my-abbreviations.el - a file to store abbreviations tables. So far
+<pre><font color="#ee7600">; my-abbreviations.el - a file to store abbreviations tables. So far
 ; it has only a latex-mode abbreviation table, but it can contain
 ; tables for many other languages (html, C++, etc).  Note that XEmacs
 ; sometimes overwrites this file and then the nice order as now is
-; lost.</span>
+; lost.</font>
 
 
-<span class="comment">; Define the table of abbreviations in latex-mode.  Note that we have
+<font color="#ee7600">; Define the table of abbreviations in latex-mode.  Note that we have
 ; to use '\\' to stand for backslash, since, just like in LaTeX, in
 ; emacs lisp the backslash character is special.  It would have been
 ; logical for this table to be called latex-mode-abbrev-table, but for
-; some reason that does not work.</span>
-(<span class="keyword">define-abbrev-table</span> '<span class="function-name">text-mode-abbrev-table</span> '(
+; some reason that does not work.</font>
+(<font color="#f939ff">define-abbrev-table</font> '<font color="#0000ff">text-mode-abbrev-table</font> '(
 
-  <span class="comment">; abbreviations to fix typos (i.e, to correct things like 'teh' into 'the')</span>
-    (&quot;<span class="string">teh</span>&quot;  &quot;<span class="string">the </span>&quot;  nil 0)
-    (&quot;<span class="string">hte</span>&quot;  &quot;<span class="string">the </span>&quot;  nil 0)
-    (&quot;<span class="string">htat</span>&quot; &quot;<span class="string">that </span>&quot; nil 0)
+  <font color="#ee7600">; abbreviations to fix typos (i.e, to correct things like 'teh' into 'the')</font>
+    (&quot;<font color="#00cd00">teh</font>&quot;  &quot;<font color="#00cd00">the </font>&quot;  nil 0)
+    (&quot;<font color="#00cd00">hte</font>&quot;  &quot;<font color="#00cd00">the </font>&quot;  nil 0)
+    (&quot;<font color="#00cd00">htat</font>&quot; &quot;<font color="#00cd00">that </font>&quot; nil 0)
 
-   <span class="comment">; abbreviations to long words</span>
-    (&quot;<span class="string">abb</span>&quot;      &quot;<span class="string">abbreviation </span>&quot;    nil 0)
-    (&quot;<span class="string">approx</span>&quot;   &quot;<span class="string">approximation </span>&quot;   nil 0)
-    (&quot;<span class="string">contr</span>&quot;    &quot;<span class="string">contradiction </span>&quot;   nil 0)
-    (&quot;<span class="string">cont</span>&quot;     &quot;<span class="string">continuously </span>&quot;    nil 0)
-    (&quot;<span class="string">neib</span>&quot;     &quot;<span class="string">neighborhood </span>&quot;    nil 0)
-    (&quot;<span class="string">\\lra</span>&quot;    &quot;<span class="string">\\leftrightarrow</span>&quot; nil 0)
+   <font color="#ee7600">; abbreviations to long words</font>
+    (&quot;<font color="#00cd00">abb</font>&quot;      &quot;<font color="#00cd00">abbreviation </font>&quot;    nil 0)
+    (&quot;<font color="#00cd00">approx</font>&quot;   &quot;<font color="#00cd00">approximation </font>&quot;   nil 0)
+    (&quot;<font color="#00cd00">contr</font>&quot;    &quot;<font color="#00cd00">contradiction </font>&quot;   nil 0)
+    (&quot;<font color="#00cd00">cont</font>&quot;     &quot;<font color="#00cd00">continuously </font>&quot;    nil 0)
+    (&quot;<font color="#00cd00">neib</font>&quot;     &quot;<font color="#00cd00">neighborhood </font>&quot;    nil 0)
+    (&quot;<font color="#00cd00">\\lra</font>&quot;    &quot;<font color="#00cd00">\\leftrightarrow</font>&quot; nil 0)
    
-   <span class="comment">; abbreviations to long letters in the Green alphabet</span>
-    (&quot;<span class="string">\\a</span>&quot; &quot;<span class="string">\\alpha</span>&quot; nil 0)
-    (&quot;<span class="string">\\b</span>&quot; &quot;<span class="string">\\beta</span>&quot; nil 0)
-    (&quot;<span class="string">\\g</span>&quot; &quot;<span class="string">\\gamma</span>&quot; nil 0)
-    (&quot;<span class="string">\\d</span>&quot; &quot;<span class="string">\\delta</span>&quot; nil 0)
-    (&quot;<span class="string">\\e</span>&quot; &quot;<span class="string">\\epsilon</span>&quot; nil 0)
-    (&quot;<span class="string">\\ve</span>&quot; &quot;<span class="string">\\varepsilon</span>&quot; nil 0)
-    (&quot;<span class="string">\\t</span>&quot; &quot;<span class="string">\\theta</span>&quot; nil 0)
-    (&quot;<span class="string">\\vt</span>&quot; &quot;<span class="string">\\vartheta</span>&quot; nil 0)
-    (&quot;<span class="string">\\k</span>&quot; &quot;<span class="string">\\kappa</span>&quot; nil 0)
-    (&quot;<span class="string">\\l</span>&quot; &quot;<span class="string">\\lambda</span>&quot; nil 0)
-    (&quot;<span class="string">\\vp</span>&quot; &quot;<span class="string">\\varphi</span>&quot; nil 0)
-    (&quot;<span class="string">\\vs</span>&quot; &quot;<span class="string">\\varpsi</span>&quot; nil 0)
-    (&quot;<span class="string">\\s</span>&quot; &quot;<span class="string">\\sigma</span>&quot; nil 0)
-    (&quot;<span class="string">\\o</span>&quot; &quot;<span class="string">\\omega</span>&quot; nil 0)
+   <font color="#ee7600">; abbreviations to long letters in the Green alphabet</font>
+    (&quot;<font color="#00cd00">\\a</font>&quot; &quot;<font color="#00cd00">\\alpha</font>&quot; nil 0)
+    (&quot;<font color="#00cd00">\\b</font>&quot; &quot;<font color="#00cd00">\\beta</font>&quot; nil 0)
+    (&quot;<font color="#00cd00">\\g</font>&quot; &quot;<font color="#00cd00">\\gamma</font>&quot; nil 0)
+    (&quot;<font color="#00cd00">\\d</font>&quot; &quot;<font color="#00cd00">\\delta</font>&quot; nil 0)
+    (&quot;<font color="#00cd00">\\e</font>&quot; &quot;<font color="#00cd00">\\epsilon</font>&quot; nil 0)
+    (&quot;<font color="#00cd00">\\ve</font>&quot; &quot;<font color="#00cd00">\\varepsilon</font>&quot; nil 0)
+    (&quot;<font color="#00cd00">\\t</font>&quot; &quot;<font color="#00cd00">\\theta</font>&quot; nil 0)
+    (&quot;<font color="#00cd00">\\vt</font>&quot; &quot;<font color="#00cd00">\\vartheta</font>&quot; nil 0)
+    (&quot;<font color="#00cd00">\\k</font>&quot; &quot;<font color="#00cd00">\\kappa</font>&quot; nil 0)
+    (&quot;<font color="#00cd00">\\l</font>&quot; &quot;<font color="#00cd00">\\lambda</font>&quot; nil 0)
+    (&quot;<font color="#00cd00">\\vp</font>&quot; &quot;<font color="#00cd00">\\varphi</font>&quot; nil 0)
+    (&quot;<font color="#00cd00">\\vs</font>&quot; &quot;<font color="#00cd00">\\varpsi</font>&quot; nil 0)
+    (&quot;<font color="#00cd00">\\s</font>&quot; &quot;<font color="#00cd00">\\sigma</font>&quot; nil 0)
+    (&quot;<font color="#00cd00">\\o</font>&quot; &quot;<font color="#00cd00">\\omega</font>&quot; nil 0)
 
-   <span class="comment">; abbreviations to mathbb R, etc</span>
-    (&quot;<span class="string">\\c</span>&quot; &quot;<span class="string">\\mathbb C</span>&quot; nil 0)
-    (&quot;<span class="string">\\q</span>&quot; &quot;<span class="string">\\mathbb Q</span>&quot; nil 0)
-    (&quot;<span class="string">\\r</span>&quot; &quot;<span class="string">\\mathbb R</span>&quot; nil 0)
-    (&quot;<span class="string">\\z</span>&quot; &quot;<span class="string">\\mathbb Z</span>&quot; nil 0)
+   <font color="#ee7600">; abbreviations to mathbb R, etc</font>
+    (&quot;<font color="#00cd00">\\c</font>&quot; &quot;<font color="#00cd00">\\mathbb C</font>&quot; nil 0)
+    (&quot;<font color="#00cd00">\\q</font>&quot; &quot;<font color="#00cd00">\\mathbb Q</font>&quot; nil 0)
+    (&quot;<font color="#00cd00">\\r</font>&quot; &quot;<font color="#00cd00">\\mathbb R</font>&quot; nil 0)
+    (&quot;<font color="#00cd00">\\z</font>&quot; &quot;<font color="#00cd00">\\mathbb Z</font>&quot; nil 0)
 
-  <span class="comment">; abbreviations involving going back one character</span>
-    (&quot;<span class="string">\\bb</span>&quot; &quot;<span class="string">{\\bf }</span>&quot; backward-char 0)
-    (&quot;<span class="string">\\ee</span>&quot; &quot;<span class="string">\\emph{}</span>&quot; backward-char 0)
-    (&quot;<span class="string">\\ii</span>&quot; &quot;<span class="string">{\\it }</span>&quot; backward-char 0)
-    (&quot;<span class="string">\\ll</span>&quot; &quot;<span class="string">\\label{}</span>&quot; backward-char 0)
-    (&quot;<span class="string">\\mm</span>&quot; &quot;<span class="string">{\\mathbf }</span>&quot; backward-char 0)
-    (&quot;<span class="string">\\ss</span>&quot; &quot;<span class="string">\\section{}</span>&quot; backward-char 0)
-   <span class="comment">; ------------------------------------</span>
-    (&quot;<span class="string">\\bi</span>&quot; &quot;<span class="string">\\bibitem{}</span>&quot; backward-char 0)
-    (&quot;<span class="string">\\ci</span>&quot; &quot;<span class="string">\\cite{}</span>&quot; backward-char 0)
-    (&quot;<span class="string">\\lm</span>&quot; &quot;<span class="string">\\lim\\limits_{}</span>&quot; backward-char 0)
-    (&quot;<span class="string">\\sq</span>&quot; &quot;<span class="string">\\sqrt{}</span>&quot; backward-char 0)
-    (&quot;<span class="string">\\sb</span>&quot; &quot;<span class="string">\\subsection{}</span>&quot; backward-char 0)
-    (&quot;<span class="string">\\ssb</span>&quot; &quot;<span class="string">\\subsubsection{}</span>&quot; backward-char 0)
+  <font color="#ee7600">; abbreviations involving going back one character</font>
+    (&quot;<font color="#00cd00">\\bb</font>&quot; &quot;<font color="#00cd00">{\\bf }</font>&quot; backward-char 0)
+    (&quot;<font color="#00cd00">\\ee</font>&quot; &quot;<font color="#00cd00">\\emph{}</font>&quot; backward-char 0)
+    (&quot;<font color="#00cd00">\\ii</font>&quot; &quot;<font color="#00cd00">{\\it }</font>&quot; backward-char 0)
+    (&quot;<font color="#00cd00">\\ll</font>&quot; &quot;<font color="#00cd00">\\label{}</font>&quot; backward-char 0)
+    (&quot;<font color="#00cd00">\\mm</font>&quot; &quot;<font color="#00cd00">{\\mathbf }</font>&quot; backward-char 0)
+    (&quot;<font color="#00cd00">\\ss</font>&quot; &quot;<font color="#00cd00">\\section{}</font>&quot; backward-char 0)
+   <font color="#ee7600">; ------------------------------------</font>
+    (&quot;<font color="#00cd00">\\bi</font>&quot; &quot;<font color="#00cd00">\\bibitem{}</font>&quot; backward-char 0)
+    (&quot;<font color="#00cd00">\\ci</font>&quot; &quot;<font color="#00cd00">\\cite{}</font>&quot; backward-char 0)
+    (&quot;<font color="#00cd00">\\lm</font>&quot; &quot;<font color="#00cd00">\\lim\\limits_{}</font>&quot; backward-char 0)
+    (&quot;<font color="#00cd00">\\sq</font>&quot; &quot;<font color="#00cd00">\\sqrt{}</font>&quot; backward-char 0)
+    (&quot;<font color="#00cd00">\\sb</font>&quot; &quot;<font color="#00cd00">\\subsection{}</font>&quot; backward-char 0)
+    (&quot;<font color="#00cd00">\\ssb</font>&quot; &quot;<font color="#00cd00">\\subsubsection{}</font>&quot; backward-char 0)
 
-   <span class="comment">; abbreviations calling functions (which are defined in my-latex.el)</span>
-    (&quot;<span class="string">\\co</span>&quot; &quot;&quot; my-latex-corollary 0)
-    (&quot;<span class="string">\\lm</span>&quot; &quot;&quot; my-latex-lemma 0)
-    (&quot;<span class="string">\\pr</span>&quot; &quot;&quot; my-latex-proof 0)
-    (&quot;<span class="string">\\th</span>&quot; &quot;&quot; my-latex-theorem 0)
+   <font color="#ee7600">; abbreviations calling functions (which are defined in my-latex.el)</font>
+    (&quot;<font color="#00cd00">\\co</font>&quot; &quot;&quot; my-latex-corollary 0)
+    (&quot;<font color="#00cd00">\\lm</font>&quot; &quot;&quot; my-latex-lemma 0)
+    (&quot;<font color="#00cd00">\\pr</font>&quot; &quot;&quot; my-latex-proof 0)
+    (&quot;<font color="#00cd00">\\th</font>&quot; &quot;&quot; my-latex-theorem 0)
 
-    (&quot;<span class="string">\\eq</span>&quot; &quot;&quot; my-latex-equation 0)
-    (&quot;<span class="string">\\ct</span>&quot; &quot;&quot; my-latex-center 0)
-    (&quot;<span class="string">\\en</span>&quot; &quot;&quot; my-latex-enumerate 0)
-    (&quot;<span class="string">\\ls</span>&quot; &quot;&quot; my-latex-list 0)
+    (&quot;<font color="#00cd00">\\eq</font>&quot; &quot;&quot; my-latex-equation 0)
+    (&quot;<font color="#00cd00">\\ct</font>&quot; &quot;&quot; my-latex-center 0)
+    (&quot;<font color="#00cd00">\\en</font>&quot; &quot;&quot; my-latex-enumerate 0)
+    (&quot;<font color="#00cd00">\\ls</font>&quot; &quot;&quot; my-latex-list 0)
 
-    (&quot;<span class="string">\\su</span>&quot; &quot;&quot; my-latex-sum 0)
-    (&quot;<span class="string">\\in</span>&quot;  &quot;&quot; my-latex-int 0)
+    (&quot;<font color="#00cd00">\\su</font>&quot; &quot;&quot; my-latex-sum 0)
+    (&quot;<font color="#00cd00">\\in</font>&quot;  &quot;&quot; my-latex-int 0)
 
-    (&quot;<span class="string">\\il</span>&quot; &quot;&quot; my-latex-int-lim 0)
-    (&quot;<span class="string">\\sl</span>&quot; &quot;&quot; my-latex-sum-lim 0)
+    (&quot;<font color="#00cd00">\\il</font>&quot; &quot;&quot; my-latex-int-lim 0)
+    (&quot;<font color="#00cd00">\\sl</font>&quot; &quot;&quot; my-latex-sum-lim 0)
    
-    (&quot;<span class="string">\\fr</span>&quot; &quot;&quot; my-latex-frac 0)
-    (&quot;<span class="string">\\rf</span>&quot; &quot;&quot; my-latex-ref 0)
+    (&quot;<font color="#00cd00">\\fr</font>&quot; &quot;&quot; my-latex-frac 0)
+    (&quot;<font color="#00cd00">\\rf</font>&quot; &quot;&quot; my-latex-ref 0)
   ))</pre>
 </td></tr></table>
 

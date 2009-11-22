@@ -41,7 +41,7 @@ line in <i><a href="startup">init.el</a></i>:
 <p>
 <table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
 <tr><td>
-<pre>(load-file &quot;<span class="doc-string">~/.xemacs/my-toolbar.el</span>&quot;)<span class="comment">; load the toolbar</span></pre>
+<pre>(load-file &quot;<font color="#00cd00">~/.xemacs/my-toolbar.el</font>&quot;)<font color="#ee7600">; load the toolbar</font></pre>
 </td></tr></table>
 
 <hr />
