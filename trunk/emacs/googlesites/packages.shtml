@@ -23,29 +23,28 @@
 
 First, lets deal with the constants. Insert the following in <i><a
 href="startup">custom.el</a></i> (any line you don't want can be
-commented out by inserting a semicolon, that is, the sign "<span
-class="comment">&nbsp;;&nbsp;</span>" before that line).
+commented out by inserting a semicolon, that is, the sign "<font color="#ee7600">&nbsp;;&nbsp;</font>" before that line).
 
 <p>
 <table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
 <tr><td>
-<pre>(custom-set-variables               <span class="comment">; only one entry with this name must exist in custom.el</span>
- '(delete-key-deletes-forward t)    <span class="comment">; make the delete key delete the next character (as expected)</span>
- '(line-number-mode t)              <span class="comment">; show the line and column number of the cursor in the ...</span>
- '(column-number-mode t)            <span class="comment">; ... lower part of the screen (very useful)</span>
- '(make-backup-files nil)           <span class="comment">; do not make back-up files (they just trash the directories)</span>
- '(visible-bell t)                  <span class="comment">; flash the screen instead of beeping (which can be annoying)</span>
- '(mouse-yank-at-point t)           <span class="comment">; paste where the cursor is, and not where the mouse clicks in</span>
- '(user-mail-address &quot;<span class="string">my@email</span>&quot; t)  <span class="comment">; your e-mail address (otherwise XEmacs will nag)</span>
- '(query-user-mail-address nil)     <span class="comment">; don't ask what my e-mail address is all the time</span>
-)                                   <span class="comment">; don't miss this closing parenthesis!</span></pre>
+<pre>(custom-set-variables               <font color="#ee7600">; only one entry with this name must exist in custom.el</font>
+ '(delete-key-deletes-forward t)    <font color="#ee7600">; make the delete key delete the next character (as expected)</font>
+ '(line-number-mode t)              <font color="#ee7600">; show the line and column number of the cursor in the ...</font>
+ '(column-number-mode t)            <font color="#ee7600">; ... lower part of the screen (very useful)</font>
+ '(make-backup-files nil)           <font color="#ee7600">; do not make back-up files (they just trash the directories)</font>
+ '(visible-bell t)                  <font color="#ee7600">; flash the screen instead of beeping (which can be annoying)</font>
+ '(mouse-yank-at-point t)           <font color="#ee7600">; paste where the cursor is, and not where the mouse clicks in</font>
+ '(user-mail-address &quot;<font color="#00cd00">my@email</font>&quot; t)  <font color="#ee7600">; your e-mail address (otherwise XEmacs will nag)</font>
+ '(query-user-mail-address nil)     <font color="#ee7600">; don't ask what my e-mail address is all the time</font>
+)                                   <font color="#ee7600">; don't miss this closing parenthesis!</font></pre>
 </td></tr></table>
 
 <p> Check whether <i><a href="startup">custom.el</a></i> already
 has an entry called <i>custom-set-variables.</i> (That is by the way a
 <i>hash,</i> a collection of variables grouped together, each having
 its own value.) If so, append the lines above which start with the quoted
-parenthesis <span class="ltxcode">'(</span> to that hash, or just
+parenthesis <font color="#0000ff">'(</font> to that hash, or just
 replace some or all of them. And don't forget that the hash has a
 closing parenthesis. For these preferences to take effect, XEmacs must be <i>restarted</i>.
 
@@ -59,16 +58,16 @@ started. Insert the following in <i><a href="startup">init.el</a></i>
 <p>
 <table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
 <tr><td>
-<pre><span class="comment">; Saves a history of files opened previously (including other times XEmacs was used - very useful)</span>
-(<span class="keyword">require</span> `savehist)
-(setq savehist-file &quot;<span class="doc-string">~/.xemacs/history</span>&quot;)
+<pre><font color="#ee7600">; Saves a history of files opened previously (including other times XEmacs was used - very useful)</font>
+(<font color="#f939ff">require</font> `savehist)
+(setq savehist-file &quot;<font color="#00cd00">~/.xemacs/history</font>&quot;)
 (setq savehist-length 1000)
 (savehist-load)
 
-<span class="comment">; Saves the position the cursor was in a file before the file was closed.</span>
-(load-library &quot;<span class="doc-string">saveplace</span>&quot;)
-(setq save-place-file &quot;<span class="doc-string">~/.xemacs/places</span>&quot;)
-(setq shadow-todo-file &quot;<span class="doc-string">~/.xemacs/shadow-todo</span>&quot;)</pre>
+<font color="#ee7600">; Saves the position the cursor was in a file before the file was closed.</font>
+(load-library &quot;<font color="#00cd00">saveplace</font>&quot;)
+(setq save-place-file &quot;<font color="#00cd00">~/.xemacs/places</font>&quot;)
+(setq shadow-todo-file &quot;<font color="#00cd00">~/.xemacs/shadow-todo</font>&quot;)</pre>
 </td></tr></table>
 
 <p> This is how the history is to be used. Hit the command to open a
@@ -93,10 +92,10 @@ href="startup">init.el</a></i>
 <p>
 <table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
 <tr><td>
-<pre>(load-file &quot;<span class="doc-string">~/.xemacs/mas-file-history.el</span>&quot;) <span class="comment">; creates a menu with a list of recently opened files</span>
-(setq mas-file-history-menu-path nil)       <span class="comment">; put the menu at the top of the XEmacs window</span>
-(setq mas-file-history-menu-title &quot;<span class="doc-string">History</span>&quot;)<span class="comment">; the name of the menu</span>
-(<span class="keyword">with-temp-buffer</span>)                          <span class="comment">; this hack seems to be necessary</span></pre>
+<pre>(load-file &quot;<font color="#00cd00">~/.xemacs/mas-file-history.el</font>&quot;) <font color="#ee7600">; creates a menu with a list of recently opened files</font>
+(setq mas-file-history-menu-path nil)       <font color="#ee7600">; put the menu at the top of the XEmacs window</font>
+(setq mas-file-history-menu-title &quot;<font color="#00cd00">History</font>&quot;)<font color="#ee7600">; the name of the menu</font>
+(<font color="#f939ff">with-temp-buffer</font>)                          <font color="#ee7600">; this hack seems to be necessary</font></pre>
 </td></tr></table>
 
 <p> To change some preferences for this package, click on
