@@ -42,8 +42,8 @@ href="startup">init.el</a>
 <p>
 <table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
 <tr><td>
-<pre>(load-file &quot;<span class="doc-string">~/.xemacs/cua-mode.el</span>&quot;)  <span class="comment">; load cua-mode every time XEmacs is started</span>
-(CUA-mode 1) <span class="comment">; run cua-mode (a package to enable MS Windows type keyboard shortcuts)</span></pre>
+<pre>(load-file &quot;<font color="#00cd00">~/.xemacs/cua-mode.el</font>&quot;)  <font color="#ee7600">; load cua-mode every time XEmacs is started</font>
+(CUA-mode 1) <font color="#ee7600">; run cua-mode (a package to enable MS Windows type keyboard shortcuts)</font></pre>
 </td></tr></table>
 
 <p>The neat thing about this package, is that, with it one can still
@@ -61,8 +61,8 @@ insert in <a href="startup">init.el</a>
 <p>
 <table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
 <tr><td>
-<pre>(load-library &quot;<span class="doc-string">pc-select</span>&quot;)    <span class="comment">; a package which enables text selection ...</span>
-(pc-select-mode)              <span class="comment">; ... with the shift and arrow keys</span></pre>
+<pre>(load-library &quot;<font color="#00cd00">pc-select</font>&quot;)    <font color="#ee7600">; a package which enables text selection ...</font>
+(pc-select-mode)              <font color="#ee7600">; ... with the shift and arrow keys</font></pre>
 </td></tr></table>
 
 <p> Let us define some other shortcuts. We will put the commands
@@ -74,7 +74,7 @@ href="startup">init.el</a></i>
 <p>
 <table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
 <tr><td>
-<pre>(load-file &quot;<span class="doc-string">~/.xemacs/my-shortcuts.el</span>&quot;)  <span class="comment">; will load this file every time XEmacs is started</span></pre>
+<pre>(load-file &quot;<font color="#00cd00">~/.xemacs/my-shortcuts.el</font>&quot;)  <font color="#ee7600">; will load this file every time XEmacs is started</font></pre>
 </td></tr></table>
 
 <p> The text below, if inserted in <i>my-shortcuts.el</i>, will enable one to save with <i>Ctrl-s</i>,
@@ -83,19 +83,19 @@ open a file with <i>Ctrl-o</i>, etc.
 <p>
 <table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
 <tr><td>
-<pre>(global-set-key [(control o)] 'find-file)              <span class="comment">; use Ctrl-o to open a (new) file</span>
-(global-set-key [(control n)] 'find-file-other-frame)  <span class="comment">; open a file in a new window with Ctrl-n</span>
-(global-set-key [(control s)] 'save-buffer)            <span class="comment">; save with Ctrl-s</span>
-(global-set-key [(meta s)]    'write-file)             <span class="comment">; 'save file as...' with Alt-s ('meta' is</span>
-                                                       <span class="comment">; just another name for the 'Alt' key)</span>
-(global-set-key [(control q)] 'save-buffers-kill-emacs)<span class="comment">; exit XEmacs with Ctrl-q</span>
-(global-set-key [(meta q)]    'kill-this-buffer)       <span class="comment">; delete changes (don't save) with Alt-q</span>
+<pre>(global-set-key [(control o)] 'find-file)              <font color="#ee7600">; use Ctrl-o to open a (new) file</font>
+(global-set-key [(control n)] 'find-file-other-frame)  <font color="#ee7600">; open a file in a new window with Ctrl-n</font>
+(global-set-key [(control s)] 'save-buffer)            <font color="#ee7600">; save with Ctrl-s</font>
+(global-set-key [(meta s)]    'write-file)             <font color="#ee7600">; 'save file as...' with Alt-s ('meta' is</font>
+                                                       <font color="#ee7600">; just another name for the 'Alt' key)</font>
+(global-set-key [(control q)] 'save-buffers-kill-emacs)<font color="#ee7600">; exit XEmacs with Ctrl-q</font>
+(global-set-key [(meta q)]    'kill-this-buffer)       <font color="#ee7600">; delete changes (don't save) with Alt-q</font>
 
-(global-set-key [(control t)] 'ispell-buffer)          <span class="comment">; spell-check with Ctrl-t</span>
-(global-set-key [(control r)] 'replace-string)         <span class="comment">; search and replace with Ctrl-r</span>
+(global-set-key [(control t)] 'ispell-buffer)          <font color="#ee7600">; spell-check with Ctrl-t</font>
+(global-set-key [(control r)] 'replace-string)         <font color="#ee7600">; search and replace with Ctrl-r</font>
 
-(<span class="keyword">require</span> '<span class="reference">redo</span>)                                        <span class="comment">; load the 'redo' package</span>
-(global-set-key [(meta z)]    'redo)                   <span class="comment">; 'redo', that is, revert the last 'undo'</span></pre>
+(<font color="#f939ff">require</font> '<font color="#00cd00">redo</font>)                                        <font color="#ee7600">; load the 'redo' package</font>
+(global-set-key [(meta z)]    'redo)                   <font color="#ee7600">; 'redo', that is, revert the last 'undo'</font></pre>
 </td></tr></table>
 
 <p> To enable <i>Ctrl-z</i> to work as <i>undo</i>, one would ideally just use a <i>global-set-key</i>
@@ -107,13 +107,12 @@ it work as 'undo'. That is presented below (this text needs to go to <i>my-short
 <p> 
 <table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%"> 
 <tr><td> <pre>
-<span class="comment">; A first attempt to make &quot;control z&quot; work as undo. 
-</span>(global-set-key [(control z)] 'undo)
+<font color="#ee7600">; A first attempt to make &quot;control z&quot; work as undo.</font> 
+(global-set-key [(control z)] 'undo)
 
-<span class="comment">; The above does not work on newer versions of XEmacs. Then, highjack 
-; Xemacs's zap-up-to-char function itself and force it to work as &quot;undo&quot;.</span>
-(<span class="keyword">defun</span> <span
-class="function-name">zap-up-to-char</span> () 
+<font color="#ee7600">; The above does not work on newer versions of XEmacs. Then, highjack 
+; Xemacs's zap-up-to-char function itself and force it to work as &quot;undo&quot;.</font>
+(<font color="#f939ff">defun</font> <font color="#0000ff">zap-up-to-char</font> () 
   (interactive) 
   (undo)
 )</pre> </td></tr></table>
@@ -125,17 +124,17 @@ than just the declaration of a global key. The following would need to go to <i>
 <p>
 <table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0"  width="100%">
 <tr><td>
-<pre><span class="comment">; search forward with Ctrl-f</span>
+<pre><font color="#ee7600">; search forward with Ctrl-f</font>
 (global-set-key [(control f)] 'isearch-forward)
-(<span class="keyword">define-key</span> <span class="variable-name">isearch-mode-map</span> [(control f)] (lookup-key isearch-mode-map &quot;<span class="string">\C-s</span>&quot;))
-(<span class="keyword">define-key</span> <span class="variable-name">minibuffer-local-isearch-map</span> [(control f)]
-  (lookup-key minibuffer-local-isearch-map &quot;<span class="string">\C-s</span>&quot;))
+(<font color="#f939ff">define-key</font> <font color="#9a2fff">isearch-mode-map</font> [(control f)] (lookup-key isearch-mode-map &quot;<font color="#00cd00">\C-s</font>&quot;))
+(<font color="#f939ff">define-key</font> <font color="#9a2fff">minibuffer-local-isearch-map</font> [(control f)]
+  (lookup-key minibuffer-local-isearch-map &quot;<font color="#00cd00">\C-s</font>&quot;))
 
-<span class="comment">; search backward with Alt-f</span>
+<font color="#ee7600">; search backward with Alt-f</font>
 (global-set-key [(meta f)] 'isearch-backward)
-(<span class="keyword">define-key</span> <span class="variable-name">isearch-mode-map</span> [(meta f)] (lookup-key isearch-mode-map &quot;<span class="string">\C-r</span>&quot;))
-(<span class="keyword">define-key</span> <span class="variable-name">minibuffer-local-isearch-map</span> [(meta f)]
-  (lookup-key minibuffer-local-isearch-map &quot;<span class="string">\C-r</span>&quot;))</pre>
+(<font color="#f939ff">define-key</font> <font color="#9a2fff">isearch-mode-map</font> [(meta f)] (lookup-key isearch-mode-map &quot;<font color="#00cd00">\C-r</font>&quot;))
+(<font color="#f939ff">define-key</font> <font color="#9a2fff">minibuffer-local-isearch-map</font> [(meta f)]
+  (lookup-key minibuffer-local-isearch-map &quot;<font color="#00cd00">\C-r</font>&quot;))</pre>
 </td></tr></table>
 
 <p> Note that XEmacs searches as you type. This takes a bit used to,
