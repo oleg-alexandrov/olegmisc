@@ -63,47 +63,55 @@
     </style>
 </head>
   <body>
-    <pre><span class="preprocessor">#include</span> <span class="string">&lt;iostream&gt;</span>
-<span class="preprocessor">#include</span> <span class="string">&lt;cmath&gt;</span>
-<span class="preprocessor">#include</span> &quot;<span class="string">double3.h</span>&quot;
-<span class="type">using</span> namespace <span class="variable-name">std</span>;
+<table border="1" cellspacing="0" cellpadding="2"  bgcolor="#e0e0e0" text="#ffffff"  width="100%">
+<tr><td>
+<font color="black">
 
-<span class="comment">// create a class called double3 each object being a three component vector</span>
+    <pre><font color="#ff0000">#include</font> <font color="#00cd00">&lt;iostream&gt;</font>
+<font color="#ff0000">#include</font> <font color="#00cd00">&lt;cmath&gt;</font>
+<font color="#ff0000">#include</font> &quot;<font color="#00cd00">double3.h</font>&quot;
+<font color="#886fff">using</font> namespace <font color="#9a2fff">std</font>;
 
-<span class="function-name">double3::double3</span>(<span class="type">double</span> <span class="variable-name">x</span>, <span class="type">double</span> <span class="variable-name">y</span>, <span class="type">double</span> <span class="variable-name">z</span>) : x_(x), y_(y), z_(z){ }
-<span class="function-name">double3::double3</span>(<span class="type">const</span> double3&amp; <span class="variable-name">r</span>) : x_(r.x_), y_(r.y_), z_(r.z_){ }
-<span class="type">double</span>&amp; <span class="type">double3</span>::<span class="keyword">operator</span><span class="function-name">[]</span>(<span class="type">int</span> <span class="variable-name">i</span>){
-  <span class="keyword">if</span> (i == 0) <span class="keyword">return</span> x_;
-  <span class="keyword">if</span> (i == 1) <span class="keyword">return</span> y_;
-  <span class="keyword">if</span> (i == 2) <span class="keyword">return</span> z_;
-  cerr &lt;&lt; &quot;<span class="string">ERROR: index out of range\n</span>&quot;;
+<font color="#ee7600">// create a class called double3 each object being a three component vector</font>
+
+<font color="#0000ff">double3::double3</font>(<font color="#886fff">double</font> <font color="#9a2fff">x</font>, <font color="#886fff">double</font> <font color="#9a2fff">y</font>, <font color="#886fff">double</font> <font color="#9a2fff">z</font>) : x_(x), y_(y), z_(z){ }
+<font color="#0000ff">double3::double3</font>(<font color="#886fff">const</font> double3&amp; <font color="#9a2fff">r</font>) : x_(r.x_), y_(r.y_), z_(r.z_){ }
+<font color="#886fff">double</font>&amp; <font color="#886fff">double3</font>::<font color="#f939ff">operator</font><font color="#0000ff">[]</font>(<font color="#886fff">int</font> <font color="#9a2fff">i</font>){
+  <font color="#f939ff">if</font> (i == 0) <font color="#f939ff">return</font> x_;
+  <font color="#f939ff">if</font> (i == 1) <font color="#f939ff">return</font> y_;
+  <font color="#f939ff">if</font> (i == 2) <font color="#f939ff">return</font> z_;
+  cerr &lt;&lt; &quot;<font color="#00cd00">ERROR: index out of range\n</font>&quot;;
   exit(0);
 }
-<span class="type">double3</span> <span class="keyword">operator</span><span class="function-name">+(</span><span class="type">const</span> double3&amp; <span class="variable-name">r1</span>, <span class="type">const</span> double3&amp; <span class="variable-name">r2</span>){
+<font color="#886fff">double3</font> <font color="#f939ff">operator</font><font color="#0000ff">+(</font><font color="#886fff">const</font> double3&amp; <font color="#9a2fff">r1</font>, <font color="#886fff">const</font> double3&amp; <font color="#9a2fff">r2</font>){
   double3 r(r1.x_+r2.x_, r1.y_+r2.y_, r1.z_+r2.z_);
-  <span class="keyword">return</span> r;
+  <font color="#f939ff">return</font> r;
 }
-<span class="type">double3</span> <span class="function-name">operator*</span>(<span class="type">const</span> <span class="type">double</span>&amp; <span class="variable-name">c</span>, <span class="type">const</span> double3&amp; <span class="variable-name">r</span>){
+<font color="#886fff">double3</font> <font color="#0000ff">operator*</font>(<font color="#886fff">const</font> <font color="#886fff">double</font>&amp; <font color="#9a2fff">c</font>, <font color="#886fff">const</font> double3&amp; <font color="#9a2fff">r</font>){
   double3 rez(c*r.x_, c*r.y_, c*r.z_);
-  <span class="keyword">return</span> rez;
+  <font color="#f939ff">return</font> rez;
 }
-<span class="type">double3</span> <span class="keyword">operator</span><span class="function-name">-(</span><span class="type">const</span> double3&amp; <span class="variable-name">r1</span>, <span class="type">const</span> double3&amp; <span class="variable-name">r2</span>){
+<font color="#886fff">double3</font> <font color="#f939ff">operator</font><font color="#0000ff">-(</font><font color="#886fff">const</font> double3&amp; <font color="#9a2fff">r1</font>, <font color="#886fff">const</font> double3&amp; <font color="#9a2fff">r2</font>){
   double3 r(r1.x_-r2.x_, r1.y_-r2.y_, r1.z_-r2.z_);
-  <span class="keyword">return</span> r;
+  <font color="#f939ff">return</font> r;
 }
-<span class="type">double3</span>&amp; <span class="type">double3</span>::<span class="keyword">operator</span><span class="function-name">=(</span><span class="type">const</span> double3&amp; <span class="variable-name">r</span>)
+<font color="#886fff">double3</font>&amp; <font color="#886fff">double3</font>::<font color="#f939ff">operator</font><font color="#0000ff">=(</font><font color="#886fff">const</font> double3&amp; <font color="#9a2fff">r</font>)
 {
   x_ = r.x_;
   y_ = r.y_;
   z_ = r.z_;
-  <span class="keyword">return</span> *<span class="keyword">this</span>;
+  <font color="#f939ff">return</font> *<font color="#f939ff">this</font>;
 }
-<span class="type">ostream</span>&amp; <span class="keyword">operator</span><span class="function-name">&lt;&lt;</span>(ostream&amp; ostr, <span class="type">const</span> double3&amp; <span class="variable-name">r</span>){
-  <span class="keyword">return</span> ostr &lt;&lt; &quot;<span class="string">[ </span>&quot; &lt;&lt; r.x_ &lt;&lt; &quot;<span class="string">, </span>&quot; &lt;&lt; r.y_ &lt;&lt; &quot;<span class="string">, </span>&quot; &lt;&lt; r.z_ &lt;&lt; &quot;<span class="string"> ]\n</span>&quot;;
+<font color="#886fff">ostream</font>&amp; <font color="#f939ff">operator</font><font color="#0000ff">&lt;&lt;</font>(ostream&amp; ostr, <font color="#886fff">const</font> double3&amp; <font color="#9a2fff">r</font>){
+  <font color="#f939ff">return</font> ostr &lt;&lt; &quot;<font color="#00cd00">[ </font>&quot; &lt;&lt; r.x_ &lt;&lt; &quot;<font color="#00cd00">, </font>&quot; &lt;&lt; r.y_ &lt;&lt; &quot;<font color="#00cd00">, </font>&quot; &lt;&lt; r.z_ &lt;&lt; &quot;<font color="#00cd00"> ]\n</font>&quot;;
 }</pre>
   
+</font>
+</td></tr></table>
 
-<!--    Updated: February 22, 2004<hr /> -->
+<!--    Updated: November 21, 2009<hr /> -->
+<a href="syntax">
+<img src="back.gif" border="0" alt="Back: " />Syntax highlighting</a>
 
 </body>
 </html>
