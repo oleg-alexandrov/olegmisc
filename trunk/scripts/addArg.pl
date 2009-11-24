@@ -38,7 +38,6 @@ sub addArg{
   #               );';
 
   # Position starts from 1, not from zero.
-  
 
   my $fun      = shift;
   my $argToAdd = shift;
@@ -56,7 +55,6 @@ sub addArg{
 
   my ($before, $argList, $after) = splitByMatchingParen($fun);
 
-  
   # New arg will be on its on line
   $argToAdd .= "\n";
   $argToAdd =~ s/^\s*//g;
@@ -96,7 +94,6 @@ sub addArg{
   $argList =~ s/([ \t\r]*[\n]+[ \t\r]*)(,)/$2$1/g;
   $argList =~ s/(\s*\/\/.*?)(,)/$2$1/g;
   $argList =~ s/$comma/,/g;
-
   
   # Indent all but the first argument
   my $indentLevel = " " x length($before);
