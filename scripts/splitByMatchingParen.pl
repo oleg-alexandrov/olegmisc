@@ -62,7 +62,7 @@ sub findFirstCharPos{
     }
     $pos++;
   }
-  print "Failed to match \'$char\' in the text " . join("", @$chars) . "\n";
+  #print "Failed to match \'$char\' in the text '" . join("", @$chars) . "'\n";
   return -1;
 }
 
