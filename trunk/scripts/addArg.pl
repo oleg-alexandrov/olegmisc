@@ -45,7 +45,7 @@ sub addArg{
   my $argPos   = shift;
 
   if ($argPos <= 0){
-    print "Expecting argument position to be >=1\n";
+    print "Expecting argument position to be >= 1\n";
     exit(0);
   }
   
@@ -59,10 +59,8 @@ sub addArg{
   
   # New arg will be on its on line
   $argToAdd .= "\n";
-  
-  #Keep in mind the level of indentation
   $argToAdd =~ s/^\s*//g;
-  $argToAdd = ( " " x length($before) ) . $argToAdd;
+  $argToAdd = "\n" . $argToAdd;
   
   # Encode any comma in comments as that can be confusing
   $argList  =~ s/(\/\/.*?[\n]+)/encodeComma($1, $comma)/eg;
@@ -95,9 +93,31 @@ sub addArg{
   $argList = join(",", @outargs);
 
   # Move comma back and decode the comma in comments
-  $argList =~ s/\n,/,\n/g;
+  $argList =~ s/([ \t\r]*[\n]+[ \t\r]*)(,)/$2$1/g;
   $argList =~ s/(\s*\/\/.*?)(,)/$2$1/g;
+  $argList =~ s/$comma/,/g;
 
+  
+  # Indent all but the first argument
+  my $indentLevel = " " x length($before);
+  @outargs = split("\n", $argList);
+
+  for (my $i = 0; $i < scalar(@outargs); $i++){
+
+    if ($i > 0) { $outargs[$i] =~ s/^\s*/$indentLevel/g; }
+    else        { $outargs[$i] =~ s/^\s*//g;             }
+ 
+  }
+
+  $argList = join("\n", @outargs);
+  
+  # Rm excessive spaces, put space at the end
+  $argList  =~ s/^\s*//g;
+  $argList  =~ s/\n[ \t\r]+\n/\n/g;
+  $argList  =~ s/\s*$//g;
+  $argList .=  "\n";
+
+  $after = $indentLevel . $after;
   $fun = $before . $argList . $after;
 
   return $fun;
