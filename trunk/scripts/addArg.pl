@@ -6,27 +6,44 @@ require 'splitByMatchingParen.pl';
 undef $/;          # read one whole file in one scalar
 
 MAIN:{
-
-  if (scalar(@ARGV) < 3){
-    print "Usage: $0 functionName argToAdd argPos\n";
-    #exit(0);
+  #addArg.pl myfun "int i // some arg" 5 test.cpp
+  if (scalar(@ARGV) < 4){
+    print "Usage: $0 functionName argToAdd argPos files\n";
   }
 
-  my $fun    = 'void myfun(int a, // first arg, note the comma in comments
-                 double b, // second arg,  axUp6Ze 
-                 double c, double d // third and fourth, 
-                 );';
+  my $fun      = shift @ARGV;
+  my $argToAdd = shift @ARGV;
+  my $argPos   = shift @ARGV;
+  my @files    = @ARGV;
 
-  my $argPos = shift @ARGV;
+  my $tag = 'xu6Ao u9 '; # something unlikely
   
-  my $argToAdd = "int q // an integer";
+  foreach my $file (@files){
 
-  print "Function is\n$fun\n\n";
-  print "Insert at pos $argPos\n";
+    open(FILE, "<$file"); my $text = <FILE>; close(FILE);
 
-  $fun = addArg($fun, $argToAdd, $argPos);
+    $text =~ s/(^|\n)([^\n]*?\Q$fun\E)/$1$tag$2/g;  
+    my @blocks = split(/$tag/, $text);
+
+    foreach my $block (@blocks){
+
+      print "------------------------\n";
+      print "block is\n'$block'\n\n";
+      #print "Insert at pos $argPos\n";
+      
+      $block = addArg($block, $argToAdd, $argPos);
+      
+      #print "\nblock is\n'$block'\n";
+      print "------------------------\n";
+      
+    }
+
+    $text = join('', @blocks);
+    open(FILE, ">", $file . "_out"); print FILE $text; close(FILE);
+    
+  }
+
   
-  print "\nFunction is\n$fun\n";
 }
 
 sub addArg{
@@ -37,7 +54,7 @@ sub addArg{
   #               double c, double d // third and fourth, 
   #               );';
 
-  # Position starts from 1, not from zero.
+  # Position starts from 1, not from 0.
 
   my $fun      = shift;
   my $argToAdd = shift;
@@ -55,6 +72,10 @@ sub addArg{
 
   my ($before, $argList, $after) = splitByMatchingParen($fun);
 
+  if ($argList eq "" and $after eq ""){
+    return $before;
+  }
+  
   # New arg will be on its on line
   $argToAdd .= "\n";
   $argToAdd =~ s/^\s*//g;
@@ -66,7 +87,7 @@ sub addArg{
 
   # Move comma to the end of line (we want to
   # group an argument with its comment if any)
-  $argList =~ s/(,)(\s*\/\/.*?[\n]+)/$2$1/g;
+  $argList =~ s/(,)(\s*\/\/.*?\n)/$2$1/g;
 
   my @args = split(",", $argList);
   my $len  = scalar (@args);
@@ -78,7 +99,9 @@ sub addArg{
     if ($i+1 == $argPos){
       push(@outargs, $argToAdd);
     }
-    
+
+    $args[$i] =~ s/^[ \t]*\n\s*//g; # rm extra newlines
+    $args[$i] =~ s/\n\s*$/\n/g;     # rm extra newlines
     push(@outargs, $args[$i]);
     
   }
@@ -114,6 +137,9 @@ sub addArg{
   $argList  =~ s/\s*$//g;
   $argList .=  "\n";
 
+  # The case of just one argument
+  $argList =~ s/^\s*,\s*//g;
+  
   $after = $indentLevel . $after;
   $fun = $before . $argList . $after;
 
