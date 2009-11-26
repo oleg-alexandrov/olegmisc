@@ -99,7 +99,7 @@ sub get_files_in_maildir {
     my $filesize = stat($file)->size;
     #print "$filesize Size of $file is $filesize\n";
     
-    if ($filesize >= 15000000){
+    if ($filesize >= 15000000){ # 15 MB
       print "Skip $file as too big\n";
       next;
     }
