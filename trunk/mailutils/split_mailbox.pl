@@ -3,9 +3,10 @@ use strict;		      # 'strict' insists that all variables be declared
 use diagnostics;	      # 'diagnostics' expands the cryptic warnings
 #undef $/; # undefines the separator. Can read one whole file in one scalar.
 
+my $max_size = 5e+6; #(5MB) Split a huge mailbox into chunks of $max_size
+
 MAIN: {
 
-  # Split a huge mailbox into chunks 1MB or so each.
   
   my ($line, $big_mailbox_file, $count);
 
@@ -21,7 +22,6 @@ MAIN: {
   }
 
   my $small_mailbox = "";
-  my $max_size = 5e+6; # 5MB
 
   # Use a big number for $count so that files are sorted well later
   $count = 1000;
