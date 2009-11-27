@@ -76,7 +76,7 @@ sub get_files_in_maildir {
 
   my $mail_dir = shift;
 
-  $mail_dir = "/home/aoleg/" . $mail_dir;
+  $mail_dir = $ENV{HOME} . '/' . $mail_dir;
 
   my $file_line = `find $mail_dir`;
   my @files = split("\n", $file_line);
