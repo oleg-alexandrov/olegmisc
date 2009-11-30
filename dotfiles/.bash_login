@@ -1,0 +1,21 @@
+#  .bash_login
+
+echo "                                                                   "
+echo "    What makes the quality of a researcher's inventiveness and     "
+echo "    imagination is the __quality of his attention__ to hearing the "
+echo "    voices of things.                    -- A. Grothendieck        "
+
+#"Reality is that which when you stop believing in it does not go away." Philip K. Dick
+
+# "Deep in the human unconscious is a pervasive need for a logical
+# universe that makes sense. But the real universe is always one step
+# beyond logic." -Frank Herbert
+
+#make backspace behave
+#stty erase ^?
+
+# functions and the prompt
+if [ -f ~/.bashrc ]; then
+        . ~/.bashrc;
+fi
+

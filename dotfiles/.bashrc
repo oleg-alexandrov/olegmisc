@@ -1,5 +1,13 @@
 # .bashrc
 
+umask 022              # permissions set to -rw-r--r--
+ulimit -f 2000000000   # max file size (200MB)
+unset ignoreeof
+
+set history=20000
+set filec
+set show-all-if-ambiguous on
+
 # Make the backspace behave
 stty erase '^?'
 
@@ -145,4 +153,30 @@ fi
 if [ -f ~/.bash_aliases ]; then
         . ~/.bash_aliases
 fi
+
+# Copy of most important .bashenv settings
+# # visualization and editing
+# export EDITOR=vim
+# export TEXEDIT='vim +%d %s'
+# export VISUAL=vim
+
+# # the two lines below cause trouble. 
+# #export MORE=less
+# #export LESS='XeiwmQPm--Less--?e (END):?s (%pb\%)..$PM--Less-- %f %bb/%s?e (END):?s (%pb\%)..'
+# export PAGER=less
+
+# # history
+# export HISTFILE=$HOME/.bash_history # Not to be confused with the csh history
+# export HISTSIZE=20000
+# export HISTCONTROL=ignoredups
+
+# # listing files
+# export LC_COLLATE=C # when using ls, put the dotfiles first.
+# export LS_COLORS="di=34;1:ln=36;1:ex=32;1:*~=31;1:*.zip=31;01:*.gz=31;01:*.bz2=31;01:*.tgz=31;1:*.gz=31;1:*.jpg=35;01:*.jpeg=35;01:*.gif=35;01:*.bmp=35;01:*.xpm=35;01:*.png=35;01:*.mov=35;01:*.mpg=35;01:*.mpeg=35;01:*.avi=35;01:*.xcf=35;01"
+# export FIGNORE=.o:.elc:~:.dvi:.aux:.toc:.log:.bbl:.blg:.thm:.sty:.lof:.lot:.bib:.mexglx:.cmd:.ly2:.box
+
+# # other
+# export MAILCHECK=-1800000 # don't notify of new mail
+
+# export GDBHISTFILE=$HOME/.gdb_history
 

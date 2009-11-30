@@ -1,3 +1,5 @@
+source ~/.bash_login 
+
 autoload -U compinit promptinit
 compinit
 promptinit
