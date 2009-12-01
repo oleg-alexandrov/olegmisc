@@ -118,9 +118,18 @@ function mysetvars
 
 function vp
 {
-    # show the path to a file
-    echo `pwd`/$1
+  # show the path to a file
+  echo `pwd`/$1
+}
 
+function a {
+
+ # make an alias available to all other open shells right when it is defined
+ source ~/.bash_aliases;
+ alias $*;
+ alias > ~/.bash_aliases; 
+ perl -pi -e "s#^([^\s]+=)#alias \$1#g" ~/.bash_aliases;
+   
 }
 
 # function ptv {
