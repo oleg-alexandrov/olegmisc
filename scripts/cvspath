@@ -1,0 +1,18 @@
+#!/bin/sh
+if [ $# -eq 0 ] ; then
+  echo " Input a cvs_log file."
+  exit ;
+else
+  while read f
+  do
+    VAR=`echo $f | awk '{print $1}'` 
+    VAR=`find . -name $VAR`
+    for parameters in $VAR
+    do
+      VAR2=`cvs status $parameters | grep Status | grep -v date | awk '{print NF}'`
+      if [ "$VAR2" ] ; then
+        echo $parameters 
+      fi
+    done
+  done < $1 
+fi  
