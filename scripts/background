@@ -1,0 +1,89 @@
+#!/usr/bin/perl
+
+use strict;                    # 'strict' insists that all variables be declared.
+use diagnostics;               # 'diagnostics' expands the cryptic warnings.
+
+my ($imagedir, $junk, $n, $random, @files, $deleted_images);
+
+# print "$ENV{HOME}\n";
+# print "$ENV{PATH}\n";
+
+#get into the wallpapers directory
+$imagedir="/home/wallpapers";
+$deleted_images = $imagedir . '/deleted_images.dat';
+
+chdir $imagedir;
+print `pwd` . "\n";
+@files=`ls *.jpg *.JPG *.gif *.GIF`;
+$n=$#files;
+
+#notifiy if less than 50 wallpapers are left
+#`/bin/echo \"There are only $n wallpapers left. Get more. \" | elm aoleg -s wallpapers` if ($n < 50);
+
+#put in the background a random image from the file $imagedir
+$random=($n+1)*rand;
+($random,$junk) = split(/\./, $random);
+my $curr_im=$files[$random];
+$curr_im =~ s/\n//g;
+print `echo "Now running new"; ~/bin/xv -max  -quit -root $imagedir/$curr_im`;
+
+# run gconf too, so that nautilus does not put back the default wallpaper
+print `gconftool-2 -t str --set /desktop/gnome/background/picture_filename $imagedir/$curr_im`; 
+print `gconftool-2 -t str --set /desktop/gnome/background/picture_options "stretched"`;
+sleep 2;
+
+
+#record the name of the current background in the file .xsession-errors
+my $machine=`uname -n`;
+$machine =~ s/\n//;
+$machine = join('', $machine, '');
+#print "$machine\n";
+`/bin/echo \"$imagedir/$curr_im\" >> \~\/$machine`;
+#print "/bin/echo \"$imagedir/$curr_im\" >> \~\/$machine";
+#keep track of how many times an image showd up.
+my $index=$imagedir . "/index.dat";
+open(FILE,"<$index");
+my @lines=<FILE>;
+close(FILE);
+
+#read the data from that file
+my %entries;
+my ($aa, $bb);
+foreach (@lines) {
+  next if(/^\s*$/);
+  chomp;
+  ($aa, $bb)=split(' ', $_);
+  $entries{$aa}=$bb;
+}
+
+#update the file
+my %newentries;
+foreach (@files) {
+  chomp;
+  if(exists $entries{$_}){
+    $newentries{$_}=$entries{$_};
+  }else {
+    $newentries{$_}=0;
+  }
+}
+
+my $date=`/bin/date`;
+$date =~ s/\n//g;
+
+my $nmax=10; #no image must show up more than $nmax times.
+$newentries{$curr_im}++;
+if ($newentries{$curr_im} >= $nmax) {
+  `rm -f $curr_im`;
+  `/bin/echo \"deleting $imagedir/$curr_im on $date\" >> $deleted_images`;
+  delete $newentries{$curr_im};
+}
+
+
+my $key;
+open(FILE,">$index");
+foreach $key (sort {$newentries{$a} cmp $newentries{$b} } keys %newentries) {
+  print FILE "$key $newentries{$key}\n";
+}
+close(FILE);
+
+
