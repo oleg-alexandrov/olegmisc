@@ -186,6 +186,65 @@ export MAILCHECK=-1800000 # don't notify of new mail
 
 export GDBHISTFILE=$HOME/.gdb_history
 
+# aliases
+alias ag='alias | grep -i '
+alias c=clear
+alias cd=mycd
+alias ce='crontab -e'
+alias cp='\cp -iv'
+alias cpu='cat /proc/cpuinfo'
+alias cs=cvs_status.pl
+alias csa='~/bin/loop_changes.sh'
+alias css='cvs status | grep -i status | grep -v "Up-to-date"'
+alias cvc='cvs commit -m '
+alias cvd='cvs diff'
+alias cvu='cvs update -P -d'
+alias cx='chmod a+x'
+alias d=cd
+alias dh='du -h'
+alias di=diff
+alias ds='du . | sort -n'
+alias fh='find . -name'
+alias g='grep -i -E --colour=auto'
+alias gr='g -r'
+alias head='\head -n 100'
+alias hp='nohup nice -19'
+alias k9='kill -9'
+alias ka='killall -v -9'
+alias l='ls -a'
+alias less=mymore
+alias ll='ls -alh --color'
+alias lls='ls -lSr  -a -h --color'
+alias llt='ll -rt'
+alias ls='ls -a --color'
+alias lt='ll -rt'
+alias m=mymore
+alias make='time make'
+alias matlab='matlab -nosplash'
+alias mc='make clean'
+alias md=mkdir
+alias mk='time make'
+alias ml='matlab -nosplash -nodesktop'
+alias more=mymore
+alias p=vim
+alias pa='ps aux'
+alias pico=vim
+alias pl='perl -pi -e'
+alias r='alias > ~/.bash_aliases; perl -pi -e "s#^([^\s]+=)#alias \$1#g" ~/.bash_aliases'
+alias rf='\rm -fv'
+alias rm='\rm -vi'
+alias ssh='ssh -X'
+alias svs='svn status'
+alias svu='svn update'
+alias tc='tar czfv'
+alias tk=tkdiff
+alias u='cd ..'
+alias un=unalias
+alias vv=/usr/bin/kcachegrind
+alias which='alias=| /usr/bin/which --tty-only --read-alias --show-dot --show-tilde'
+alias x=exit
+
+# More aliases
 if [ -f ~/.bash_aliases ]; then
         . ~/.bash_aliases
 fi
