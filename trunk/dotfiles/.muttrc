@@ -133,7 +133,7 @@ set record = "=s"  # the sent mail folder.
 set move = no  # this line was: #set move = ask-no
 #set move = ask-no
 set mask = "[^.]+"
-#set mbox = "/var/spool/mail/aoleg"  #the inbox
+set mbox = "/var/spool/mail/aoleg"  #the inbox
 set mbox = "~/mail/I"  #the inbox
 #set mbox_type = mbox
 #set mh_purge = no
@@ -212,7 +212,7 @@ set pop_last = no
 #set ssl_usesystemcerts = yes
 #set ssl_use_sslv3 = yes
 #set ssl_use_tlsv1 = yes
-set imap_force_ssl = yes
+#set imap_force_ssl = yes
 
 # PGP #
 #set pgp_timeout = 300
@@ -279,7 +279,7 @@ unignore	from: subject to cc date
 #my_hdr X-Operating-System: `uname -a`
 
 # Specify default filename when saving messages
-save-hook "" =
+#save-hook "" =
 #save-hook [!]<pattern> <mailbox>
 #save-hook mutt- = mutt-mail
 #save-hook aol\.com +spam
