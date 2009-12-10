@@ -42,6 +42,10 @@ imap <C-F> <Esc>/
 " in .bashrc
 map  <C-S> <Esc>:wq<CR>
 imap <C-S> <Esc>:wq<CR>
+
+map  <C-w> <Esc>:w<CR>
+imap <C-w> <Esc>:w<CR>
+
 map  <C-Q> <Esc>:q<CR>
 imap <C-Q> <Esc>:q<CR>
 

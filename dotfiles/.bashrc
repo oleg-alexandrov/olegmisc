@@ -4,7 +4,7 @@ umask 022              # permissions set to -rw-r--r--
 ulimit -f 2000000000   # max file size (200MB)
 unset ignoreeof
 
-set history=20000
+set history=10000
 set filec
 set show-all-if-ambiguous on
 
@@ -42,12 +42,12 @@ else
 fi
 }
 
-function mycd {
- if [ "$*" ]; then 
-   \cd "$*"; ls -a --color;
- else
-   \cd; ls -a --color;
- fi
+function cdls {
+  if [ "$*" ]; then 
+     builtin cd "$*"; ls -a --color;
+  else
+      builtin cd; ls -a --color;
+  fi
 }
 
 function rwd {
@@ -60,20 +60,47 @@ function cdw {
  cd $WORKDIR;
 }
 
-function proml 
+# after the W variable is updated, update the other settings
+function setbuildenv
 {
-case $TERM in
-        xterm*)
-                local TITLEBAR='\[\033]0;\u@\h:\w\007\]'
-                ;;
-        *)
-                local TITLEBAR=''
-                ;;
-esac
+  export BASE=$HOME/$W/dev; 
+  export b=$HOME/$W/build/;
+  export bt=$HOME/$W/build/test;
+  export bb=$HOME/$W/build/bin;
+}
 
-PS1="${TITLEBAR}\
-\n$COLOR2${USER}@\h$COLOR3:$COLOR4\w\
-\nLOXIM_MODE=$LOXIM_MODE@$W $COLOR2>$COLOR3>$COLOR1>$COLOR_9 "
+function vp
+{
+  # show the path to a file
+  echo `pwd`/$1
+}
+
+function a {
+  # make an alias available to all other open shells right when it is defined
+  source ~/.unaliases;
+  source ~/.bash_aliases;
+  alias $*;
+  alias > ~/.bash_aliases; 
+  perl -pi -e "s#^([^\s]+=)#alias \$1#g" ~/.bash_aliases;
+   
+}
+
+function ag {
+    # grep through all aliases for given pattern
+    alias | grep $*
+}
+
+function un {
+  # Unalias an alias in all open and future sessions
+  unalias $* 2>/dev/null;
+  echo "unalias $* 2>/dev/null" >> ~/.unaliases;
+  alias > ~/.bash_aliases; 
+  perl -pi -e "s#^([^\s]+=)#alias \$1#g" ~/.bash_aliases;
+}
+
+function hg {
+    # grep through all history for given pattern
+    history 1 | grep $*
 }
 
 # -<colour opc>--------------------------------
@@ -106,48 +133,27 @@ COLOR8="\[\033[1;38m\]"  # White Bold
 COLOR_9="\[\033[0;39m\]" # White
 COLOR9="\[\033[1;39m\]"  # White Bold
 
-
-# after the W variable is updated, update the other settings
-function mysetvars
+function proml 
 {
-  export BASE=$HOME/$W/dev; 
-  export b=$HOME/$W/build/;
-  export bt=$HOME/$W/build/test;
-  export bb=$HOME/$W/build/bin;
+ case $TERM in
+         xterm*)
+                 local TITLEBAR='\[\033]0;\u@\h:\w\007\]'
+                 ;;
+         *)
+                 local TITLEBAR=''
+                 ;;
+ esac
+
+ if [[ $LOXIM_MODE = "" ]]; then
+   LOX_TAG="";
+ else
+   LOX_TAG="LOXIM_MODE=$LOXIM_MODE@";
+ fi;
+
+PS1="${TITLEBAR}\
+\n$COLOR2${USER}@\h$COLOR3:$COLOR4\w\
+\n$LOX_TAG$W $COLOR2>$COLOR3>$COLOR1>$COLOR_9 "
 }
-
-function vp
-{
-  # show the path to a file
-  echo `pwd`/$1
-}
-
-function a {
-
- # make an alias available to all other open shells right when it is defined
- source ~/.bash_aliases;
- alias $*;
- alias > ~/.bash_aliases; 
- perl -pi -e "s#^([^\s]+=)#alias \$1#g" ~/.bash_aliases;
-   
-}
-
-# function ptv {
-
-# # b=$1
-# # a=`echo $b |sed -n s/\\..*$//p`
-# #  echo $a
-
-# # # a=`echo  $b |sed -n s/\\..*$//p`
-# # # return;    
-#  pdflatex $1.tex;
-#  acroread -geometry 1200x990+0+0 $1.pdf;
-# }
-
-#enviromental variables
-if [ -f ~/.bashenv ]; then
-        . ~/.bashenv;
-fi
 
 # While this is an environment variable, it needs to be set here
 # because it is used only interactively
@@ -186,14 +192,19 @@ export MAILCHECK=-1800000 # don't notify of new mail
 
 export GDBHISTFILE=$HOME/.gdb_history
 
+# More env variables
+if [ -f ~/.bashenv ]; then
+        source ~/.bashenv
+fi
+
 # aliases
-alias ag='alias | grep -i '
 alias c=clear
-alias cd=mycd
+alias cd=cdls
 alias ce='crontab -e'
 alias cp='\cp -iv'
 alias cpu='cat /proc/cpuinfo'
 alias cs=cvs_status.pl
+alias ca='~/bin/loop_changes.sh'
 alias csa='~/bin/loop_changes.sh'
 alias css='cvs status | grep -i status | grep -v "Up-to-date"'
 alias cvc='cvs commit -m '
@@ -244,8 +255,11 @@ alias vv=/usr/bin/kcachegrind
 alias which='alias=| /usr/bin/which --tty-only --read-alias --show-dot --show-tilde'
 alias x=exit
 
-# More aliases
-if [ -f ~/.bash_aliases ]; then
-        . ~/.bash_aliases
+if [ -f ~/.unaliases ]; then
+        source ~/.unaliases
 fi
 
+# More aliases
+if [ -f ~/.bash_aliases ]; then
+        source ~/.bash_aliases
+fi
