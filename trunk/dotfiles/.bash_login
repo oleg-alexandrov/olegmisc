@@ -14,8 +14,3 @@ echo "    voices of things.                    -- A. Grothendieck        "
 #make backspace behave
 #stty erase ^?
 
-# functions and the prompt
-if [ -f ~/.bashrc ]; then
-        . ~/.bashrc;
-fi
-
