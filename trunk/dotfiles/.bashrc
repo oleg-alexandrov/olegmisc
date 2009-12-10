@@ -257,11 +257,19 @@ alias vv=/usr/bin/kcachegrind
 alias which='alias=| /usr/bin/which --tty-only --read-alias --show-dot --show-tilde'
 alias x=exit
 
+if [ -f ~/.base_aliases ]; then
+        source ~/.base_aliases
+fi
+
 if [ -f ~/.unaliases ]; then
         source ~/.unaliases
 fi
+
+alias bal=''
 
 # More aliases
 if [ -f ~/.bash_aliases ]; then
         source ~/.bash_aliases
 fi
+
+bal;
