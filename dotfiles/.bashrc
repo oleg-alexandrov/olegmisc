@@ -243,6 +243,7 @@ alias pa='ps aux'
 alias pico=vim
 alias pl='perl -pi -e'
 alias r='alias > ~/.bash_aliases; perl -pi -e "s#^([^\s]+=)#alias \$1#g" ~/.bash_aliases'
+alias rr='source ~/.bash_login; source ~/.bashrc'
 alias rf='\rm -fv'
 alias rm='\rm -vi'
 alias ssh='ssh -X'
