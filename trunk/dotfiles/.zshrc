@@ -45,16 +45,22 @@ bindkey  "\M-d"              delete-word
 
 autoload -U colors
 
-
 function proml
 {
- if [[ $LOXIM_MODE = "" ]]; then
-   LOX_TAG="";
- else
-   LOX_TAG="LOXIM_MODE=$LOXIM_MODE@";
+    
+ # Show user@machine:/curdirr in the title bar 
+ if [[ $TERM == "xterm" || $TERM == "rxvt" ]]; then
+   print -Pn "\e]2;%n@%m:%~\a"; 
  fi;
 
-  # Must put escape characters in {% and %} to avoid garbled long lines
+  if [[ $LOXIM_MODE = "" ]]; then
+    LOX_TAG="";
+  else
+    LOX_TAG="LOXIM_MODE=$LOXIM_MODE@";
+  fi;
+
+  # The command prompt. 
+  # Must put escape characters in {% and %} to avoid garbling long command lines.
   PS1="
 $terminfo[bold]%{$fg[blue]%}%T %{$fg[yellow]%}%W %{$fg[green]%}%n@%m%{$fg[white]%}:%{$fg[blue]%}%~ 
 %{$fg[blue]%}$LOX_TAG$W %{$fg[green]%}>%{$fg[yellow]%}>%{$fg[red]%}>%{$fg[white]%} "

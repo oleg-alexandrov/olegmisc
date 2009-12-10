@@ -48,6 +48,7 @@ function cdls {
   else
       builtin cd; ls -a --color;
   fi
+  proml;
 }
 
 function rwd {
