@@ -148,12 +148,12 @@ function proml
  if [[ $LOXIM_MODE = "" ]]; then
    LOX_TAG="";
  else
-   LOX_TAG="LOXIM_MODE=$LOXIM_MODE@";
+   LOX_TAG="LOXIM_MODE=$LOXIM_MODE@$W ";
  fi;
 
 PS1="${TITLEBAR}\
 \n$COLOR2${USER}@\h$COLOR3:$COLOR4\w\
-\n$LOX_TAG$W $COLOR2>$COLOR3>$COLOR1>$COLOR_9 "
+\n$LOX_TAG$COLOR2>$COLOR3>$COLOR1>$COLOR_9 "
 }
 
 # While this is an environment variable, it needs to be set here
