@@ -44,6 +44,8 @@ bindkey  "^["                backward-delete-word
 bindkey  "\M-d"              delete-word
 
 autoload -U colors
+localColors=$w/local/share/zsh/4.3.10/functions/colors; # local zsh installation
+if [[ -f $localColors ]]; then source $localColors; fi;
 
 function proml
 {
