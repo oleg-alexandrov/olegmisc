@@ -26,7 +26,8 @@ MAIN:{
   my $max_col = 0;
   
   my $len = scalar (@val1);
-
+  if ($len <= 0) { exit(0); }
+  
   for (my $row = 0; $row < $len; $row++){
     
     my @l1 = split(/\s+/, $val1[$row]);
@@ -60,10 +61,12 @@ MAIN:{
   }
 
   print "Max err is $max_err at line " . ($max_row + 1)
-     .                  " and column " . ($max_col + 1) . "\n";
+     .                  " and column " . ($max_col + 1) 
+        #.               " in files $file1 $file2"
+        . "\n";
   
-  print "Lines:\n";
-  print $val1[$max_row] . "\n";
-  print $val2[$max_row] . "\n";
+  #print "Lines:\n";
+  #print $val1[$max_row] . "\n";
+  #print $val2[$max_row] . "\n";
   
 }
