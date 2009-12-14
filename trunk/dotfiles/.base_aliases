@@ -71,6 +71,7 @@ alias rl='rm -fv *.ly2 *.box'
 alias rm='\rm -vi'
 alias rr='source ~/.zshrc'
 alias run-help=man
+alias sep='. ~/bin/setpath'
 alias sva='svn add'
 alias svd='svn diff'
 alias svm='svn commit -m'
@@ -86,7 +87,6 @@ alias vnc='vncserver -geometry 1272x996'
 alias vncbig='vncserver -geometry 2550x1008'
 alias vr='. ~/bin/vr'
 alias vv=/usr/bin/kcachegrind
-alias which='alias=| /usr/bin/which --tty-only --read-alias --show-dot --show-tilde'
 alias which-command=whence
 alias x=exit
 alias xg='xgraph -ng -geometry 1000x800+0+0'

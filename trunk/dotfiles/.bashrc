@@ -78,9 +78,15 @@ function vp
 
 function a {
   # make an alias available to all other open shells right when it is defined
-  source ~/.unaliases;
-  source ~/.bash_aliases;
-  alias $*;
+  if [ -f ~/.unaliases    ]; then source ~/.unaliases;    fi;
+  if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi;
+
+  if [ "$*" ]; then  
+    alias "$*";
+  else
+    alias;  
+  fi;
+
   alias > ~/.bash_aliases; 
   perl -pi -e "s#^([^\s]+=)#alias \$1#g" ~/.bash_aliases;
    
@@ -88,20 +94,20 @@ function a {
 
 function ag {
     # grep through all aliases for given pattern
-    alias | grep $*
+    alias | grep "$*"
 }
 
 function un {
   # Unalias an alias in all open and future sessions
-  unalias $* 2>/dev/null;
-  echo "unalias $* 2>/dev/null" >> ~/.unaliases;
+  unalias "$*" 2>/dev/null;
+  echo "unalias "$*" 2>/dev/null" >> ~/.unaliases;
   alias > ~/.bash_aliases; 
   perl -pi -e "s#^([^\s]+=)#alias \$1#g" ~/.bash_aliases;
 }
 
 function hg {
     # grep through all history for given pattern
-    history 1 | grep $*
+    history 1 | grep "$*"
 }
 
 # -<colour opc>--------------------------------
@@ -265,11 +271,7 @@ if [ -f ~/.unaliases ]; then
         source ~/.unaliases
 fi
 
-alias bal=''
-
 # More aliases
 if [ -f ~/.bash_aliases ]; then
         source ~/.bash_aliases
 fi
-
-bal
