@@ -1,6 +1,8 @@
 #!/usr/bin/perl
 use strict;	   # insist that all variables be declared
 use diagnostics;   # expand the cryptic warnings
+use lib $ENV{HOME} . '/bin';
+
 require 'splitByMatchingParen.pl';
 
 undef $/;          # read one whole file in one scalar
@@ -22,11 +24,13 @@ MAIN:{
 
     open(FILE, "<$file"); my $text = <FILE>; close(FILE);
 
-    $text =~ s/(^|\n)([^\n]*?\Q$fun\E)/$1$tag$2/g;  
+    $text =~ s/(^|\n)([^\n]*?\Q$fun\E\s*\()/$1$tag$2/g;  
     my @blocks = split(/$tag/, $text);
 
     foreach my $block (@blocks){
 
+      next unless ($block =~ /^.*?\Q$fun\E\s*\(/);
+      
       print "------------------------\n";
       print "block is\n'$block'\n\n";
       #print "Insert at pos $argPos\n";
@@ -100,8 +104,8 @@ sub addArg{
       push(@outargs, $argToAdd);
     }
 
-    $args[$i] =~ s/^[ \t]*\n\s*//g; # rm extra newlines
-    $args[$i] =~ s/\n\s*$/\n/g;     # rm extra newlines
+    #$args[$i] =~ s/^[ \t]*\n\s*//g; # rm extra newlines
+    #$args[$i] =~ s/\n\s*$/\n/g;     # rm extra newlines
     push(@outargs, $args[$i]);
     
   }
