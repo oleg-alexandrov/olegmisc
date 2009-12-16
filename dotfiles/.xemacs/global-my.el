@@ -404,6 +404,7 @@
   (align-regexp start end 
                 (concat "\\(\\s-*\\)" regexp) 1 1 t))
 
+(global-set-key [(meta m)] 'mark-paragraph)
 (global-set-key     'button4 'mwheel-down)
 (global-set-key     'button5 'mwheel-up)
 (global-set-key [(control \')] 'my-delete-tail)
