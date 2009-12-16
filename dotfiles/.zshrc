@@ -1,3 +1,4 @@
+# First read the settings that are in common in bash and zsh
 source ~/.bash_login 
 source ~/.bashrc
 
@@ -18,9 +19,10 @@ setopt nohistbeep
 setopt histsavenodups
 setopt sharehistory  
 
-setopt CSH_NULL_GLOB # don't complain if there are no matches
-setopt NULL_GLOB     # don't complain if there are no matches
-setopt AUTO_PUSHD    # Make cd push the old directory onto the directory stack
+setopt CSH_NULL_GLOB    # don't complain if there are no matches
+setopt NULL_GLOB        # don't complain if there are no matches
+setopt AUTO_PUSHD       # make cd push the old directory onto the directory stack
+setopt complete_in_word # complete when the cursor is in the middle of a word
 
 setopt PUSHD_IGNORE_DUPS
 
@@ -42,6 +44,9 @@ bindkey  "$terminfo[khome]"  beginning-of-line
 bindkey  "$terminfo[kend]"   end-of-line
 bindkey  "^["                backward-delete-word
 bindkey  "\M-d"              delete-word
+bindkey  "^Z"                undo
+bindkey "^[d"                delete-word # delete word forward with meta-D
+bindkey "^[[3;5~"            kill-line   # delete to end of line with Ctrl-Delete
 
 autoload -U colors
 localColors=$w/local/share/zsh/4.3.10/functions/colors; # local zsh installation
@@ -65,7 +70,7 @@ function proml
   # Must put escape characters in {% and %} to avoid garbling long command lines.
   PS1="
 $terminfo[bold]%{$fg[blue]%}%T %{$fg[yellow]%}%W %{$fg[green]%}%n@%m%{$fg[white]%}:%{$fg[blue]%}%~ 
-%{$fg[blue]%}$LOX_TAG$W %{$fg[green]%}>%{$fg[yellow]%}>%{$fg[red]%}>%{$fg[white]%} "
+%{$fg[blue]%}$LOX_TAG$W %{$fg[green]%}>%{$fg[yellow]%}>%{$fg[red]%}>%{$fg[white]%} ";
 }
 
 proml;

@@ -1,5 +1,10 @@
 #  .bash_login
 
+if [ $SHELL = "/bin/bash" ] && [ -f ~/bin/zsh ]; then
+   export SHELL="~/bin/zsh"
+   exec ~/bin/zsh;
+fi;  
+
 echo "                                                                   "
 echo "    What makes the quality of a researcher's inventiveness and     "
 echo "    imagination is the __quality of his attention__ to hearing the "
@@ -11,6 +16,4 @@ echo "    voices of things.                    -- A. Grothendieck        "
 # universe that makes sense. But the real universe is always one step
 # beyond logic." -Frank Herbert
 
-#make backspace behave
-#stty erase ^?
 
