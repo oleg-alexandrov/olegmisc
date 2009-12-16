@@ -34,14 +34,16 @@ MAIN:{
   # and insert the new argument at the prescribed location.
   foreach my $file (@files){
 
+    next unless (-f $file);
+    
     open(FILE, "<$file"); my $text = <FILE>; close(FILE);
 
-    $text =~ s/(^|\n)([^\n]*?\Q$fun\E\s*\()/$1$tag$2/g;  
+    $text =~ s/(^|\n)([^\n]*?\Q$fun\E\s*\()/$1$tag$2/ig;  
     my @blocks = split(/$tag/, $text);
 
     foreach my $block (@blocks){
 
-      next unless ($block =~ /^.*?\Q$fun\E\s*\(/);
+      next unless ($block =~ /^.*?\Q$fun\E\s*\(/i);
       
       #print "------------------------\n";
       #print "block is\n'$block'\n\n";
@@ -55,7 +57,7 @@ MAIN:{
     }
 
     $text = join('', @blocks);
-    open(FILE, ">", $file . "_out"); print FILE $text; close(FILE);
+    open(FILE, ">", $file); print FILE $text; close(FILE);
     
   }
   
