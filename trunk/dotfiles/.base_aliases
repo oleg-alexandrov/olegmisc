@@ -81,6 +81,8 @@ alias t='time . ~/bin/rt.sh'
 alias tail='\tail -n 100'
 alias tc='tar czfv'
 alias tk=tkdiff
+alias unp='. ~/bin/unsetpath'
+alias vg='$w/local/bin/valgrind  --log-file=Log --leak-check=full'
 alias vgp='valgrind --tool=callgrind --dump-instr=yes '
 alias vi=vim
 alias vnc='vncserver -geometry 1272x996'
