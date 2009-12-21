@@ -314,6 +314,8 @@ AddToMenu Programs   "+++Programs+++"   Title
 +   ""   Nop
 +   "Xemacs"   Exec exec  /usr/bin/xemacs&
 +   ""   Nop
++   "Firefox"   Exec exec  /usr/bin/firefox&
++   ""   Nop
 +   "Graphics"   Popup Graphics
 +   ""   Nop   
 +   "Utilities"   Popup Utilities
