@@ -36,7 +36,9 @@ MAIN: {
   print "Number of messages is " . scalar (@mails) . "\n";
   
   foreach $message (@mails) {          
-    
+
+    $message = &add_message_id_if_needed($message);
+
     if ($message !~ /Message-ID:\s+\<(.*?)\>/i){ 
       print "Missing message id\n" . $message . "\n";
       exit(0);
@@ -67,11 +69,15 @@ MAIN: {
   # If in debug mode just write the processed messages to disk
   if ($debugMode){ # debug
 
+    foreach $message (@mails) {
+      $message =~ s/[\n]*$//g;
+    }
+
     # this will show what processing the messages underwent before being sent
      my $outfile = "ProcessedMessages";
      print "Writing processed messages to $outfile\n";
      open(FILE, ">$outfile");
-     print FILE join ("\n", @mails); # I don't know why "\n" is necessary here
+     print FILE join ("\n\n", @mails);
      print FILE "\n";
      close(FILE);
   }
@@ -86,7 +92,7 @@ sub send_message_to_gmail_via_procmail {
 
   $tmp_file = "Tmp_file.txt";
   open(FILE, ">$tmp_file");
-  print FILE "$message";
+  print FILE "$message\n";
   close(FILE);
 
   $procmailrc_file = $ENV{HOME} . '/gmail_procmailrc';

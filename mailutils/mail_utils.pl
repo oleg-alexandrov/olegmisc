@@ -96,6 +96,7 @@ sub write_mailbox{
 
     # make sure there is a newline bewteen messages
     $message =~ s/^\s*//g;
+    $message =~ s/\s*$//g;
     $message =~ s/\s*$/\n\n/g;
     
     print FILE $message;
@@ -289,9 +290,15 @@ sub add_message_id_if_needed {
   # Manufacture an id from the "from" and "to" lines.
   # Must be deterministic.
   if ($header =~ /^From (.*?)\n/){
-    $id = $1;
   }else{
     print "Error! Missing \"From\" line in header!\n";
+    exit(0);
+  }
+
+  if ($header =~ /Date:(.*?)\n/i){
+    $id = $1;
+  }else{
+    print "Error: Cannot match date in: \n$header\n";
     exit(0);
   }
 
@@ -307,7 +314,7 @@ sub add_message_id_if_needed {
 
   $header =~ s/^(.*?\n)(Date:.*?)$/$1Message-ID: \<$id\>\n$2/sg;
 
-  print "Adding message id to:\n$header\n\n";
+  #print "Adding message id to:\n$header\n\n";
 
   return $header;
 }
