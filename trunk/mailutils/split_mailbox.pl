@@ -1,12 +1,15 @@
 #!/usr/bin/perl
-use strict;		      # 'strict' insists that all variables be declared
-use diagnostics;	      # 'diagnostics' expands the cryptic warnings
-#undef $/; # undefines the separator. Can read one whole file in one scalar.
+use strict;	       # 'strict' insists that all variables be declared
+use diagnostics;       # 'diagnostics' expands the cryptic warnings
+use lib $ENV{HOME} . '/bin/mailutils';
+#undef $/;             # Keep this commented, want to read a line at a time
 
-my $max_size = 5e+6; #(5MB) Split a huge mailbox into chunks of $max_size
+my $max_size = 5e+6; # Split a huge mailbox in chunks of size <= $max_size
 
 MAIN: {
 
+  # Split a big mailbox into small mailboxes. Read the big mailbox
+  # one line at a time to conserve memory.
   
   my ($line, $big_mailbox_file, $count);
 
@@ -39,7 +42,7 @@ MAIN: {
     if ($line !~ /^From.*?\d:\d\d:\d\d/){
       # Not the start of a new message, so just append the current
       # line and move to the next line
-      $small_mailbox = $small_mailbox . $line;
+      $small_mailbox .= $line;
       next;
     }
 
@@ -60,14 +63,14 @@ MAIN: {
       $count++;
 
     }else{
-      $small_mailbox = $small_mailbox . $line;
+      $small_mailbox .= $line;
     }
     
   } # end looping over the lines of the current file
 
   # Write the last chunk
   my $small_mailbox_file = $big_mailbox_file . "__" . $count;
-  print "Writing to $small_mailbox_file\n";
+  print "Writing last chunk to $small_mailbox_file\n";
   open(FILE_SMALL, ">$small_mailbox_file");
   print FILE_SMALL $small_mailbox;
   close(FILE_SMALL);

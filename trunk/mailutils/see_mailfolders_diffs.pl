@@ -3,50 +3,63 @@ use strict;		      # 'strict' insists that all variables be declared
 use diagnostics;	      # 'diagnostics' expands the cryptic warnings
 use Encode;
 use File::stat;
+use lib $ENV{HOME} . '/bin/mailutils';
 require 'mail_utils.pl';
 undef $/;
 
-# Get the ids from a mailbox, put all of them in a file
+# Get the ids from a mail directory, put all of them in a hash.
 # Then use those ids to find which mails in one directory
 # are missing from the second one, and the other way around.
+
+# Do not read mailbox files bigger than this (it is assumed such files
+# have been split into smaller mailboxes).
+# This number must be bigger than the number used to split mailboxes.
+my $big_file_size = 40e6; # 40MB
 
 MAIN: {
 
   # Get ids of the files on gmail, write them to disk
-  my $gmail_dir          = "gmail";
+  my $gmail_dir      = "gmail";
   my $gmail_ids_file = $gmail_dir . "_ids.txt";
-  #&get_ids($gmail_dir, $gmail_ids_file);
+  &write_ids_to_disk($gmail_dir, $gmail_ids_file);
   
   # Get ids of the files in old_mail (local mail), write them to disk
-  my $old_mail_dir          = "old_mail";
+  my $old_mail_dir      = "old_mail";
   my $old_mail_ids_file = $old_mail_dir . "_ids.txt";
-  #&get_ids($old_mail_dir, $old_mail_ids_file);
+  &write_ids_to_disk($old_mail_dir, $old_mail_ids_file);
 
-  #exit(0);
-  
-  my $id;
+  # Pause before reading the ids from disk
+  print "Pausing ...\n";
+  sleep(5);
 
-  my %gmail_ids    = &get_hash_from_disk($gmail_ids_file);
-  my %old_mail_ids = &get_hash_from_disk($old_mail_ids_file);
+  # Read the ids we just wrote to disk
+  my %gmail_ids    = &get_ids_from_disk($gmail_ids_file);
+  my %old_mail_ids = &get_ids_from_disk($old_mail_ids_file);
 
+  # Mailboxes (we skip the ones of size $big_file_size) 
   my @gmail_files    = &get_files_in_maildir($gmail_dir);
   my @old_mail_files = &get_files_in_maildir($old_mail_dir);
-
   
   my $missing_gmail    = "Missing_" . $gmail_dir;
   my $missing_old_mail = "Missing_" . $old_mail_dir;
   
-  my $folder;
+  my ($id, $folder);
 
+  # Empty before appending to folder
+  print "Will write to $missing_old_mail\n";
+  open(FILE, ">$missing_old_mail"); print FILE ""; close(FILE);
+  
   # See mails that are on gmail, but which are not on old mail
-  open(FILE, ">$missing_old_mail"); print FILE ""; close(FILE); # empty b/f app
   foreach $folder (@gmail_files){
     print "Doing $folder\n";
     &write_missing($folder, \%old_mail_ids, $missing_old_mail);
   }
 
+  # Empty before appending to folder
+  open(FILE, ">$missing_gmail"); print FILE ""; close(FILE);
+  print "Will write to $missing_gmail\n";
+  
   # The other way around, files which are in old mail, but not on gmail
-  open(FILE, ">$missing_gmail"); print FILE ""; close(FILE); # emtpy b/f app
   foreach $folder (@old_mail_files){
     print "Doing $folder\n";
     &write_missing($folder, \%gmail_ids, $missing_gmail);
@@ -54,7 +67,7 @@ MAIN: {
   
 }
 
-sub get_hash_from_disk {
+sub get_ids_from_disk {
 
   my $file = shift;
 
@@ -77,10 +90,12 @@ sub get_files_in_maildir {
   my $mail_dir = shift;
 
   $mail_dir = $ENV{HOME} . '/' . $mail_dir;
-
+  print "\nGetting files in $mail_dir\n\n";
+  
   my $file_line = `find $mail_dir`;
-  my @files = split("\n", $file_line);
-
+  my @files     = split("\n", $file_line);
+  @files        = sort {$a cmp $b} @files;
+  
   my @files_out = ();
   
   my $file;
@@ -91,7 +106,7 @@ sub get_files_in_maildir {
       next;
     }
 
-    if ($file =~ /\.msf$/){
+    if ($file =~ /\.(msf|dat)$/){
       #print "Skipping $file\n";
       next;
     }
@@ -99,8 +114,8 @@ sub get_files_in_maildir {
     my $filesize = stat($file)->size;
     #print "$filesize Size of $file is $filesize\n";
     
-    if ($filesize >= 15000000){ # 15 MB
-      print "Skip $file as too big\n";
+    if ($filesize >= $big_file_size){ 
+      print "-----Skip $file as too big\n";
       next;
     }
 
@@ -111,12 +126,12 @@ sub get_files_in_maildir {
   return @files_out;
 }
 
-sub get_ids {
+sub write_ids_to_disk {
 
   my $mailbox = shift;
   my $id_file = shift;
   
-  # make file blank before we start
+  # make the id file blank before we start
   open(FILE, ">$id_file");
   print FILE "";
   close(FILE);
@@ -158,7 +173,10 @@ sub write_missing {
   my $message;
   foreach $message (@mails){
 
-    next unless ($message =~ /^From /);
+    if ($message !~ /^From .*?\d:\d\d:\d\d/){
+      print "Error, invalid message!\n$message\n";
+      exit(0);
+    }
     
     my ($header, $body) = &extract_header_body ($message);
 

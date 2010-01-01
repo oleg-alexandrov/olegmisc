@@ -23,7 +23,7 @@ sub read_done_ids {
       $id = $1; $success = $2;
       $Done_hash->{$id} = $success;
     }else{
-      print "Error! Malformatted file $done_file!\n";
+      print "\nError! Malformatted file $done_file!\n";
       print "Bad line: $line\n";
       exit(0);
     }
@@ -86,7 +86,7 @@ sub write_mailbox{
   $mails  = shift;
 
   if (-e $folder){
-    print "Error! $folder exists!\n";
+    print "\nError! $folder exists!\n";
     exit(0);
   }
 
@@ -111,7 +111,7 @@ sub extract_header_body {
   
   $message =~ s/^\s*//g; # rm whitespace at the beginning
 
-  if ($message !~ /^From /){
+  if ($message !~ /^From .*?\d:\d\d:\d\d/){
     print "Invalid message.\n" . $message . "\n";
     exit(0);
   }
@@ -162,8 +162,8 @@ sub process_message{
   
   # Check if the message id is missing
   if ($header !~ /\nMessage-ID:\s+\<.*?\>/i){
-    print "Error, no message id!\n";
-    print "Message is: $message\n";
+    print "\nError: no message id!\n";
+    print "Message is:\n$message\n";
     exit(0);
   }
   
@@ -173,7 +173,7 @@ sub process_message{
 
 #     $id1 = $1; $id2 = $2;
 #     if ($id1 ne $id2){
-#       print "Error, more than one message id!\n";
+#       print "\nError, more than one message id!\n";
 #       print "$message\n";
 #       exit(0);
 #     }
@@ -241,7 +241,7 @@ sub extract_ids {
   my $message;
   foreach $message (@mails){
 
-    if ($message !~ /^From /){
+    if ($message !~ /^From .*?\d:\d\d:\d\d/){
       print "Invalid message\n$message\n";
       exit(0);
     }
@@ -289,23 +289,23 @@ sub add_message_id_if_needed {
 
   # Manufacture an id from the "from" and "to" lines.
   # Must be deterministic.
-  if ($header =~ /^From (.*?)\n/){
+  if ($header =~ /^From .*?\d:\d\d:\d\d/){
   }else{
-    print "Error! Missing \"From\" line in header!\n";
+    print "\nError! Missing \"From\" line in header!\n";
     exit(0);
   }
 
-  if ($header =~ /Date:(.*?)\n/i){
+  if ($header =~ /Date:(.*?)($|\n)/i){
     $id = $1;
   }else{
-    print "Error: Cannot match date in: \n$header\n";
+    print "\nError: Cannot match date in: \n$header\n";
     exit(0);
   }
 
-  if ($header =~ /To:(.*?)\n/i){
+  if ($header =~ /To:(.*?)($|\n)/i){
     $id = $id . $1;
   }else{
-    print "Error! Missing \"To\" line in header!\n";
+    print "\nError! Missing \"To\" line in header!\n";
     print "$header\n";
     #exit(0);
   }
