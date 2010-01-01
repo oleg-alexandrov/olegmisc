@@ -26,8 +26,8 @@ MAIN: {
   $folder    = $ARGV[0];
   $debugMode = $ARGV[1]; # 1 for debugging, 0 for actual work
   
-  $message_file = 'Message_file';  # save here a message before calling the forwarding program
-  $done_file = 'Sent_to_gmail.txt'; # Store message ids of mail forwarded earlier
+  $message_file = 'Message_file';   # save here a message before calling the fwding prog
+  $done_file    = 'Sent_to_gmail.txt'; # Store message ids of mail forwarded earlier
   $pause = 30; # pause this many seconds between sending messages to gmail
 
   &read_done_ids ($done_file, \%Done_hash);
@@ -100,6 +100,9 @@ sub send_message_to_gmail_via_procmail {
     print "Error! $procmailrc_file does not exist. Exiting.\n";
     exit(0);
   }
+
+  # To do: open $procmailrc_file and see if there is a valid address there.
+  # Otherwise procmail might forward to the original recepient maybe, not good.
   
   print "cat $tmp_file \| /usr/bin/procmail $procmailrc_file\n";
   print `cat $tmp_file \| /usr/bin/procmail $procmailrc_file` . "\n";
