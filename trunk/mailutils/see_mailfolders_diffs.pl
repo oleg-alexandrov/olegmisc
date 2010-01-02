@@ -89,7 +89,6 @@ sub get_files_in_maildir {
 
   my $mail_dir = shift;
 
-  $mail_dir = $ENV{HOME} . '/' . $mail_dir;
   print "\nGetting files in $mail_dir\n\n";
   
   my $file_line = `find $mail_dir`;
