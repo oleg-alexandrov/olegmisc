@@ -1,6 +1,7 @@
 #!/usr/bin/perl
-use strict;		      # 'strict' insists that all variables be declared
-use diagnostics;	      # 'diagnostics' expands the cryptic warnings
+use strict;		  # 'strict' insists that all variables be declared
+use diagnostics;	  # 'diagnostics' expands the cryptic warnings
+use lib $ENV{HOME} . '/bin/mailutils';
 
 require 'mail_utils.pl';
 
@@ -37,8 +38,10 @@ MAIN: {
     } # end visiting the current folder
     
   } # end going over mail folders
-  
-  open(FILE, ">UniqueMails");
+
+  my $out = "UniqueMails";
+  print "Writing unique mails to $out\n";
+  open(FILE, ">$out");
   foreach $id (keys %ids){
     print FILE $ids{$id} . "\n\n";
   }
