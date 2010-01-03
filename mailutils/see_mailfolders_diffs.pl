@@ -140,19 +140,16 @@ sub write_ids_to_disk {
 
   foreach $file (@files){
     
-    print "Will do $file\n";
-
     my @ids;
     @ids = &extract_ids($file);
 
     open(FILE, ">>$id_file");
-    print "Appending ids to $id_file\n";
+    #print "Appending ids to $id_file\n";
     foreach my $id (@ids){
       print FILE "$id\n";
     }
     close(FILE);
 
-    print "\n";
   }
 
 }
@@ -170,6 +167,8 @@ sub write_missing {
   &read_mailbox($folder, \@mails);
 
   my $message;
+
+  open(FILE, ">>$missing_folder");
   foreach $message (@mails){
 
     if ($message !~ /^From .*?\d:\d\d:\d\d/){
@@ -187,10 +186,9 @@ sub write_missing {
 
     $message = &combine_header_body($header, $body);
 
-    open(FILE, ">>$missing_folder");
     print FILE $message . "\n"; # Newline just in case
-    close(FILE);
     
   }
+  close(FILE);
 
 }

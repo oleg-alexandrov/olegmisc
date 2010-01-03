@@ -11,7 +11,14 @@ sub read_done_ids {
   my ($done_file, $Done_hash, $line, $id, $success, $text);
   
   $done_file = shift; $Done_hash = shift;
- 
+
+  %$Done_hash = ();
+
+  if (!-e $done_file){
+    print "Missing $done_file\n";
+    return;
+  }
+  
   open(FILE, "<$done_file") || die "Can't open file $done_file";
   $text = <FILE>; 
   close (FILE);
@@ -61,7 +68,7 @@ sub read_mailbox {
   # pass the mailbox by reference
   @$mails = split ($tag, $text);
 
-  # Verification. Strip any whitespace from message beginning.
+  # Some processing
   my $mail;
   foreach $mail (@$mails){
 
@@ -73,7 +80,13 @@ sub read_mailbox {
       print "Invalid mail\n$mail\n";
       exit(0);
     }
-    
+
+    # Wipe the old message id and create a new one.
+    my ($header, $body) = &extract_header_body ($mail);
+    $header =~ s/\nMessage-ID:\s+.*?($|\n)/$1/ig;
+    $header = &add_message_id_if_needed($header);
+    $mail   = &combine_header_body($header, $body);
+
   }
 
 }
@@ -119,7 +132,7 @@ sub extract_header_body {
   my ($header, $body);
   
   # Check if the message has a header
-  if ($message =~ /^(.*?)(\n\n.*?)$/s){
+  if ($message =~ /^(.*?)(\r?\n\r?\n\r?.*?)$/s){
     $header = $1;
     $body = $2;
   }else{
@@ -275,45 +288,52 @@ sub extract_message_id {
 
 sub add_message_id_if_needed {
 
-  # Don't modify the way the ID is manufactured here,
-  # as this will yield to messages being duplicated on gmail
-  # if having different ids.
+  # Manufacture an id from the "Date" and "To" fields.
+  # Must be deterministic.
+
   my ($header, $id);
 
   $header = shift;
+  $id     = "";
+  
+  if ($header !~ /^From .*?\d:\d\d:\d\d/){
+    print "\nError! Missing \"From\" line in header!\n$header\n";
+    exit(0);
+  }
 
-  if ($header =~ /Message-ID:\s+\<.*?\>/i){
+  if ($header =~ /(^|\n)Message-ID:\s+\<.*?\>/i){
     # nothing to do, id exists
     return $header;
   }
 
-  # Manufacture an id from the "from" and "to" lines.
-  # Must be deterministic.
-  if ($header =~ /^From .*?\d:\d\d:\d\d/){
+  if ($header =~ /(^|\n)Date:(.*?)($|\n)/i){
+    $id = $2;
   }else{
-    print "\nError! Missing \"From\" line in header!\n";
-    exit(0);
-  }
-
-  if ($header =~ /Date:(.*?)($|\n)/i){
-    $id = $1;
-  }else{
-    print "\nError: Cannot match date in: \n$header\n";
-    exit(0);
-  }
-
-  if ($header =~ /To:(.*?)($|\n)/i){
-    $id = $id . $1;
-  }else{
-    print "\nError! Missing \"To\" line in header!\n";
-    print "$header\n";
+    #print "\nError: Cannot match date in: \n$header\n";
     #exit(0);
   }
 
-  $id =~ s/[^a-zA-Z0-9]/-/g;
+  my $to = "";
+  if ($header =~ /(^|\n)To:(.*?)($|\n)/i){
+    # Must have the cleanups below (added the hard way)
+    $to = $2;
+    $to =~ s/\@.*?$//g; # the part after @ may be different on gmail and local
+    $to =~ s/[\"\'\`; ]//g;
+    $to =~ s/\<.*?$//g; 
+    $to =~ s/\s*,.*?$//g;
+    $to =~ s/\s*undisclosed.*?$//ig;
+  }else{
+    #print "\nError! Missing \"To\" line in header!\n";
+    #print "$header\n";
+    #exit(0);
+  }
+  $id = $id . $to;
 
-  $header =~ s/^(.*?\n)(Date:.*?)$/$1Message-ID: \<$id\>\n$2/sg;
+  $id =~ s/\s//g;
+  $id =~ s/[^a-zA-Z0-9]//g;
 
+  $header =~ s/^(From.*?\n)(.*?)$/$1Message-ID: \<$id\>\n$2/sg;
+  
   #print "Adding message id to:\n$header\n\n";
 
   return $header;
