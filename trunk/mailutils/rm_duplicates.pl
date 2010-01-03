@@ -39,7 +39,7 @@ MAIN: {
     
   } # end going over mail folders
 
-  my $out = "UniqueMails";
+  my $out = $files[0];
   print "Writing unique mails to $out\n";
   open(FILE, ">$out");
   foreach $id (keys %ids){
