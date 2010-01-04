@@ -21,7 +21,7 @@ stty start undef # control q
 
 ## Pager macros
 function mymore {
-local MORE=more
+local MORE=/usr/bin/less
 
 if [ $# = 1 ]; then
     case "$1" in
@@ -38,7 +38,7 @@ if [ $# = 1 ]; then
 	*)       $MORE "$@" ;;
     esac
 else
-    more "$@"
+    $MORE "$@"
 fi
 }
 
