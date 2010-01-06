@@ -23,7 +23,10 @@ setopt CSH_NULL_GLOB    # don't complain if there are no matches
 setopt NULL_GLOB        # don't complain if there are no matches
 setopt AUTO_PUSHD       # make cd push the old directory onto the directory stack
 setopt complete_in_word # complete when the cursor is in the middle of a word
-
+setopt CSH_JUNKIE_LOOPS        # for i in *; echo $i; end
+setopt interactivecomments
+setopt SH_WORD_SPLIT
+setopt AUTO_CD # cd to given dir by just typing dir name
 setopt PUSHD_IGNORE_DUPS
 
 eval `dircolors -b`
@@ -48,9 +51,10 @@ bindkey  "^Z"                undo
 bindkey "^[d"                delete-word # delete word forward with meta-D
 bindkey "^[[3;5~"            kill-line   # delete to end of line with Ctrl-Delete
 
+
 autoload -U colors
 localColors=$w/local/share/zsh/4.3.10/functions/colors; # local zsh installation
-if [[ -f $localColors ]]; then source $localColors; fi;
+if [[ -f $localColors ]]; then source $localColors > /dev/null 2>&1; fi;
 
 function proml
 {
@@ -73,4 +77,5 @@ $terminfo[bold]%{$fg[blue]%}%T %{$fg[yellow]%}%W %{$fg[green]%}%n@%m%{$fg[white]
 %{$fg[blue]%}$LOX_TAG$W %{$fg[green]%}>%{$fg[yellow]%}>%{$fg[red]%}>%{$fg[white]%} ";
 }
 
+# Init the prompt
 proml;

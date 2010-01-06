@@ -21,7 +21,7 @@ stty start undef # control q
 
 ## Pager macros
 function mymore {
-local MORE=/usr/bin/less
+local MORE=more
 
 if [ $# = 1 ]; then
     case "$1" in
@@ -77,6 +77,7 @@ function vp
 }
 
 function a {
+
   # make an alias available to all other open shells right when it is defined
   if [ -f ~/.unaliases    ]; then source ~/.unaliases;    fi;
   if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi;
@@ -108,6 +109,11 @@ function un {
 function hg {
     # grep through all history for given pattern
     history 1 | grep "$*"
+}
+
+function svm {
+    echo "svn commit -m \"$*\"";
+    svn commit -m "$*";
 }
 
 # -<colour opc>--------------------------------
