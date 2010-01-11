@@ -1,0 +1,12 @@
+<UserScriptConfig>
+	<Script filename="hide_digg_sponsored_entr.user.js" name="Hide Digg Sponsored Entries" namespace="http://daryl.learnhouston.com/userscripts/" description="Remove those irritating sponsored links in Digg's entry list." enabled="true" basedir="hide_digg_sponsored_entr">
+		<Include>http*://*digg.com*</Include>
+	</Script>
+	<Script filename="digg3_ad_remover.user.js" name="Digg3 Ad Remover" namespace="http://www.waxydesign.com" description="Removes the ads on Digg 3.0" enabled="true" basedir="digg3_ad_remover">
+		<Include>http://*digg.com/*</Include>
+		<Exclude> </Exclude>
+	</Script>
+	<Script filename="digg_de-link_summaries.user.js" name="Digg de-link summaries" namespace="http://ruhl.in" description="" enabled="true" basedir="digg_de-link_summaries">
+		<Include>http://digg.com/*</Include>
+	</Script>
+</UserScriptConfig>
