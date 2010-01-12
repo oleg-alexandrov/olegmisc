@@ -13,8 +13,6 @@ print "End of data"
 
 vals = data.split("\n")
 
-r1 = re.compile('^.*?other.*?$');
-
 for val in vals:
     
     #print "Here is a val: ", val
