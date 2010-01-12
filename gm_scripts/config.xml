@@ -9,4 +9,14 @@
 	<Script filename="digg_de-link_summaries.user.js" name="Digg de-link summaries" namespace="http://ruhl.in" description="" enabled="true" basedir="digg_de-link_summaries">
 		<Include>http://digg.com/*</Include>
 	</Script>
+	<Script filename="tweaking_nyt.user.js" name="Tweaking NYT" namespace="NYT" description="Tweaking NYT" enabled="true" basedir="tweaking_nyt">
+		<Include>http://www.nytimes.com/</Include>
+	</Script>
+	<Script filename="strip_digg_announcement.user.js" name="Strip Digg Announcement" namespace="Digg" description="Strip Digg Announcement" enabled="true" basedir="strip_digg_announcement">
+		<Include>http://digg.com/</Include>
+	</Script>
+	<Script filename="diggcom_disable_announce.user.js" name="Digg.com Disable Announcements and Promos" namespace="http://www.sernerdalot.com" description="Disables Announcements and Promos" enabled="true" basedir="diggcom_disable_announce">
+		<Include>http://digg.com/*</Include>
+		<Include>http://*.digg.com/*</Include>
+	</Script>
 </UserScriptConfig>
