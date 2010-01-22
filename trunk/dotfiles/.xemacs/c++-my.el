@@ -360,3 +360,4 @@ exist, try replacing 'src' with 'include' and vice-versa"
 (local-set-key [(meta t)] 'toggle-cpp-h)
 (local-set-key [(meta h)] 'update-header-file)
 (local-set-key [(control return)] 'c++-break-line)
+(local-set-key [(meta \[)] 'goto-match-paren)
