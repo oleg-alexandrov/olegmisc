@@ -6,11 +6,12 @@ autoload -U compinit promptinit
 compinit; promptinit;
 
 export HISTFILE=~/.zsh_history
+export z=~/.zsh_history
 export HISTSIZE=10000
 export SAVEHIST=10000
 setopt appendhistory
 setopt incappendhistory
-setopt extendedhistory
+unsetopt extendedhistory
 setopt histfindnodups
 setopt histignorealldups
 setopt histreduceblanks
@@ -56,6 +57,24 @@ autoload -U colors
 localColors=$w/local/share/zsh/4.3.10/functions/colors; # local zsh installation
 if [[ -f $localColors ]]; then source $localColors > /dev/null 2>&1; fi;
 
+function edit-alias () {
+
+  # If the command line has just the text "pp",
+  # this function will replace that text with the line
+  # alias pp=<the name of the alias>
+  # assuming that the alias "pp" exists.
+  # This makes it simple to re-edit an alias.
+
+  # Bind this function to a keystroke as follows: 
+  #zle -N edit-alias
+  #bindkey "^J" edit-alias
+
+  local in=$BUFFER;     # what is currently on the command line
+  BUFFER=`~/bin/expand_alias.pl $in`;  # replace with the text as described above
+}
+zle -N edit-alias
+bindkey "^J" edit-alias
+
 function proml
 {
     
@@ -67,14 +86,14 @@ function proml
   if [[ $LOXIM_MODE = "" ]]; then
     LOX_TAG="";
   else
-    LOX_TAG="LOXIM_MODE=$LOXIM_MODE@";
+    LOX_TAG="LOXIM_MODE=$LOXIM_MODE%{$fg[yellow]%}@";
   fi;
 
   # The command prompt. 
   # Must put escape characters in {% and %} to avoid garbling long command lines.
   PS1="
-$terminfo[bold]%{$fg[blue]%}%T %{$fg[yellow]%}%W %{$fg[green]%}%n@%m%{$fg[white]%}:%{$fg[blue]%}%~ 
-%{$fg[blue]%}$LOX_TAG$W %{$fg[green]%}>%{$fg[yellow]%}>%{$fg[red]%}>%{$fg[white]%} ";
+$terminfo[bold]%{$fg[green]%}%n@%m%{$fg[white]%}:%{$fg[blue]%}%~ 
+%{$fg[blue]%}$LOX_TAG%{$fg[green]%}$W %{$fg[red]%}>%{$fg[yellow]%}>%{$fg[green]%}>%{$fg[white]%} ";
 }
 
 # Init the prompt
