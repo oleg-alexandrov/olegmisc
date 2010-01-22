@@ -6,6 +6,7 @@ alias ce='crontab -e'
 alias ced='perl -pi -e "s#\s*\n#\n#g"'
 alias cel='perl -pi -e "s#\s*\n#\n#g"'
 alias cl=ccol.pl
+alias cmx='chmod a-x'
 alias cp='\cp -iv'
 alias cpu='cat /proc/cpuinfo'
 alias cs=cvs_status.pl
@@ -23,8 +24,7 @@ alias ec=echo
 alias fh='find . -name'
 alias g='grep -i -E --colour=auto'
 alias gf='gfortran -Wall -c'
-alias gr='g -r'
-alias gt='g tag * | g cvs'
+alias gt=gthumb
 alias h='history 1'
 alias head='\head -n 100'
 alias hl='\head -n 100'
@@ -68,6 +68,7 @@ alias rf='\rm -fv'
 alias rfo='\rm -fv .#* java.log.* matlab_crash* .*~ *~ *.box *.ly1 *.ly2 \#*'
 alias rl='source ~/.zshrc'
 alias rm='\rm -vi'
+alias rr='source ~/.zshrc'
 alias rs='alias > ~/.bash_aliases; perl -pi -e "s#^([^\s]+=)#alias \$1#g" ~/.bash_aliases'
 alias run-help=man
 alias sep='. ~/bin/setpath'
