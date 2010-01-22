@@ -10,25 +10,29 @@ MAIN:{
     exit(0);
   }
 
-  my $param = $ARGV[0];
-  my $val   = $ARGV[1];
-  my $file  = $ARGV[2];
+  my $param  = shift @ARGV; 
+  my $val    = shift @ARGV;
+  my @files  = @ARGV;
 
-  open(FILE, "<$file");
-  my $text = <FILE>;
-  close(FILE);
-  
-  my @lines = split("\n", $text);
-  foreach my $line (@lines){
-    next unless ($line =~ /^(.*?$param.*?\s+)(.*?)$/i);
-    $line = $1 . $val;
-    $line =~ s/^\s*#\s*/ /g;
-    print "$line\n";
- }
+  foreach my $file (@files){
 
-  $text = join("\n", @lines);
-  open(FILE, ">$file");
-  print FILE $text . "\n";
-  close(FILE);
+    open(FILE, "<$file");
+    my $text = <FILE>;
+    close(FILE);
+    
+    my @lines = split("\n", $text);
+    foreach my $line (@lines){
+      next unless ($line =~ /^(.*?$param.*?\s+)(.*?)$/i);
+      $line = $1 . $val;
+      $line =~ s/^\s*#\s*/ /g;
+      print "$file: $line\n";
+    }
+    
+    $text = join("\n", @lines);
+    open(FILE, ">$file");
+    print FILE $text . "\n";
+    close(FILE);
+
+  }
   
 }

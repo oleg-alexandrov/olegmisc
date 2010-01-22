@@ -12,6 +12,11 @@ MAIN:{
   # into
   # int a    = 5;
   # double q = 6;
+
+  if ( scalar(@ARGV) < 2 ){
+    print "Usage: $0 tag files\n";
+    exit(0);
+  }
   
   my $tag   = shift @ARGV;
   my @files = @ARGV;
@@ -67,16 +72,22 @@ sub do_align{
     }
     $end--;
 
-    for ($k = $beg; $k <= $end; $k++){
-      
-      next unless ($lines[$k] =~ /^(.*?)(\s*\Q$tag\E.*?)$/);
-      my $before = $1;
-      my $after  = $2;
-      $after     =~ s/^\s*//g;
-      
-      $before = $before . " " x ($maxcol - length($before) + 1);
+    if ($end - $beg > 1){
 
-      $lines[$k] = $before . $after;
+      # Align lines only if there is more than one in the given block
+
+      for ($k = $beg; $k <= $end; $k++){
+        
+        next unless ($lines[$k] =~ /^(.*?)(\s*\Q$tag\E.*?)$/);
+        my $before = $1;
+        my $after  = $2;
+        $after     =~ s/^\s*//g;
+        
+        $before = $before . " " x ($maxcol - length($before) + 1);
+        
+        $lines[$k] = $before . $after;
+      }
+      
     }
     
     $beg = $end + 1;
