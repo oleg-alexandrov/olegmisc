@@ -51,7 +51,7 @@
 
 ;; dictionary
 ;(setq ispell-prefer-aspell t)
-(setq ispell-personal-dictionary "~/.xemacs/ispell-dictionary")
+;(setq ispell-personal-dictionary "~/.xemacs/ispell-dictionary")
 
 ;;some functions and global keys
 (load-library "global-my")
@@ -84,7 +84,7 @@
 ; (icomplete-mode 1)
 
 ; turn on spelling for source code 
-(flyspell-prog-mode)
+;(flyspell-prog-mode)
 
 ;;auto-insert stuff
 (add-hook 'find-file-hooks 'auto-insert)

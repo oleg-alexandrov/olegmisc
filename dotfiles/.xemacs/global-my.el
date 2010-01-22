@@ -1,3 +1,4 @@
+; Vi style star search 
 (defun isearch-set-initial-string ()
   (remove-hook 'isearch-mode-hook 'isearch-set-initial-string)
   (setq isearch-string isearch-initial-string)
@@ -404,7 +405,21 @@
   (align-regexp start end 
                 (concat "\\(\\s-*\\)" regexp) 1 1 t))
 
-(global-set-key [(meta m)] 'mark-paragraph)
+(defun goto-match-paren ()
+  "Go to the matching parenthesis if on parenthesis"
+  (interactive)
+  (cond ((looking-at "[\(\{]") (forward-list 1) (backward-char 1))
+        ((looking-at "[\)\}]") (forward-char 1) (backward-list 1))
+        )
+)
+
+(defun mark-paragraph-and-align ()
+  (interactive)
+  (call-interactively 'mark-paragraph)
+  (call-interactively 'align-repeat)
+  )
+
+(global-set-key [(meta m)] 'mark-paragraph-and-align)
 (global-set-key     'button4 'mwheel-down)
 (global-set-key     'button5 'mwheel-up)
 (global-set-key [(control \')] 'my-delete-tail)
