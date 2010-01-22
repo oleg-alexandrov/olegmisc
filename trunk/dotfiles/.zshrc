@@ -30,11 +30,15 @@ setopt SH_WORD_SPLIT
 setopt AUTO_CD # cd to given dir by just typing dir name
 setopt PUSHD_IGNORE_DUPS
 
+export WORDCHARS=""; # Make every non-alphanumeric be a word separator
+#export WORDCHARS="*?_-.[]~=/&;!#$%^(){}<>"; # original
+
 eval `dircolors -b`
 
 zstyle ':completion:*' menu select
 
 bindkey  "^A"                beginning-of-line
+bindkey  "^B"                backward-word
 bindkey  "^E"                end-of-line
 bindkey  "^D"                delete-char
 bindkey  "^F"                forward-word
@@ -49,9 +53,10 @@ bindkey  "$terminfo[kend]"   end-of-line
 bindkey  "^["                backward-delete-word
 bindkey  "\M-d"              delete-word
 bindkey  "^Z"                undo
-bindkey "^[d"                delete-word # delete word forward with meta-D
-bindkey "^[[3;5~"            kill-line   # delete to end of line with Ctrl-Delete
-
+bindkey  "^[d"               delete-word  
+bindkey  "^[[3;5~"           kill-line    
+bindkey  "^[f"               forward-char
+bindkey  "^[b"               backward-char
 
 autoload -U colors
 localColors=$w/local/share/zsh/4.3.10/functions/colors; # local zsh installation
