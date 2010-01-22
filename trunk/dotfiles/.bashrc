@@ -116,6 +116,18 @@ function svm {
     svn commit -m "$*";
 }
 
+function gr {
+
+  # recursive grep
+  grep -r -i -E --colour=auto $* .;
+
+}
+
+function fe {
+ # Find files with given extension
+  find . -name \*.$1;
+}
+
 # -<colour opc>--------------------------------
 COLOR_0="\[\033[0;30m\]" # Black
 COLOR0="\[\033[1;30m\]"  # Black (Light) / Dark Gray
