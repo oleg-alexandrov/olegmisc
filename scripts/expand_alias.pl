@@ -28,7 +28,7 @@ MAIN:{
     last;
   }
 
-  if (!match){
+  if (!$match){
     print "$in\n";
   }
 }
