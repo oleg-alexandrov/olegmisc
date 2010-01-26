@@ -2,15 +2,16 @@
 // @name           Strip Digg Announcement
 // @namespace      Digg
 // @description    Strip Digg Announcement
-// @include        http://digg.com/
+// @include        http*://*digg.com*
 // ==/UserScript==
 
 	
 (function() {
 
-	document.getElementById('game').style["display"] = "none";
+	//document.getElementById('contents').style["display"] = "none";
 
 	document.getElementById('game').style["display"] = "none";
+	document.getElementById('game-clock').style["display"] = "none";
 
 	document.getElementById('user-announcement').style["display"] = "none";
 
