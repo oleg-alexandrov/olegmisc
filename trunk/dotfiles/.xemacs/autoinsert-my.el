@@ -90,6 +90,7 @@ using namespace std;
 (define-auto-insert "\\.tex\\'" "header.tex")
 (define-auto-insert "\\.pl\\'" "header.pl")
 (define-auto-insert "\\.sh\\'" "header.sh")
+(define-auto-insert "\\.py\\'" "header.py")
 ;;(define-auto-insert "\\.f\\'" "header.f")
 ;;(define-auto-insert "\\.cpp\\'" "header.cpp")
 ;(define-auto-insert "\\.el\\'" "header.el")
