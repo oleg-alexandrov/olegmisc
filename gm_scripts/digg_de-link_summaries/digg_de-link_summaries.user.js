@@ -15,8 +15,11 @@ GM_wait();
 
 // All your GM code must be inside this function
 function letsJQuery() {
+
+
 		$("a.body").each(function(i, elem){
 			var html = $(elem).html();
 			$(elem).replaceWith("<span class='body'>" + html + "</span>");
 		});
+
 }
