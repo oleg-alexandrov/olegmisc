@@ -15,10 +15,10 @@ vals = data.split("\n")
 
 for val in vals:
     
-    #print "Here is a val: ", val
+    matches = re.match('^.*?(other.*?)$', val)
 
-    matches = re.match('^.*?(other.*?)$', val);
     if matches:
+        
         print "Match found in ", val
         print "Match is ", matches.group(0)
         print "Group is", matches.group(1) # first match

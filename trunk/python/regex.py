@@ -1,25 +1,38 @@
 #!/usr/bin/python
 
-import sys
-import os
-import re # perl-style regular expressions
+import re
 
+# Controlling the number of matches
 val = 'xy ac abc abbc abbbc abbbbc abbbbbc zw';
+print "\nString is ", val
+print '0,  ', re.findall('ab*c',     val)   # any number of b's
+print '1, 2', re.findall('ab{1,2}c', val)   # number of b's within range
+print '2,  ', re.findall('ab{2,}c', val)    # number of b's within range
 
-matches = re.match('^.*?(ab*c).*?$', val);
+# Raw strings
+val = r'a \section';
+print "Val is ", val
+matches = re.match(r'^.*?(\\s).*?$', val); # raw match
 if matches:
-    print "Match found in ", val
-    print "All groups are ", matches.groups()
-    print "Match is ", matches.group(0)
+    print "Found match for ", val
+    print "Match is ", matches.groups()
     print "Group is", matches.group(1) # first match
     
-    #print "Before it is: ", val
-    #val = re.compile('o([^ ]*?)r').sub("OTHER", val)
-    #print "After sub is: ", val
-    
 
-print "\nString is ", val
-print '0,  ', re.compile('ab*c').findall(val)       # any number of b's
-print '1, 2', re.compile('ab{1,2}c').findall(val)   # number of b's within range
-print '0, 3', re.compile('ab{0,3}c').findall(val)   # number of b's within range
-print '2, 4', re.compile('ab{2,4}c').findall(val)   # number of b's within range
+# Replacement
+val  = 'xy ac abc abbc abbbc abbbbc abbbbbc zw';
+print "Val before", val
+val2 = re.sub('[axybc]+', 'w', val)
+print "Val after ", val2
+
+# Case insensitive modifier
+val  = 'xy ac abc abbc aBCc abCbbc abbbbbc zw';
+print "\nVal is ", val
+out = re.findall('ab*', val);       print "Case sensitive outputs are   ", out
+out = re.findall('ab*', val, re.I); print "Case insensitive outputs are ", out
+
+# Grouping
+p = re.compile('^.*?(ab)(ab)', re.I)
+m = p.match('xAbabAbAbAb')
+print "m=", m
+print "groups are ", m.groups()
