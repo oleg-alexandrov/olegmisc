@@ -2,29 +2,30 @@
 // @name           Tweaking NYT
 // @namespace      NYT
 // @description    Tweaking NYT
-// @include        http://www.nytimes.com/
+// @include        http://*.nytimes.com/*
+// @include        http://nytimes.com/*
 // ==/UserScript==
 
 	
 (function() {
 
-//	document.getElementById('toolsHome').style["display"] = "none";
+var adIDAry = ['adxBigAd', 'date'],
+		classNameAry = ['toolbarPromo runaroundRight'],
+		tempEle = null,
+		tempEles = null;
 
-//var adBar = document.getElementById('toolsHome');
-
-//if (adBar)  adBar.parentNode.removeChild(adBar);
-
-
-//	document.getElementById('item_ad').style["display"] = "none";
-//	document.getElementById('comments_ad').style["display"] = "none";
-//	document.getElementById('col-promo').style["display"] = "none";
-//      document.getElementById('div#topads').style.display="none";
-//      document.getElementById('col-promo').style.display="none";
-
-//var adBar = document.getElementById('col-promo');
-//
-//if (adBar)
-//	adBar.parentNode.removeChild(adBar);
+	// remove known ad ids
+	for (var i = 0; i < adIDAry.length; i++) {
+		tempEle = document.getElementById(adIDAry[i]);
+		if (tempEle) tempEle.parentNode.removeChild(tempEle);
+	}
+	// remove known ad class names
+	for (var i = 0; i < classNameAry.length; i++) {
+		tempEles = document.getElementsByClassName(classNameAry[i]);
+		for (var j = 0; j < tempEles.length; j++) {
+			tempEles[j].parentNode.removeChild(tempEles[j]);
+		}
+	}
 
 })()
 
