@@ -110,8 +110,8 @@ sub parse_h {
 
   my (%h_map, $key);
   
-  my @blocks = &extract_blocks($text);
-
+  my @blocks = &extract_blocks_h($text);
+  
   # Overwrite function prototypes that changed in the cpp file
   my $block;
   foreach $block (@blocks){
@@ -152,9 +152,15 @@ sub parse_h {
 
     #print "overwriting: $block\n";
     #print "with $cpp_map->{$key}\n";
+
+    # Save the number of newlines
+    my $oldnewlines = "";
+    if ($block =~ /(\s*)$/){
+      $oldnewlines = $1;
+    }
     
     $block = $cpp_map->{$key};
-
+    
     # Put back the static keyword
     if ($is_static){
       $block = "static " . $block;
@@ -163,6 +169,10 @@ sub parse_h {
     # rm the namespace and indent
     $block =~ s/(\w+::)(\w+\s*\()/$2/;
     $block = &indent_block ($block);
+
+    # Use the original number of newlines
+    $block =~ s/\s*$//g;
+    $block = $block . $oldnewlines;
     
   }
 
@@ -175,7 +185,7 @@ sub parse_h {
     next if (exists $h_map{$key});
 
     my $new_block = $cpp_map->{$key};
-
+    
     next unless ($new_block =~ /$namesp\:\:/ ); # must be same namespace
 
     # rm the namespace and indent
@@ -195,9 +205,24 @@ sub parse_h {
   
   $text = join ("", @blocks);
 
-  # Append the new blocks under the very last private:
+  # Append the new blocks under the very last private: or public:
   if ($new_chunk !~ /^\s*$/){
-    $text =~ s/^(.*private:\s*)(.*?)$/$1$new_chunk$2/sg;
+
+    if ($text =~ /(^|\n)private:/){
+      
+      $text =~ s/^(.*private:\s*)(.*?)$/$1$new_chunk$2/sg;
+      
+    }elsif ($text =~ /(^|\n)public:/){
+      
+      $text =~ s/^(.*public:\s*)(.*?)$/$1$new_chunk$2/sg;
+      
+    }elsif ($text =~ /(^|\n)class\s+$namesp/){
+      
+      $text =~ s/^(.*class $namesp.*?\{\s*)(.*?)$/$1$new_chunk$2/sg;
+    }else{
+     print "Must have public: private: or class{\n"; 
+    }
+    
   }
 
   $text =~ s/\s*$/\n/g;
@@ -239,3 +264,52 @@ sub extract_blocks {
   return @blocks;
 }
 
+sub extract_blocks_h{
+
+  # Split into blocks by newline. If one block does not have a balanced newline
+  # set, merge it with the next block
+  
+  my $text = shift;
+
+  $text =~ s/\r//g; 
+  $text =~ s/\t/ /g; 
+
+  my @blocks = split("\n", $text);
+
+  my @nblocks = ();
+  my $nblock = "";
+  
+  foreach my $block (@blocks){
+
+    $nblock = $nblock . $block . "\n";
+    
+    if (balanced_parens($nblock)){
+      
+      push (@nblocks, $nblock);
+      $nblock = "";
+      next;
+      
+    }
+    
+  }
+
+  if ($nblock !~ /^\s*$/){
+    push (@nblocks, $nblock);
+  }
+
+  return @nblocks;
+}
+
+sub balanced_parens{
+
+  # If the current text has a balanced number of parentheses
+  
+  my $text = shift;
+  
+  $text =~ s/\/\/.*?(\n|$)//g;
+  
+  my $lpars = scalar ($text =~ /\(/g);
+  my $rpars = scalar ($text =~ /\)/g);
+
+  return ($lpars == $rpars);
+}
