@@ -48,21 +48,6 @@ MAIN: {
   print "$header_file updated\n";
 }
 
-sub key_sig{
-
-  # Signature is the number of commas
-  
-  my $block = shift;
-  $block =~ s/\{.*?$//sg;
-
-  $block = $block . "\n";
-  $block =~ s/\/\/.*?\n//g;
-
-  $block =~ s/[^,]//g;
-
-  return $block;
-}
-
 sub parse_cpp {
 
   my $text    = shift;
@@ -99,10 +84,10 @@ sub parse_h {
   my $cpp_map = shift;
 
   # identify the namespace in the h class
-  my $namesp;
   # Look at the last of all namespaces (this is a bit hackish)
+  my $namespace;
   if ($text =~ /^.*\n\s*(class|struct)\s+(\w+)\s*:*.*?\{/s){
-    $namesp = $2;
+    $namespace = $2;
   }else{
     print "Can't identify the namespace!\n";
     exit(0);
@@ -148,17 +133,15 @@ sub parse_h {
     # Ignore functions with preset params (having the equal sign somehwere)
     next if ($block =~ /=/);
 
-    # Overwrite a .h entry with the corresponding .cpp entry.
-
-    #print "overwriting: $block\n";
-    #print "with $cpp_map->{$key}\n";
-
     # Save the number of newlines
     my $oldnewlines = "";
     if ($block =~ /(\s*)$/){
       $oldnewlines = $1;
     }
-    
+
+    # Overwrite a .h entry with the corresponding .cpp entry.
+    #print "overwriting: $block\n";
+    #print "with $cpp_map->{$key}\n";
     $block = $cpp_map->{$key};
     
     # Put back the static keyword
@@ -178,15 +161,14 @@ sub parse_h {
 
   # See what new functions were declared in the cpp file and are missing in
   # the h file
-  my @new_blocks;
-  @new_blocks = ();
+  my @new_blocks = ();
   foreach $key (keys %$cpp_map){
 
     next if (exists $h_map{$key});
 
     my $new_block = $cpp_map->{$key};
     
-    next unless ($new_block =~ /$namesp\:\:/ ); # must be same namespace
+    next unless ($new_block =~ /$namespace\:\:/ ); # must be same namespace
 
     # rm the namespace and indent
     $new_block =~ s/(\w+::)(\w+\s*\()/$2/;
@@ -210,15 +192,16 @@ sub parse_h {
 
     if ($text =~ /(^|\n)private:/){
       
-      $text =~ s/^(.*private:\s*)(.*?)$/$1$new_chunk$2/sg;
+      $text =~ s/^(.*private:(?:[ ]*\n)*)(.*?)$/$1$new_chunk$2/sg;
       
     }elsif ($text =~ /(^|\n)public:/){
       
-      $text =~ s/^(.*public:\s*)(.*?)$/$1$new_chunk$2/sg;
+      $text =~ s/^(.*public:(?:[ ]*\n)*)(.*?)$/$1$new_chunk$2/sg;
       
-    }elsif ($text =~ /(^|\n)class\s+$namesp/){
+    }elsif ($text =~ /(^|\n)class\s+$namespace/){
       
-      $text =~ s/^(.*class $namesp.*?\{\s*)(.*?)$/$1$new_chunk$2/sg;
+      $text =~ s/^(.*class $namespace.*?\{(?:[ ]*\n)*)(.*?)$/$1$new_chunk$2/sg;
+      
     }else{
      print "Must have public: private: or class{\n"; 
     }
@@ -232,6 +215,8 @@ sub parse_h {
   
 sub extract_blocks {
 
+  # The separator between blocks is an empty line
+  
   my $text = shift;
 
   $text =~ s/\r//g; 
@@ -266,8 +251,8 @@ sub extract_blocks {
 
 sub extract_blocks_h{
 
-  # Split into blocks by newline. If one block does not have a balanced newline
-  # set, merge it with the next block
+  # Split into blocks by newline. If one block does not have a
+  # balanced paranthesis set, merge it with the next block
   
   my $text = shift;
 
