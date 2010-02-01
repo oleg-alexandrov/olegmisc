@@ -30,8 +30,8 @@ MAIN:{
   
   for (my $row = 0; $row < $len; $row++){
     
-    my @l1 = split(/\s+/, $val1[$row]);
-    my @l2 = split(/\s+/, $val2[$row]);
+    my @l1 = split(/(,|\s+)/, $val1[$row]);
+    my @l2 = split(/(,|\s+)/, $val2[$row]);
 
     my $numlen = scalar( @l1 );
 
