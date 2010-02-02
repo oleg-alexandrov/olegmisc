@@ -26,7 +26,7 @@ MAIN: {
 
   &parse_cpp($text, \%cpp_map);
 
-  # override header file name if available
+  # Override the header file name if available
   if ($text =~ /\n\#\s*include\s*\"(.*?)\".*?header file/){
     $header_file = $1;
 
@@ -53,15 +53,15 @@ sub parse_cpp {
   my $text    = shift;
   my $cpp_map = shift;
 
-  my @blocks = &extract_blocks($text);
+  my @blocks = &extract_blocks_cpp($text);
 
   my $block;
   foreach $block (@blocks){
 
     $block =~ s/\/\*.*?\*\///sg; # get rid of C-style comments
 
-    # Will match things like: void  *  myname::myfun ( double x, double y) const{
-    next unless ( $block =~ /(\w+[\s\*\&]+\w+\:\:\w+)\s*(\(.*?\)\s*\w*\s*)\{/s );
+    # Will match things like: std::string  *  myname::myfun ( double x, double y) const{
+    next unless ( $block =~ /(\w+(?:\:\:\w+)?[\s\*\&]+\w+::\w+)\s*(\(.*?\)\s*\w*\s*)\{/s );
 
     my $key = $1;
     my $fun = $1 . $2 . ";\n\n";
@@ -85,7 +85,7 @@ sub parse_h {
 
   # identify the namespace in the h class
   # Look at the last of all namespaces (this is a bit hackish)
-  my $namespace;
+  my $namespace = "";
   if ($text =~ /^.*\n\s*(class|struct)\s+(\w+)\s*:*.*?\{/s){
     $namespace = $2;
   }else{
@@ -112,8 +112,8 @@ sub parse_h {
       $static = $1;
     }
     
-    # match things like: void  *  myfun ( double x, double y){
-    if  ( $block =~ /(\w+[\s\*\&]+[\w]+)(\s*\(.*\))/s ){
+    # match things like: std::string  *  myfun ( double x, double y){
+    if  ( $block =~ /(\w+(?:\:\:\w+)?[\s\*\&]+[\w]+)(\s*\(.*\))/s ){
       $key = $1;
       $key =~ s/\s+/ /g;
     }else{
@@ -140,8 +140,7 @@ sub parse_h {
     }
 
     # Overwrite a .h entry with the corresponding .cpp entry.
-    #print "overwriting: $block\n";
-    #print "with $cpp_map->{$key}\n";
+    #print "Overwriting: $block\n";
     $block = $cpp_map->{$key};
     
     # Put back the static keyword
@@ -150,13 +149,14 @@ sub parse_h {
     }
     
     # rm the namespace and indent
-    $block =~ s/(\w+::)(\w+\s*\()/$2/;
+    $block =~ s/($namespace\:\:)(\w+\s*\()/$2/; # Must escape : here
     $block = &indent_block ($block);
 
     # Use the original number of newlines
     $block =~ s/\s*$//g;
     $block = $block . $oldnewlines;
     
+    #print "Overwriting with $block\n";
   }
 
   # See what new functions were declared in the cpp file and are missing in
@@ -172,7 +172,7 @@ sub parse_h {
 
     # rm the namespace and indent
     $new_block =~ s/(\w+::)(\w+\s*\()/$2/;
-
+    
     $new_block =~ s/^\s*/  /g;
     $new_block = &indent_block ($new_block);
 
@@ -213,7 +213,7 @@ sub parse_h {
   return $text;
 }
   
-sub extract_blocks {
+sub extract_blocks_cpp {
 
   # The separator between blocks is an empty line
   
@@ -244,7 +244,6 @@ sub extract_blocks {
   $text =~ s/(\n[ \t]*\n)/$1$sep/g;
 
   my @blocks = split($sep, $text);
-  
 
   return @blocks;
 }
@@ -259,14 +258,20 @@ sub extract_blocks_h{
   $text =~ s/\r//g; 
   $text =~ s/\t/ /g; 
 
-  my @blocks = split("\n", $text);
+  my @blocks = split(/\n/, $text);
 
   my @nblocks = ();
   my $nblock = "";
-  
+
+  my $count = 0;
   foreach my $block (@blocks){
 
-    $nblock = $nblock . $block . "\n";
+    $count++;
+    
+    $nblock = $nblock . $block;
+
+    # Add the newline back except for the last field
+    $nblock .= "\n" if ( $count < scalar(@blocks) );
     
     if (balanced_parens($nblock)){
       
