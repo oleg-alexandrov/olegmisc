@@ -68,8 +68,9 @@ sub parse_cpp {
 
     $fun =~ s/\s*;/;/g;
     
-    # rm namespace from fun declaration
-    $key =~ s/(\w+::)//;  
+    # rm namespace from fun declaration, so std::string namespace::myfun()
+    # becomes simply ...                    std::string myfun()
+    $key =~ s/(\w+(?:\:\:\w+)?[\s\*\&]+)(\w+::)(\w+)/$1$3/;  
     $key =~ s/\s+/ /g;
 
     $cpp_map->{$key} = $fun;
@@ -167,11 +168,11 @@ sub parse_h {
     next if (exists $h_map{$key});
 
     my $new_block = $cpp_map->{$key};
-    
+
     next unless ($new_block =~ /$namespace\:\:/ ); # must be same namespace
 
     # rm the namespace and indent
-    $new_block =~ s/(\w+::)(\w+\s*\()/$2/;
+    $new_block =~ s/($namespace\:\:)(\w+\s*\()/$2/;
     
     $new_block =~ s/^\s*/  /g;
     $new_block = &indent_block ($new_block);
