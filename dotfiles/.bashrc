@@ -95,7 +95,7 @@ function a {
 
 function ag {
     # grep through all aliases for given pattern
-    alias | grep "$*"
+    alias | grep -i --colour=auto "$*"
 }
 
 function un {
@@ -119,13 +119,22 @@ function svm {
 function gr {
 
   # recursive grep
-  grep -r -i -E --colour=auto $* .;
+  grep -r -i -E --colour=auto "$*" .;
 
 }
 
 function fe {
  # Find files with given extension
   find . -name \*.$1;
+}
+
+function v {
+
+ # Save the current file name. Will open it in emacs.
+ file=`pwd`/$1;
+ file=$( echo $file | perl -pi -e "s#:.*?\$##g" );
+ echo $file > ~/.fileToOpen
+
 }
 
 # -<colour opc>--------------------------------

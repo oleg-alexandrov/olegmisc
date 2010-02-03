@@ -120,10 +120,10 @@ DeskTopSize 3x12
  
 ######################### Keyboard binding###########################
 #Key F1    A   N   Exec /usr/bin/konsole& 
-Key F1    A   N   Exec /usr/bin/gnome-terminal  --geometry 110x45+0+0& 
+Key F1    A   C   Exec /usr/bin/gnome-terminal  --geometry 110x45+0+0& 
 #Key F1    A   N   Exec  /m1/aoleg/bin/rxvt & # -geo 140x61+10+10  -hc blue  -bdc -fn 8x16 &
 Key F2    A   N   Exec  /m1/aoleg/bin/rxvt -fn 8x16 -e mutt &
-Key F3    A   N   Exec  ~/bin/xe &
+Key F3    A   C   Exec  ~/bin/xe &
 Key F4    A   N   Exec  /usr/bin/firefox&
 Key F6    A   N   Exec  mozilla& 
 Key F7    A   N   Exec  /usr/local/bin/mathematica&
