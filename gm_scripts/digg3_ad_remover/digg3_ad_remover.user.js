@@ -9,7 +9,7 @@
 (function() {
 
        var adIDAry = ['user-announcement', 'ad hdr', 'advertisement','ad','sponsor-banner','div#topads','topads','block_ad_msft'],
-               classNameAry = ['advertisement','ad','sponsored','ad-list','promo'],
+               classNameAry = ['selector', 'advertisement','ad','sponsored','ad-list','promo'],
                tempEle = null,
                tempEles = null;
 
