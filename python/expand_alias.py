@@ -20,12 +20,13 @@ out = ""
 
 for line in lines:
 
-    matches = re.match('^(alias ' + aliasName + '.*?)$', line); # raw match
+    matches = re.match('^(alias ' + aliasName + '=.*?)$', line); # raw match
     if matches:
         out = matches.group(1)
 
 if out == "":
     out = aliasName
 
+out = re.sub('^alias', 'a', out);
 print out
     
