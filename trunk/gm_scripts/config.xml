@@ -13,6 +13,7 @@
 		<Include>http://www.nytimes.com/</Include>
 		<Include>http://*.nytimes.com/*</Include>
 		<Include>http://nytimes.com/*</Include>
+		<Include>file:///C:/Documents%20and%20Settings/olegalex/Desktop/The%20New%20York%20Times%20-%20Breaking%20News,%20World%20News%20&amp;%20Multimedia.htm</Include>
 	</Script>
 	<Script filename="strip_digg_announcement.user.js" name="Strip Digg Announcement" namespace="Digg" description="Strip Digg Announcement" enabled="true" basedir="strip_digg_announcement">
 		<Include>http://digg.com/</Include>
@@ -27,5 +28,14 @@
 	</Script>
 	<Script filename="clean_slashdot.user.js" name="clean slashdot" namespace="Slashdot" description="" enabled="true" basedir="clean_slashdot">
 		<Include>http://slashdot.org/</Include>
+	</Script>
+	<Script filename="local.user.js" name="local" namespace="local" description="local" enabled="true" basedir="local">
+		<Include>file:///C:/Documents%20and%20Settings/olegalex/Desktop/The%20New%20York%20Times%20-%20Breaking%20News,%20World%20News%20&amp;%20Multimedia.htm</Include>
+	</Script>
+	<Script filename="link_labs.user.js" name="Link Labs" namespace="http://programadoresmx.blogspot.com/" description="Nuevo menu para herramientas experimentales de google labs" enabled="true" basedir="link_labs">
+		<Include>http://www.google.com/firefox*</Include>
+	</Script>
+	<Script filename="economist.user.js" name="Economist" namespace="local" description="Tweak Economist" enabled="true" basedir="economist">
+		<Include>http://*.economist.com/*</Include>
 	</Script>
 </UserScriptConfig>

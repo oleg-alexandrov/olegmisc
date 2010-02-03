@@ -9,8 +9,8 @@
 	
 (function() {
 
-var adIDAry = ['adxBigAd', 'date'],
-		classNameAry = ['toolbarPromo runaroundRight'],
+var adIDAry = ['adxBigAd', 'date', 'switchEditions', 'HPTopNav'],
+		classNameAry = ['singleAd', 'columnGroup firstColumnGroup fullWidth', 'toolbarPromo runaroundRight', 'navigationHomeEdition', 'switchEditions'],
 		tempEle = null,
 		tempEles = null;
 
@@ -26,6 +26,24 @@ var adIDAry = ['adxBigAd', 'date'],
 			tempEles[j].parentNode.removeChild(tempEles[j]);
 		}
 	}
+
+tempEle = document.getElementById('toolsHome');
+
+var items = tempEle.getElementsByTagName("a");
+var item = items[0];
+item.parentNode.removeChild(item);
+
+// document.getElementById('toolsHome').getElementsByTagName("a")[0].text.replace('o', 'e');
+// document.getElementById('toolsHome').getElementsByTagName("a")[0].setAttribute('text', 'hi')
+// document.getElementById('toolsHome').getElementsByTagName("a")[0].href = "xuxa";
+ 
+// alert( document.getElementById('toolsHome').getElementsByTagName("a")[0].href )
+
+
+//alert("The number of items is " + items.length + " item name is " + item.text);
+
+// if(tempEle.value != "")
+//	alert("You entered: " + tempEle.firstChild.nodeValue);
 
 })()
 
