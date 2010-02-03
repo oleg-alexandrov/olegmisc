@@ -87,7 +87,7 @@ sub parse_h {
   # identify the namespace in the h class
   # Look at the last of all namespaces (this is a bit hackish)
   my $namespace = "";
-  if ($text =~ /^.*\n\s*(class|struct)\s+(\w+)\s*:*.*?\{/s){
+  if ($text =~ /^.*\n\s*(class|struct|namespace)\s+(\w+)\s*:*.*?\{/s){
     $namespace = $2;
   }else{
     print "Can't identify the namespace!\n";

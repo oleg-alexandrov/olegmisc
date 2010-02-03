@@ -13,7 +13,10 @@
 ; and it launches a new Notepad window (or activates an existing one).  To
 ; try out these hotkeys, run AutoHotkey again, which will load this file.
 
-#z::Run www.autohotkey.com
+;#z::Run www.autohotkey.com
+
+; Reload this script with Win-a
+#a:: Run "C:\Program Files\AutoHotkey\AutoHotkey.exe" "C:\Documents and Settings\olegalex\Desktop\AutoHotkey.ahk"
 
 ^!n::
 IfWinExist Untitled - Notepad
@@ -76,5 +79,37 @@ Else
   WinWait ahk_class MozillaUIWindowClass
   WinActivate
 }
-;Return
+Return
 
+; Go to the sent folder in Outlook with Win-s
+#s::
+IfWinActive ahk_class rctrl_renwnd32
+{
+  Send ^y
+  Send {Home}
+  Send s
+  Send {Enter}
+}
+Return
+
+; Go to the inbox folder in Outlook with Win-i
+#i::
+IfWinActive ahk_class rctrl_renwnd32
+{
+  Send ^y
+  Send {Home}
+  Send i
+  Send {Enter}
+}
+Return
+
+; Go to the work folder in Outlook with Win-w
+#w::
+IfWinActive ahk_class rctrl_renwnd32
+{
+  Send ^y
+  Send {Home}
+  Send w
+  Send {Enter}
+}
+Return
