@@ -37,27 +37,6 @@ eval `dircolors -b`
 
 zstyle ':completion:*' menu select
 
-bindkey  "^A"                beginning-of-line
-bindkey  "^B"                backward-word
-bindkey  "^E"                end-of-line
-bindkey  "^D"                delete-char
-bindkey  "^F"                forward-word
-bindkey  "^H"                backward-delete-word
-bindkey  '^?'                backward-delete-char
-bindkey  "^[[3~"             delete-char
-bindkey  "^[3;5~"            delete-char
-bindkey  "^R"                history-incremental-search-backward
-bindkey  "^H"                describe-key-briefly
-bindkey  "$terminfo[khome]"  beginning-of-line
-bindkey  "$terminfo[kend]"   end-of-line
-bindkey  "^["                backward-delete-word
-bindkey  "\M-d"              delete-word
-bindkey  "^Z"                undo
-bindkey  "^[d"               delete-word  
-bindkey  "^[[3;5~"           kill-line    
-bindkey  "^[f"               forward-char
-bindkey  "^[b"               backward-char
-
 autoload -U colors
 localColors=$w/local/share/zsh/4.3.10/functions/colors; # local zsh installation
 if [[ -f $localColors ]]; then source $localColors > /dev/null 2>&1; fi;
@@ -74,11 +53,10 @@ function edit-alias () {
   #zle -N edit-alias
   #bindkey "^J" edit-alias
 
-  local in=$BUFFER;     # what is currently on the command line
-  BUFFER=`~/bin/expand_alias.pl $in`;  # replace with the text as described above
+  local in="$BUFFER";     # what is currently on the command line
+  BUFFER=`~/bin/python/expand_alias.py $in`;  # replace with the text as described above
 }
 zle -N edit-alias
-bindkey "^J" edit-alias
 
 function proml
 {
@@ -100,6 +78,28 @@ function proml
 $terminfo[bold]%{$fg[green]%}%n@%m%{$fg[white]%}:%{$fg[blue]%}%~ 
 %{$fg[blue]%}$LOX_TAG%{$fg[green]%}$W %{$fg[red]%}>%{$fg[yellow]%}>%{$fg[green]%}>%{$fg[white]%} ";
 }
+
+bindkey  "^A"                beginning-of-line
+bindkey  "^B"                backward-word
+bindkey  "^E"                end-of-line
+bindkey  "^D"                delete-char
+bindkey  "^F"                forward-word
+bindkey  "^H"                backward-delete-word
+bindkey  '^?'                backward-delete-char
+bindkey  "^[[3~"             delete-char
+bindkey  "^[3;5~"            delete-char
+bindkey  "^R"                history-incremental-search-backward
+bindkey  "^J"                edit-alias
+bindkey  "^H"                describe-key-briefly
+bindkey  "$terminfo[khome]"  beginning-of-line
+bindkey  "$terminfo[kend]"   end-of-line
+bindkey  "^["                backward-delete-word
+bindkey  "\M-d"              delete-word
+bindkey  "^Z"                undo
+bindkey  "^[d"               delete-word  
+bindkey  "^[[3;5~"           kill-line    
+bindkey  "^[f"               forward-char
+bindkey  "^[b"               backward-char
 
 # Init the prompt
 proml;

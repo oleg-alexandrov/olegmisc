@@ -475,6 +475,7 @@
 ;(global-set-key "\e[8~" 'end-of-line)
 
 (global-set-key [(control \8)] 'isearch-forward-at-point)
+(global-set-key [(control t)] 'isearch-forward-at-point)
 
 ; A first attempt to make "control z" work as undo. 
 (global-set-key [(control z)] 'undo)
@@ -496,3 +497,24 @@
   (undo)
   )
 
+; In a terminal we request that we want to open a certain file
+; by putting its name in ~/.fileToOpen.
+; Here we open the file with that name.
+(defun find-requested-file ()
+  (interactive)
+  (find-file "~/.fileToOpen")
+  (switch-to-buffer ".fileToOpen")
+  (beginning-of-line)
+  (let ((begin (point) ))
+
+    (end-of-line)
+    (let (( end (point) ))
+      
+      (find-file (buffer-substring begin end))
+      )
+    )
+  (kill-buffer ".fileToOpen")
+  )
+(global-set-key [(control x) (v)] 'find-requested-file)
+
+(global-auto-revert-mode 1)
