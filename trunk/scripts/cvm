@@ -10,8 +10,14 @@ undef $/; # undefines the separator. Can read one whole file in one scalar.
 
 MAIN:{
   
-  my ($subject, $files, $token);
+  my ($command, $subject, $files, $token);
 
+  if (-d "CVS"){
+    $command = "cvs";
+  }elsif (-d ".svn"){
+    $command = "svn";
+  }
+  
   $subject = "";
   $files   = "";
   
@@ -29,7 +35,7 @@ MAIN:{
 
   if ($subject !~ /^\s*$/){
 
-    my $command = '/usr/bin/cvs commit -m "' . $subject . '" ' . $files;
+    $command = "$command commit -m '$subject' $files";
     print "$command\n";
     print `$command`;
     
