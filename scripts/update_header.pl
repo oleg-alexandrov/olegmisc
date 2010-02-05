@@ -6,9 +6,6 @@ undef $/; # undefines the separator. Can read one whole file in one scalar.
 # Extract C++ function information from a .cpp file and
 # use that to update the corresponding .h file.
 
-# This code is broken
-# Need to get the namespace before parsing the cpp file
-
 require $ENV{HOME} . '/.xemacs/indent_block.pl';
 
 MAIN: {
@@ -18,19 +15,17 @@ MAIN: {
     exit(0);
   }
   
-  my ($cpp_file, $header_file, $text, %cpp_map);
+  my ($cpp_file, $header_file, %cpp_map);
 
   $cpp_file    = $ARGV[0];
   $header_file = $ARGV[1];
   
   open(FILE, "<$cpp_file") || die "Cannot open $cpp_file\n";
-  $text = <FILE>;
+  my $cpptext = <FILE>;
   close(FILE);
 
-  &parse_cpp($text, \%cpp_map);
-
   # Override the header file name if available
-  if ($text =~ /\n\#\s*include\s*\"(.*?)\".*?header file/){
+  if ($cpptext =~ /\n\#\s*include\s*\"(.*?)\".*?header file/){
     $header_file = $1;
 
     if ($cpp_file =~ /^(.*\/)/){
@@ -39,13 +34,16 @@ MAIN: {
   }
   
   open(FILE, "<$header_file") || die "Cannot open $header_file\n";
-  $text = <FILE>;
+  my $h_text = <FILE>;
   close(FILE);
 
-  $text = &parse_h($text, \%cpp_map);
+  # Do the work
+  my $namespace = get_namespace($h_text);
+  &parse_cpp($cpptext, \%cpp_map, $namespace); # %cpp_map is output
+  $h_text = &parse_h($h_text, \%cpp_map, $namespace); # %cpp_map is input
   
   open(FILE, ">$header_file") || die "Cannot open $header_file\n";
-  print FILE "$text";
+  print FILE $h_text;
   close(FILE);
 
   print "$header_file updated\n";
@@ -53,8 +51,9 @@ MAIN: {
 
 sub parse_cpp {
 
-  my $text    = shift;
-  my $cpp_map = shift;
+  my $text      = shift;
+  my $cpp_map   = shift;
+  my $namespace = shift;
 
   my @blocks = &extract_blocks_cpp($text);
 
@@ -63,8 +62,9 @@ sub parse_cpp {
 
     $block =~ s/\/\*.*?\*\///sg; # get rid of C-style comments
 
-    # Will match things like: std::string  *  myname::myfun ( double x, double y) const{
-    next unless ( $block =~ /\b(\w[\w\:\s\*\&]*\s\w+::\w+)\s*(\(.*?\)\s*\w*\s*)\{/s );
+    # Will match things like: std::string mynamespace::myfun ( double x, double y) const{
+    next unless ( $block =~
+                  /(?:^|\n)(\w+[^\n]*?\s+$namespace\:\:\w+)\s*(\(.*?\).*?)\{/s );
 
     my $key = $1;
     my $fun = $1 . $2 . ";\n\n";
@@ -73,7 +73,7 @@ sub parse_cpp {
     
     # rm namespace from fun declaration, so std::string namespace::myfun()
     # becomes simply ...                    std::string myfun()
-    $key =~ s/\b(\w[\w\:\s\*\&]*\s)(\w+::)(\w+)/$1$3/;  
+    $key =~ s/$namespace\:\://;  
     $key =~ s/\s+/ /g;
 
     $cpp_map->{$key} = $fun;
@@ -84,18 +84,9 @@ sub parse_cpp {
  
 sub parse_h {
 
-  my $text    = shift;
-  my $cpp_map = shift;
-
-  # identify the namespace in the h class
-  # Look at the last of all namespaces (this is a bit hackish)
-  my $namespace = "";
-  if ($text =~ /^.*\n\s*(class|struct|namespace)\s+(\w+)\s*:*.*?\{/s){
-    $namespace = $2;
-  }else{
-    print "Can't identify the namespace!\n";
-    exit(0);
-  }
+  my $text      = shift;
+  my $cpp_map   = shift;
+  my $namespace = shift;
 
   my (%h_map, $key);
   
@@ -107,18 +98,17 @@ sub parse_h {
 
     $block =~ s/\/\*.*?\*\///sg; # get rid of C-style comments
 
-    my $is_static = ($block =~ /^\s*static\s+/);
-
     # Strip the static keyword for now
-    my $static = "";
-    if ($is_static){
-      $block =~ s/^(\s*static\s+)//g;
+    my $is_static = 0;
+    my $static   = "";
+    if ($block =~ /^(\s*(?:static|virtual)\s+)(.*?)$/s){
       $static = $1;
+      $block  = $2;
     }
     
     # match things like: std::string  *  myfun ( double x, double y){
+    if  ( $block =~ /[^|\n](\w.*?\s\w+)\s*\(.*?\)/s ){
                     
-    if  ( $block =~ /\b(\w[\w\:\s\*\&]*)(\(.*?\))/s ){
       $key = $1;
       $key =~ s/\s+/ /g;
     }else{
@@ -150,7 +140,7 @@ sub parse_h {
     
     # Put back the static keyword
     if ($is_static){
-      $block = "static " . $block;
+      $block = $static . $block;
     }
     
     # rm the namespace and indent
@@ -307,4 +297,21 @@ sub balanced_parens{
   my $rpars = scalar ($text =~ /\)/g);
 
   return ($lpars == $rpars);
+}
+
+sub get_namespace{
+
+  # identify the namespace in the h class
+  # Look at the last of all namespaces (this is a bit hackish)
+
+  my $text = shift;
+  
+  my $namespace = "";
+  if ($text =~ /^.*\n\s*(class|struct|namespace)\s+(\w+)\s*:*.*?\{/s){
+    $namespace = $2;
+  }else{
+    print "Can't identify the namespace!\n";
+    exit(0);
+  }
+  return $namespace;
 }
