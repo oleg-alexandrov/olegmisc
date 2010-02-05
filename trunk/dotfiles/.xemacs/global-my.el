@@ -500,20 +500,38 @@
 ; In a terminal we request that we want to open a certain file
 ; by putting its name in ~/.fileToOpen.
 ; Here we open the file with that name.
+; If a line number is specified, we go to that line.
 (defun find-requested-file ()
   (interactive)
   (find-file "~/.fileToOpen")
   (switch-to-buffer ".fileToOpen")
-  (beginning-of-line)
-  (let ((begin (point) ))
 
-    (end-of-line)
-    (let (( end (point) ))
-      
-      (find-file (buffer-substring begin end))
-      )
-    )
+  ; Find file name
+  (beginning-of-line)
+  (setq bf (point))
+  (end-of-line)
+  (setq ef (point))
+  (setq file (buffer-substring bf ef))
+
+  ; Find line number
+  (setq lineno 1)
+  (beginning-of-line)
+  (next-line 1)
+  (cond ( (looking-at "line: ")
+          (message "looking at line")
+          (search-forward "line: ")
+          (setq bl (point))
+          (end-of-line)
+          (setq el (point))
+          (setq lineno (buffer-substring bl el))
+          (setq lineno (string-to-number lineno))
+          )
+        )
+  
   (kill-buffer ".fileToOpen")
+  (find-file file)
+  (goto-line lineno)
+  
   )
 (global-set-key [(control x) (v)] 'find-requested-file)
 

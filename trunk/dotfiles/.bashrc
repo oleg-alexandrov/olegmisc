@@ -130,11 +130,14 @@ function fe {
 
 function v {
 
+ fs="$HOME/.fileToOpen"
  # Save the current file name. Will open it in emacs.
- file=`pwd`/$1;
- file=$( echo $file | perl -pi -e "s#:.*?\$##g" );
- echo $file > ~/.fileToOpen
-
+ file=$(pwd)/$1;
+ file=$( echo $file | perl -pi -e "s#:\s*(\d+).*?\$#;line: \$1#g" );
+ file=$( echo $file | perl -pi -e "s#:[^\d\s].*?\$##g" );
+ echo $file > $fs
+ perl -pi -e "s#;#\n#g" $fs
+ cat $fs
 }
 
 # -<colour opc>--------------------------------
