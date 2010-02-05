@@ -6,6 +6,9 @@ undef $/; # undefines the separator. Can read one whole file in one scalar.
 # Extract C++ function information from a .cpp file and
 # use that to update the corresponding .h file.
 
+# This code is broken
+# Need to get the namespace before parsing the cpp file
+
 require $ENV{HOME} . '/.xemacs/indent_block.pl';
 
 MAIN: {
@@ -61,7 +64,7 @@ sub parse_cpp {
     $block =~ s/\/\*.*?\*\///sg; # get rid of C-style comments
 
     # Will match things like: std::string  *  myname::myfun ( double x, double y) const{
-    next unless ( $block =~ /(\w+(?:\:\:\w+)?[\s\*\&]+\w+::\w+)\s*(\(.*?\)\s*\w*\s*)\{/s );
+    next unless ( $block =~ /\b(\w[\w\:\s\*\&]*\s\w+::\w+)\s*(\(.*?\)\s*\w*\s*)\{/s );
 
     my $key = $1;
     my $fun = $1 . $2 . ";\n\n";
@@ -70,7 +73,7 @@ sub parse_cpp {
     
     # rm namespace from fun declaration, so std::string namespace::myfun()
     # becomes simply ...                    std::string myfun()
-    $key =~ s/(\w+(?:\:\:\w+)?[\s\*\&]+)(\w+::)(\w+)/$1$3/;  
+    $key =~ s/\b(\w[\w\:\s\*\&]*\s)(\w+::)(\w+)/$1$3/;  
     $key =~ s/\s+/ /g;
 
     $cpp_map->{$key} = $fun;
@@ -114,7 +117,8 @@ sub parse_h {
     }
     
     # match things like: std::string  *  myfun ( double x, double y){
-    if  ( $block =~ /(\w+(?:\:\:\w+)?[\s\*\&]+[\w]+)(\s*\(.*\))/s ){
+                    
+    if  ( $block =~ /\b(\w[\w\:\s\*\&]*)(\(.*?\))/s ){
       $key = $1;
       $key =~ s/\s+/ /g;
     }else{
