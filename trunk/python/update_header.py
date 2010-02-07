@@ -75,15 +75,15 @@ def parse_cpp(text, namespace):
 
     for block in blocks:
 
-        p = re.match("^(\w[^\n]*?\s)" + namespace + "::(\w+)(\s*\(.*?\)).*?\{",
+        p = re.match("^(\w[^\n]*?\s)"
+                     + namespace
+                     + "::(\w+)(\s*\(.*?\)).*?\{",
                      block, re.S)
 
         if not p: continue
         
         fun_name           = p.group(2)
         cpp_map[fun_name]  = p.group(1) + p.group(2) + p.group(3)
-        #print "--", block
-            
     
     return cpp_map
 
@@ -99,7 +99,7 @@ def parse_update_h(text, cpp_map, namespace):
         
         p = re.match("""
         ^(\s*(?:static|virtual)?\s*)  # leading spaces, static, virtual
-        (\w[^\n]*?\s)                 # Type 
+        (\w[^\n]*?\s)                 # type 
         (\w+)                         # function name 
         (\s*\(.*?\))                  # list of arguments
         (.*)$                         # newline, const, etc. 
@@ -110,14 +110,12 @@ def parse_update_h(text, cpp_map, namespace):
         fun_name         = p.group(3)
         h_map[fun_name]  = "".join(p.group())
         
-
         if cpp_map.has_key(fun_name):
-            print "\n-------\nOverwriting\n'" + block + "'\nwith\n"
+            #print "\n-------\nOverwriting\n'" + block + "'\nwith\n"
             block = p.group(1) + cpp_map[fun_name] + p.group(5)
-            print "'" + block + "'\n"
+            #print "'" + block + "'\n"
         
         blocks[count] = block
-        #print "--", block,
 
 
     text = "".join(blocks)
