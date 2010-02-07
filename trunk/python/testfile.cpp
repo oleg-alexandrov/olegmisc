@@ -1,8 +1,11 @@
 #include "fine.h"
 
-// Some funcion here
-
-unsigned int myname::myfun(unsigned int i, unsigned j){
-
+// Some function here
+// Some function here
+unsigned int myname::myfun(// some text here
+                           unsigned int i,
+                           unsigned j // some more text
+                           ){
+  // some code here
 }
 
