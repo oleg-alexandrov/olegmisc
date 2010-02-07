@@ -18,6 +18,6 @@ unsigned int myname::myfun2(unsigned
 
 }
 
-void std::vector myname::myfun3(double x, double z){
+void* std::vector<double> * myname::myfun3(double x, double z){
 
 }
