@@ -2,7 +2,6 @@
 #define FINE_H
 
 // Some function there
-
 // Some function here
 
 class myname{

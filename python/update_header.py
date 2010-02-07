@@ -55,6 +55,25 @@ def extract_blocks(text):
         blocks.append(block)
 
     return blocks
+
+def parse_cpp(text, namespace):
+
+    cpp_map = {}
+
+    blocks = extract_blocks(text)
+
+    for block in blocks:
+
+        p = re.match("^([^\n]*?)" + namespace + "::(\w+)(\s*\(.*?\))",
+                     block, re.S)
+        if p:
+
+            block_sans_namespace = p.group(1) + p.group(2) + p.group(3)
+            fun_name             = p.group(2)
+            cpp_map[fun_name]    = block_sans_namespace
+            
+    
+    return cpp_map
     
 if __name__ == '__main__':
 
@@ -70,6 +89,6 @@ if __name__ == '__main__':
 
     namespace = get_namespace(h_text)
 
-    blocks = extract_blocks(h_text)
+    cpp_map = parse_cpp(cpp_text, namespace)
     
     
