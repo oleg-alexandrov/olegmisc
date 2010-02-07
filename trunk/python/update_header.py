@@ -4,10 +4,13 @@ import sys
 import os
 import re # Perl-style regular expressions
 
+# If a function declaration changed in the cpp file, update
+# the corresponding declaration in the h file.
+    
 def get_namespace(text):
 
-  # identify the namespace in the h class
-  # Look at the last of all namespaces (this is a bit hackish)
+  # Identify the namespace in the header file Look at the last of all
+  # namespaces if there's more than one.
 
   namespace = ""
 
@@ -19,7 +22,7 @@ def get_namespace(text):
     print "Can't identify the namespace!"
     sys.exit(1);
   
-  return namespace;
+  return namespace
 
 def balanced_parens(text):
 
@@ -32,6 +35,9 @@ def balanced_parens(text):
 
 def extract_blocks(text):
 
+    # A block consists of several consecutive lines such
+    # that the parentheses in the block are balanced.
+    
     lines = text.split("\n")
 
     blocks = []
@@ -58,23 +64,67 @@ def extract_blocks(text):
 
 def parse_cpp(text, namespace):
 
+    # Identify the function declarations. Map each function name
+    # to the full declaration, e.g.,
+    # myfun --> void namesp::myfun(double x)
+    # Strip the namespace 
+
     cpp_map = {}
 
     blocks = extract_blocks(text)
 
     for block in blocks:
 
-        p = re.match("^([^\n]*?)" + namespace + "::(\w+)(\s*\(.*?\))",
+        p = re.match("^(\w[^\n]*?\s)" + namespace + "::(\w+)(\s*\(.*?\)).*?\{",
                      block, re.S)
-        if p:
 
-            block_sans_namespace = p.group(1) + p.group(2) + p.group(3)
-            fun_name             = p.group(2)
-            cpp_map[fun_name]    = block_sans_namespace
+        if not p: continue
+        
+        fun_name           = p.group(2)
+        cpp_map[fun_name]  = p.group(1) + p.group(2) + p.group(3)
+        #print "--", block
             
     
     return cpp_map
+
+def parse_update_h(text, cpp_map, namespace):
+
+    blocks = extract_blocks(text)
+    h_map  = {}
+    count  = -1
     
+    for block in blocks:
+
+        count = count + 1
+        
+        p = re.match("""
+        ^(\s*(?:static|virtual)?\s*)  # leading spaces, static, virtual
+        (\w[^\n]*?\s)                 # Type 
+        (\w+)                         # function name 
+        (\s*\(.*?\))                  # list of arguments
+        (.*)$                         # newline, const, etc. 
+        """, block, re.S | re.X)
+
+        if not p: continue
+
+        fun_name         = p.group(3)
+        h_map[fun_name]  = "".join(p.group())
+        
+
+        if cpp_map.has_key(fun_name):
+            print "\n-------\nOverwriting\n'" + block + "'\nwith\n"
+            block = p.group(1) + cpp_map[fun_name] + p.group(5)
+            print "'" + block + "'\n"
+        
+        blocks[count] = block
+        #print "--", block,
+
+
+    text = "".join(blocks)
+    #print text
+    
+    return text
+
 if __name__ == '__main__':
 
     if len(sys.argv) < 3:
@@ -88,7 +138,5 @@ if __name__ == '__main__':
     hh = open(h_file,   'r'); h_text   = hh.read(); hh.close()
 
     namespace = get_namespace(h_text)
-
-    cpp_map = parse_cpp(cpp_text, namespace)
-    
-    
+    cpp_map   = parse_cpp(cpp_text, namespace)
+    h_text    = parse_update_h(h_text, cpp_map, namespace)

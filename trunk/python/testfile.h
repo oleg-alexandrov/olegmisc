@@ -5,9 +5,13 @@
 // Some function here
 
 class myname{
-  unsigned int myfun(unsigned int i, unsigned j);
-  unsigned int myfun2(unsigned
-                      k);
+  static unsigned int myfun(unsigned int i, unsigned j) const;
+// Some text here
+  virtual unsigned int myfun2(unsigned
+                              k,
+                              //some code here
+                              );
+  void std::string * myfun3(double x);
 
 }
   
