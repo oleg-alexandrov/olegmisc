@@ -9,7 +9,7 @@ import re # Perl-style regular expressions
     
 def get_namespace(text):
 
-  # Identify the namespace in the header file Look at the last of all
+  # Identify the namespace in the header file. Look at the last of all
   # namespaces if there's more than one.
 
   namespace = ""
@@ -36,7 +36,7 @@ def balanced_parens(text):
 def extract_blocks(text):
 
     # A block consists of several consecutive lines such
-    # that the parentheses in the block are balanced.
+    # that the parentheses in each block are balanced.
     
     lines = text.split("\n")
 
@@ -75,9 +75,9 @@ def parse_cpp(cpp_text, namespace):
 
     for block in blocks:
 
-        p = re.match("^(\w[^\n]*?\s)"
+        p = re.match("^(\w[^\n]*?\s)" # everything up to the namespace
                      + namespace
-                     + "::(\w+)(\s*\(.*?\)).*?\{",
+                     + "::(\w+)(\s*\(.*?\)).*?\{", # fun name, and up to {
                      block, re.S)
 
         if not p: continue
@@ -133,7 +133,7 @@ def parse_update_h(h_text, cpp_map, namespace):
     if new_chunk == "":
         return h_text # Nothing else to do
 
-    # Append after the last public:/private:/namespace/class tag
+    # Append the new chunk after the last public:/private:/namespace/class tag
     p = re.match("""
     ^(
     .*\n\s*
