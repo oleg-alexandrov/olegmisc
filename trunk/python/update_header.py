@@ -173,4 +173,5 @@ if __name__ == '__main__':
     cpp_map   = parse_cpp(cpp_text, namespace)
     h_text    = parse_update_h(h_text, cpp_map, namespace)
 
+    hh = open(h_file, 'w'); hh.write(h_text); hh.close()
     #print h_text

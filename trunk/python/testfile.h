@@ -5,13 +5,19 @@
 // Some function here
 
 class myname{
-  static unsigned int myfun(unsigned int i, unsigned j) const;
+  double myfun4();
+  static unsigned int myfun(// some text here
+                           unsigned int i,
+                           // some more text
+                           unsigned j, // some more text
+                           std::vector<double> q
+                           ) const;
   // Some text here
   virtual unsigned int myfun2(unsigned
-                              k,
-                              //some code here
-                              );
-  void std::string * myfun3(double x);
+                            k,
+                            //some code here
+                            );
+  void* std::vector<double> * myfun3(double x, double z);
 
   
 };
