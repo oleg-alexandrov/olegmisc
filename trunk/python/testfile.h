@@ -15,6 +15,7 @@ class myname{
   // Some text here
   virtual unsigned int myfun2(unsigned
                             k,
+                            
                             //some code here
                             );
   void* std::vector<double> * myfun3(double x, double z);
@@ -24,4 +25,4 @@ class myname{
 
 #endif
 
-//extra stuff
+//extra stuffx

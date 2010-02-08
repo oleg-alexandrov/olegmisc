@@ -114,11 +114,9 @@ def parse_update_h(h_text, cpp_map, namespace):
         h_map[fun_name]  = "".join(p.group())
         
         if cpp_map.has_key(fun_name):
-            #print "\n-------\nOverwriting\n'" + block + "'\nwith\n"
-            block = p.group(1) + cpp_map[fun_name] + p.group(5)
-            #print "'" + block + "'\n"
-        
-        blocks[count] = block
+            blocks[count] = p.group(1) + cpp_map[fun_name] + p.group(5)
+            print "\n-------\nOverwriting\n'" + block + "'\nwith\n"
+            print "'" + blocks[count] + "'\n"
 
     h_text = "".join(blocks)
 
@@ -153,8 +151,6 @@ def parse_update_h(h_text, cpp_map, namespace):
     h_text = p.group(1) + p.group(2) + new_chunk + ";\n" \
              + p.group(2) + p.group(3)
 
-    #print "group 1 is '" + p.group(1) + "'\n"
-    print h_text
     return h_text
 
 if __name__ == '__main__':
@@ -174,4 +170,3 @@ if __name__ == '__main__':
     h_text    = parse_update_h(h_text, cpp_map, namespace)
 
     hh = open(h_file, 'w'); hh.write(h_text); hh.close()
-    #print h_text
