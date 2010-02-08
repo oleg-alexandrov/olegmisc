@@ -62,7 +62,7 @@ def extract_blocks(text):
 
     return blocks
 
-def parse_cpp(text, namespace):
+def parse_cpp(cpp_text, namespace):
 
     # Identify the function declarations. Map each function name
     # to the full declaration, e.g.,
@@ -71,7 +71,7 @@ def parse_cpp(text, namespace):
 
     cpp_map = {}
 
-    blocks = extract_blocks(text)
+    blocks = extract_blocks(cpp_text)
 
     for block in blocks:
 
@@ -87,12 +87,13 @@ def parse_cpp(text, namespace):
     
     return cpp_map
 
-def parse_update_h(text, cpp_map, namespace):
+def parse_update_h(h_text, cpp_map, namespace):
 
-    blocks = extract_blocks(text)
+    blocks = extract_blocks(h_text)
     h_map  = {}
     count  = -1
-    
+
+    # Overwrite with the corresponding block from the cpp file
     for block in blocks:
 
         count = count + 1
@@ -107,6 +108,8 @@ def parse_update_h(text, cpp_map, namespace):
 
         if not p: continue
 
+        if re.match("=", block): continue # skip functions with default args
+        
         fun_name         = p.group(3)
         h_map[fun_name]  = "".join(p.group())
         
@@ -117,11 +120,42 @@ def parse_update_h(text, cpp_map, namespace):
         
         blocks[count] = block
 
+    h_text = "".join(blocks)
 
-    text = "".join(blocks)
-    #print text
+    # See what new functions were declared in the cpp file and are
+    # missing in the h file
+    new_chunk = ""
+    for key in cpp_map:
+        
+        if h_map.has_key(key): continue
+        new_chunk = new_chunk + cpp_map[key] + "\n"
+
+    new_chunk = re.sub("\s*$", "", new_chunk)    
     
-    return text
+    if new_chunk == "":
+        return h_text # Nothing else to do
+
+    # Append after the last public:/private:/namespace/class tag
+    p = re.match("""
+    ^(
+    .*\n\s*
+    (?:public:|private:|class\s*\w+\s*\{|namespace\s*\w+\s*\{)
+    .*?[\n]
+    )           # end of group 1
+    ([ \t]*)    # indentation level (group 2)
+    (.*?)$      # group 3, whatever is left
+    """, h_text, re.S | re.X)
+
+    if not p:
+        print "Could not find a place to append the new blocks to"
+        sys.exit(1)
+
+    h_text = p.group(1) + p.group(2) + new_chunk + ";\n" \
+             + p.group(2) + p.group(3)
+
+    #print "group 1 is '" + p.group(1) + "'\n"
+    print h_text
+    return h_text
 
 if __name__ == '__main__':
 
@@ -138,3 +172,5 @@ if __name__ == '__main__':
     namespace = get_namespace(h_text)
     cpp_map   = parse_cpp(cpp_text, namespace)
     h_text    = parse_update_h(h_text, cpp_map, namespace)
+
+    #print h_text

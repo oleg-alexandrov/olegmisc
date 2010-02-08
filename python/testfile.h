@@ -6,14 +6,13 @@
 
 class myname{
   static unsigned int myfun(unsigned int i, unsigned j) const;
-// Some text here
+  // Some text here
   virtual unsigned int myfun2(unsigned
                               k,
                               //some code here
                               );
   void std::string * myfun3(double x);
 
-}
   
 };
 
