@@ -162,11 +162,11 @@ if __name__ == '__main__':
     cpp_file = sys.argv[1]
     h_file   = sys.argv[2]
 
-    hh = open(cpp_file, 'r'); cpp_text = hh.read(); hh.close()
-    hh = open(h_file,   'r'); h_text   = hh.read(); hh.close()
+    fh = open(cpp_file, 'r'); cpp_text = fh.read(); fh.close()
+    fh = open(h_file,   'r'); h_text   = fh.read(); fh.close()
 
     namespace = get_namespace(h_text)
     cpp_map   = parse_cpp(cpp_text, namespace)
     h_text    = parse_update_h(h_text, cpp_map, namespace)
 
-    hh = open(h_file, 'w'); hh.write(h_text); hh.close()
+    fh = open(h_file, 'w'); fh.write(h_text); fh.close()
