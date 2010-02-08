@@ -115,8 +115,8 @@ def parse_update_h(h_text, cpp_map, namespace):
         
         if cpp_map.has_key(fun_name):
             blocks[count] = p.group(1) + cpp_map[fun_name] + p.group(5)
-            print "\n-------\nOverwriting\n'" + block + "'\nwith\n"
-            print "'" + blocks[count] + "'\n"
+            #print "\n-------\nOverwriting\n'" + block + "'\nwith\n"
+            #print "'" + blocks[count] + "'\n"
 
     h_text = "".join(blocks)
 
