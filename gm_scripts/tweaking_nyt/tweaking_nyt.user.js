@@ -9,8 +9,8 @@
 	
 (function() {
 
-var adIDAry = ['adxBigAd', 'date', 'switchEditions', 'HPTopNav'],
-		classNameAry = ['singleAd', 'columnGroup firstColumnGroup fullWidth', 'toolbarPromo runaroundRight', 'navigationHomeEdition', 'switchEditions'],
+var adIDAry = ['TopRight', 'memberTools', 'mainTabs', 'adxBigAd', 'lastUpdate', 'switchEditions', 'HPTopNav'],
+		classNameAry = ['timestamp', 'singleAd', 'columnGroup firstColumnGroup fullWidth', 'toolbarPromo runaroundRight', 'navigationHomeEdition', 'switchEditions'],
 		tempEle = null,
 		tempEles = null;
 
@@ -27,8 +27,11 @@ var adIDAry = ['adxBigAd', 'date', 'switchEditions', 'HPTopNav'],
 		}
 	}
 
-tempEle = document.getElementById('toolsHome');
+//for (i=0; i<document.getElementById('toolsHome').childNodes.length; i++){
+// alert("Child is " + document.getElementById('toolsHome').childNodes[i].nodeName);
+//}
 
+tempEle = document.getElementById('toolsHome');
 var items = tempEle.getElementsByTagName("a");
 var item = items[0];
 item.parentNode.removeChild(item);
