@@ -13,31 +13,14 @@
 ; and it launches a new Notepad window (or activates an existing one).  To
 ; try out these hotkeys, run AutoHotkey again, which will load this file.
 
-;#z::Run www.autohotkey.com
+; Only one instance of this script
+#SingleInstance force
 
 ; Reload this script with Win-a
 #a:: Run "C:\Program Files\AutoHotkey\AutoHotkey.exe" "C:\Documents and Settings\olegalex\Desktop\AutoHotkey.ahk"
 
-^!n::
-IfWinExist Untitled - Notepad
-	WinActivate
-else
-	Run Notepad
-return
-
-
-; Note: From now on whenever you run AutoHotkey directly, this script
-; will be loaded.  So feel free to customize it to suit your needs.
-
-; Please read the QUICK-START TUTORIAL near the top of the help file.
-; It explains how to perform common automation tasks such as sending
-; keystrokes and mouse clicks.  It also explains more about hotkeys.
-
-; Only one instance of this script
-#SingleInstance force
-
-; Map Capslock to Tab
-Capslock::Tab
+; Map Capslock to Control
+Capslock::Control
 
 ; F1 to launch or switch to VncViewer
 F1::
@@ -81,35 +64,22 @@ Else
 }
 Return
 
-; Go to the sent folder in Outlook with Win-s
-#s::
-IfWinActive ahk_class rctrl_renwnd32
+#IfWinActive ahk_class rctrl_renwnd32
 {
-  Send ^y
-  Send {Home}
-  Send s
-  Send {Enter}
+  ; Outlook bindings
+  !s::Send ^y{Home}s{Enter}  ; Go to the sent   folder with alt-s
+  !i::Send ^y{Home}i{Enter}  ; Go to the inbox  folder with alt-i
+  !d::Send ^y{Home}d{Enter}  ; Go to the del    folder with alt-d
+  !w::Send ^y{Home}w{Enter}  ; Go to the work   folder with alt-w
+  !v::Send ^+v{Home}w{Enter} ; Save to the work folder with alt-v
+  Return
 }
-Return
 
-; Go to the inbox folder in Outlook with Win-i
-#i::
-IfWinActive ahk_class rctrl_renwnd32
-{
-  Send ^y
-  Send {Home}
-  Send i
-  Send {Enter}
-}
-Return
 
-; Go to the work folder in Outlook with Win-w
-#w::
-IfWinActive ahk_class rctrl_renwnd32
+#IfWinActive ahk_class MozillaUIWindowClass
 {
-  Send ^y
-  Send {Home}
-  Send w
-  Send {Enter}
+  ; Firefox bindings
+  !h::Send {Browser_Home}   ; Go to the home page with alt-h
+  !g::Send ^lgm{Enter}      ; Go to gmail with         alt-g
+  Return
 }
-Return
