@@ -62,7 +62,7 @@ started. Insert the following in <i><a href="startup">init.el</a></i>
 (<font color="#f939ff">require</font> `savehist)
 (setq savehist-file &quot;<font color="#00cd00">~/.xemacs/history</font>&quot;)
 (setq savehist-length 1000)
-(savehist-load)
+(savehist-mode 1)
 
 <font color="#ee7600">; Saves the position the cursor was in a file before the file was closed.</font>
 (load-library &quot;<font color="#00cd00">saveplace</font>&quot;)
