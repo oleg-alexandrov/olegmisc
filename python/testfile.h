@@ -5,6 +5,7 @@
 // Some function here
 
 class myname{
+  double myfun5();
   double myfun4();
   static unsigned int myfun(// some text here
                            unsigned int i,

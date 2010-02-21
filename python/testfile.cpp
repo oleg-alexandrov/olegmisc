@@ -27,9 +27,12 @@ unsigned int myname::myfun2(unsigned
 }
 
 void* std::vector<double> * myname::myfun3(double x, double z){
-
 }
 
 double myname::myfun4(){
+
+}
+
+double myname::myfun5(){
 
 }
