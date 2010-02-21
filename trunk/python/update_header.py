@@ -84,9 +84,8 @@ def indent_block(text):
     if indent_level == 0 and p:
       indent_level = len(p.group(1))
       
-    #text = "\n".join(lines)
-    #print "-------------"
-    
+  #print "\n".join(lines)
+  text = "\n".join(lines)
   return text
 
 def parse_cpp(cpp_text, namespace):
@@ -168,8 +167,8 @@ def parse_update_h(h_text, cpp_map, namespace):
         blocks[count] = indent_block(blocks[count])
         cpp_map[fun_name][best_match] = 1 # mark that we used this one 
           
-        #print "\n-------\nOverwriting\n\"" + block + "\"\nwith\n"
-        #print "\"" + blocks[count] + "\"\n"
+        print "\n-------\nOverwriting\n\"" + block + "\"\nwith\n"
+        print "\"" + blocks[count] + "\n\"\n"
     
     h_text = "".join(blocks)
 
