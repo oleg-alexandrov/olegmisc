@@ -67,6 +67,28 @@ def extract_blocks(text):
 
     return blocks
 
+def indent_block(text):
+
+  # Indent a block of text by the opening paranthesis
+  
+  lines        = text.split("\n")
+  indent_level = 0
+
+  for count in range(len(lines)):
+
+    if indent_level > 0:
+      lines[count] = re.sub("^[ \t]*", "", lines[count])
+      lines[count] = " " * indent_level + lines[count]
+
+    p = re.match("^(.*?\()", lines[count])
+    if indent_level == 0 and p:
+      indent_level = len(p.group(1))
+      
+    #text = "\n".join(lines)
+    #print "-------------"
+    
+  return text
+
 def parse_cpp(cpp_text, namespace):
 
     # Identify the function declarations. Map each function name
@@ -143,6 +165,7 @@ def parse_update_h(h_text, cpp_map, namespace):
         
         # We found the cpp function with the closest signature
         blocks[count] = p.group(1) + best_match + p.group(5)
+        blocks[count] = indent_block(blocks[count])
         cpp_map[fun_name][best_match] = 1 # mark that we used this one 
           
         #print "\n-------\nOverwriting\n\"" + block + "\"\nwith\n"
@@ -157,6 +180,7 @@ def parse_update_h(h_text, cpp_map, namespace):
         
         if h_map.has_key(key): continue
         for block in cpp_map[key]:
+          block     = indent_block(block)
           new_chunk = new_chunk + block + "\n"
 
     new_chunk = re.sub("\s*$", "", new_chunk)    
@@ -202,3 +226,4 @@ if __name__ == '__main__':
     h_text  = parse_update_h(h_text, cpp_map, namespace)
 
     fh = open(h_file, 'w'); fh.write(h_text); fh.close()
+

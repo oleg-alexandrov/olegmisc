@@ -6,6 +6,7 @@
 
 class myname{
   double myfun5();
+  
   double myfun4();
   static unsigned int myfun(// some text here
                            unsigned int i,
@@ -20,11 +21,11 @@ class myname{
                             );
   // Some text here
   virtual unsigned int myfun2(unsigned
-                            k,
+                            k, int w
                             );
-
+  
   void* std::vector<double> * myfun3(double x, double z);
-
+  
   
 };
 
