@@ -169,8 +169,8 @@ def parse_update_h(h_text, cpp_map, namespace):
         blocks[count] = indent_block(blocks[count])
         cpp_map[fun_name][best_match] = 1 # mark that we used this one 
           
-        print "\n-------\nOverwriting\n\"" + block + "\"\nwith\n"
-        print "\"" + blocks[count] + "\n\"\n"
+        #print "\n-------\nOverwriting\n\"" + block + "\"\nwith\n"
+        #print "\"" + blocks[count] + "\n\"\n"
     
     h_text = "".join(blocks)
 

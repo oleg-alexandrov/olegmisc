@@ -11,7 +11,8 @@ unsigned int myname::myfun2(unsigned
 }
 
 unsigned int myname::myfun2(unsigned
-                            k, int w
+                            k, int w,
+                            int vv
                             ){
 
 }
