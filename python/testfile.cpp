@@ -12,8 +12,9 @@ unsigned int myname::myfun2(unsigned
 
 unsigned int myname::myfun2(unsigned
                             k, int w,
-                            int vv,
-                            int ww, int qs, double g
+                                 int vv,
+                                int ww, int qs, double g, int p
+                                   double q
                             ){
 
 }

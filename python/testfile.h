@@ -17,7 +17,8 @@ class myname{
   virtual unsigned int myfun2(unsigned
                               k, int w,
                               int vv,
-                              int ww, int qs, double g
+                              int ww, int qs, double g, int p
+                              double q
                               );
                                                               
   void* std::vector<double> * myfun3(double x, double z);
