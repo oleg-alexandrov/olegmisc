@@ -33,6 +33,11 @@ def balanced_parens(text):
 
     return len(lp) == len(rp)
 
+def len_woc(text):
+  # Length after stripping the comments
+  text = re.sub("//.*?($|\n)", "", text)
+  return len(text)
+
 def extract_blocks(text):
 
     # A block consists of several consecutive lines such
@@ -92,11 +97,6 @@ def parse_cpp(cpp_text, namespace):
           
     return cpp_map
 
-def num_of_commas(text):
-  text = re.sub("//.*?($|\n)", "", text)
-  commas = re.findall(",", text)
-  return len(commas)
-  
 def parse_update_h(h_text, cpp_map, namespace):
 
     blocks = extract_blocks(h_text)
@@ -126,7 +126,7 @@ def parse_update_h(h_text, cpp_map, namespace):
         if not cpp_map.has_key(fun_name): continue
 
         # Find the function in the cpp file with the same name and
-        # with the closest signature. 
+        # with the closest length (in terms of number of characters)
         max_error_sig  = 1e+100
         best_match     = ""
         for key in cpp_map[fun_name]:
@@ -134,7 +134,7 @@ def parse_update_h(h_text, cpp_map, namespace):
           # Skip any cpp function used earlier
           if cpp_map[fun_name][key] != 0: continue
           
-          error_sig = abs(num_of_commas(block) - num_of_commas(key))
+          error_sig = abs(len_woc(block) - len_woc(key))
           if error_sig < max_error_sig:
             max_error_sig  = error_sig
             best_match     = key
