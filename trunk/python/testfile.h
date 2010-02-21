@@ -17,6 +17,13 @@ class myname{
                             s
                             //some code here
                             );
+  // Some text here
+  virtual unsigned int myfun2(unsigned
+                            k,
+                            int w, int qq
+                            //some code here
+                            );
+
   void* std::vector<double> * myfun3(double x, double z);
 
   
