@@ -20,8 +20,6 @@ unsigned int myname::myfun2(unsigned
 
 unsigned int myname::myfun2(unsigned
                             k,
-                            int w, int qq
-                            //some code here
                             ){
 
 }
