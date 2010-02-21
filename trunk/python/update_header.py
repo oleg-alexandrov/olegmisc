@@ -76,6 +76,8 @@ def indent_block(text):
 
   for count in range(len(lines)):
 
+    if re.match("^\s*$", lines[count]): continue
+    
     if indent_level > 0:
       lines[count] = re.sub("^[ \t]*", "", lines[count])
       lines[count] = " " * indent_level + lines[count]
