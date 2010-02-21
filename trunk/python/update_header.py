@@ -156,7 +156,8 @@ def parse_update_h(h_text, cpp_map, namespace):
     for key in cpp_map:
         
         if h_map.has_key(key): continue
-        new_chunk = new_chunk + cpp_map[key] + "\n"
+        for block in cpp_map[key]:
+          new_chunk = new_chunk + block + "\n"
 
     new_chunk = re.sub("\s*$", "", new_chunk)    
     
