@@ -65,12 +65,11 @@ def extract_blocks(text):
 def parse_cpp(cpp_text, namespace):
 
     # Identify the function declarations. Map each function name
-    # to the full declaration, e.g.,
-    # myfun --> void namesp::myfun(double x)
+    # to the set of all functions with that name, e.g.,
+    # myfun --> {void namesp::myfun(double x), double namesp::myfun(int s)}
     # Strip the namespace 
 
-    cpp_map     = {}
-    cpp_map_dup = {} # Needed if there are multiple functions with same name
+    cpp_map = {} # Needed if there are multiple functions with same name
     
     blocks = extract_blocks(cpp_text)
 
@@ -83,22 +82,22 @@ def parse_cpp(cpp_text, namespace):
 
         if not p: continue
         
-        fun_name           = p.group(2)
-        cpp_map[fun_name]  = p.group(1) + p.group(2) + p.group(3)
+        fun_name = p.group(2)
+        fun_decl = p.group(1) + p.group(2) + p.group(3)
 
-        if not cpp_map_dup.has_key(fun_name): cpp_map_dup[fun_name] = {}
+        if not cpp_map.has_key(fun_name): cpp_map[fun_name] = {}
           
-        cpp_map_dup[fun_name][cpp_map[fun_name]] = 0
+        cpp_map[fun_name][fun_decl] = 0
 
           
-    return (cpp_map, cpp_map_dup)
+    return cpp_map
 
 def num_of_commas(text):
   text = re.sub("//.*?($|\n)", "", text)
   commas = re.findall(",", text)
   return len(commas)
   
-def parse_update_h(h_text, cpp_map, cpp_map_dup, namespace):
+def parse_update_h(h_text, cpp_map, namespace):
 
     blocks = extract_blocks(h_text)
     h_map  = {}
@@ -124,22 +123,16 @@ def parse_update_h(h_text, cpp_map, cpp_map_dup, namespace):
         fun_name         = p.group(3)
         h_map[fun_name]  = "".join(p.group())
         
-        # Overwriting with appropriate cpp function
-        #if cpp_map.has_key(fun_name):
-        #  blocks[count] = p.group(1) + cpp_map[fun_name] + p.group(5)
-          #print "\n-------\nOverwriting\n'" + block + "'\nwith\n"
-          #print "'" + blocks[count] + "'\n"
-          
-        if not cpp_map_dup.has_key(fun_name): continue
+        if not cpp_map.has_key(fun_name): continue
 
         # Find the function in the cpp file with the same name and
         # with the closest signature. 
         max_error_sig  = 1e+100
         best_match     = ""
-        for key in cpp_map_dup[fun_name]:
+        for key in cpp_map[fun_name]:
 
           # Skip any cpp function used earlier
-          if cpp_map_dup[fun_name][key] != 0: continue
+          if cpp_map[fun_name][key] != 0: continue
           
           error_sig = abs(num_of_commas(block) - num_of_commas(key))
           if error_sig < max_error_sig:
@@ -150,7 +143,7 @@ def parse_update_h(h_text, cpp_map, cpp_map_dup, namespace):
         
         # We found the cpp function with the closest signature
         blocks[count] = p.group(1) + best_match + p.group(5)
-        cpp_map_dup[fun_name][best_match] = 1 # mark that we used this one 
+        cpp_map[fun_name][best_match] = 1 # mark that we used this one 
           
         print "\n-------\nOverwriting\n\"" + block + "\"\nwith\n"
         print "\"" + blocks[count] + "\"\n"
@@ -203,8 +196,8 @@ if __name__ == '__main__':
     fh = open(h_file,   'r'); h_text   = fh.read(); fh.close()
 
     namespace = get_namespace(h_text)
-    (cpp_map, cpp_map_dup) = parse_cpp(cpp_text, namespace)
+    cpp_map = parse_cpp(cpp_text, namespace)
     
-    h_text  = parse_update_h(h_text, cpp_map, cpp_map_dup, namespace)
+    h_text  = parse_update_h(h_text, cpp_map, namespace)
 
     fh = open(h_file, 'w'); fh.write(h_text); fh.close()
