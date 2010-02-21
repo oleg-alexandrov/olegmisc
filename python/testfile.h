@@ -10,13 +10,14 @@ class myname{
   double myfun4();
   // Some text here
   virtual unsigned int myfun2(unsigned
-                              k, int w,
-                              int vv
+                              qq
+                              //some code here
                               );
   // Some text here
   virtual unsigned int myfun2(unsigned
-                              qq
-                              //some code here
+                              k, int w,
+                              int vv,
+                              int ww, int qs, double g
                               );
                                                               
   void* std::vector<double> * myfun3(double x, double z);
