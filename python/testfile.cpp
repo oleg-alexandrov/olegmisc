@@ -19,7 +19,7 @@ unsigned int myname::myfun2(unsigned
 }
 
 unsigned int myname::myfun2(unsigned
-                            k,
+                            k, int w
                             ){
 
 }
