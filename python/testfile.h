@@ -14,8 +14,7 @@ class myname{
                            ) const;
   // Some text here
   virtual unsigned int myfun2(unsigned
-                            k,
-                            
+                            s
                             //some code here
                             );
   void* std::vector<double> * myfun3(double x, double z);

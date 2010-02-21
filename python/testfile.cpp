@@ -12,8 +12,15 @@ unsigned int myname::myfun(// some text here
 }
 
 unsigned int myname::myfun2(unsigned
+                            s
+                            //some code here
+                            ){
+
+}
+
+unsigned int myname::myfun2(unsigned
                             k,
-                            
+                            int w
                             //some code here
                             ){
 
