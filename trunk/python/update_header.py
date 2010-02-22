@@ -141,12 +141,11 @@ def parse_update_h(h_text, cpp_map, namespace):
 
         if not p: continue
 
-        if re.match("=", block): continue # skip functions with default args
-        
         fun_name         = p.group(3)
         h_map[fun_name]  = "".join(p.group())
         
         if not cpp_map.has_key(fun_name): continue
+        if re.search("=", block):         continue # skip functions with default args
 
         # Find the function in the cpp file with the same name and
         # with the closest length (in terms of number of characters)
@@ -211,13 +210,19 @@ def parse_update_h(h_text, cpp_map, namespace):
 
 if __name__ == '__main__':
 
-    if len(sys.argv) < 3:
-        print "Usage:", sys.argv[0], "file.cpp file.h"
+    if len(sys.argv) < 2:
+        print "Usage:", sys.argv[0], "file.cpp"
         sys.exit(1)
 
     cpp_file = sys.argv[1]
-    h_file   = sys.argv[2]
+    
+    h_file = cpp_file;
+    h_file = re.sub(r".cpp", ".h", h_file)
 
+    if (not os.path.exists(h_file)) or (not os.path.isfile(h_file)):
+      print "File", h_file, "does not exist"
+      sys.exit(1)
+    
     fh = open(cpp_file, 'r'); cpp_text = fh.read(); fh.close()
     fh = open(h_file,   'r'); h_text   = fh.read(); fh.close()
 
