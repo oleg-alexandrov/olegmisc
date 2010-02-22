@@ -233,3 +233,5 @@ if __name__ == '__main__':
 
     fh = open(h_file, 'w'); fh.write(h_text); fh.close()
 
+    h_file = re.sub(r"^.*/", "", h_file)
+    print "Updated ", h_file
