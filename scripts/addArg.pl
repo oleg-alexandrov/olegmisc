@@ -114,7 +114,7 @@ sub addArg{
   my @outargs = ();
   for (my $i = 0; $i < $len ; $i++){
     
-    if ($i+1 == $argPos){
+    if ($i == $argPos - 1){ # Use -1 since $argPos starts from 1
       push(@outargs, $argToAdd);
     }
 
@@ -125,6 +125,14 @@ sub addArg{
   if ( $argPos > $len ){
     push(@outargs, $argToAdd);
   }
+
+  # If argument before the one we added ended with a newline, remove the newline,
+  # as otherwise we'll get an extra blank line.
+  if ($argPos > $len + 1){
+    $argPos = $len + 1;
+  }
+  my $prevArgPos = $argPos - 2;
+  $outargs[$prevArgPos] =~ s/\n[ \t]*$//g if ( $prevArgPos >= 0 );
 
   # Put back together the arguments
   $argList = join(",", @outargs);
