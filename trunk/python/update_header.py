@@ -4,8 +4,8 @@ import sys
 import os
 import re # Perl-style regular expressions
 
-# If a function declaration changed in the cpp file, update
-# the corresponding declaration in the h file.
+# If a function declaration changed in a cpp file, this script updates
+# the corresponding declaration in the corresponding h file.
     
 def get_namespace(text):
 
