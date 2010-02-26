@@ -76,8 +76,6 @@ def indent_block(text):
 
   for count in range(len(lines)):
 
-    if re.match("^\s*$", lines[count]): continue
-    
     if indent_level > 0:
       lines[count] = re.sub("^[ \t]*", "", lines[count])
       lines[count] = " " * indent_level + lines[count]
@@ -86,8 +84,12 @@ def indent_block(text):
     if indent_level == 0 and p:
       indent_level = len(p.group(1))
       
-  #print "\n".join(lines)
   text = "\n".join(lines)
+
+  # Strip whitespaces after the last newline (those whitespaces are an artifact
+  # which cause problems later)
+  text = re.sub("[ ]*$", "", text)
+  
   return text
 
 def parse_cpp(cpp_text, namespace):
