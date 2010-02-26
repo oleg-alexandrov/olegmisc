@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+# This script is used to merge the given spreadsheets side by side
+
 import sys
 import os
 import re # Perl-style regular expressions
