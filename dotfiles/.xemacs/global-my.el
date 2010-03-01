@@ -7,6 +7,9 @@
 (defun isearch-forward-at-point (&optional regexp-p no-recursive-edit)
   "Interactive search forward for the symbol at point."
   (interactive "P\np")
+  (if (looking-at "[ \t\n]")
+      (re-search-forward "[^ \t\n]")
+    )
   (if regexp-p (isearch-forward regexp-p no-recursive-edit)
     (let* ((end (progn (skip-syntax-forward "w_") (point)))
            (begin (progn (skip-syntax-backward "w_") (point))))
@@ -437,6 +440,7 @@
 (global-set-key [(control s)] 'save-buffer)
 (global-set-key [(control space)] 'jump-and-insert-space)
 (global-set-key [(control u)] 'yank)
+(global-set-key [(control x) (v)] 'revert-buffer)
 (global-set-key [(control x) (control d)] 'my-dummy-function)
 (global-set-key [(control x) (control z)] 'my-dummy-function)
 (global-set-key [(control x) (d)] 'duplicate-line)
@@ -464,12 +468,12 @@
 (global-set-key [(meta r)] 'copy-to-register)
 (global-set-key [(meta i)] 'insert-register)
 (global-set-key [(control x) (t)] 'call-tkdiff)
-(global-set-key [(meta v)] 'revert-buffer)
 (global-set-key [(meta return)] 'new-line-and-indent)
 (global-set-key [(meta l)] 'align-repeat)
 (local-set-key [(meta \[)] 'insert-brackets)
 (global-set-key [(meta \;)] 'insert-semicolon-and-newline)
 (global-set-key [(meta o)] 'iswitchb-buffer)
+(global-set-key [(meta b)] 'bookmark-jump)
 ;; terminal keys
 ;(global-set-key "\e[7~" 'beginning-of-line)
 ;(global-set-key "\e[8~" 'end-of-line)
@@ -518,7 +522,6 @@
   (beginning-of-line)
   (next-line 1)
   (cond ( (looking-at "line: ")
-          (message "looking at line")
           (search-forward "line: ")
           (setq bl (point))
           (end-of-line)
@@ -533,6 +536,6 @@
   (goto-line lineno)
   
   )
-(global-set-key [(control x) (v)] 'find-requested-file)
+(global-set-key [(meta v)] 'find-requested-file)
 
 (global-auto-revert-mode 1)
