@@ -1,8 +1,9 @@
 ; c++-my.el
 
-;(flyspell-prog-mode)      ; turn on `flyspell-mode' for comments and strings
+;(flyspell-prog-mode)     ; turn on `flyspell-mode' for comments and strings
 (c-toggle-hungry-state 1) ; delete space hungrily
 (pending-delete-mode 1)   ; delete selected text when any character is touched
+(imenu-add-menubar-index) ; make a menu listing all functions in the given file
 
 (defun c++-if ()
   (interactive)
