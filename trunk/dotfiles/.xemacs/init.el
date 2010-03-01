@@ -34,7 +34,7 @@
 (require `savehist)
 (setq savehist-file "~/.xemacs/history")
 (setq savehist-length 1000)
-(savehist-load)
+(savehist-mode 1)
 
 ;Saves the position the cursor was in a file before the file was closed.
 (load-library "saveplace")
@@ -62,6 +62,7 @@
 ; switch buffers
 (setq iswitchb-buffer-ignore '("^ " "^\\*"))
 (setq iswitchb-default-method 'samewindow)
+(setq iswitchb-case t); case insensitive
 (require 'edmacro)
 (defun iswitchb-local-keys ()
   (mapc (lambda (K) 
@@ -235,6 +236,10 @@
 (autoload 'pymacs-exec "pymacs" nil t)
 (autoload 'pymacs-load "pymacs" nil t)
 (eval-after-load "pymacs"
-  '(add-to-list 'pymacs-load-path "/home/aoleg/.xemacs/Pymacs"))
+  '(add-to-list 'pymacs-load-path "~/.xemacs/Pymacs"))
 (pymacs-load "manglers")
 
+; Bookmarks
+(setq bookmark-save-flag 1)
+(setq bookmark-default-file "~/.xemacs/bookmarks.bmk")
+(bookmark-load bookmark-default-file)

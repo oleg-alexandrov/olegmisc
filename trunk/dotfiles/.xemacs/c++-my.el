@@ -320,7 +320,7 @@ exist, try replacing 'src' with 'include' and vice-versa"
   (let ((cur-file (buffer-file-name) ))
 
     (if (string-match "\\.cpp$" cur-file)
-        (let ((command (concat "~/bin/update_header.pl " cur-file " "
+        (let ((command (concat "~/bin/python/update_header.py " cur-file " "
                                (swap-cpp-h cur-file)) ))
           (shell-command command)
           )
@@ -362,3 +362,5 @@ exist, try replacing 'src' with 'include' and vice-versa"
 (local-set-key [(meta h)] 'update-header-file)
 (local-set-key [(control return)] 'c++-break-line)
 (local-set-key [(meta \[)] 'goto-match-paren)
+(local-set-key [(control meta a)] 'beginning-of-defun)
+(local-set-key [(control meta e)] 'end-of-defun)
