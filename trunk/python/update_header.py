@@ -175,6 +175,9 @@ def parse_update_h(h_text, cpp_map, namespace):
     
     h_text = "".join(blocks)
 
+    # Add a newline at the end if missing
+    if not re.search("\n\s*$", h_text): h_text = h_text + "\n"
+
     # See what new functions were declared in the cpp file and are
     # missing in the h file
     new_chunk = ""
