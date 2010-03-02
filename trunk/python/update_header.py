@@ -96,7 +96,7 @@ def parse_cpp(cpp_text, namespace):
 
     # Identify the function declarations. Map each function name
     # to the set of all functions with that name, e.g.,
-    # myfun --> {void namesp::myfun(double x), double namesp::myfun(int s)}
+    # myfun --> { void namesp::myfun(double x), double namesp::myfun(int s) }
     # Strip the namespace 
 
     cpp_map = {} # Needed if there are multiple functions with same name
@@ -119,17 +119,18 @@ def parse_cpp(cpp_text, namespace):
           
         cpp_map[fun_name][fun_decl] = 0
 
-          
     return cpp_map
 
 def parse_update_h(h_text, cpp_map, namespace):
 
-    blocks = extract_blocks(h_text)
-    h_map  = {}
-    count  = -1
+    # Update the h file by overwriting each block with the
+    # corresponding block from the cpp file.
 
-    # Overwrite with the corresponding block from the cpp file
-    for block in blocks:
+    h_blocks = extract_blocks(h_text)
+    h_map    = {}
+    count    = -1
+
+    for h_block in h_blocks:
 
         count = count + 1
         
@@ -139,41 +140,48 @@ def parse_update_h(h_text, cpp_map, namespace):
         (\w+)                         # function name 
         (\s*\(.*?\))                  # list of arguments
         (.*)$                         # newline, const, etc. 
-        """, block, re.S | re.X)
+        """, h_block, re.S | re.X)
 
         if not p: continue
 
         fun_name         = p.group(3)
-        h_map[fun_name]  = "".join(p.group())
-        
+        h_map[fun_name]  = h_block
+
         if not cpp_map.has_key(fun_name): continue
-        if re.search("=", block):         continue # skip functions with default args
+        if re.search("=", h_block):       continue # skip functions with default args
 
         # Find the function in the cpp file with the same name and
         # with the closest length (in terms of number of characters)
-        max_error_sig  = 1e+100
-        best_match     = ""
-        for key in cpp_map[fun_name]:
+        max_error_sig       = 1e+100
+        best_cpp_block      = ""
+        best_cpp_with_extra = ""
+        for cpp_block in cpp_map[fun_name]:
 
           # Skip any cpp function used earlier
-          if cpp_map[fun_name][key] != 0: continue
+          if cpp_map[fun_name][cpp_block] != 0: continue
+
+          # Add the extra info present in the h file and not the cpp
+          # file, like "virtual", "static", etc.
+          cpp_with_extra = p.group(1) + cpp_block + p.group(5) 
+
+          error_sig = abs(len_woc(h_block) - len_woc(cpp_with_extra))
           
-          error_sig = abs(len_woc(block) - len_woc(key))
           if error_sig < max_error_sig:
-            max_error_sig  = error_sig
-            best_match     = key
+            max_error_sig       = error_sig
+            best_cpp_block      = cpp_block
+            best_cpp_with_extra = cpp_with_extra
             
-        if best_match == "": continue # could not find a match
+        if best_cpp_with_extra == "": continue # could not find a match
         
         # We found the cpp function with the closest signature
-        blocks[count] = p.group(1) + best_match + p.group(5)
-        blocks[count] = indent_block(blocks[count])
-        cpp_map[fun_name][best_match] = 1 # mark that we used this one 
+        h_blocks[count] = best_cpp_with_extra
+        h_blocks[count] = indent_block(h_blocks[count])
+        cpp_map[fun_name][best_cpp_block] = 1 # mark that we used this one 
           
-        #print "\n-------\nOverwriting\n\"" + block + "\"\nwith\n"
-        #print "\"" + blocks[count] + "\n\"\n"
+        #print "\n-------\nOverwriting\n\"" + h_block + "\"\nwith\n"
+        #print "\"" + h_blocks[count] + "\n\"\n"
     
-    h_text = "".join(blocks)
+    h_text = "".join(h_blocks)
 
     # Add a newline at the end if missing
     if not re.search("\n\s*$", h_text): h_text = h_text + "\n"
@@ -184,9 +192,9 @@ def parse_update_h(h_text, cpp_map, namespace):
     for key in cpp_map:
         
         if h_map.has_key(key): continue
-        for block in cpp_map[key]:
-          block     = indent_block(block)
-          new_chunk = new_chunk + block + "\n"
+        for cpp_block in cpp_map[key]:
+          cpp_block     = indent_block(cpp_block)
+          new_chunk = new_chunk + cpp_block + "\n"
 
     new_chunk = re.sub("\s*$", "", new_chunk)    
     
