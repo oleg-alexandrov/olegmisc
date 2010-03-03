@@ -102,7 +102,8 @@ def parse_cpp(cpp_text, namespace):
     cpp_map = {} # Needed if there are multiple functions with same name
     
     blocks = extract_blocks(cpp_text)
-
+    count  = 1 # Used to keep the order of blocks
+    
     for block in blocks:
 
         p = re.match("^(\w[^\n]*?\s)" # everything up to the namespace
@@ -117,8 +118,9 @@ def parse_cpp(cpp_text, namespace):
 
         if not cpp_map.has_key(fun_name): cpp_map[fun_name] = {}
           
-        cpp_map[fun_name][fun_decl] = 0
-
+        cpp_map[fun_name][fun_decl] = count
+        count = count + 1
+        
     return cpp_map
 
 def parse_update_h(h_text, cpp_map, namespace):
@@ -158,7 +160,7 @@ def parse_update_h(h_text, cpp_map, namespace):
         for cpp_block in cpp_map[fun_name]:
 
           # Skip any cpp function used earlier
-          if cpp_map[fun_name][cpp_block] != 0: continue
+          if cpp_map[fun_name][cpp_block] < 0: continue
 
           # Add the extra info present in the h file and not the cpp
           # file, like "virtual", "static", etc.
@@ -176,7 +178,7 @@ def parse_update_h(h_text, cpp_map, namespace):
         # We found the cpp function with the closest signature
         h_blocks[count] = best_cpp_with_extra
         h_blocks[count] = indent_block(h_blocks[count])
-        cpp_map[fun_name][best_cpp_block] = 1 # mark that we used this one 
+        cpp_map[fun_name][best_cpp_block] = -1 # mark that we used this one 
           
         #print "\n-------\nOverwriting\n\"" + h_block + "\"\nwith\n"
         #print "\"" + h_blocks[count] + "\n\"\n"
@@ -187,21 +189,15 @@ def parse_update_h(h_text, cpp_map, namespace):
     if not re.search("\n\s*$", h_text): h_text = h_text + "\n"
 
     # See what new functions were declared in the cpp file and are
-    # missing in the h file
-    new_chunk = ""
+    # missing in the h file. Keep them in the same order as in the cpp file.
+    new_blocks = {}
     for key in cpp_map:
         
         if h_map.has_key(key): continue
         for cpp_block in cpp_map[key]:
-          cpp_block     = indent_block(cpp_block)
-          new_chunk = new_chunk + cpp_block + "\n"
+          new_blocks[cpp_map[key][cpp_block]] = cpp_block # Needed for sorting
 
-    new_chunk = re.sub("\s*$", "", new_chunk)    
-    
-    if new_chunk == "":
-        return h_text # Nothing else to do
-
-    # Append the new chunk after the last public:/private:/namespace/class tag
+    # Append the new blocks after the last public:/private:/namespace/class tag
     p = re.match("""
     ^(
     .*\n\s*
@@ -216,8 +212,17 @@ def parse_update_h(h_text, cpp_map, namespace):
         print "Could not find a place to append the new blocks to"
         sys.exit(1)
 
-    h_text = p.group(1) + p.group(2) + new_chunk + ";\n" \
-             + p.group(2) + p.group(3)
+    new_chunk    = ""
+    indent_level = p.group(2)
+    
+    for num in sorted(new_blocks.keys()):
+      new_chunk = new_chunk + indent_level + indent_block(new_blocks[num]) + ";\n"
+      
+    new_chunk = re.sub("\s*$", "", new_chunk)    
+    if new_chunk == "":
+        return h_text # Nothing else to do
+
+    h_text = p.group(1) + new_chunk + p.group(2) + p.group(3)
 
     return h_text
 
