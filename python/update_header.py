@@ -89,7 +89,7 @@ def indent_block(text):
   # Strip whitespaces after the last newline (those whitespaces are an artifact
   # which cause problems later)
   text = re.sub("[ ]*$", "", text)
-  
+
   return text
 
 def parse_cpp(cpp_text, namespace):
@@ -205,7 +205,7 @@ def parse_update_h(h_text, cpp_map, namespace):
     .*?[\n]
     )           # end of group 1
     ([ \t]*)    # indentation level (group 2)
-    (.*?)$      # group 3, whatever is left
+    (.*)$       # group 3, whatever is left
     """, h_text, re.S | re.X)
 
     if not p:
@@ -220,7 +220,6 @@ def parse_update_h(h_text, cpp_map, namespace):
     for num in sorted_keys:
       new_chunk = new_chunk + indent_level + indent_block(new_blocks[num]) + ";\n"
       
-    new_chunk = re.sub("\s*$", "", new_chunk)    
     if new_chunk == "":
         return h_text # Nothing else to do
 
