@@ -214,8 +214,10 @@ def parse_update_h(h_text, cpp_map, namespace):
 
     new_chunk    = ""
     indent_level = p.group(2)
-    
-    for num in sorted(new_blocks.keys()):
+
+    sorted_keys = new_blocks.keys()
+    sorted_keys.sort()
+    for num in sorted_keys:
       new_chunk = new_chunk + indent_level + indent_block(new_blocks[num]) + ";\n"
       
     new_chunk = re.sub("\s*$", "", new_chunk)    
