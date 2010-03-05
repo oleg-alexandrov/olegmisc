@@ -54,7 +54,7 @@ function edit-alias () {
   #bindkey "^J" edit-alias
 
   local in="$BUFFER";     # what is currently on the command line
-  BUFFER=`~/bin/python/expand_alias.py $in`;  # replace with the text as described above
+  BUFFER=$($HOME/bin/python/expand_alias.py $in); # modify as described above
 }
 zle -N edit-alias
 
@@ -91,6 +91,7 @@ bindkey  "^[3;5~"            delete-char
 bindkey  "^R"                history-incremental-search-backward
 bindkey  "^J"                edit-alias
 bindkey  "^H"                describe-key-briefly
+bindkey  "^P"                up-line-or-history
 bindkey  "$terminfo[khome]"  beginning-of-line
 bindkey  "$terminfo[kend]"   end-of-line
 bindkey  "^["                backward-delete-word
@@ -98,8 +99,8 @@ bindkey  "\M-d"              delete-word
 bindkey  "^Z"                undo
 bindkey  "^[d"               delete-word  
 bindkey  "^[[3;5~"           kill-line    
-bindkey  "^[f"               forward-char
-bindkey  "^[b"               backward-char
+bindkey  "^[f"               forward-word
+bindkey  "^[b"               backward-word
 
 # Init the prompt
 proml;
