@@ -48,11 +48,13 @@ alias make='time make'
 alias matlab='matlab -nosplash'
 alias mc='make clean'
 alias md=mkdir
+alias me=max_err.pl
 alias mk='time make'
 alias mkl='pl "s#\/.*\/##g"'
 alias ml='matlab -nosplash -nodesktop'
 alias mll='matlab -nosplash -nodesktop'
 alias more=mymore
+alias mpr='perl -pi -e "s#\/.*\/##g"'
 alias mr='make release'
 alias mv='\mv -vi'
 alias nano=vim
@@ -72,15 +74,18 @@ alias rr='source ~/.zshrc'
 alias rs='alias > ~/.bash_aliases; perl -pi -e "s#^([^\s]+=)#alias \$1#g" ~/.bash_aliases'
 alias run-help=man
 alias sep='. ~/bin/setpath'
+alias sis=sis.pl
 alias sva='svn add'
 alias svd='svn diff'
 alias svdel='svn delete'
-alias svs='svn status --show-updates'
+alias svm=cvm
+alias svs=cs
 alias svu='svn update'
-alias t='time . ~/bin/rt.sh'
+alias t=top
 alias tail='\tail -n 100'
 alias tc='tar czfv'
 alias tk=tkdiff
+alias tt='time . ~/bin/rt.sh'
 alias unp='. ~/bin/unsetpath'
 alias vg='$w/local/bin/valgrind  --log-file=Log --leak-check=full'
 alias vgp='valgrind --tool=callgrind --dump-instr=yes '
