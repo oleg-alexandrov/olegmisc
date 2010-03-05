@@ -106,20 +106,20 @@ function un {
   perl -pi -e "s#^([^\s]+=)#alias \$1#g" ~/.bash_aliases;
 }
 
-function hg {
+function pug {
     # grep through all history for given pattern
-    history 1 | grep "$*"
+    ps ux | grep -i --color=auto "$*"
 }
 
-function svm {
-    echo "svn commit -m \"$*\"";
-    svn commit -m "$*";
+function hg {
+    # grep through all history for given pattern
+    history 1 | grep -i --color=auto "$*"
 }
 
 function gr {
 
   # recursive grep
-  grep -r -i -E --colour=auto "$*" .;
+  grep -r -i -n -E --colour=auto "$*" .;
 
 }
 

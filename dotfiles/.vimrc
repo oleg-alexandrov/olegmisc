@@ -30,6 +30,8 @@ map <Return> i<Return>
 map! <C-A> <Home>
 map! <C-E> <End>
 
+map <C-Home> <Esc>1gg
+map! <C-Home> <Esc>1gg
 noremap <C-Home> <Esc>1gg
 
 map  <C-F> <Esc>/
