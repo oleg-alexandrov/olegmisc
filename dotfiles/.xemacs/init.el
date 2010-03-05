@@ -229,17 +229,9 @@
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 8)
 
-; Pymacs
-(autoload 'pymacs-apply "pymacs")
-(autoload 'pymacs-call "pymacs")
-(autoload 'pymacs-eval "pymacs" nil t)
-(autoload 'pymacs-exec "pymacs" nil t)
-(autoload 'pymacs-load "pymacs" nil t)
-(eval-after-load "pymacs"
-  '(add-to-list 'pymacs-load-path "~/.xemacs/Pymacs"))
-(pymacs-load "manglers")
 
 ; Bookmarks
 (setq bookmark-save-flag 1)
 (setq bookmark-default-file "~/.xemacs/bookmarks.bmk")
 (bookmark-load bookmark-default-file)
+(setq tags-case-fold-search t)
