@@ -474,6 +474,7 @@
 (global-set-key [(meta \;)] 'insert-semicolon-and-newline)
 (global-set-key [(meta o)] 'iswitchb-buffer)
 (global-set-key [(meta b)] 'bookmark-jump)
+(global-set-key [(meta p)] 'bookmark-jump)
 (global-set-key [(meta \8)] 'pop-tag-mark)
 ;; terminal keys
 ;(global-set-key "\e[7~" 'beginning-of-line)
