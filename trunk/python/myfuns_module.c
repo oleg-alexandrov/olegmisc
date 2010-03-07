@@ -19,6 +19,7 @@ static PyObject * myfun1(PyObject *self, PyObject *args){
 
   printf("The user input was: %s %d\n", command, v);
   sts = system(command);
+  sts += v;
   return Py_BuildValue("i", sts);
 
 }
