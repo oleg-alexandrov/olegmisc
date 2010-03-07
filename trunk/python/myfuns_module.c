@@ -11,12 +11,13 @@
 static PyObject * myfun1(PyObject *self, PyObject *args){
   
   const char *command;
+  const int v;
   int sts;
   
-  if (!PyArg_ParseTuple(args, "s", &command))
+  if (!PyArg_ParseTuple(args, "si", &command, &v))
     return NULL; // NULL will be interpreted as an error flag
 
-  printf("The user input was: %s\n", command);
+  printf("The user input was: %s %d\n", command, v);
   sts = system(command);
   return Py_BuildValue("i", sts);
 
