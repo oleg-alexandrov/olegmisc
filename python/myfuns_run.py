@@ -9,6 +9,6 @@ import sys
 import myfuns # The C module is implemented here
 
 if len(sys.argv) > 1:
-    status = myfuns.myfun1(sys.argv[1])
+    status = myfuns.myfun1(sys.argv[1], 6)
 else:
     print "Usage:", sys.argv[0], "command_name"
