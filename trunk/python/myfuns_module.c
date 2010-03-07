@@ -6,7 +6,7 @@
 // The function doing the work. It takes an input Python string,
 // converts it to a C-style string, and calls the 'system' command
 // with that string. It takes the output of that command (an integer)
-// and converts it to a Python integer which is returned outside of
+// and converts it to a Python integer which is returned from
 // this function.
 static PyObject * myfun1(PyObject *self, PyObject *args){
   
