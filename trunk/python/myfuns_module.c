@@ -1,7 +1,7 @@
 #include <Python.h>
 
 // Create a C module that will be called from Python. See the
-// code myfuns_build.py about how to compile and run this model.
+// code myfuns_build.py about how to compile and run this module.
 
 // The function doing the work. It takes an input Python string,
 // converts it to a C-style string, and calls the 'system' command
