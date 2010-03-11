@@ -1,6 +1,6 @@
 # First read the settings that are in common in bash and zsh
-source ~/.bash_login 
-source ~/.bashrc
+if [[ -f ~/.bash_login ]]; then source ~/.bash_login; fi
+if [[ -f ~/.bashrc     ]]; then source ~/.bashrc;     fi
 
 autoload -U compinit promptinit
 compinit; promptinit;
