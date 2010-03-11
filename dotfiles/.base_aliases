@@ -22,7 +22,7 @@ alias di=diff
 alias ds='du . | sort -n'
 alias ec=echo
 alias fh='find . -name'
-alias g='grep -i -E --colour=auto'
+alias g='grep -n -i -E --colour=auto'
 alias gf='gfortran -Wall -c'
 alias gt=gthumb
 alias h='history 1'
@@ -67,7 +67,7 @@ alias pl='perl -pi -e'
 alias pu='ps ux'
 alias pucat='ps ux | cat'
 alias rf='\rm -fv'
-alias rfo='\rm -fv .#* java.log.* matlab_crash* .*~ *~ *.box *.ly1 *.ly2 \#*'
+alias rfo='\rm -fv .#* java.log.* matlab_crash* .*~ *~ *.box *.ly1 *.ly2 *.ly \#*'
 alias rl='source ~/.zshrc'
 alias rm='\rm -vi'
 alias rr='source ~/.zshrc'
