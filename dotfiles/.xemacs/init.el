@@ -235,3 +235,5 @@
 (setq bookmark-default-file "~/.xemacs/bookmarks.bmk")
 (bookmark-load bookmark-default-file)
 (setq tags-case-fold-search t)
+(setq case-fold-search t)
+(visit-tags-table "~/opc/dev/TAGS")

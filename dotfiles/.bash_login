@@ -1,5 +1,11 @@
 #  .bash_login
 
+LZSH=$HOME/bin/zsh
+if [ $SHELL != "$LZSH" ] && [ -f "$LZSH" ]; then 
+    export SHELL="$LZSH"
+    exec "$LZSH" 
+fi
+
 echo "                                                                   "
 echo "    What makes the quality of a researcher's inventiveness and     "
 echo "    imagination is the __quality of his attention__ to hearing the "
@@ -10,5 +16,4 @@ echo "    voices of things.                    -- A. Grothendieck        "
 # "Deep in the human unconscious is a pervasive need for a logical
 # universe that makes sense. But the real universe is always one step
 # beyond logic." -Frank Herbert
-
 
