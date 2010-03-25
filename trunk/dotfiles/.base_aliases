@@ -54,7 +54,7 @@ alias mkl='pl "s#\/.*\/##g"'
 alias ml='matlab -nosplash -nodesktop'
 alias mll='matlab -nosplash -nodesktop'
 alias more=mymore
-alias mpr='perl -pi -e "s#\/.*\/##g"'
+alias mpr='perl -pi -e "s#\/.*\/##g" # make a path relative'
 alias mr='make release'
 alias mv='\mv -vi'
 alias nano=vim
@@ -70,6 +70,7 @@ alias rf='\rm -fv'
 alias rfo='\rm -fv .#* java.log.* matlab_crash* .*~ *~ *.box *.ly1 *.ly2 *.ly \#*'
 alias rl='source ~/.zshrc'
 alias rm='\rm -vi'
+alias rmc='perl -pi -e "s#^\s*\#.*?\n##g"'
 alias rr='source ~/.zshrc'
 alias rs='alias > ~/.bash_aliases; perl -pi -e "s#^([^\s]+=)#alias \$1#g" ~/.bash_aliases'
 alias run-help=man
