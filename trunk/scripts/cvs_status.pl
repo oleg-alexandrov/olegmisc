@@ -8,7 +8,11 @@ undef $/; # undefines the separator. Can read one whole file in one scalar.
 MAIN: {
 
   # Clean up cvs status
-
+  if ( ( -d ".svn" ) && ( ! -d "CVS" ) ){
+    print `svn status --show-updates`;
+    exit(0);
+  }
+  
   my $pwd = getcwd;
   $pwd = $pwd . "/" unless ($pwd =~ /\/$/);
 
@@ -35,7 +39,7 @@ MAIN: {
     $file = $1;
 
     # Make file path relative
-    $file =~ s/^.*?(matlabRD|doc_plan|dev)\///g;
+    $file =~ s/^.*?(matlabRD|doc_plan|dev|baseline)\///g;
 
     # Strip some other odd markup
     $file =~ s/Attic\///g;
