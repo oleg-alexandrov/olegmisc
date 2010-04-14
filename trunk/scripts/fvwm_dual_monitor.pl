@@ -16,7 +16,7 @@ print "Screen dims are $SW $SH\n";
 
 # start a dedicated server
 $fifo = "$ENV{'HOME'}/.FCMfocus";
-system( "FvwmCommand 'FvwmCommandS $fifo'");
+system( "$ENV{'HOME'}/bin/FvwmCommand 'FvwmCommandS $fifo'");
 #for slow machine
 select(undef,undef,undef,1);
 
@@ -54,7 +54,7 @@ while ( <FCM> ) {
       print "$_\n";
       
       # fvwm doesn't like commands from modules too fast
-      select(undef,undef,undef, 0.4 );
+      #select(undef,undef,undef, 0.4 );
       #print FCC "windowid $id move ${x}p ${y}p\n";
       
       my $ctrx = $x + $width/2;
@@ -65,11 +65,16 @@ while ( <FCM> ) {
         # If a window is partially on one screen and partially on the other
         # screen, move it completely to the screen containing its center of gravity.
 
-        if ($ctrx < $half){
-          # Move to the left screen
-          print "windowid $id move 0p ${y}p\n";
-          print FCC "windowid $id move 0p ${y}p\n";
-          
+        if ($ctrx < $half/2 ||
+            ($ctrx < $half && $width >= $half/2 && $height >= $SH/2) ){
+          # Move to the left half of the left screen
+          print "windowid $id move 0p 0p\n";
+          print FCC "windowid $id move 0p 0p\n";
+        }elsif ($ctrx < $half){
+          # Move so that the right edge of the window is right in the middle
+          my $nx = $half - $width;
+          print "windowid $id move ${nx}p ${y}p\n";
+          print FCC "windowid $id move ${nx}p ${y}p\n";
         }else{
           # Move to the right screen
           print "windowid $id move ${half}p ${y}p\n";
