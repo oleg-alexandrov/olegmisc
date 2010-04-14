@@ -20,24 +20,50 @@ MAIN: {
   $user =~ s/\/$//g;
   $user =~ s/^.*\///g;
 
-  my @lines = split("===", `cvs status`);
-  
-  my ($line, $file, $status, @files, @stats, $file_len);
+  my $status = `cvs status`;
+
+  # First parse the files whose status is unknown
+  my @lines = split("\n", $status);
+
+  my (@files, @stats, $file_len);
+  my ($line, $file, $stat);
 
   @files = ();
   @stats = ();
   $file_len = 0;
+
+  foreach $line (@lines){
+    next unless ($line =~ /^(\?)\s+([^\s]*?)($|\s)/ );
+
+    $file = $2;
+    $stat = $1;
+    push(@files, $file);
+    push(@stats, $stat);
+
+    if ($file_len < length($file)){
+      $file_len = length($file);
+    }
+
+  }
+  
+  # Then parrse the files whose status is known
+  @lines = split("===", $status);
   
   foreach $line (@lines){
 
     next if ($line =~ /Status:\s+Up-to-date/i);
 
     next unless ($line =~ /Status:\s*(.*?)\n/i);
-    $status = $1;
+    $stat = $1;
     
-    next unless ($line =~ /Repository\s+revision:.*?(\/.*),/i);
-    $file = $1;
-
+    if ($line =~ /Repository\s+revision:.*?(\/.*),/i){
+      $file = $1;
+    }elsif ($line =~ /File:\s+([^\s]*?)(\s|$)/){
+      $file = $1;
+    }else{
+     $file = "?"; 
+    }
+    
     # Make file path relative
     $file =~ s/^.*?(matlabRD|doc_plan|dev|baseline)\///g;
 
@@ -45,7 +71,7 @@ MAIN: {
     $file =~ s/Attic\///g;
         
     push(@files, $file);
-    push(@stats, $status);
+    push(@stats, $stat);
 
     if ($file_len < length($file)){
       $file_len = length($file);
@@ -57,14 +83,14 @@ MAIN: {
 
   foreach $file (@files){
 
-    $status = $stats[$counter]; $counter++;
+    $stat = $stats[$counter]; $counter++;
 
     $file = &make_local_to_cur_dir($pwd, $file);
     
     # pad with spaces after the file name
     $file = $file . " " x ($file_len - length($file));
 
-    print "File: $file $status\n";
+    print "File: $file $stat\n";
   }
 
 }
