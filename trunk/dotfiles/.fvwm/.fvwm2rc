@@ -25,8 +25,10 @@ MenuStyle * MenuFace VGradient 128 1 #2c80A0 1 #1c5572
 #MenuStyle * MenuFace VGradient 128 2 grey85 50 grey70 50 grey50 -- Flat
 
 
-AddToFunc InitFunction    "I" Module FvwmPager  0 0
-AddToFunc RestartFunction "I" Module FvwmPager  0 0
+#AddToFunc InitFunction    "I" Module FvwmPager  0 0
+#AddToFunc RestartFunction "I" Module FvwmPager  0 0
+AddToFunc InitFunction "I" Module FvwmCommandS
+AddToFunc RestartFunction "I" Module FvwmCommandS
 
 #ModulePath $HOME/diverse/fvwm2
 ImagePath $HOME/diverse/icons/:/usr/X11/include/X11/pixmaps/:/usr/X11R6/include/X11/pixmaps:/usr/include/X11/pixmaps/:/home/grad/aoleg/diverse/htmls/icons/
@@ -106,7 +108,12 @@ Style "*emacs"   Icon XEmacs.xpm
 
 ########################### Pager #########################################
 DeskTopSize 3x12
-*FvwmPagerGeometry 130x532-0-0
+DesktopName 0 Desk 0
+DesktopName 1 Desk 1
+DesktopName 2 Desk 2
+DesktopName 3 Desk 3
+
+*FvwmPagerGeometry 390x532-0-0
 *FvwmPagerBack  #1c5572  
 ##  was   #908090
 *FvwmPagerFore white 
@@ -121,7 +128,7 @@ DeskTopSize 3x12
 ######################### Keyboard binding###########################
 #Key F1    A   N   Exec /usr/bin/konsole& 
 #Key F1    A   C   Exec /usr/bin/gnome-terminal  --geometry 110x45+0+0& 
-Key F1   A   C   Exec /usr/bin/gnome-terminal --geometry 110x45+0+0 -e "$HOME/bin/zsh"& 
+Key F1   A   C   Exec /usr/bin/gnome-terminal --geometry 110x44+0+0 -e "$HOME/bin/zsh"& 
 #Key F1    A   C   Exec $HOME/bin/mrxvt -bg black -fg white -geometry 110x45+0+0& 
 #Key F1    A   N   Exec  /m1/aoleg/bin/rxvt & # -geo 140x61+10+10  -hc blue  -bdc -fn 8x16 &
 Key F2    A   N   Exec  /m1/aoleg/bin/rxvt -fn 8x16 -e mutt &
@@ -147,10 +154,10 @@ Key Left  A   C   Scroll -100    0
 Key Right A   C   Scroll +100   +0
 Key Up    A   C   Scroll +0   -100
 Key Down  A   C   Scroll +0   +100
-# Key Left  A   C Module FvwmPager -transient
-# Key Right A   C Module FvwmPager -transient
-# Key Up    A   C Module FvwmPager -transient
-# Key Down  A   C Module FvwmPager -transient
+
+# Pop-up the pager temorarily
+Key Home  A   3   Module FvwmPager -transient 0 3
+Key End   A   3   Module FvwmPager -transient 0 3
 
 # Use the left windows key for moving the cursor  
 # Put this in .bashrc: xmodmap -e  "add mod3 = Super_L"
@@ -158,6 +165,10 @@ Key Left   A   3   CursorMove -50 +0
 Key Right  A   3   CursorMove +50 +0
 Key Up     A   3   CursorMove +0 -50
 Key Down   A   3   CursorMove +0 +50
+
+# Win-PageUp and Win-PageDown to move between desks
+Key Next  A  3    GotoDesk +1 0 3
+Key Prior A  3    GotoDesk -1 0 3
 
 # arrow + shift + meta => move pointer by 1/10 of a page
 Key Left   A   SM   CursorMove -50 +0
@@ -171,7 +182,9 @@ Key Right  A   MC   CursorMove +50 +0
 Key Up     A   MC   CursorMove +0 -50
 Key Down   A   MC   CursorMove +0 +50
 
-# 1.2 Bouttons
+Key q   A   3   Close
+
+# 1.2 Buttons
 # ------------
 # on définit le boutton normal, pressé et inactif.
 # Pour chaque cas, on définit la couleur et le dessin de manière
@@ -234,7 +247,7 @@ AddButtonStyle 6 Inactive (4 25x80@0 85x80@0 85x75@0 25x75@0 25x70@0 85x70@0) --
 AddToFunc Iconify-and-Raise     "I" Iconify
 +                               "I" Raise
 
-AddToFunc InitFunction          "I" Module FvwmPager 0 0
+# AddToFunc InitFunction          "I" Module FvwmPager 0 0
 
 
 AddToFunc MailFunction     "I" Next [$0] Iconify -1
@@ -265,7 +278,7 @@ AddToFunc Resize-or-Raise2      "M" Raise
 +                               "M" Resize
 +                               "D" Lower
 
-AddToFunc RestartFunction       "I" Module FvwmPager 0 0
+#AddToFunc RestartFunction       "I" Module FvwmPager 0 0
 
 
 
