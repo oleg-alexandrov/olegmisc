@@ -62,6 +62,7 @@ alias op2=echo
 alias p=vim
 alias pa='ps aux'
 alias pd=popd
+alias pe=' perl -MCPAN -e shell'
 alias pico=vim
 alias pl='perl -pi -e'
 alias pu='ps ux'
