@@ -110,22 +110,23 @@
 ;; auto-mode-alist
 (setq auto-mode-alist
       (append '(
-		("\\.bash"  . shell-script-mode)
-		("\\.aliases"  . shell-script-mode)
-		("\\.C$"  . c++-mode)
-		("\\.cc$" . c++-mode)
-		("\\.hh$" . c++-mode)
-		("\\.h$"  . c++-mode)
-		("\\.cc$" . c-mode)
-		("\\.tex$" . LaTeX-mode)
-		("\\.php$" . c++-mode)
-		("\\.s?html?\\'" . html-mode)
-		("\\.\\([pP][Llm]\\)\\'" . cperl-mode)
-		("\\.\\(acumask\\)\\'" . cperl-mode)
-		("\\.\\(param\\)\\'" . cperl-mode)
-		("\\.m\\'" . matlab-mode)
-		("muttrc\\'" . muttrc-mode)
-		("^\/tmp\/mutt" . mutt-mode)
+		("\\.bash"                . shell-script-mode)
+		("\\.sh"                  . shell-script-mode)
+		("\\.aliases"             . shell-script-mode)
+		("\\.C$"                  . c++-mode)
+		("\\.cc$"                 . c++-mode)
+		("\\.hh$"                 . c++-mode)
+		("\\.h$"                  . c++-mode)
+		("\\.cc$"                 . c-mode)
+		("\\.tex$"                . LaTeX-mode)
+		("\\.php$"                . c++-mode)
+		("\\.s?html?\\'"          . html-mode)
+		("\\.\\([pP][Llm]\\)\\'"  . cperl-mode)
+		("\\.\\(acumask\\)\\'"    . cperl-mode)
+		("\\.\\(param\\)\\'"      . text-mode)
+		("\\.m\\'"                . matlab-mode)
+		("muttrc\\'"              . muttrc-mode)
+		("^\/tmp\/mutt"           . mutt-mode)
 		) auto-mode-alist))
 
 
@@ -214,6 +215,13 @@
 (add-hook 'emacs-lisp-mode-hook 
 	  '(lambda()
 	     (load-library "emacs-lisp-my")
+	     
+	     ))
+
+;; Shell
+(add-hook 'shell-script-mode-hook 
+	  '(lambda()
+	     (load-library "shell-script-my")
 	     
 	     ))
 
