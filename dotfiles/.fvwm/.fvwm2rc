@@ -26,9 +26,12 @@ MenuStyle * MenuFace VGradient 128 1 #2c80A0 1 #1c5572
 
 
 #AddToFunc InitFunction    "I" Module FvwmPager  0 0
-#AddToFunc RestartFunction "I" Module FvwmPager  0 0
 AddToFunc InitFunction "I" Module FvwmCommandS
+AddToFunc InitFunction "I" Exec $HOME/bin/fvwm_dual_monitor.pl&
+
+#AddToFunc RestartFunction "I" Module FvwmPager  0 0
 AddToFunc RestartFunction "I" Module FvwmCommandS
+AddToFunc RestartFunction "I" Exec $HOME/bin/fvwm_dual_monitor.pl&
 
 #ModulePath $HOME/diverse/fvwm2
 ImagePath $HOME/diverse/icons/:/usr/X11/include/X11/pixmaps/:/usr/X11R6/include/X11/pixmaps:/usr/include/X11/pixmaps/:/home/grad/aoleg/diverse/htmls/icons/
@@ -182,7 +185,9 @@ Key Right  A   MC   CursorMove +50 +0
 Key Up     A   MC   CursorMove +0 -50
 Key Down   A   MC   CursorMove +0 +50
 
+# 3 is the Win key
 Key q   A   3   Close
+Key w   A   3   Lower
 
 # 1.2 Buttons
 # ------------
