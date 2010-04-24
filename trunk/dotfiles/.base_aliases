@@ -65,6 +65,7 @@ alias pd=popd
 alias pe=' perl -MCPAN -e shell'
 alias pico=vim
 alias pl='perl -pi -e'
+alias pso=psort
 alias pu='ps ux'
 alias pucat='ps ux | cat'
 alias rf='\rm -fv'
