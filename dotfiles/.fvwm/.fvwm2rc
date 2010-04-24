@@ -25,11 +25,11 @@ MenuStyle * MenuFace VGradient 128 1 #2c80A0 1 #1c5572
 #MenuStyle * MenuFace VGradient 128 2 grey85 50 grey70 50 grey50 -- Flat
 
 
-#AddToFunc InitFunction    "I" Module FvwmPager  0 0
+AddToFunc InitFunction    "I" Module FvwmPager  *
 AddToFunc InitFunction "I" Module FvwmCommandS
 AddToFunc InitFunction "I" Exec $HOME/bin/fvwm_dual_monitor.pl&
 
-#AddToFunc RestartFunction "I" Module FvwmPager  0 0
+AddToFunc RestartFunction "I" Module FvwmPager  *
 AddToFunc RestartFunction "I" Module FvwmCommandS
 AddToFunc RestartFunction "I" Exec $HOME/bin/fvwm_dual_monitor.pl&
 
@@ -116,7 +116,7 @@ DesktopName 1 Desk 1
 DesktopName 2 Desk 2
 DesktopName 3 Desk 3
 
-*FvwmPagerGeometry 390x532-0-0
+*FvwmPagerGeometry 130x532-0-0
 *FvwmPagerBack  #1c5572  
 ##  was   #908090
 *FvwmPagerFore white 
@@ -126,7 +126,7 @@ DesktopName 3 Desk 3
 ## was cab3ca
 *FvwmPagerSmallFont 5x8
 *FvwmPager: SolidSeparators
-*FvwmPager: Label * 
+#*FvwmPager: Label * 
  
 ######################### Keyboard binding###########################
 #Key F1    A   N   Exec /usr/bin/konsole& 
@@ -159,8 +159,8 @@ Key Up    A   C   Scroll +0   -100
 Key Down  A   C   Scroll +0   +100
 
 # Pop-up the pager temorarily
-Key Home  A   3   Module FvwmPager -transient 0 3
-Key End   A   3   Module FvwmPager -transient 0 3
+Key Home  A   3   Module FvwmPager -transient *
+Key End   A   3   Module FvwmPager -transient *
 
 # Use the left windows key for moving the cursor  
 # Put this in .bashrc: xmodmap -e  "add mod3 = Super_L"
