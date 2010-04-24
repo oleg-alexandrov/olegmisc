@@ -41,22 +41,33 @@ autoload -U colors
 localColors=$w/local/share/zsh/4.3.10/functions/colors; # local zsh installation
 if [[ -f $localColors ]]; then source $localColors > /dev/null 2>&1; fi;
 
-function edit-alias () {
+function expand-command-smartly () {
 
-  # If the command line has just the text "pp",
-  # this function will replace that text with the line
-  # alias pp=<the name of the alias>
-  # assuming that the alias "pp" exists.
-  # This makes it simple to re-edit an alias.
+  # When some text is typed in the command line, expand it
+  # intelligently to save typing.
 
   # Bind this function to a keystroke as follows: 
-  #zle -N edit-alias
-  #bindkey "^J" edit-alias
+  #zle -N expand-command-smartly
+  #bindkey "^J" expand-command-smartly
 
   local in="$BUFFER";     # what is currently on the command line
-  BUFFER=$($HOME/bin/python/expand_alias.py $in); # modify as described above
+  cmd=$( echo $in | awk {'print $1'} ) 
+
+  if [ $cmd = "a" ]; then 
+    BUFFER=$($HOME/bin/python/expand_alias.py $in); 
+    CURSOR=$#in
+  elif [ $cmd = "pl" ]; then 
+    BUFFER="perl -pi -e \"s###g\""
+    CURSOR=15
+  elif [ $cmd = "for" ]; then 
+    var=$( echo $in | awk {'print $2'} )
+    BUFFER="for (($var = ; $var < ; $var++)); do  done"
+    SHORT="for (($var = ";
+    CURSOR=$#SHORT
+  fi
+  
 }
-zle -N edit-alias
+zle -N expand-command-smartly
 
 function proml
 {
@@ -85,11 +96,12 @@ bindkey  "^E"                end-of-line
 bindkey  "^D"                delete-char
 bindkey  "^F"                forward-word
 bindkey  "^H"                backward-delete-word
+bindkey  "^O"                expand-or-complete-prefix
 bindkey  '^?'                backward-delete-char
 bindkey  "^[[3~"             delete-char
 bindkey  "^[3;5~"            delete-char
 bindkey  "^R"                history-incremental-search-backward
-bindkey  "^J"                edit-alias
+bindkey  "^J"                expand-command-smartly
 bindkey  "^H"                describe-key-briefly
 bindkey  "^P"                up-line-or-history
 bindkey  "$terminfo[khome]"  beginning-of-line

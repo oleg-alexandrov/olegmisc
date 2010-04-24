@@ -102,6 +102,12 @@ function a {
  
 }
 
+function ald {
+
+    # Create an alias to cd to the current directory
+    a $1="cd $(pwd)"
+}
+
 function ag {
     # grep through all aliases for given pattern
     alias | grep -i --colour=auto "$*"
