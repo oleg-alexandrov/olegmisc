@@ -10,7 +10,8 @@
 (function() {
 
 var adIDAry = ['TopRight', 'memberTools', 'mainTabs', 'adxBigAd', 'lastUpdate', 'switchEditions', 'HPTopNav'],
-		classNameAry = ['timestamp', 'singleAd', 'columnGroup firstColumnGroup fullWidth', 'toolbarPromo runaroundRight', 'navigationHomeEdition', 'switchEditions'],
+		classNameAry = ['timestamp', 'singleAd', 'columnGroup firstColumnGroup fullWidth', 'toolbarPromo runaroundRight', 'navigationHomeEdition', 
+            'switchEditions', 'subNavigation tabContent active'],
 		tempEle = null,
 		tempEles = null;
 

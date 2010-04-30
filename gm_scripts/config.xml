@@ -38,4 +38,7 @@
 	<Script filename="economist.user.js" name="Economist" namespace="local" description="Tweak Economist" enabled="true" basedir="economist">
 		<Include>http://*.economist.com/*</Include>
 	</Script>
+	<Script filename="block_annoying.user.js" name="block annoying" namespace="local" description="" enabled="true" basedir="block_annoying">
+		<Include>http://slashdot.org/</Include>
+	</Script>
 </UserScriptConfig>
