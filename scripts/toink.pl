@@ -36,7 +36,7 @@ sub get_polys{
   $text =~ s/color\s*=.*?\n//g;
   $text =~ s/\s*;.*?(\n|$)/$1/g;
   $text =~ s/anno.*?\n//g;
-                     
+  
   my ($ctx, $cty);
   if ($text !~ /^([^\s]+?)\s+([^\s]+?)(\s|$)/){
     print "Failed to match the text!\n";
