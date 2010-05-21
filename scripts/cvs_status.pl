@@ -65,7 +65,7 @@ MAIN: {
     }
     
     # Make file path relative
-    $file =~ s/^.*?(matlabRD|doc_plan|dev|baseline)\///g;
+    $file =~ s/^.*?(matlabRD|doc_plan|dev|baseline|dft)\///g;
 
     # Strip some other odd markup
     $file =~ s/Attic\///g;

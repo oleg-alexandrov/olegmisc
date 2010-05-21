@@ -14,16 +14,20 @@ MAIN:{
   my $file_svg = $ARGV[0];
   open(FILE, "<$file_svg"); my $text = <FILE>; close(FILE);
 
-  my ($ctx, $cty);
-  open(FILE, "<center.xg");
-  my $ct = <FILE>;
-  close(FILE);
-  if ($ct !~ /^(.*?)\s+(.*?)\n/){
-    print "Error reading the center\n";
-    exit(0);
+  my $ctx = 0;
+  my $cty = 0;
+  my $ctFile = "center.xg";
+  if ( -e $ctFile){
+    open(FILE, "<$ctFile") || die "Cannot open file $ctFile $!";
+    my $ct = <FILE>;
+    close(FILE);
+    if ($ct !~ /^(.*?)\s+(.*?)\n/){
+      print "Error reading the center from $ctFile\n";
+      exit(0);
+    }
+    $ctx = $1;
+    $cty = $2;
   }
-  $ctx = $1;
-  $cty = $2;
   
   my $out = "color=red\n";
   foreach my $line (split("\n", $text)){
