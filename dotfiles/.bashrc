@@ -70,12 +70,6 @@ function setbuildenv
   export bb=$HOME/$W/build/bin;
 }
 
-function vp
-{
-  # show the path to a file
-  echo `pwd`/$1
-}
-
 function a {
 
   # make an alias available to all other open shells right when it is defined
@@ -159,6 +153,18 @@ function ovl {
   perl -pi -e "s#\"overwriteLayers\" \"false\"#\"overwriteLayers\" \"true\"#g" $1
   grep  -i --colour=auto overwriteLayers $1
 }
+
+function cvr {
+  
+  # Add recursively to CVS
+  dir=$1
+  
+  files=$( find $dir | grep -v CVS )
+  for file in $files; do
+    cvs add $file
+  done
+
+} 
 
 # -<colour opc>--------------------------------
 COLOR_0="\[\033[0;30m\]" # Black
