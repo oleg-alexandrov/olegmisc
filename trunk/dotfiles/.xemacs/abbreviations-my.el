@@ -72,7 +72,6 @@
     ))
 
 (define-abbrev-table 'cperl-mode-abbrev-table '(
-    ("" "exit(0);" nil 0)
     (",." "\"\\n\"" nil 14)
     (";u" "undef $/;" nil 0)
     (";x" "exit(0);" nil 0)

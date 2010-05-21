@@ -119,8 +119,9 @@
       (forward-char 1)
     (search-forward "<" nil t)
     (insert " ")
-    (setq for_flag 0)
-))
+    )
+  (setq for_flag 0)
+  )
 
 (defun smart-space ()
   (interactive)
