@@ -330,7 +330,7 @@ Mouse 3 R C Module FvwmPager -transient
 ########################  Menus ##############################
 AddToMenu Programs   "+++Programs+++"   Title
 +   ""   Nop
-+   "Xterm"   Exec exec /usr/bin/xterm  -geo 108x46+0+0  -hc blue  -bdc -fn 8x16 &
++   "Xterm"   Exec exec /usr/bin/xterm  -geo 108x46+0+0  -hc blue  -bdc -fn 8x16 -e zsh&
 +   ""   Nop
 +   "Xemacs"   Exec exec  /usr/bin/xemacs&
 +   ""   Nop
