@@ -1,7 +1,7 @@
 alias bj=bjobs
 alias bk=bkill
 alias c=clear
-alias ca='~/bin/loop_changes.sh'
+alias ca='~/bin/loop_changes.pl'
 alias ce='crontab -e'
 alias ced='perl -pi -e "s#\s*\n#\n#g"'
 alias cel='perl -pi -e "s#\s*\n#\n#g"'
@@ -88,6 +88,7 @@ alias t=top
 alias tail='\tail -n 100'
 alias tc='tar czfv'
 alias tk=tkdiff
+alias ts='\tail'
 alias tt='time . ~/bin/rt.sh'
 alias unp='. ~/bin/unsetpath'
 alias vg='$w/local/bin/valgrind  --log-file=Log --leak-check=full'
