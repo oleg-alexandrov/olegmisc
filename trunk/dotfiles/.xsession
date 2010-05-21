@@ -29,7 +29,11 @@
 
 xv -quit -root ~/diverse/wallpapers/NASA-Apollo8-Dec24-Earthrise_longer.jpg
 
-~/diverse/fvwm/bin/fvwm
+if [ -e "~/diverse/fvwm/bin/fvwm" ]; then 
+    "~/diverse/fvwm/bin/fvwm"
+else
+  fvwm
+fi
 
 #(sleep 0.5; killall -9 fvwm) & # to avoid yet another bug
 #   fvwm -f ~/.fvwm/rc.fvwm 
