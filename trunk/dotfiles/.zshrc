@@ -53,6 +53,11 @@ function expand-command-smartly () {
   local in="$BUFFER";     # what is currently on the command line
   cmd=$( echo $in | awk {'print $1'} ) 
 
+  #echo "Buffer is " $BUFFER
+  #echo $CURSOR
+  #BUFFER=$($HOME/bin/python/expand_cmdline.py "$in" $CURSOR)
+  #return
+
   if [ $cmd = "a" ]; then 
     BUFFER=$($HOME/bin/python/expand_alias.py $in); 
     CURSOR=$#in
@@ -78,16 +83,18 @@ function proml
  fi;
 
   if [[ $LOXIM_MODE = "" ]]; then
-    LOX_TAG="";
+    LOX_TAG=""; 
+    W_TAG="";
   else
     LOX_TAG="LOXIM_MODE=$LOXIM_MODE%{$fg[yellow]%}@";
+    W_TAG="$W ";
   fi;
 
   # The command prompt. 
   # Must put escape characters in {% and %} to avoid garbling long command lines.
   PS1="
 $terminfo[bold]%{$fg[green]%}%n@%m%{$fg[white]%}:%{$fg[blue]%}%~ 
-%{$fg[blue]%}$LOX_TAG%{$fg[green]%}$W%{$fg[red]%}>%{$fg[yellow]%}>%{$fg[green]%}>%{$fg[white]%} ";
+%{$fg[blue]%}$LOX_TAG%{$fg[green]%}$W_TAG%{$fg[red]%}>%{$fg[yellow]%}>%{$fg[green]%}>%{$fg[white]%} ";
 }
 
 bindkey  "^A"                beginning-of-line
