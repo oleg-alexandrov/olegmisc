@@ -87,7 +87,7 @@ function proml
   # Must put escape characters in {% and %} to avoid garbling long command lines.
   PS1="
 $terminfo[bold]%{$fg[green]%}%n@%m%{$fg[white]%}:%{$fg[blue]%}%~ 
-%{$fg[blue]%}$LOX_TAG%{$fg[green]%}$W %{$fg[red]%}>%{$fg[yellow]%}>%{$fg[green]%}>%{$fg[white]%} ";
+%{$fg[blue]%}$LOX_TAG%{$fg[green]%}$W%{$fg[red]%}>%{$fg[yellow]%}>%{$fg[green]%}>%{$fg[white]%} ";
 }
 
 bindkey  "^A"                beginning-of-line
