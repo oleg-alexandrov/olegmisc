@@ -50,26 +50,9 @@ function expand-command-smartly () {
   #zle -N expand-command-smartly
   #bindkey "^J" expand-command-smartly
 
-  local in="$BUFFER";     # what is currently on the command line
-  cmd=$( echo $in | awk {'print $1'} ) 
-
-  #echo "Buffer is " $BUFFER
-  #echo $CURSOR
-  #BUFFER=$($HOME/bin/python/expand_cmdline.py "$in" $CURSOR)
-  #return
-
-  if [ $cmd = "a" ]; then 
-    BUFFER=$($HOME/bin/python/expand_alias.py $in); 
-    CURSOR=$#in
-  elif [ $cmd = "pl" ]; then 
-    BUFFER="perl -pi -e \"s###g\""
-    CURSOR=15
-  elif [ $cmd = "for" ]; then 
-    var=$( echo $in | awk {'print $2'} )
-    BUFFER="for (($var = ; $var < ; $var++)); do  done"
-    SHORT="for (($var = ";
-    CURSOR=$#SHORT
-  fi
+  BUFFER=$($HOME/bin/python/expand_cmdline.py "$BUFFER" $CURSOR)
+  CURSOR=$(echo $BUFFER | sed -e 's/__sep__.*//') 
+  BUFFER=$(echo $BUFFER | sed -e 's/^[0-9]*__sep__//') 
   
 }
 zle -N expand-command-smartly
