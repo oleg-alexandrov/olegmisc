@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export XEPATH=/usr/bin/
+export XEPATH=$HOME/bin/
 instanceCount=$(ps aux | grep `whoami` | grep xemacs | grep -v 'grep xemacs' | wc -l);
 if [ "$instanceCount" -eq "0" ]; then
 

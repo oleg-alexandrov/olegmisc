@@ -53,7 +53,7 @@ sub get_polys{
   my @polys = split(/NEXT\s*/, $text);
 
   foreach my $poly (@polys){
-    $poly =~ s/(.*?)\s+(.*?)\n/($1 - $ctx)*$scale . " " . ($2 - $cty)*$scale . "\n"/eg;
+    $poly =~ s/(.*?)\s+(.*?)\n/($1 - $ctx)*$scale . " " . -($2 - $cty)*$scale . "\n"/eg;
     $poly =~ s/\s*$//g;
     $poly =~ s/^\s*//g;
     $poly =~ s/[ ]+/,/g;
