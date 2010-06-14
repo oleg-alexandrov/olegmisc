@@ -4,7 +4,7 @@
 run_loc="";
 
 #export XEPATH=/grid/common/pkgs/xemacs/v21.4.20/bin/
-export XEPATH=/home/olegalex/xemacs/bin/
+export XEPATH=/usr/bin/
 instanceCount=$(ps aux | grep `whoami` | grep xemacs | grep -v 'grep xemacs' | wc -l);
 if [ "$instanceCount" -eq "0" ]; then
 

@@ -5,7 +5,7 @@ undef $/;          # read one whole file in one scalar
 
 MAIN:{
 
-  my $dir = "$ENV{HOME}/ucla/public_html/wp/afd/";
+  my $dir = "$ENV{HOME}/bin";
   chdir $dir;
   print `svn update` . "\n";
   
