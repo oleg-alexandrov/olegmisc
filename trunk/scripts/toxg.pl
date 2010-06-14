@@ -48,7 +48,7 @@ MAIN:{
         print "Error!\n";
         print "$line\n";
       }
-      $vert = floor($v1 + $ctx+0.5) . " " . floor($v2 + $cty+0.5);
+      $vert = ( floor($v1 + 0.5) + $ctx ) . " " . ( -floor($v2 + 0.5) + $cty );
       push(@verts, $vert);
     }
     $line = join("\n", @verts);

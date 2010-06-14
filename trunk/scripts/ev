@@ -1,4 +1,5 @@
 #!/bin/sh
+echo -n $@ '= ' 
 bc << EOF
 scale=16
 $@
