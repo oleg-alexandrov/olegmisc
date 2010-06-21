@@ -109,8 +109,10 @@ function ag {
 
 function un {
   # Unalias an alias in all open and future sessions
-  unalias "$*" 2>/dev/null;
-  echo "unalias "$*" 2>/dev/null" >> ~/.unaliases;
+  for u in $*; do 
+    unalias $u 2>/dev/null
+    echo "unalias $u 2>/dev/null" >> ~/.unaliases
+  done
   alias > ~/.bash_aliases; 
   perl -pi -e "s#^([^\s]+=)#alias \$1#g" ~/.bash_aliases;
 }
