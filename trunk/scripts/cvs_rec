@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Usage: cvs_rec topDirName
+
+# Add recursively to CVS
+dir=$1
+
+# First remove the "CVS" subdirectories  
+cvsDirs=$( find $dir -name CVS )
+for cvsDir in cvsDirs; do
+    rm -rfv $cvsDir;
+done
+
+files=$( find $dir | grep -v CVS )
+for file in $files; do
+  cvs add $file
+done
