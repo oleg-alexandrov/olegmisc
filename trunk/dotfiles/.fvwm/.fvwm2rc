@@ -332,7 +332,7 @@ AddToMenu Programs   "+++Programs+++"   Title
 +   ""   Nop
 +   "Xterm"   Exec exec /usr/bin/xterm  -geo 108x46+0+0  -hc blue  -bdc -fn 8x16 -e zsh&
 +   ""   Nop
-+   "Xemacs"   Exec exec  /usr/bin/xemacs&
++   "Xemacs"   Exec exec  ~/bin/xe&
 +   ""   Nop
 +   "Firefox"   Exec exec  /usr/bin/firefox&
 +   ""   Nop
