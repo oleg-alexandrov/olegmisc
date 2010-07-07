@@ -9,7 +9,7 @@
 #include <qdatetime.h>
 #include <vector>
 #include "utils.h"
-#include "../../xg_poly.h"
+#include "../../polyUtils/xg_poly.h"
 
 class drawPoly : public QWidget
 {
@@ -26,7 +26,8 @@ public:
   void shiftUp();
   void shiftDown();
   void resetTransformSettings();
-  void pixelToWorldCoords(int px, int py, double & wx, double & wy);
+  void pixelToWorldCoords(double px, double py,
+                          double & wx, double & wy);
   
 public slots:
 
@@ -44,14 +45,14 @@ void showPoly( QPainter *paint );
 
 private:
   
-  double m_scale , m_shiftX,    m_shiftY;
-  int m_mousePrsX, m_mousePrsY, m_mouseRelX,  m_mouseRelY;
-  int m_viewXll,   m_viewYll,   m_viewWidX,   m_viewWidY;
-  int m_worldXll,  m_worldYll,  m_worldWidX,  m_worldWidY;
-  int m_screenXll, m_screenYll, m_screenWidX, m_screenWidY;
+  double m_scale ,  m_shiftX,    m_shiftY;
+  int m_mousePrsX,  m_mousePrsY, m_mouseRelX,  m_mouseRelY;
+  int m_worldXll,   m_worldYll,  m_worldWidX,  m_worldWidY;
+  int m_screenXll,  m_screenYll, m_screenWidX, m_screenWidY;
+  double m_viewXll, m_viewYll,   m_viewWidX,   m_viewWidY;
   double m_prevClickedX, m_prevClickedY, m_undefined;
   
-  std::vector<xg_poly> m_polyVec; // put back the reference!
+  std::vector<xg_poly> m_polyVec;
   int m_yFactor; // To compensate for Qt's origin in the upper-left corner
 
 };

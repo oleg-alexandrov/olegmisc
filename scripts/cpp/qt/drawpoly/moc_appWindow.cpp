@@ -1,7 +1,7 @@
 /****************************************************************************
 ** appWindow meta object code from reading C++ file 'appWindow.h'
 **
-** Created: Mon Jul 5 17:11:31 2010
+** Created: Tue Jul 6 20:34:15 2010
 **      by: The Qt MOC ($Id: qt/moc_yacc.cpp   3.3.6   edited Mar 8 17:43 $)
 **
 ** WARNING! All changes made in this file will be lost!
