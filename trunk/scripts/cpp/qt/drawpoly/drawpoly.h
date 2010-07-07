@@ -41,13 +41,13 @@ protected:
   void wheelEvent(QWheelEvent *event);
 
 private slots:
-void showPoly( QPainter *paint );
+  void showPoly( QPainter *paint );
 
 private:
   
-  double m_scale ,  m_shiftX,    m_shiftY;
+  double m_scale,   m_shiftX,    m_shiftY;
   int m_mousePrsX,  m_mousePrsY, m_mouseRelX,  m_mouseRelY;
-  int m_worldXll,   m_worldYll,  m_worldWidX,  m_worldWidY;
+  int m_windowXll,  m_windowYll, m_windowWidX, m_windowWidY;
   int m_screenXll,  m_screenYll, m_screenWidX, m_screenWidY;
   double m_viewXll, m_viewYll,   m_viewWidX,   m_viewWidY;
   double m_prevClickedX, m_prevClickedY, m_undefined;

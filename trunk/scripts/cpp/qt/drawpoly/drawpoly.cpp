@@ -38,15 +38,15 @@ drawPoly::drawPoly( QWidget *parent, const char *name,
   resetTransformSettings();
 
   // int
-  m_screenXll    = 0;   m_screenYll  = 0;
-  m_screenWidX   = 0;   m_screenWidY = 0;
-  m_worldXll     = 0;   m_worldYll   = 0;
-  m_worldWidX    = 0;   m_worldWidY  = 0;
+  m_screenXll  = 0;   m_screenYll  = 0;
+  m_screenWidX = 0;   m_screenWidY = 0;
+  m_windowXll  = 0;   m_windowYll  = 0;
+  m_windowWidX = 0;   m_windowWidY = 0;
 
   // double
   m_undefined    = 1.0e+100;
-  m_viewXll      = 0.0; m_viewYll    = 0.0;
-  m_viewWidX     = 0.0; m_viewWidY   = 0.0;
+  m_viewXll      = 0.0; m_viewYll  = 0.0;
+  m_viewWidX     = 0.0; m_viewWidY = 0.0;
   m_prevClickedX = m_undefined;
   m_prevClickedY = m_undefined;
 }
@@ -194,8 +194,8 @@ void drawPoly::shiftDown(){
 void drawPoly::pixelToWorldCoords(double px, double py,
                                   double & wx, double & wy){
 
-  wx = m_worldWidX*double(px - m_viewXll)/double(m_viewWidX) + m_worldXll;
-  wy = m_worldWidY*double(py - m_viewYll)/double(m_viewWidY) + m_worldYll;
+  wx = m_windowWidX*double(px - m_viewXll)/double(m_viewWidX) + m_windowXll;
+  wy = m_windowWidY*double(py - m_viewYll)/double(m_viewWidY) + m_windowYll;
 }
 
 
@@ -237,9 +237,12 @@ void drawPoly::showPoly( QPainter *paint ){
   int blen   = (int)ceil(max(widx, widy));
   double pad = tol*blen;
   double len = min(m_screenWidX, m_screenWidY);
-  paint->setWindow(iround(xll + 0.5*(widx - blen) - pad),
-                   iround(yll + 0.5*(widy - blen) - pad),
-                   iround(blen + 2*pad), iround(blen + 2*pad)
+  m_windowXll  = iround(xll + 0.5*(widx - blen) - pad);
+  m_windowYll  = iround(yll + 0.5*(widy - blen) - pad);
+  m_windowWidX = iround(blen + 2*pad);
+  m_windowWidY = iround(blen + 2*pad);
+  paint->setWindow(m_windowXll,  m_windowYll,
+                   m_windowWidX, m_windowWidY
                    );
   
   if (m_viewWidX == 0 || m_viewWidY == 0){
@@ -293,40 +296,28 @@ void drawPoly::showPoly( QPainter *paint ){
   cout << "Viewpoint is " << m_viewXll << ' ' << m_viewYll << ' '
        << m_viewWidX << ' ' << m_viewWidY << endl;
 
-
-  QRect R = paint->window();
-  cout << "Window is " << R.left() << ' ' << R.top() << ' '
-       << R.width() << ' ' << R.height() << endl;
-
-  m_worldXll  = R.left();
-  m_worldYll  = R.top();
-  m_worldWidX = R.width();
-  m_worldWidY = R.height();
-  //assert( m_worldWidX == m_worldWidY);
-  
   paint->setBrush( NoBrush );        // do not fill
-  //paint.setBrush( QColor("red") );
-  //paint->setRenderHint(QPainter::Antialiasing); // Qt4
-  //paint->setRenderHint(QPainter::SmoothPixmapTransform);
-  // Also for anti-alising of text
 
+  // Clip the polygons to a window slightly bigger than what is seen
+  // on the screen to avoid a Qt bug with zoom in.
+  double pad2 = 50;
+  double clip_xll, clip_yll, clip_xur, clip_yur;
+  pixelToWorldCoords(m_screenXll + pad2, m_screenYll + pad2,
+                     clip_xll, clip_yll);
+  pixelToWorldCoords(m_screenXll + m_screenWidX - pad2,
+                     m_screenYll + m_screenWidY - pad2,
+                     clip_xur, clip_yur);
+  
   // Plot the polygons
   int lineWidth = 1;
-  double pad2 = 50;
-  for (int clipIter  = 0; clipIter < (int)m_polyVec.size(); clipIter++){
+  for (int vecIter  = 0; vecIter < (int)m_polyVec.size(); vecIter++){
     
-    // Cut the polygon to a window slightly bigger than what is seen
-    // on the screen to avoid a Qt bug with zoom in.
-    double clip_xll, clip_yll, clip_xur, clip_yur;
-    pixelToWorldCoords(m_screenXll + pad2, m_screenYll + pad2,
-                       clip_xll, clip_yll);
-    pixelToWorldCoords(m_screenXll + m_screenWidX - pad2,
-                       m_screenYll + m_screenWidY - pad2,
-                       clip_xur, clip_yur);
-
     xg_poly clipPoly;
-    m_polyVec[clipIter].clipPoly(clip_xll, clip_yll, clip_xur, clip_yur,
-                                 clipPoly);
+    m_polyVec[vecIter].clipPoly(//inuts
+                                clip_xll, clip_yll, clip_xur, clip_yur,
+                                // output
+                                clipPoly
+                                );
     
     const double * xv           = clipPoly.get_xv();
     const double * yv           = clipPoly.get_yv();
@@ -342,14 +333,13 @@ void drawPoly::showPoly( QPainter *paint ){
     
       int pSize = numVerts[pIter];
       QPointArray pa(pSize);
-    
       for (int vIter = 0; vIter < pSize; vIter++){
         pa[vIter] = QPoint(iround(xv[start + vIter]),
                            iround(yv[start + vIter])
                            );
       }
 
-      QColor color = QColor(colors[pIter].c_str());
+      QColor color = QColor( colors[pIter].c_str() );
       paint->setPen( QPen(color, lineWidth) );
       paint->drawPolygon( pa );
 
@@ -357,32 +347,20 @@ void drawPoly::showPoly( QPainter *paint ){
 
   }
 
-  double sxll, syll, sxur, syur;
-  cout << "Screen is " << m_screenXll << ' ' << m_screenYll << ' '
-       << m_screenXll + m_screenWidX << ' '
-       << m_screenYll + m_screenWidY << endl;
-  
-  pixelToWorldCoords(m_screenXll + pad2, m_screenYll + pad2,
-                     sxll, syll);
-  pixelToWorldCoords(m_screenXll + m_screenWidX - pad2,
-                     m_screenYll + m_screenWidY - pad2,
-                     sxur, syur);
+  cout << "Clip box: " << clip_xll << ' ' << m_yFactor*clip_yll
+       << ' ' << clip_xur - clip_xll << ' ' << clip_yur - clip_yll << endl;
 
-  cout << "World coords " << sxll << ' ' << m_yFactor*syll
-       << ' ' << sxur << ' ' << m_yFactor*syur << endl;
-  
+  // Plot the clipping box
   int numV = 4;
-  double xv[] = {sxll, sxur, sxur, sxll};
-  double yv[] = {syll, syll, syur, syur};
-  
+  double xv[] = {clip_xll, clip_xur, clip_xur, clip_xll};
+  double yv[] = {clip_yll, clip_yll, clip_yur, clip_yur};
   QPointArray pa(numV);
   for (int vIter = 0; vIter < numV; vIter++){
     pa[vIter] = QPoint(iround(xv[vIter]),
                        iround(yv[vIter])
                        );
   }
-    
-  paint->setPen( QPen("cyan", lineWidth) );
+  paint->setPen( QPen("white", lineWidth) );
   paint->drawPolygon( pa );
   
   return;
