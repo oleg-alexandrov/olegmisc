@@ -5,8 +5,8 @@
 #include <qmainwindow.h>
 #include <qintdict.h>
 #include <qcanvas.h>
-#include "../../xg_poly.h"
 #include "drawpoly.h"
+class xg_poly;
 
 
 class appWindow : public QMainWindow {
