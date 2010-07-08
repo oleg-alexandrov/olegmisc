@@ -26,6 +26,11 @@ using namespace std;
 inline int iround(double x){ return (int)round(x); }
 inline int iceil (double x){ return (int)ceil( x); }
 inline int ifloor(double x){ return (int)floor(x); }
+inline int isign (double x){
+  if (x > 0) return  1;
+  if (x < 0) return -1;
+  return 0;
+}
 
 drawPoly::drawPoly( QWidget *parent, const char *name,
                     const std::vector<xg_poly> & polyVec,
@@ -66,27 +71,6 @@ void drawPoly::mousePressEvent( QMouseEvent *E){
 //   cout << "Mouse pressed at "
 //        << m_mousePrsX << ' ' << m_mousePrsY << endl;
 
-  int prec = 6, wid = prec + 6;
-  cout.precision(prec);
- 
-  double wx, wy;
-  pixelToWorldCoords(m_mousePrsX, m_mousePrsY, wx, wy);
-  cout << "Point: ("
-       << setw(wid) << wx << ", "
-       << setw(wid) << wy*m_yFactor << ")";
-  if (m_prevClickedX != m_undefined || m_prevClickedY != m_undefined){
-    cout  << " dist from prev: ("
-          << setw(wid) << wx - m_prevClickedX << ", "
-          << setw(wid) << (wy - m_prevClickedY)*m_yFactor
-          << ") Euclidean: "
-          << setw(wid) << sqrt( (wx - m_prevClickedX)*(wx - m_prevClickedX) + 
-                                (wy - m_prevClickedY)*(wy - m_prevClickedY)
-                                );
-  }
-  cout << endl;
-    
-  m_prevClickedX = wx;
-  m_prevClickedY = wy;
 }
 
 void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
@@ -94,17 +78,69 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
   const QPoint Q = E->pos();
   m_mouseRelX = Q.x();
   m_mouseRelY = Q.y();
+
+  // Pressed mid-button enables left/right/up/down navigation
+  const ButtonState button = E->button();
+  if (button == Qt::MidButton){
+
+    if (abs(m_mouseRelX - m_mousePrsX) > abs(m_mouseRelY - m_mousePrsY) ){
+
+      if ( m_mouseRelX - m_mousePrsX > 0){
+        shiftLeft();
+      }else{
+        shiftRight();
+      }
+      
+    }else{
+      
+      if ( m_mouseRelY - m_mousePrsY > 0){
+        shiftUp();
+      }else{
+        shiftDown();
+      }
+      
+    }
+    return;
+  }
+    
 //   cout << "Mouse pressed at "
 //        << m_mousePrsX << ' ' << m_mousePrsY << endl;
 //   cout << "Mouse released at "
 //        << m_mouseRelX << ' ' << m_mouseRelY << endl;
 
   if       (m_mouseRelX > m_mousePrsX && m_mouseRelY > m_mousePrsY){
-    update();
+    update(); // Will zoom to the region selected with the mouse
   }else if (m_mouseRelX < m_mousePrsX && m_mouseRelY < m_mousePrsY ){
     zoomOut();
+  }else if (m_mouseRelX == m_mousePrsX && m_mouseRelY == m_mousePrsY){
+
+    // Print the physcal coordinates of the point the mouse was clicked at
+    int prec = 6, wid = prec + 6;
+    cout.precision(prec);
+    
+    double wx, wy;
+    pixelToWorldCoords(m_mouseRelX, m_mouseRelY, wx, wy);
+    cout << "Point: ("
+         << setw(wid) << wx << ", "
+         << setw(wid) << wy*m_yFactor << ")";
+    if (m_prevClickedX != m_undefined || m_prevClickedY != m_undefined){
+      cout  << " dist from prev: ("
+            << setw(wid) << wx - m_prevClickedX << ", "
+            << setw(wid) << (wy - m_prevClickedY)*m_yFactor
+            << ") Euclidean: "
+            << setw(wid) << sqrt( (wx - m_prevClickedX)*(wx - m_prevClickedX)
+                                  + 
+                                  (wy - m_prevClickedY)*(wy - m_prevClickedY)
+                                  );
+    }
+    cout << endl;
+    
+    m_prevClickedX = wx;
+    m_prevClickedY = wy;
+
   }
   
+  return;
 }
 
 void drawPoly::mouseMoveEvent( QMouseEvent *){
@@ -212,8 +248,8 @@ void drawPoly::showPoly( QPainter *paint ){
   m_screenYll  = v.top();
   m_screenWidX = v.width();
   m_screenWidY = v.height();
-  //   cout << "Screen is " << m_screenXll << ' ' << m_screenYll << ' '
-  //        << m_screenWidX << ' ' << m_screenWidY << endl;
+  //cout << "Screen is " << m_screenXll << ' ' << m_screenYll << ' '
+  //     << m_screenWidX << ' ' << m_screenWidY << endl;
 
   // Poly dimensions
   double big = 1e+100;
@@ -245,6 +281,9 @@ void drawPoly::showPoly( QPainter *paint ){
                    m_windowWidX, m_windowWidY
                    );
   
+//   cout << "Window is " << m_windowXll << ' ' << m_windowYll << ' '
+//        << m_windowWidX << ' ' << m_windowWidY << endl;
+
   if (m_viewWidX == 0 || m_viewWidY == 0){
     
     // This should be reached only when the window is created
@@ -288,6 +327,9 @@ void drawPoly::showPoly( QPainter *paint ){
     
   }
 
+  // Having computed the new view reset the numbers used to manipulate
+  // it so that we can start fresh with new manipulations next time
+  // (but starting from the newly computed view).
   resetTransformSettings();
 
   paint->setViewport(ifloor(m_viewXll), ifloor(m_viewYll),
@@ -307,7 +349,23 @@ void drawPoly::showPoly( QPainter *paint ){
   pixelToWorldCoords(m_screenXll + m_screenWidX - pad2,
                      m_screenYll + m_screenWidY - pad2,
                      clip_xur, clip_yur);
-  
+
+  // If the physical box filling the screen is less than
+  // smallBoxSize, then snapping to integer is not accurate
+  // enough. Snap to a fraction of integer.
+  double smallBoxSize = 1000.0;
+  double boxSize = min(clip_xur - clip_xll, clip_yur - clip_yll);
+  assert(boxSize > 0.0);
+  double snapScale = 1.0;
+  while (boxSize/snapScale < smallBoxSize){
+    snapScale *= 0.1;
+  }
+  paint->setWindow(iround(m_windowXll/snapScale),
+                   iround(m_windowYll/snapScale),
+                   iround(m_windowWidX/snapScale),
+                   iround(m_windowWidY/snapScale)
+                   );
+
   // Plot the polygons
   int lineWidth = 1;
   for (int vecIter  = 0; vecIter < (int)m_polyVec.size(); vecIter++){
@@ -334,8 +392,8 @@ void drawPoly::showPoly( QPainter *paint ){
       int pSize = numVerts[pIter];
       QPointArray pa(pSize);
       for (int vIter = 0; vIter < pSize; vIter++){
-        pa[vIter] = QPoint(iround(xv[start + vIter]),
-                           iround(yv[start + vIter])
+        pa[vIter] = QPoint(iround(xv[start + vIter]/snapScale),
+                           iround(yv[start + vIter]/snapScale)
                            );
       }
 
@@ -356,8 +414,8 @@ void drawPoly::showPoly( QPainter *paint ){
   double yv[] = {clip_yll, clip_yll, clip_yur, clip_yur};
   QPointArray pa(numV);
   for (int vIter = 0; vIter < numV; vIter++){
-    pa[vIter] = QPoint(iround(xv[vIter]),
-                       iround(yv[vIter])
+    pa[vIter] = QPoint(iround(xv[vIter]/snapScale),
+                       iround(yv[vIter]/snapScale)
                        );
   }
   paint->setPen( QPen("white", lineWidth) );
