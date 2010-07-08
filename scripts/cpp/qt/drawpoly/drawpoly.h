@@ -55,6 +55,8 @@ private:
   std::vector<xg_poly> m_polyVec;
   int m_yFactor; // To compensate for Qt's origin in the upper-left corner
 
+  QRect m_rubberBandRect;
+  
 };
 
 #endif // DRAWPOLY_H

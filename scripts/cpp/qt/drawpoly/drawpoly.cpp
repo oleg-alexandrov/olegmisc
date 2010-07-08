@@ -19,7 +19,8 @@
 #include <qtimer.h>
 #include <qevent.h>
 #include "drawpoly.h"
-#include <iomanip>    // required for use of setw()
+#include <iomanip>   // required for use of setw()
+#include <cfloat>    // defines DBL_MAX
 #include "../../polyUtils/geomclipandmerge.h"
 using namespace std;
 
@@ -144,7 +145,19 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
 }
 
 void drawPoly::mouseMoveEvent( QMouseEvent *){
-  //cout << "Mouse moved" << endl;
+#if 0
+  cout << "Mouse moved" << endl;
+  QPainter painter(this);
+  painter.setRasterOp(Qt::XorROP);
+  painter.setPen(Qt::white);
+  //painter.setRasterOp(Qt::NotROP);
+  //painter.drawRect(m_rubberBandRect.normalize());
+  QRect rect = m_rubberBandRect.normalize();
+  update(rect.left(), rect.top(), rect.width(), 1);                      
+  update(rect.left(), rect.top(), 1, rect.height());                     
+  update(rect.left(), rect.bottom(), rect.width(), 1);                   
+  update(rect.right(), rect.top(), 1, rect.height());                    
+#endif
 }
 
 void drawPoly::wheelEvent(QWheelEvent *event){
@@ -242,6 +255,9 @@ void drawPoly::paintEvent( QPaintEvent * ){
 
 void drawPoly::showPoly( QPainter *paint ){
 
+  //paint->setRasterOp(Qt::XorROP);
+  
+               
   // Screen dimensions
   QRect v = paint->viewport();
   m_screenXll  = v.left();
@@ -252,7 +268,7 @@ void drawPoly::showPoly( QPainter *paint ){
   //     << m_screenWidX << ' ' << m_screenWidY << endl;
 
   // Poly dimensions
-  double big = 1e+100;
+  double big = DBL_MAX;
   double xll = big, yll = big, xur = -big, yur = -big;
   for (int p = 0; p < (int)m_polyVec.size(); p++){
     double xll0, yll0, xur0, yur0;
@@ -260,7 +276,11 @@ void drawPoly::showPoly( QPainter *paint ){
     xll = min(xll, xll0); xur = max(xur, xur0);
     yll = min(yll, yll0); yur = max(yur, yur0);
   }
-
+  if (xur < xll || yur < yll){
+    // All polygons are empty
+    xll = 0.0; yll = 0.0; xur = 1.0; yur = 1.0;
+  }
+  
   double widx = xur - xll; assert(widx >= 0.0);
   if (widx == 0.0){ xll = 0.0; widx = 1.0; }
   double widy = yur - yll; assert(widy >= 0.0);
@@ -269,7 +289,7 @@ void drawPoly::showPoly( QPainter *paint ){
   cout << "Bd box is "
        << xll  << ' ' << yll << ' ' << xur << ' ' << yur << endl;
   
-  double tol = 0.05; // percentage by which to pad the view
+  double tol = 0.1; // percentage by which to pad the view
   int blen   = (int)ceil(max(widx, widy));
   double pad = tol*blen;
   double len = min(m_screenWidX, m_screenWidY);
@@ -342,12 +362,12 @@ void drawPoly::showPoly( QPainter *paint ){
 
   // Clip the polygons to a window slightly bigger than what is seen
   // on the screen to avoid a Qt bug with zoom in.
-  double pad2 = 50;
+  double clipPad = 50; // pixels
   double clip_xll, clip_yll, clip_xur, clip_yur;
-  pixelToWorldCoords(m_screenXll + pad2, m_screenYll + pad2,
+  pixelToWorldCoords(m_screenXll - clipPad, m_screenYll - clipPad,
                      clip_xll, clip_yll);
-  pixelToWorldCoords(m_screenXll + m_screenWidX - pad2,
-                     m_screenYll + m_screenWidY - pad2,
+  pixelToWorldCoords(m_screenXll + m_screenWidX + clipPad,
+                     m_screenYll + m_screenWidY + clipPad,
                      clip_xur, clip_yur);
 
   // If the physical box filling the screen is less than
@@ -365,6 +385,12 @@ void drawPoly::showPoly( QPainter *paint ){
                    iround(m_windowWidX/snapScale),
                    iround(m_windowWidY/snapScale)
                    );
+
+  QFont F;
+  int fs = max(10, min(iround(2000/boxSize), 1000));
+  cout << "Font size is " << fs << endl;
+  F.setPixelSize(fs);
+  paint->setFont(F);
 
   // Plot the polygons
   int lineWidth = 1;
@@ -388,19 +414,19 @@ void drawPoly::showPoly( QPainter *paint ){
     for (int pIter = 0; pIter < numPolys; pIter++){
     
       if (pIter > 0) start += numVerts[pIter - 1];
-    
+      QColor color = QColor( colors[pIter].c_str() );
+      paint->setPen( QPen(color, lineWidth) );
+
       int pSize = numVerts[pIter];
       QPointArray pa(pSize);
       for (int vIter = 0; vIter < pSize; vIter++){
-        pa[vIter] = QPoint(iround(xv[start + vIter]/snapScale),
-                           iround(yv[start + vIter]/snapScale)
-                           );
+        int x0 = iround(xv[start + vIter]/snapScale);
+        int y0 = iround(yv[start + vIter]/snapScale);
+        pa[vIter] = QPoint(x0, y0);
+        //paint->drawText(x0, y0, "z");
       }
 
-      QColor color = QColor( colors[pIter].c_str() );
-      paint->setPen( QPen(color, lineWidth) );
       paint->drawPolygon( pa );
-
     }
 
   }
@@ -414,13 +440,13 @@ void drawPoly::showPoly( QPainter *paint ){
   double yv[] = {clip_yll, clip_yll, clip_yur, clip_yur};
   QPointArray pa(numV);
   for (int vIter = 0; vIter < numV; vIter++){
-    pa[vIter] = QPoint(iround(xv[vIter]/snapScale),
-                       iround(yv[vIter]/snapScale)
-                       );
+    int x0 = iround(xv[vIter]/snapScale);
+    int y0 = iround(yv[vIter]/snapScale);
+    pa[vIter] = QPoint(x0, y0);
   }
   paint->setPen( QPen("white", lineWidth) );
   paint->drawPolygon( pa );
-  
+
   return;
 }
 
