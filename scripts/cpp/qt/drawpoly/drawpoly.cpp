@@ -79,6 +79,11 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
   m_mouseRelX = Q.x();
   m_mouseRelY = Q.y();
 
+//   cout << "Mouse pressed at "
+//        << m_mousePrsX << ' ' << m_mousePrsY << endl;
+//   cout << "Mouse released at "
+//        << m_mouseRelX << ' ' << m_mouseRelY << endl;
+
   // Pressed mid-button enables left/right/up/down navigation
   const ButtonState button = E->button();
   if (button == Qt::MidButton){
@@ -103,11 +108,6 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
     return;
   }
     
-//   cout << "Mouse pressed at "
-//        << m_mousePrsX << ' ' << m_mousePrsY << endl;
-//   cout << "Mouse released at "
-//        << m_mouseRelX << ' ' << m_mouseRelY << endl;
-
   if       (m_mouseRelX > m_mousePrsX && m_mouseRelY > m_mousePrsY){
     update(); // Will zoom to the region selected with the mouse
   }else if (m_mouseRelX < m_mousePrsX && m_mouseRelY < m_mousePrsY ){
