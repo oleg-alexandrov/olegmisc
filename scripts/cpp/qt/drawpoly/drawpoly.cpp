@@ -264,8 +264,8 @@ void drawPoly::showPoly( QPainter *paint ){
   m_screenYll  = v.top();
   m_screenWidX = v.width();
   m_screenWidY = v.height();
-  //cout << "Screen is " << m_screenXll << ' ' << m_screenYll << ' '
-  //     << m_screenWidX << ' ' << m_screenWidY << endl;
+  cout << "Screen is " << m_screenXll << ' ' << m_screenYll << ' '
+       << m_screenWidX << ' ' << m_screenWidY << endl;
 
   // Poly dimensions
   double big = DBL_MAX;
@@ -386,11 +386,6 @@ void drawPoly::showPoly( QPainter *paint ){
                    iround(m_windowWidY/snapScale)
                    );
 
-  QFont F;
-  int fs = max(10, min(iround(2000/boxSize), 1000));
-  cout << "Font size is " << fs << endl;
-  F.setPixelSize(fs);
-  paint->setFont(F);
 
   // Plot the polygons
   int lineWidth = 1;
@@ -423,7 +418,15 @@ void drawPoly::showPoly( QPainter *paint ){
         int x0 = iround(xv[start + vIter]/snapScale);
         int y0 = iround(yv[start + vIter]/snapScale);
         pa[vIter] = QPoint(x0, y0);
-        //paint->drawText(x0, y0, "z");
+        
+//         QFont F;
+//         //int fs = max(10, min(iround(2000/boxSize), 1000));
+//         int fs = 100;
+//         cout << "Font size is " << fs << endl;
+//         //F.setPixelSize(fs);
+//         F.setPointSize(fs);
+//         paint->setFont(F);
+//         paint->drawText(x0, y0, 100, 100, Qt::AlignCenter, "z");
       }
 
       paint->drawPolygon( pa );
