@@ -46,22 +46,19 @@ drawPoly::drawPoly( QWidget *parent, const char *name,
   // int
   m_screenXll  = 0;   m_screenYll  = 0;
   m_screenWidX = 0;   m_screenWidY = 0;
-  m_windowXll  = 0;   m_windowYll  = 0;
-  m_windowWidX = 0;   m_windowWidY = 0;
 
   // double
-  m_undefined    = 1.0e+100;
   m_viewXll      = 0.0; m_viewYll  = 0.0;
   m_viewWidX     = 0.0; m_viewWidY = 0.0;
-  m_prevClickedX = m_undefined;
-  m_prevClickedY = m_undefined;
+  m_firstPaintInstance = true;
+  m_prevClickExists    = false;
 }
 
 void drawPoly::resetTransformSettings(){
-  m_scale     = 1.0;
-  m_shiftX    = 0.0; m_shiftY    = 0.0;
-  m_mousePrsX = 0;   m_mousePrsY = 0;
-  m_mouseRelX = 0;   m_mouseRelY = 0;
+  m_zoomFactor = 1.0;
+  m_shiftX     = 0.0; m_shiftY    = 0.0;
+  m_mousePrsX  = 0;   m_mousePrsY = 0;
+  m_mouseRelX  = 0;   m_mouseRelY = 0;
 }
 
 void drawPoly::mousePressEvent( QMouseEvent *E){
@@ -124,7 +121,7 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
     cout << "Point: ("
          << setw(wid) << wx << ", "
          << setw(wid) << wy*m_yFactor << ")";
-    if (m_prevClickedX != m_undefined || m_prevClickedY != m_undefined){
+    if (m_prevClickExists){
       cout  << " dist from prev: ("
             << setw(wid) << wx - m_prevClickedX << ", "
             << setw(wid) << (wy - m_prevClickedY)*m_yFactor
@@ -135,9 +132,10 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
                                   );
     }
     cout << endl;
-    
-    m_prevClickedX = wx;
-    m_prevClickedY = wy;
+
+    m_prevClickExists = true;
+    m_prevClickedX    = wx;
+    m_prevClickedY    = wy;
 
   }
   
@@ -206,45 +204,46 @@ void drawPoly::keyPressEvent( QKeyEvent *k ){
 
 void drawPoly::zoomIn(){
   resetTransformSettings();
-  m_scale = 2.0;
+  m_zoomFactor = 0.5;
   update();
 }
 
 void drawPoly::zoomOut(){
   resetTransformSettings();
-  m_scale = 0.5;
+  m_zoomFactor = 2.0;
   update();
 }
 
 void drawPoly::shiftRight(){
   resetTransformSettings();
-  m_shiftX = -min(m_screenWidX, m_screenWidY)/4.0;
+  m_shiftX = 0.25;
   update();
 }
 
 void drawPoly::shiftLeft(){
   resetTransformSettings();
-  m_shiftX = min(m_screenWidX, m_screenWidY)/4.0;
+  m_shiftX = -0.25;
   update();
 }
 
 void drawPoly::shiftUp(){
   resetTransformSettings();
-  m_shiftY = min(m_screenWidX, m_screenWidY)/4.0;
+  m_shiftY = -0.25;
   update();
 }
 
 void drawPoly::shiftDown(){
   resetTransformSettings();
-  m_shiftY = -min(m_screenWidX, m_screenWidY)/4.0;
+  m_shiftY = 0.25;
   update();
 }
 
-void drawPoly::pixelToWorldCoords(double px, double py,
+void drawPoly::pixelToWorldCoords(double   px, double   py,
                                   double & wx, double & wy){
 
-  wx = m_windowWidX*double(px - m_viewXll)/double(m_viewWidX) + m_windowXll;
-  wy = m_windowWidY*double(py - m_viewYll)/double(m_viewWidY) + m_windowYll;
+  wx = (px - m_padX)/m_pixelSize + m_viewXll;
+  wy = (py - m_padY)/m_pixelSize + m_viewYll;
+  
 }
 
 
@@ -253,97 +252,145 @@ void drawPoly::paintEvent( QPaintEvent * ){
   showPoly( &paint );
 }
 
-void drawPoly::showPoly( QPainter *paint ){
+void drawPoly::expandBoxToGivenRatio(// inputs
+                                     double screenRatio, 
+                                     // inputs/outputs
+                                     double & xll,  double & yll,
+                                     double & widx, double & widy){
+                           
+  // Expand the bounding box to have the same aspect ratio as the screen.
+  double nwidx = widx, nwidy = widy;
+  if (widy/widx <= screenRatio) nwidy = widx*screenRatio;
+  else                          nwidx = widy/screenRatio;
+  assert(nwidx >= widx && nwidy >= widy
+         && abs(nwidy/nwidx - screenRatio) < 1.0e-5*screenRatio);
 
-  //paint->setRasterOp(Qt::XorROP);
+  // Make the new bounding box have the same center as the old one
+  xll += widx/2.0 - nwidx/2.0;
+  yll += widy/2.0 - nwidy/2.0;
+
+  // Overwrite the previous box
+  widx = nwidx; 
+  widy = nwidy;
+
+  return;
+}
+
+void drawPoly::setUpViewBox(// inputs
+                            double screenRatio, 
+                            const std::vector<xg_poly> & polyVec,
+                            // outputs
+                            double & xll, double & yll,
+                            double &widx, double & widy){
+
+  // Given a set of polygons, set up a box containing these polygons
+  // with the same aspect ratio as the screen
+
+  double xur, yur; // local variables
   
-               
-  // Screen dimensions
-  QRect v = paint->viewport();
-  m_screenXll  = v.left();
-  m_screenYll  = v.top();
-  m_screenWidX = v.width();
-  m_screenWidY = v.height();
-  cout << "Screen is " << m_screenXll << ' ' << m_screenYll << ' '
-       << m_screenWidX << ' ' << m_screenWidY << endl;
-
-  // Poly dimensions
+  // Start with the poly bounding box
   double big = DBL_MAX;
-  double xll = big, yll = big, xur = -big, yur = -big;
-  for (int p = 0; p < (int)m_polyVec.size(); p++){
+  xll = big; yll = big; xur = -big; yur = -big;
+  for (int p = 0; p < (int)polyVec.size(); p++){
     double xll0, yll0, xur0, yur0;
-    m_polyVec[p].bdBox(xll0, yll0, xur0, yur0);
+    polyVec[p].bdBox(xll0, yll0, xur0, yur0);
     xll = min(xll, xll0); xur = max(xur, xur0);
     yll = min(yll, yll0); yur = max(yur, yur0);
   }
+
+  // Treat the case of empty polygons
   if (xur < xll || yur < yll){
-    // All polygons are empty
     xll = 0.0; yll = 0.0; xur = 1.0; yur = 1.0;
   }
-  
-  double widx = xur - xll; assert(widx >= 0.0);
-  if (widx == 0.0){ xll = 0.0; widx = 1.0; }
-  double widy = yur - yll; assert(widy >= 0.0);
-  if (widy == 0.0){ yll = 0.0; widy = 1.0; }
 
-  cout << "Bd box is "
-       << xll  << ' ' << yll << ' ' << xur << ' ' << yur << endl;
-  
-  double tol = 0.1; // percentage by which to pad the view
-  int blen   = (int)ceil(max(widx, widy));
-  double pad = tol*blen;
-  double len = min(m_screenWidX, m_screenWidY);
-  m_windowXll  = iround(xll + 0.5*(widx - blen) - pad);
-  m_windowYll  = iround(yll + 0.5*(widy - blen) - pad);
-  m_windowWidX = iround(blen + 2*pad);
-  m_windowWidY = iround(blen + 2*pad);
-  paint->setWindow(m_windowXll,  m_windowYll,
-                   m_windowWidX, m_windowWidY
-                   );
-  
-//   cout << "Window is " << m_windowXll << ' ' << m_windowYll << ' '
-//        << m_windowWidX << ' ' << m_windowWidY << endl;
+  // Treat the case when the polygons are degenerate
+  if (xur == xll){ xll -= 0.5; xur += 0.5; }
+  if (yur == yll){ yll -= 0.5; yur += 0.5; }
+    
+  widx = xur - xll; assert(widx > 0.0);
+  widy = yur - yll; assert(widy > 0.0);
 
-  if (m_viewWidX == 0 || m_viewWidY == 0){
-    
-    // This should be reached only when the window is created
-    m_viewXll  = m_screenXll + 0.5*(m_screenWidX - len);
-    m_viewYll  = m_screenYll + 0.5*(m_screenWidY - len);
-    m_viewWidX = len;
-    m_viewWidY = len;
+//   cout << "Bd box ll corner and widths are "
+//        << xll  << ' ' << yll << ' ' << widx << ' ' << widy << endl;
 
-  }else if (m_mouseRelX > m_mousePrsX && m_mouseRelY > m_mousePrsY){
+  // Expand the box slightly for plotting purposes
+  double factor = 0.05;
+  xll -= widx*factor; xur += widx*factor; widx *= 1.0 + 2*factor;
+  yll -= widy*factor; yur += widy*factor; widy *= 1.0 + 2*factor;
+  
+  expandBoxToGivenRatio(screenRatio,             // input
+                        xll, yll, widx, widy     // in/out
+                        );
+ 
+  xur = xll + widx;
+  yur = yll + widy;
+
+  return;
+  
+}
+
+void drawPoly::showPoly( QPainter *paint ){
+
+  //paint->setRasterOp(Qt::XorROP);
+               
+  // Screen dimensions
+  QRect v       = paint->viewport();
+  m_screenXll   = v.left();
+  m_screenYll   = v.top();
+  m_screenWidX  = v.width();
+  m_screenWidY  = v.height();
+  m_screenRatio = double(m_screenWidY)/double(m_screenWidX);
+  //cout << "Screen is " << m_screenXll << ' ' << m_screenYll << ' '
+  //     << m_screenWidX << ' ' << m_screenWidY << endl;
+
+  // To have the polygon show up a bit inside the screen use some padding
+  m_padX = 50.0; m_padY = m_screenRatio*m_padX; // Units are pixels
+
+  if (m_firstPaintInstance){
+    setUpViewBox(// inputs
+                 m_screenRatio, m_polyVec,
+                 // outputs
+                 m_viewXll, m_viewYll, m_viewWidX, m_viewWidY
+                 );
+    m_firstPaintInstance = false;
+  }
+//   paint->setWindow(m_screenXll,  m_screenYll,
+//                    m_screenWidX, m_screenWidY
+//                    );
+//   paint->setViewport(m_screenXll,  m_screenYll,
+//                      m_screenWidX, m_screenWidY
+//                      );
+
+  if (m_mouseRelX > m_mousePrsX && m_mouseRelY > m_mousePrsY){
+
+    // Form a new view based on the rectangle selected with the mouse.
+    // Enlarge this rectangle if necessary to keep the aspect ratio.
+
+    // The call to pixelToWorldCoords uses the existing view internally
+    double xll, yll, xur, yur;
+    pixelToWorldCoords(m_mousePrsX, m_mousePrsY, xll, yll);
+    pixelToWorldCoords(m_mouseRelX, m_mouseRelY, xur, yur);
     
-    // Zoom in to selected highlight
-    
-    double mlen = max(m_mouseRelX - m_mousePrsX,
-                   m_mouseRelY - m_mousePrsY
-                   );
-    assert(mlen > 0);
-    double vlen = min(m_viewWidX, m_viewWidY);
-    assert(vlen > 0);
-    double slen = min(m_screenWidX, m_screenWidY);
-    assert(slen > 0);
-    
-    double scale = double(slen)/double(mlen);
-    
-    m_viewXll  = (m_viewXll - m_mousePrsX)*scale;
-    m_viewYll  = (m_viewYll - m_mousePrsY)*scale;
-    m_viewWidX = max(vlen*scale, 2.0);
-    m_viewWidY = max(vlen*scale, 2.0);
+    double widx = xur - xll;
+    double widy = yur - yll;
+
+    expandBoxToGivenRatio(//inputs
+                          m_screenRatio,  
+                          // input/outputs
+                          xll, yll, widx, widy
+                          );
+
+    // Overwrite the view
+    m_viewXll = xll; m_viewWidX = widx;
+    m_viewYll = yll; m_viewWidY = widy;
     
   }else{
     
-    // shift or zoom
-    
-    double len = min(m_viewWidX, m_viewWidY);
-    assert(len > 0);
-    m_viewXll  = m_viewXll*m_scale
-      + (m_screenXll + m_screenWidX/2.0)*(1.0 - m_scale) + m_shiftX;
-    m_viewYll  = m_viewYll*m_scale
-      + (m_screenYll + m_screenWidY/2.0)*(1.0 - m_scale) + m_shiftY;
-    m_viewWidX = len * m_scale;
-    m_viewWidY = len * m_scale;
+    // Modify the view for given shift or zoom
+    m_viewXll  += m_viewWidX*( (1 - m_zoomFactor)/2.0 + m_shiftX );
+    m_viewYll  += m_viewWidY*( (1 - m_zoomFactor)/2.0 + m_shiftY );
+    m_viewWidX *= m_zoomFactor;
+    m_viewWidY *= m_zoomFactor;
     
   }
 
@@ -351,49 +398,27 @@ void drawPoly::showPoly( QPainter *paint ){
   // it so that we can start fresh with new manipulations next time
   // (but starting from the newly computed view).
   resetTransformSettings();
-
-  paint->setViewport(ifloor(m_viewXll), ifloor(m_viewYll),
-                     iceil(m_viewWidX), iceil(m_viewWidY)
-                     );
-  cout << "Viewpoint is " << m_viewXll << ' ' << m_viewYll << ' '
-       << m_viewWidX << ' ' << m_viewWidY << endl;
-
-  paint->setBrush( NoBrush );        // do not fill
-
-  // Clip the polygons to a window slightly bigger than what is seen
-  // on the screen to avoid a Qt bug with zoom in.
-  double clipPad = 50; // pixels
-  double clip_xll, clip_yll, clip_xur, clip_yur;
-  pixelToWorldCoords(m_screenXll - clipPad, m_screenYll - clipPad,
-                     clip_xll, clip_yll);
-  pixelToWorldCoords(m_screenXll + m_screenWidX + clipPad,
-                     m_screenYll + m_screenWidY + clipPad,
-                     clip_xur, clip_yur);
-
-  // If the physical box filling the screen is less than
-  // smallBoxSize, then snapping to integer is not accurate
-  // enough. Snap to a fraction of integer.
-  double smallBoxSize = 1000.0;
-  double boxSize = min(clip_xur - clip_xll, clip_yur - clip_yll);
-  assert(boxSize > 0.0);
-  double snapScale = 1.0;
-  while (boxSize/snapScale < smallBoxSize){
-    snapScale *= 0.1;
-  }
-  paint->setWindow(iround(m_windowXll/snapScale),
-                   iround(m_windowYll/snapScale),
-                   iround(m_windowWidX/snapScale),
-                   iround(m_windowWidY/snapScale)
-                   );
-
+  
+  m_pixelSize = (m_screenWidX - 2*m_padX)/m_viewWidX;
+  assert( abs(m_pixelSize - (m_screenWidY - 2*m_padY)/m_viewWidY)
+           < 1.0e-5*m_pixelSize );
 
   // Plot the polygons
+  paint->setBrush( NoBrush );        // do not fill
   int lineWidth = 1;
+  QFont F;
+  int fontSize = 15;
+  //F.setPixelSize(fontSize);
+  F.setPointSize(fontSize);
+  paint->setFont(F);
+  
   for (int vecIter  = 0; vecIter < (int)m_polyVec.size(); vecIter++){
     
     xg_poly clipPoly;
     m_polyVec[vecIter].clipPoly(//inuts
-                                clip_xll, clip_yll, clip_xur, clip_yur,
+                                m_viewXll,  m_viewYll,
+                                m_viewXll + m_viewWidX,
+                                m_viewYll + m_viewWidY,
                                 // output
                                 clipPoly
                                 );
@@ -409,48 +434,50 @@ void drawPoly::showPoly( QPainter *paint ){
     for (int pIter = 0; pIter < numPolys; pIter++){
     
       if (pIter > 0) start += numVerts[pIter - 1];
-      QColor color = QColor( colors[pIter].c_str() );
-      paint->setPen( QPen(color, lineWidth) );
 
       int pSize = numVerts[pIter];
       QPointArray pa(pSize);
       for (int vIter = 0; vIter < pSize; vIter++){
-        int x0 = iround(xv[start + vIter]/snapScale);
-        int y0 = iround(yv[start + vIter]/snapScale);
+        int x0 = iround((xv[start + vIter] - m_viewXll)*m_pixelSize + m_padX);
+        int y0 = iround((yv[start + vIter] - m_viewYll)*m_pixelSize + m_padY);
         pa[vIter] = QPoint(x0, y0);
         
-//         QFont F;
-//         //int fs = max(10, min(iround(2000/boxSize), 1000));
-//         int fs = 100;
-//         cout << "Font size is " << fs << endl;
-//         //F.setPixelSize(fs);
-//         F.setPointSize(fs);
-//         paint->setFont(F);
-//         paint->drawText(x0, y0, 100, 100, Qt::AlignCenter, "z");
+        //paint->drawText(x0, y0, 100, 100, Qt::AlignCenter, "z");
+        double tol = 1;
+        if (x0 > m_padX + tol && x0 < m_screenWidX - m_padX - tol &&
+            y0 > m_padY + tol && y0 < m_screenWidY - m_padY - tol 
+            ){
+          // Do not put text where the polygon meets the viewing box
+          paint->setPen( QPen("gold", lineWidth) );
+          //paint->drawText(x0, y0, "z");
+        }
       }
 
+      QColor color = QColor( colors[pIter].c_str() );
+      paint->setPen( QPen(color, lineWidth) );
       paint->drawPolygon( pa );
     }
 
   }
 
-  cout << "Clip box: " << clip_xll << ' ' << m_yFactor*clip_yll
-       << ' ' << clip_xur - clip_xll << ' ' << clip_yur - clip_yll << endl;
-
-  // Plot the clipping box
+  // Plot the view box
   int numV = 4;
-  double xv[] = {clip_xll, clip_xur, clip_xur, clip_xll};
-  double yv[] = {clip_yll, clip_yll, clip_yur, clip_yur};
+  double xv[] = {m_viewXll, m_viewXll + m_viewWidX,
+                 m_viewXll + m_viewWidX, m_viewXll};
+  double yv[] = {m_viewYll, m_viewYll, m_viewYll + m_viewWidY,
+                 m_viewYll + m_viewWidY};
   QPointArray pa(numV);
   for (int vIter = 0; vIter < numV; vIter++){
-    int x0 = iround(xv[vIter]/snapScale);
-    int y0 = iround(yv[vIter]/snapScale);
+    int x0 = iround((xv[vIter] - m_viewXll)*m_pixelSize + m_padX);
+    int y0 = iround((yv[vIter] - m_viewYll)*m_pixelSize + m_padY);
     pa[vIter] = QPoint(x0, y0);
   }
-  paint->setPen( QPen("white", lineWidth) );
-  paint->drawPolygon( pa );
+   paint->setPen( QPen("white", lineWidth) );
+   paint->drawPolygon( pa );
+   
+   //cout << "window width: " << m_viewWidX << ' ' << m_viewWidY << endl;
 
-  return;
+   return;
 }
 
 
