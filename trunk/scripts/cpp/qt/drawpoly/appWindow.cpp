@@ -27,6 +27,8 @@ appWindow::appWindow(QWidget* parent, const char* name,
   createMenus();
 
   m_poly = new drawPoly (this, name, polyVec, plotVertsOnlyVec, yFactor);
+  setCentralWidget(m_poly);
+  
   m_poly->resize( widX, widY );
   m_poly->setBackgroundColor (QColor("black"));
   m_poly->setCaption(name);

@@ -353,7 +353,7 @@ void drawPoly::showPoly( QPainter *paint ){
   //     << m_screenWidX << ' ' << m_screenWidY << endl;
 
   // To have the polygon show up a bit inside the screen use some padding
-  m_padX = 50.0; m_padY = m_screenRatio*m_padX; // Units are pixels
+  m_padX = 0.0; m_padY = m_screenRatio*m_padX; // Units are pixels
 
   if (m_firstPaintInstance){
     setUpViewBox(// inputs
@@ -371,10 +371,11 @@ void drawPoly::showPoly( QPainter *paint ){
 //                      );
 
   if (m_mouseRelX > m_mousePrsX && m_mouseRelY > m_mousePrsY){
-
+    
     // Form a new view based on the rectangle selected with the mouse.
     // Enlarge this rectangle if necessary to keep the aspect ratio.
 
+    cout << "Zoom to mouse selection!" << endl;
     // The call to pixelToWorldCoords uses the existing view internally
     double xll, yll, xur, yur;
     pixelToWorldCoords(m_mousePrsX, m_mousePrsY, xll, yll);
@@ -394,7 +395,8 @@ void drawPoly::showPoly( QPainter *paint ){
     m_viewYll = yll; m_viewWidY = widy;
     
   }else{
-    
+
+    cout << "zoom in!" << endl;
     // Modify the view for given shift or zoom
     m_viewXll  += m_viewWidX*( (1 - m_zoomFactor)/2.0 + m_shiftX );
     m_viewYll  += m_viewWidY*( (1 - m_zoomFactor)/2.0 + m_shiftY );
@@ -506,7 +508,8 @@ void drawPoly::showPoly( QPainter *paint ){
    paint->setPen( QPen("white", lineWidth) );
    paint->drawPolygon( pa );
    
-   //cout << "window width: " << m_viewWidX << ' ' << m_viewWidY << endl;
+//    cout << "view is: " << m_viewXll << ' ' << m_viewYll
+//         << ' ' << m_viewWidX << ' ' << m_viewWidY << endl;
 
    return;
 }
