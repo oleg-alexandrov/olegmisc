@@ -13,7 +13,7 @@ class appWindow : public QMainWindow {
   Q_OBJECT
 
 public:
-  appWindow(QWidget*, QWidget* parent, const char* name,
+  appWindow(QWidget* parent, const char* name,
             const std::vector<xg_poly> & polyVec,
             const std::vector<bool>    & plotVertsOnlyVec,
             int yFactor,
