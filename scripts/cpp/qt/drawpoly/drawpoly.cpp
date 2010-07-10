@@ -375,7 +375,6 @@ void drawPoly::showPoly( QPainter *paint ){
     // Form a new view based on the rectangle selected with the mouse.
     // Enlarge this rectangle if necessary to keep the aspect ratio.
 
-    cout << "Zoom to mouse selection!" << endl;
     // The call to pixelToWorldCoords uses the existing view internally
     double xll, yll, xur, yur;
     pixelToWorldCoords(m_mousePrsX, m_mousePrsY, xll, yll);
@@ -396,7 +395,6 @@ void drawPoly::showPoly( QPainter *paint ){
     
   }else{
 
-    cout << "zoom in!" << endl;
     // Modify the view for given shift or zoom
     m_viewXll  += m_viewWidX*( (1 - m_zoomFactor)/2.0 + m_shiftX );
     m_viewYll  += m_viewWidY*( (1 - m_zoomFactor)/2.0 + m_shiftY );
