@@ -9,7 +9,7 @@ undef $/; # undefines the separator. Can read one whole file in one scalar.
 MAIN: {
 
   if (! @ARGV){
-    print "Usage: $0 InputPoly.xg\n";
+    print "Usage: $0 inputPoly.xg\n";
     exit(0);
   }
   
@@ -18,18 +18,18 @@ MAIN: {
   $text = <FILE>;
   close(FILE);
 
-  $text =~ s/\nanno.*?\n/\n/g; # strip existing annotation
+  $text =~ s/\nanno.*?\n/\n/g; # strip existing annotations
   @lines = split ("\n", $text);
 
   $vert_count = 1;
   
-  for ($ctr = 0; $ctr <= $#lines; $ctr++){
+  for ($ctr = 0; $ctr < scalar(@lines); $ctr++){
 
     $line = $lines[$ctr];
     
     if ($line =~ /next/i){
       
-      # if at a "NEXT" line, reset vertices counter
+      # if at a "NEXT" line, reset the vertices counter
       $vert_count = 1;
       next;
       
@@ -37,7 +37,8 @@ MAIN: {
 
     if ( ( $ctr < $#lines ) && ($lines[$ctr+1] !~ /next/i ) ){
 
-      # don't put an annotation at the last vertex, as that's just the first one
+      # don't put an annotation at the last vertex, as that's just the
+      # first one repeated
       $line =~ s/\s*\;.*?$//g; # strip comments
       next unless ($line =~ /^\s*([\d\-\+\.]+\s+[\d\-\+\.]+)\s*$/);
       $lines[$ctr] = $line . "\n" . "anno " . $1 . " " . $vert_count;
@@ -47,11 +48,11 @@ MAIN: {
   }
 
   $text = join ("\n", @lines);
-
+  
   my $outfile ="Annotated.xg";
   print "Writng annotated file to $outfile\n";
   open(FILE, ">$outfile");
-  print FILE "$text";
+  print FILE $text . "\n";
   close(FILE);
   
 }
