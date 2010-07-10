@@ -14,7 +14,9 @@ class appWindow : public QMainWindow {
 
 public:
   appWindow(QWidget*, QWidget* parent, const char* name,
-          const std::vector<xg_poly> & polyVec, int yFactor,
+            const std::vector<xg_poly> & polyVec,
+            const std::vector<bool>    & plotVertsOnlyVec,
+            int yFactor,
           int widX, int widY, WFlags f=0);
   ~appWindow();
             public slots:
