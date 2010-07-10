@@ -18,13 +18,15 @@
 using namespace std;
 
 appWindow::appWindow(QWidget*, QWidget* parent, const char* name,
-                     const std::vector<xg_poly> & polyVec, int yFactor,
+                     const std::vector<xg_poly> & polyVec,
+                     const std::vector<bool>    & plotVertsOnlyVec,
+                     int yFactor,
                      int widX, int widY, WFlags f):
   QMainWindow(parent, name, f){
 
   createMenus();
 
-  m_poly = new drawPoly (this, name, polyVec, yFactor);
+  m_poly = new drawPoly (this, name, polyVec, plotVertsOnlyVec, yFactor);
   m_poly->resize( widX, widY );
   m_poly->setBackgroundColor (QColor("black"));
   m_poly->setCaption(name);

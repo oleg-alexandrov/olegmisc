@@ -35,11 +35,13 @@ inline int isign (double x){
 
 drawPoly::drawPoly( QWidget *parent, const char *name,
                     const std::vector<xg_poly> & polyVec,
+                    const std::vector<bool>    & plotVertsOnlyVec,
                     int yFactor
                     ):
   QWidget(parent, name), m_yFactor(yFactor) {
 
-  m_polyVec = polyVec;
+  m_polyVec          = polyVec;
+  m_plotVertsOnlyVec = plotVertsOnlyVec;
   
   resetTransformSettings();
 
@@ -411,7 +413,6 @@ void drawPoly::showPoly( QPainter *paint ){
            < 1.0e-5*m_pixelSize );
 
   // Plot the polygons
-  paint->setBrush( NoBrush );        // do not fill
   int lineWidth = 1;
   QFont F;
   int fontSize = 12;
@@ -420,6 +421,8 @@ void drawPoly::showPoly( QPainter *paint ){
 
   // Draw the polygons
   for (int vecIter  = 0; vecIter < (int)m_polyVec.size(); vecIter++){
+
+    bool plotVertsOnly = m_plotVertsOnlyVec[vecIter];
     
     xg_poly clipPoly;
     m_polyVec[vecIter].clipPoly(//inuts
@@ -441,21 +444,36 @@ void drawPoly::showPoly( QPainter *paint ){
     int start = 0;
     for (int pIter = 0; pIter < numPolys; pIter++){
     
+      QColor color = QColor( colors[pIter].c_str() );
+      paint->setPen( QPen(color, lineWidth) );
+
       if (pIter > 0) start += numVerts[pIter - 1];
 
       int pSize = numVerts[pIter];
       QPointArray pa(pSize);
       for (int vIter = 0; vIter < pSize; vIter++){
+
         int x0, y0;
         worldToPixelCoords(xv[start + vIter], yv[start + vIter], // inputs
                            x0, y0                                // outputs
                            );
         pa[vIter] = QPoint(x0, y0);
+
+        // Qt's built in points are too small. Instead of drawing a point
+        // draw a small circle.
+        int w = 2;
+        paint->setBrush( color );
+        if (plotVertsOnly){
+          paint->drawEllipse(x0 - w, y0 - w, 2*w, 2*w);
+        }
+        
       }
 
-      QColor color = QColor( colors[pIter].c_str() );
-      paint->setPen( QPen(color, lineWidth) );
-      paint->drawPolygon( pa );
+      paint->setBrush( NoBrush );        // do not fill
+      if (!plotVertsOnly){
+        paint->drawPolygon( pa );
+      }
+      
     }
 
     // Plot the annotations

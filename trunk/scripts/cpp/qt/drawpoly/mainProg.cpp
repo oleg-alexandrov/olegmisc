@@ -22,12 +22,13 @@ int main(int argc, char** argv){
   int widX, widY;
   extractWindowDims(argc - 1, argv + 1, widX, widY); // argv[0] is prog name
 
-  bool plotPoints = false; // plot a polygon or just its vertices
+  bool plotVertsOnly = false; // plot the edges or just the vertices
 
   int yFactor = -1; // To compensate for Qt's origin in the upper-left corner
 
-  vector<xg_poly> polyVec;
-  polyVec.resize(argc);
+  vector<xg_poly> polyVec;          polyVec.resize(argc);
+  vector<bool>    plotVertsOnlyVec; plotVertsOnlyVec.clear();
+  
   int numClips = 0;
   for (int argIter = 1; argIter < argc; argIter++){
 
@@ -35,8 +36,7 @@ int main(int argc, char** argv){
     if (strlen(filename) == 0) continue;
 
     if ( strstr(filename, "-p") ){
-      plotPoints = !plotPoints;
-      cout << "plotPoints is " << plotPoints << endl;
+      plotVertsOnly = !plotVertsOnly;
       continue;
     }
     
@@ -57,9 +57,11 @@ int main(int argc, char** argv){
       annotations[s].y *= yFactor;
     }
     polyVec[numClips].set_annotations(annotations);
+
+    plotVertsOnlyVec.push_back(plotVertsOnly);
     
     numClips++;
-
+    
   }
 
   if (numClips == 0){
@@ -72,7 +74,8 @@ int main(int argc, char** argv){
   QWidget S;
   char * name = "Poly Viewer";
   
-  appWindow m(&S, NULL,  name, polyVec, yFactor, widX, widY);
+  appWindow m(&S, NULL,  name, polyVec, plotVertsOnlyVec,
+              yFactor, widX, widY);
   m.resize(widX, widY);
   m.setCaption(name);
   if ( QApplication::desktop()->width() > m.width() + 10

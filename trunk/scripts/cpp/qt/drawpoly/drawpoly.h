@@ -17,6 +17,7 @@ class drawPoly : public QWidget
 public:
     drawPoly( QWidget *parent, const char *name,
               const std::vector<xg_poly> & polyVec,
+              const std::vector<bool>    & plotVertsOnlyVec,
               int yFactor
               );
   void zoomIn();
@@ -72,6 +73,8 @@ private:
   double m_pixelSize, m_padX, m_padY;
   
   std::vector<xg_poly> m_polyVec;
+  std::vector<bool>    m_plotVertsOnlyVec;
+  
   int m_yFactor; // To compensate for Qt's origin in the upper-left corner
 
   QRect m_rubberBandRect;
