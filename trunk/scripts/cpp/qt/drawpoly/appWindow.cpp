@@ -17,7 +17,7 @@
 
 using namespace std;
 
-appWindow::appWindow(QWidget*, QWidget* parent, const char* name,
+appWindow::appWindow(QWidget* parent, const char* name,
                      const std::vector<xg_poly> & polyVec,
                      const std::vector<bool>    & plotVertsOnlyVec,
                      int yFactor,
