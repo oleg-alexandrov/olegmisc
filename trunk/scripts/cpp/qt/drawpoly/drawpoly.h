@@ -43,8 +43,11 @@ private:
 
   void showPoly( QPainter *paint );
   void resetTransformSettings();
-  void pixelToWorldCoords(double   px, double   py,
+  void pixelToWorldCoords(int px, int py,
                           double & wx, double & wy);
+  void worldToPixelCoords(double wx, double wy,
+                          int & px,  int & py);
+  
   static void expandBoxToGivenRatio(// inputs
                                     double screenRatio, 
                                     // inputs/outputs

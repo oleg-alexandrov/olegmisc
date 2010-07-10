@@ -238,7 +238,7 @@ void drawPoly::shiftDown(){
   update();
 }
 
-void drawPoly::pixelToWorldCoords(double   px, double   py,
+void drawPoly::pixelToWorldCoords(int px, int py,
                                   double & wx, double & wy){
 
   wx = (px - m_padX)/m_pixelSize + m_viewXll;
@@ -246,6 +246,13 @@ void drawPoly::pixelToWorldCoords(double   px, double   py,
   
 }
 
+void drawPoly::worldToPixelCoords(double wx, double wy,
+                                  int & px,  int & py){
+
+  px = iround((wx - m_viewXll)*m_pixelSize + m_padX);
+  py = iround((wy - m_viewYll)*m_pixelSize + m_padY);
+  
+}
 
 void drawPoly::paintEvent( QPaintEvent * ){
   QPainter paint( this );
@@ -407,11 +414,11 @@ void drawPoly::showPoly( QPainter *paint ){
   paint->setBrush( NoBrush );        // do not fill
   int lineWidth = 1;
   QFont F;
-  int fontSize = 15;
-  //F.setPixelSize(fontSize);
-  F.setPointSize(fontSize);
+  int fontSize = 12;
+  F.setPointSize(fontSize);  //F.setPixelSize(fontSize);
   paint->setFont(F);
-  
+
+  // Draw the polygons
   for (int vecIter  = 0; vecIter < (int)m_polyVec.size(); vecIter++){
     
     xg_poly clipPoly;
@@ -423,12 +430,13 @@ void drawPoly::showPoly( QPainter *paint ){
                                 clipPoly
                                 );
     
-    const double * xv           = clipPoly.get_xv();
-    const double * yv           = clipPoly.get_yv();
-    const int    * numVerts     = clipPoly.get_numVerts();
-    int numPolys                = clipPoly.get_numPolys();
-    const vector<string> colors = clipPoly.get_colors();
-    //int numVerts              = clipPoly.get_totalNumVerts();
+    const double * xv              = clipPoly.get_xv();
+    const double * yv              = clipPoly.get_yv();
+    const int    * numVerts        = clipPoly.get_numVerts();
+    int numPolys                   = clipPoly.get_numPolys();
+    const vector<string> colors    = clipPoly.get_colors();
+    const vector<anno> annotations = clipPoly.get_annotations();
+    //int numVerts                 = clipPoly.get_totalNumVerts();
 
     int start = 0;
     for (int pIter = 0; pIter < numPolys; pIter++){
@@ -438,19 +446,11 @@ void drawPoly::showPoly( QPainter *paint ){
       int pSize = numVerts[pIter];
       QPointArray pa(pSize);
       for (int vIter = 0; vIter < pSize; vIter++){
-        int x0 = iround((xv[start + vIter] - m_viewXll)*m_pixelSize + m_padX);
-        int y0 = iround((yv[start + vIter] - m_viewYll)*m_pixelSize + m_padY);
+        int x0, y0;
+        worldToPixelCoords(xv[start + vIter], yv[start + vIter], // inputs
+                           x0, y0                                // outputs
+                           );
         pa[vIter] = QPoint(x0, y0);
-        
-        //paint->drawText(x0, y0, 100, 100, Qt::AlignCenter, "z");
-        double tol = 1;
-        if (x0 > m_padX + tol && x0 < m_screenWidX - m_padX - tol &&
-            y0 > m_padY + tol && y0 < m_screenWidY - m_padY - tol 
-            ){
-          // Do not put text where the polygon meets the viewing box
-          paint->setPen( QPen("gold", lineWidth) );
-          //paint->drawText(x0, y0, "z");
-        }
       }
 
       QColor color = QColor( colors[pIter].c_str() );
@@ -458,6 +458,17 @@ void drawPoly::showPoly( QPainter *paint ){
       paint->drawPolygon( pa );
     }
 
+    // Plot the annotations
+    for (int aIter = 0; aIter < (int)annotations.size(); aIter++){
+      const anno & A = annotations[aIter];
+      int x0, y0;
+      worldToPixelCoords(A.x, A.y, // inputs
+                         x0, y0    // outputs
+                         );
+      paint->setPen( QPen("gold", lineWidth) );
+      paint->drawText(x0, y0, A.label);
+    }
+    
   }
 
   // Plot the view box
@@ -468,8 +479,10 @@ void drawPoly::showPoly( QPainter *paint ){
                  m_viewYll + m_viewWidY};
   QPointArray pa(numV);
   for (int vIter = 0; vIter < numV; vIter++){
-    int x0 = iround((xv[vIter] - m_viewXll)*m_pixelSize + m_padX);
-    int y0 = iround((yv[vIter] - m_viewYll)*m_pixelSize + m_padY);
+    int x0, y0;
+    worldToPixelCoords(xv[vIter], yv[vIter], // inputs
+                       x0, y0                // outputs
+                       );
     pa[vIter] = QPoint(x0, y0);
   }
    paint->setPen( QPen("white", lineWidth) );

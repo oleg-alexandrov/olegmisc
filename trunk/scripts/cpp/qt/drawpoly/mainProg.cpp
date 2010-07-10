@@ -51,6 +51,13 @@ int main(int argc, char** argv){
       yv[s] = yFactor*yv[s];
     }
 
+    // Flip the annotations as well
+    std::vector<anno> annotations = polyVec[numClips].get_annotations();
+    for (int s = 0; s < (int)annotations.size(); s++){
+      annotations[s].y *= yFactor;
+    }
+    polyVec[numClips].set_annotations(annotations);
+    
     numClips++;
 
   }
