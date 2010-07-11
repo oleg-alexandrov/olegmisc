@@ -475,7 +475,7 @@ void drawPoly::showPoly( QPainter *paint ){
   int lineWidth = 1;
   QFont F;
   int fontSize = 12;
-  F.setPointSize(fontSize);  //F.setPixelSize(fontSize);
+  F.setPointSize(fontSize);
   paint->setFont(F);
 
   // Draw the polygons
