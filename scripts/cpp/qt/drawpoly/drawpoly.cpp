@@ -21,7 +21,6 @@
 #include "drawpoly.h"
 #include <iomanip>   // required for use of setw()
 #include <cfloat>    // defines DBL_MAX
-#include "../../polyUtils/geomclipandmerge.h"
 using namespace std;
 
 inline int iround(double x){ return (int)round(x); }
@@ -54,6 +53,7 @@ drawPoly::drawPoly( QWidget *parent, const char *name,
   m_viewWidX     = 0.0; m_viewWidY = 0.0;
   m_firstPaintInstance = true;
   m_prevClickExists    = false;
+  m_rubberBand = QRect( 0, 0, 0, 0); // initial rubberband
 }
 
 void drawPoly::resetTransformSettings(){
@@ -68,6 +68,8 @@ void drawPoly::mousePressEvent( QMouseEvent *E){
   const QPoint Q = E->pos();
   m_mousePrsX = Q.x();
   m_mousePrsY = Q.y();
+  
+  m_rubberBand = QRect( m_mousePrsX, m_mousePrsY, 0, 0); // initial rubberband
 //   cout << "Mouse pressed at "
 //        << m_mousePrsX << ' ' << m_mousePrsY << endl;
 
@@ -84,6 +86,13 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
 //   cout << "Mouse released at "
 //        << m_mouseRelX << ' ' << m_mouseRelY << endl;
 
+  // Wipe the previous rubberband, if non-empty
+  if (m_rubberBand.width() > 0 || m_rubberBand.height() > 0){
+    QPainter painter(this);
+    wipeRubberBand(&painter, m_rubberBand);
+  }
+  m_rubberBand = QRect( m_mouseRelX, m_mouseRelY, 0, 0);
+  
   // Pressed mid-button enables left/right/up/down navigation
   const ButtonState button = E->button();
   if (button == Qt::MidButton){
@@ -107,11 +116,16 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
     }
     return;
   }
-    
+
+  // Zoom to selection if the mouse went down and right,
+  // zoom out if the mouse went up and left, and print
+  // the current coordinates otherwise.
   if       (m_mouseRelX > m_mousePrsX && m_mouseRelY > m_mousePrsY){
     update(); // Will zoom to the region selected with the mouse
+    return;
   }else if (m_mouseRelX < m_mousePrsX && m_mouseRelY < m_mousePrsY ){
     zoomOut();
+    return;
   }else if (m_mouseRelX == m_mousePrsX && m_mouseRelY == m_mousePrsY){
 
     // Print the physcal coordinates of the point the mouse was clicked at
@@ -138,9 +152,29 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
     m_prevClickExists = true;
     m_prevClickedX    = wx;
     m_prevClickedY    = wy;
-
+    return;
   }
   
+  return;
+}
+
+void drawPoly::wipeRubberBand(QPainter * paint, QRect & rubberBand){
+  
+  // Wipe the previous rubberband by overwriting the region it
+  // occupied with the cached version of the polygons from m_cache.
+  QRect R   = rubberBand;
+  int left  = min(R.left(), R.right());
+  int right = max(R.left(), R.right());
+  int top   = min(R.top(), R.bottom());
+  int bot   = max(R.top(), R.bottom());
+  int wd    = R.width();
+  int ht    = R.height();
+  int px    = 1; 
+  paint->drawPixmap (left,  top, m_cache, left,  top, wd, px);
+  paint->drawPixmap (left,  top, m_cache, left,  top, px, ht);
+  paint->drawPixmap (left,  bot, m_cache, left,  bot, wd, px);
+  paint->drawPixmap (right, top, m_cache, right, top, px, ht);
+
   return;
 }
 
@@ -153,19 +187,18 @@ void drawPoly::mouseMoveEvent( QMouseEvent *E){
   //cout << "Mouse moved to " << x << ' ' << y << endl;
 
   QPainter painter(this);
-  //painter.setRasterOp(Qt::XorROP);
   painter.setPen(Qt::white);
+  painter.setBrush( NoBrush );
 
-  // Implement the rubberband with double buffering. Wipe the screen,
-  // show the cached picture of the polygons we drew in the paint
-  // event, and on top of it put the rubber band, that is, the
-  // rectangle going from where the mouse was pressed to where the
-  // mouse is now.
-  bitBlt(this, m_screenRect.topLeft(), &m_buffer, m_screenRect);
+  // Wipe the previous rubberband
+  wipeRubberBand(&painter, m_rubberBand);
+  
+  // Create the new rubberband
   QRect rubberBand( m_mousePrsX, m_mousePrsY,
-              x - m_mousePrsX, y - m_mousePrsY );
+                    x - m_mousePrsX, y - m_mousePrsY );
   painter.drawRect(rubberBand);
-
+  m_rubberBand = rubberBand; // Save this for the future
+  
 }
 
 void drawPoly::wheelEvent(QWheelEvent *event){
@@ -267,19 +300,19 @@ void drawPoly::worldToPixelCoords(double wx, double wy,
 void drawPoly::paintEvent( QPaintEvent * E){
 
   // Instead of drawing on the screen right away, draw onto
-  // a buffer, then display the buffer. We'll use the buffer
-  // later to avoid repainting.
+  // a cache, then display the cache. We'll use the cache
+  // later to avoid repainting when the view does not change.
   m_screenRect = E->rect();
-  QSize expandedSize = m_screenRect.size().expandedTo(m_buffer.size());
-  m_buffer.resize(expandedSize);
-  m_buffer.fill(this, m_screenRect.topLeft());
+  QSize expandedSize = m_screenRect.size().expandedTo(m_cache.size());
+  m_cache.resize(expandedSize);
+  m_cache.fill(this, m_screenRect.topLeft());
 
-  QPainter paint( &m_buffer, this );
+  QPainter paint( &m_cache, this );
   paint.translate(-m_screenRect.x(), -m_screenRect.y());
   showPoly( &paint );
 
   // Copy the buffer to the screen
-  bitBlt(this, m_screenRect.x(), m_screenRect.y(), &m_buffer, 0, 0,
+  bitBlt(this, m_screenRect.x(), m_screenRect.y(), &m_cache, 0, 0,
          m_screenRect.width(), m_screenRect.height()
          );
 
