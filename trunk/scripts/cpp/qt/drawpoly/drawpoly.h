@@ -80,6 +80,10 @@ private:
   QRect m_rubberBandRect;
   bool m_firstPaintInstance;
   bool m_prevClickExists;
+
+  // For double buffering
+  QPixmap m_buffer;
+  QRect   m_screenRect;
   
 };
 
