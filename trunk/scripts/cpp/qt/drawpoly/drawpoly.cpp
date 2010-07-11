@@ -91,7 +91,7 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
     QPainter painter(this);
     wipeRubberBand(&painter, m_rubberBand);
   }
-  m_rubberBand = QRect( m_mouseRelX, m_mouseRelY, 0, 0);
+  m_rubberBand = QRect( m_mouseRelX, m_mouseRelY, 0, 0); //empty rect
   
   // Pressed mid-button enables left/right/up/down navigation
   const ButtonState button = E->button();
@@ -160,8 +160,9 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
 
 void drawPoly::wipeRubberBand(QPainter * paint, QRect & rubberBand){
   
-  // Wipe the previous rubberband by overwriting the region it
-  // occupied with the cached version of the polygons from m_cache.
+  // Wipe the current rubberband by overwriting the region it occupies
+  // (a set of four segments forming a rectangle) with the cached
+  // version of image before the rubberband was drawn.
   QRect R   = rubberBand;
   int left  = min(R.left(), R.right());
   int right = max(R.left(), R.right());
