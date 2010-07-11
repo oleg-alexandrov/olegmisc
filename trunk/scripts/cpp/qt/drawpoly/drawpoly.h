@@ -31,9 +31,9 @@ public slots:
 
 protected:
 
-  void paintEvent( QPaintEvent * );
+  void paintEvent( QPaintEvent * E);
   void mousePressEvent( QMouseEvent *E);
-  void mouseMoveEvent( QMouseEvent *);
+  void mouseMoveEvent( QMouseEvent *E);
   void keyPressEvent( QKeyEvent *k );
   void mouseReleaseEvent ( QMouseEvent * E );
   void wheelEvent(QWheelEvent *event);
@@ -41,6 +41,7 @@ protected:
 private slots:
 
 private:
+  void wipeRubberBand(QPainter * paint, QRect & rubberBand);
 
   void showPoly( QPainter *paint );
   void resetTransformSettings();
@@ -82,8 +83,8 @@ private:
   bool m_prevClickExists;
 
   // For double buffering
-  QPixmap m_buffer;
-  QRect   m_screenRect;
+  QPixmap m_cache;
+  QRect   m_screenRect, m_rubberBand;
   
 };
 
