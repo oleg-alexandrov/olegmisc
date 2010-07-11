@@ -146,30 +146,26 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
 
 void drawPoly::mouseMoveEvent( QMouseEvent *E){
 
-#if 0
   const QPoint Q = E->pos();
   int x = Q.x();
   int y = Q.y();
 
-  cout << "Mouse moved to " << x << ' ' << y << endl;
+  //cout << "Mouse moved to " << x << ' ' << y << endl;
 
   QPainter painter(this);
-  painter.setRasterOp(Qt::XorROP);
+  //painter.setRasterOp(Qt::XorROP);
   painter.setPen(Qt::white);
-  int w = 4;
-  painter.drawEllipse(x, y, 2*w, 2*w);
 
-#if 0
-  cout << "Mouse moved" << endl;
-  //painter.setRasterOp(Qt::NotROP);
-  //painter.drawRect(m_rubberBandRect.normalize());
-  QRect rect = m_rubberBandRect.normalize();
-  update(rect.left(), rect.top(), rect.width(), 1);                      
-  update(rect.left(), rect.top(), 1, rect.height());                     
-  update(rect.left(), rect.bottom(), rect.width(), 1);                   
-  update(rect.right(), rect.top(), 1, rect.height());                    
-#endif
-#endif
+  // Implement the rubberband with double buffering. Wipe the screen,
+  // show the cached picture of the polygons we drew in the paint
+  // event, and on top of it put the rubber band, that is, the
+  // rectangle going from where the mouse was pressed to where the
+  // mouse is now.
+  bitBlt(this, m_screenRect.topLeft(), &m_buffer, m_screenRect);
+  QRect rubberBand( m_mousePrsX, m_mousePrsY,
+              x - m_mousePrsX, y - m_mousePrsY );
+  painter.drawRect(rubberBand);
+
 }
 
 void drawPoly::wheelEvent(QWheelEvent *event){
@@ -268,9 +264,26 @@ void drawPoly::worldToPixelCoords(double wx, double wy,
   
 }
 
-void drawPoly::paintEvent( QPaintEvent * ){
-  QPainter paint( this );
+void drawPoly::paintEvent( QPaintEvent * E){
+
+  // Instead of drawing on the screen right away, draw onto
+  // a buffer, then display the buffer. We'll use the buffer
+  // later to avoid repainting.
+  m_screenRect = E->rect();
+  QSize expandedSize = m_screenRect.size().expandedTo(m_buffer.size());
+  m_buffer.resize(expandedSize);
+  m_buffer.fill(this, m_screenRect.topLeft());
+
+  QPainter paint( &m_buffer, this );
+  paint.translate(-m_screenRect.x(), -m_screenRect.y());
   showPoly( &paint );
+
+  // Copy the buffer to the screen
+  bitBlt(this, m_screenRect.x(), m_screenRect.y(), &m_buffer, 0, 0,
+         m_screenRect.width(), m_screenRect.height()
+         );
+
+  return;
 }
 
 void drawPoly::expandBoxToGivenRatio(// inputs
