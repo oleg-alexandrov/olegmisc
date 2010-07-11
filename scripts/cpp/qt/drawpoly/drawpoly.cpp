@@ -144,12 +144,22 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
   return;
 }
 
-void drawPoly::mouseMoveEvent( QMouseEvent *){
-#if 0
-  cout << "Mouse moved" << endl;
+void drawPoly::mouseMoveEvent( QMouseEvent *E){
+
+  const QPoint Q = E->pos();
+  int x = Q.x();
+  int y = Q.y();
+
+  cout << "Mouse moved to " << x << ' ' << y << endl;
+
   QPainter painter(this);
   painter.setRasterOp(Qt::XorROP);
   painter.setPen(Qt::white);
+  int w = 4;
+  painter.drawEllipse(x, y, 2*w, 2*w);
+
+#if 0
+  cout << "Mouse moved" << endl;
   //painter.setRasterOp(Qt::NotROP);
   //painter.drawRect(m_rubberBandRect.normalize());
   QRect rect = m_rubberBandRect.normalize();
@@ -340,6 +350,7 @@ void drawPoly::setUpViewBox(// inputs
 
 void drawPoly::showPoly( QPainter *paint ){
 
+  cout << "--- will repaint!!!" << endl;
   //paint->setRasterOp(Qt::XorROP);
                
   // Screen dimensions
