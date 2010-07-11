@@ -146,6 +146,7 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
 
 void drawPoly::mouseMoveEvent( QMouseEvent *E){
 
+#if 0
   const QPoint Q = E->pos();
   int x = Q.x();
   int y = Q.y();
@@ -167,6 +168,7 @@ void drawPoly::mouseMoveEvent( QMouseEvent *E){
   update(rect.left(), rect.top(), 1, rect.height());                     
   update(rect.left(), rect.bottom(), rect.width(), 1);                   
   update(rect.right(), rect.top(), 1, rect.height());                    
+#endif
 #endif
 }
 
@@ -350,7 +352,6 @@ void drawPoly::setUpViewBox(// inputs
 
 void drawPoly::showPoly( QPainter *paint ){
 
-  cout << "--- will repaint!!!" << endl;
   //paint->setRasterOp(Qt::XorROP);
                
   // Screen dimensions
