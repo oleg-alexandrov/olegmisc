@@ -71,7 +71,7 @@ int main(int argc, char** argv){
   polyVec.resize(numClips);
 
   QApplication app(argc, argv);
-  char * name = "Poly Viewer";
+  char * name = "polyViewer";
   
   appWindow m(NULL,  name, polyVec, plotVertsOnlyVec,
               yFactor, widX, widY);
