@@ -49,6 +49,7 @@ void appWindow::shiftLeft  (){ m_poly->shiftLeft  (); }
 void appWindow::shiftUp    (){ m_poly->shiftUp    (); }
 void appWindow::shiftDown  (){ m_poly->shiftDown  (); }
 void appWindow::resetView  (){ m_poly->resetView  (); }
+void appWindow::toggleAnno (){ m_poly->toggleAnno (); }
 
 void appWindow::createMenus(){
   
@@ -68,6 +69,7 @@ void appWindow::createMenus(){
   view->insertItem("Move up", this, SLOT(shiftUp()), Key_Up);
   view->insertItem("Move down", this, SLOT(shiftDown()), Key_Down);
   view->insertItem("Reset view", this, SLOT(resetView()), Key_R);
+  view->insertItem("Toggle anno", this, SLOT(toggleAnno()), Key_A);
 
   QPopupMenu* help = new QPopupMenu( menu );
   help->insertItem("&About", this, SLOT(help()));

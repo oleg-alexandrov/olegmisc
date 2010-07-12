@@ -53,6 +53,8 @@ drawPoly::drawPoly( QWidget *parent, const char *name,
   m_viewWidX        = 0.0; m_viewWidY = 0.0;
   m_resetView       = true;
   m_prevClickExists = false;
+  m_showAnnotations = true;
+  
   m_rubberBand      = QRect( 0, 0, 0, 0); // initial rubberband
 }
 
@@ -432,8 +434,6 @@ void drawPoly::setUpViewBox(// inputs
 
 void drawPoly::showPoly( QPainter *paint ){
 
-  //paint->setRasterOp(Qt::XorROP);
-               
   // Screen dimensions
   QRect v       = paint->viewport();
   m_screenXll   = v.left();
@@ -575,18 +575,21 @@ void drawPoly::showPoly( QPainter *paint ){
     }
 
     // Plot the annotations
-    int numAnno = annotations.size();
-    if (numAnno > 2000){
-      //cout << "Too many annotations, zoom in to see them" << endl;
-    }else{
-      for (int aIter = 0; aIter < numAnno; aIter++){
-        const anno & A = annotations[aIter];
-        int x0, y0;
-        worldToPixelCoords(A.x, A.y, // inputs
-                           x0, y0    // outputs
-                           );
-        paint->setPen( QPen("gold", lineWidth) );
-        paint->drawText(x0, y0, A.label);
+    if (m_showAnnotations){
+      
+      int numAnno = annotations.size();
+      if (numAnno > 2000){
+        //cout << "Too many annotations, zoom in to see them" << endl;
+      }else{
+        for (int aIter = 0; aIter < numAnno; aIter++){
+          const anno & A = annotations[aIter];
+          int x0, y0;
+          worldToPixelCoords(A.x, A.y, // inputs
+                             x0, y0    // outputs
+                             );
+          paint->setPen( QPen("gold", lineWidth) );
+          paint->drawText(x0, y0, A.label);
+        }
       }
     }
     
@@ -665,3 +668,8 @@ void drawPoly::drawOneVertex(int x0, int y0, QColor color, int lineWidth,
   return;
 }
 
+void drawPoly::toggleAnno(){
+
+  m_showAnnotations = !m_showAnnotations;
+  update();
+}
