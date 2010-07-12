@@ -44,28 +44,48 @@ sub read_xg{
   return @polys;
 }
 
-sub print_xg{
+sub save_xg{
 
   my $polys = shift;
-  #my $file  = shift || "";
-  #my $color = shift || "red";
-  #open(FILE, ">$file");
+  my $file  = shift || "";
+  my $color = shift || "red";
+
+  my $H;
+  if ($file eq ""){
+    $H = *STDOUT;
+  }else{
+    open(FILE, ">$file");
+    $H = *FILE;
+  }
 
   foreach my $poly (@$polys){
     
     foreach my $vert (@$poly){
-      print $vert->[0] . " " . $vert->[1] . "\n";
+      print $H $vert->[0] . " " . $vert->[1] . "\n";
     }
     
     # Make the polygon closed
     if ( scalar(@$poly) >= 1 ){
       my $vert = $poly->[0];
-      print $vert->[0] . " " . $vert->[1] . "\n";
+      print $H $vert->[0] . " " . $vert->[1] . "\n";
     }
     
-    print "NEXT\n";
+    print $H "NEXT\n";
+  }
+
+  if ($file ne ""){
+    close($H);
   }
   
 }
-   
+
+sub print_xg{
+
+  my $polys = shift;
+  my $file  = "";
+  my $color = shift || "red";
+
+  save_xg($polys, $file, $color);
+}
+
 1;
