@@ -203,13 +203,35 @@ void drawPoly::mouseMoveEvent( QMouseEvent *E){
 }
 
 void drawPoly::wheelEvent(QWheelEvent *event){
-  
+
   int delta = event->delta();
 
-  if (delta > 0){
-    shiftUp();
-  }else if (delta < 0){
-    shiftDown();
+  ButtonState state = event->state();
+
+  if (state == Qt::ControlButton){
+
+    // The control button was pressed. Zoom in/out around the current point.
+
+    int pixelx = event->x();
+    int pixely = event->y();
+    double x, y;
+    pixelToWorldCoords(pixelx, pixely, x, y);
+    centerViewAtPoint(x, y);
+    
+    if (delta > 0){
+      zoomIn();
+    }else if (delta < 0){
+      zoomOut();
+    }
+    
+  }else{
+  
+    if (delta > 0){
+      shiftUp();
+    }else if (delta < 0){
+      shiftDown();
+    }
+    
   }
   
   event->accept();
@@ -280,6 +302,11 @@ void drawPoly::shiftDown(){
   resetTransformSettings();
   m_shiftY = 0.25;
   update();
+}
+
+void drawPoly::centerViewAtPoint(double x, double y){
+  m_viewXll = x - m_viewWidX/2.0;
+  m_viewYll = y - m_viewWidY/2.0;
 }
 
 void drawPoly::resetView(){
