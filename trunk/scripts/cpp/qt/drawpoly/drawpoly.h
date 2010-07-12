@@ -41,6 +41,8 @@ protected:
 private slots:
 
 private:
+  void drawOneVertex(int x0, int y0, QColor color, int lineWidth,
+                     int drawVertIndex, QPainter * paint);
   void wipeRubberBand(QPainter * paint, QRect & rubberBand);
 
   void showPoly( QPainter *paint );
