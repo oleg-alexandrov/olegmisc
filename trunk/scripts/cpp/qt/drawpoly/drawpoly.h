@@ -71,6 +71,7 @@ private:
   double m_zoomFactor, m_shiftX, m_shiftY;
   int m_mousePrsX,  m_mousePrsY, m_mouseRelX,  m_mouseRelY;
   int m_screenXll,  m_screenYll, m_screenWidX, m_screenWidY;
+  int m_prevScreenWidX, m_prevScreenWidY; // used to detect when the window gets resized
   double m_viewXll, m_viewYll,   m_viewWidX,   m_viewWidY;
   double m_prevClickedX, m_prevClickedY;
   double m_screenRatio;
