@@ -30,6 +30,7 @@ public:
   void shiftLeft();
   void shiftUp();
   void shiftDown();
+  void resetView();
   
 private:
   drawPoly * m_poly;
