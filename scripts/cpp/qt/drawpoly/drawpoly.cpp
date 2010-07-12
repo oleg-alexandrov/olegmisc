@@ -478,11 +478,14 @@ void drawPoly::showPoly( QPainter *paint ){
   F.setPointSize(fontSize);
   paint->setFont(F);
 
+  int drawVertIndex = -1; // Will draw a vertex with a shape dependent on this
+  
   // Draw the polygons
   for (int vecIter  = 0; vecIter < (int)m_polyVec.size(); vecIter++){
 
     bool plotVertsOnly = m_plotVertsOnlyVec[vecIter];
-    
+    if (plotVertsOnly) drawVertIndex++;
+
     xg_poly clipPoly;
     m_polyVec[vecIter].clipPoly(//inuts
                                 m_viewXll,  m_viewYll,
@@ -504,7 +507,6 @@ void drawPoly::showPoly( QPainter *paint ){
     for (int pIter = 0; pIter < numPolys; pIter++){
     
       QColor color = QColor( colors[pIter].c_str() );
-      paint->setPen( QPen(color, lineWidth) );
 
       if (pIter > 0) start += numVerts[pIter - 1];
 
@@ -519,17 +521,20 @@ void drawPoly::showPoly( QPainter *paint ){
         pa[vIter] = QPoint(x0, y0);
 
         // Qt's built in points are too small. Instead of drawing a point
-        // draw a small circle.
-        int w = 2;
-        paint->setBrush( color );
-        if (plotVertsOnly){
-          paint->drawEllipse(x0 - w, y0 - w, 2*w, 2*w);
+        // draw a small shape. 
+        if (plotVertsOnly &&
+            x0 > m_screenXll && x0 < m_screenXll + m_screenWidX && 
+            y0 > m_screenYll && y0 < m_screenYll + m_screenWidY
+            ){
+          drawOneVertex(x0, y0, color, lineWidth, drawVertIndex, paint);
         }
-        
       }
+      
+      
 
-      paint->setBrush( NoBrush );        // do not fill
       if (!plotVertsOnly){
+        paint->setBrush( NoBrush );
+        paint->setPen( QPen(color, lineWidth) );
         paint->drawPolygon( pa );
       }
       
@@ -562,8 +567,9 @@ void drawPoly::showPoly( QPainter *paint ){
                        );
     pa[vIter] = QPoint(x0, y0);
   }
-   paint->setPen( QPen("white", lineWidth) );
-   paint->drawPolygon( pa );
+  paint->setBrush( NoBrush );
+  paint->setPen( QPen("white", lineWidth) );
+  paint->drawPolygon( pa );
    
 //    cout << "view is: " << m_viewXll << ' ' << m_viewYll
 //         << ' ' << m_viewWidX << ' ' << m_viewWidY << endl;
@@ -572,3 +578,50 @@ void drawPoly::showPoly( QPainter *paint ){
 }
 
 
+void drawPoly::drawOneVertex(int x0, int y0, QColor color, int lineWidth,
+                             int drawVertIndex, QPainter * paint){
+
+  int len = 6;
+  paint->setPen( QPen(color, lineWidth) );
+
+  int numTypes = 4;
+  if (drawVertIndex%numTypes == 0){
+    
+    // Draw a small filled ellipse
+    paint->setBrush( color );
+    paint->drawEllipse(x0 - len/2, y0 - len/2, len, len);
+    
+  }else if (drawVertIndex%numTypes == 1){
+    
+    // Draw an empty square
+    paint->setBrush( NoBrush );
+    paint->drawRect(x0 - len, y0 - len, 2*len, 2*len);
+    
+  }else if (drawVertIndex%numTypes == 2){
+    
+    // Draw an empty triangle
+    paint->setBrush( NoBrush );
+    paint->drawLine(x0 - len, y0 - len, x0 + len, y0 - len);
+    paint->drawLine(x0 - len, y0 - len, x0 + 0,   y0 + len);
+    paint->drawLine(x0 + len, y0 - len, x0 + 0,   y0 + len);
+    
+  }else{
+    
+    // Draw an empty reversed triangle
+    len = int(len*1.5 + 0.5);
+    paint->setBrush( NoBrush );
+    paint->drawLine(x0 - len, y0 + len, x0 + len, y0 + len);
+    paint->drawLine(x0 - len, y0 + len, x0 + 0,   y0 - len);
+    paint->drawLine(x0 + len, y0 + len, x0 + 0,   y0 - len);
+#if 0
+    // Draw a star
+    paint->setBrush( NoBrush );
+    paint->drawLine(x0 - len, y0 - len, x0 + len, y0 + len);
+    paint->drawLine(x0 - len, y0 + len, x0 + len, y0 - len);
+    paint->drawLine(x0 - len, y0, x0 + len, y0);
+    paint->drawLine(x0, y0 - len, x0, y0 + len);
+#endif  
+  }
+  
+  return;
+}
