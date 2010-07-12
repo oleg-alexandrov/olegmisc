@@ -26,6 +26,7 @@ public:
   void shiftLeft();
   void shiftUp();
   void shiftDown();
+  void toggleAnno();
   void resetView();
 
 public slots:
@@ -85,10 +86,12 @@ private:
   QRect m_rubberBandRect;
   bool m_resetView;
   bool m_prevClickExists;
-
+  
   // For double buffering
   QPixmap m_cache;
   QRect   m_screenRect, m_rubberBand;
+
+  bool m_showAnnotations;
   
 };
 

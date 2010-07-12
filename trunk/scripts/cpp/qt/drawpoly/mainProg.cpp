@@ -40,7 +40,7 @@ int main(int argc, char** argv){
       continue;
     }
     
-    cout << "Reading " << filename << endl;
+    //cout << "Reading " << filename << endl;
     if ( ! polyVec[numClips].read_poly(filename) ) exit(1);
   
     double * xv = (double*)polyVec[numClips].get_xv();
