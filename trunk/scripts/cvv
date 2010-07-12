@@ -23,7 +23,7 @@ MAIN:{
     my @lines   = split("\n", $text);
     my $success = 0;
     foreach my $line (@lines){
-      next unless ($line =~ /^(.*?$param[^\s]*?\s+)(.*?)$/i);
+      next unless ($line =~ /^(\s*\#?\s*set\s+[^\s]*?$param[^\s]*?\s+)(.*?)$/i);
       $line = $1 . $val;
       $line =~ s/^\s*#\s*/ /g;
       $success = 1;

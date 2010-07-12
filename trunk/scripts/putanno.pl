@@ -54,5 +54,6 @@ MAIN: {
   open(FILE, ">$outfile");
   print FILE $text . "\n";
   close(FILE);
-  
+
+  system("xgraph -ng -geometry 1000x800+0+0 Annotated.xg")
 }
