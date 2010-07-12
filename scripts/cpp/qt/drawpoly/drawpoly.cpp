@@ -45,15 +45,15 @@ drawPoly::drawPoly( QWidget *parent, const char *name,
   resetTransformSettings();
 
   // int
-  m_screenXll  = 0;   m_screenYll  = 0;
-  m_screenWidX = 0;   m_screenWidY = 0;
+  m_screenXll  = 0; m_screenYll  = 0;
+  m_screenWidX = 0; m_screenWidY = 0;
 
   // double
-  m_viewXll      = 0.0; m_viewYll  = 0.0;
-  m_viewWidX     = 0.0; m_viewWidY = 0.0;
-  m_firstPaintInstance = true;
-  m_prevClickExists    = false;
-  m_rubberBand = QRect( 0, 0, 0, 0); // initial rubberband
+  m_viewXll         = 0.0; m_viewYll  = 0.0;
+  m_viewWidX        = 0.0; m_viewWidY = 0.0;
+  m_resetView       = true;
+  m_prevClickExists = false;
+  m_rubberBand      = QRect( 0, 0, 0, 0); // initial rubberband
 }
 
 void drawPoly::resetTransformSettings(){
@@ -282,6 +282,12 @@ void drawPoly::shiftDown(){
   update();
 }
 
+void drawPoly::resetView(){
+  resetTransformSettings();
+  m_resetView = true;
+  update();
+}
+
 void drawPoly::pixelToWorldCoords(int px, int py,
                                   double & wx, double & wy){
 
@@ -414,13 +420,13 @@ void drawPoly::showPoly( QPainter *paint ){
   // To have the polygon show up a bit inside the screen use some padding
   m_padX = 0.0; m_padY = m_screenRatio*m_padX; // Units are pixels
 
-  if (m_firstPaintInstance){
+  if (m_resetView){
     setUpViewBox(// inputs
                  m_screenRatio, m_polyVec,
                  // outputs
                  m_viewXll, m_viewYll, m_viewWidX, m_viewWidY
                  );
-    m_firstPaintInstance = false;
+    m_resetView = false;
   }
 //   paint->setWindow(m_screenXll,  m_screenYll,
 //                    m_screenWidX, m_screenWidY
@@ -476,6 +482,9 @@ void drawPoly::showPoly( QPainter *paint ){
   QFont F;
   int fontSize = 12;
   F.setPointSize(fontSize);
+  //F.setStyleStrategy(QFont::ForceOutline);
+  //F.setStyleStrategy(QFont::PreferBitmap);
+  // F.setStyleStrategy(QFont::NoAntialias);
   paint->setFont(F);
 
   int drawVertIndex = -1; // Will draw a vertex with a shape dependent on this
@@ -530,8 +539,6 @@ void drawPoly::showPoly( QPainter *paint ){
         }
       }
       
-      
-
       if (!plotVertsOnly){
         paint->setBrush( NoBrush );
         paint->setPen( QPen(color, lineWidth) );
@@ -541,14 +548,19 @@ void drawPoly::showPoly( QPainter *paint ){
     }
 
     // Plot the annotations
-    for (int aIter = 0; aIter < (int)annotations.size(); aIter++){
-      const anno & A = annotations[aIter];
-      int x0, y0;
-      worldToPixelCoords(A.x, A.y, // inputs
-                         x0, y0    // outputs
-                         );
-      paint->setPen( QPen("gold", lineWidth) );
-      paint->drawText(x0, y0, A.label);
+    int numAnno = annotations.size();
+    if (numAnno > 2000){
+      //cout << "Too many annotations, zoom in to see them" << endl;
+    }else{
+      for (int aIter = 0; aIter < numAnno; aIter++){
+        const anno & A = annotations[aIter];
+        int x0, y0;
+        worldToPixelCoords(A.x, A.y, // inputs
+                           x0, y0    // outputs
+                           );
+        paint->setPen( QPen("gold", lineWidth) );
+        paint->drawText(x0, y0, A.label);
+      }
     }
     
   }
@@ -625,3 +637,4 @@ void drawPoly::drawOneVertex(int x0, int y0, QColor color, int lineWidth,
   
   return;
 }
+

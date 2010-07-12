@@ -26,7 +26,8 @@ public:
   void shiftLeft();
   void shiftUp();
   void shiftDown();
-  
+  void resetView();
+
 public slots:
 
 protected:
@@ -81,7 +82,7 @@ private:
   int m_yFactor; // To compensate for Qt's origin in the upper-left corner
 
   QRect m_rubberBandRect;
-  bool m_firstPaintInstance;
+  bool m_resetView;
   bool m_prevClickExists;
 
   // For double buffering
