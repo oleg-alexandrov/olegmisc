@@ -17,13 +17,14 @@ public:
             const std::vector<xg_poly> & polyVec,
             const std::vector<bool>    & plotVertsOnlyVec,
             int yFactor,
-          int widX, int widY, WFlags f=0);
+            int widX, int widY, WFlags f=0);
   ~appWindow();
-            public slots:
-            void help();
-
-             private slots:
-             void createMenus();
+  
+public slots:
+void help();
+  
+private slots:
+  void createMenus();
   void zoomIn     ();
   void zoomOut    ();
   void shiftRight ();
@@ -32,6 +33,8 @@ public:
   void shiftDown  ();
   void resetView  ();
   void toggleAnno ();
+  void cutToHlt   ();
+  void undoLast   ();
   
 private:
   drawPoly * m_poly;
