@@ -45,9 +45,8 @@ drawPoly::drawPoly( QWidget *parent, const char *name,
   resetTransformSettings();
 
   // int
-  m_screenXll  = 0;     m_screenYll  = 0;
-  m_screenWidX = 0;     m_screenWidY = 0;
-  m_prevScreenWidX = 0; m_prevScreenWidY = 0;
+  m_screenXll  = 0; m_screenYll  = 0;
+  m_screenWidX = 0; m_screenWidY = 0;
 
   // double
   m_viewXll         = 0.0; m_viewYll  = 0.0;
@@ -362,7 +361,7 @@ void drawPoly::expandBoxToGivenRatio(// inputs
                                      double & xll,  double & yll,
                                      double & widx, double & widy){
                            
-  // Expand the bounding box to have the same aspect ratio as the screen.
+  // Expand the given box to have the same aspect ratio as the screen.
   double nwidx = widx, nwidy = widy;
   if (widy/widx <= screenRatio) nwidy = widx*screenRatio;
   else                          nwidx = widy/screenRatio;
@@ -381,14 +380,12 @@ void drawPoly::expandBoxToGivenRatio(// inputs
 }
 
 void drawPoly::setUpViewBox(// inputs
-                            double screenRatio, 
                             const std::vector<xg_poly> & polyVec,
                             // outputs
                             double & xll, double & yll,
                             double &widx, double & widy){
 
-  // Given a set of polygons, set up a box containing these polygons
-  // with the same aspect ratio as the screen
+  // Given a set of polygons, set up a box containing these polygons.
 
   double xur, yur; // local variables
   
@@ -422,13 +419,6 @@ void drawPoly::setUpViewBox(// inputs
   xll -= widx*factor; xur += widx*factor; widx *= 1.0 + 2*factor;
   yll -= widy*factor; yur += widy*factor; widy *= 1.0 + 2*factor;
   
-  expandBoxToGivenRatio(screenRatio,             // input
-                        xll, yll, widx, widy     // in/out
-                        );
- 
-  xur = xll + widx;
-  yur = yll + widy;
-
   return;
   
 }
@@ -448,20 +438,19 @@ void drawPoly::showPoly( QPainter *paint ){
   // To have the polygon show up a bit inside the screen use some padding
   m_padX = 0.0; m_padY = m_screenRatio*m_padX; // Units are pixels
 
-  if (m_resetView                      ||
-      m_prevScreenWidX != m_screenWidX ||
-      m_prevScreenWidY != m_screenWidY){
+  if (m_resetView){
 
     setUpViewBox(// inputs
-                 m_screenRatio, m_polyVec,
+                 m_polyVec,
                  // outputs
                  m_viewXll, m_viewYll, m_viewWidX, m_viewWidY
                  );
-    
-    m_prevScreenWidX = m_screenWidX;
-    m_prevScreenWidY = m_screenWidY;
-    m_resetView      = false;
+    m_resetView = false;
   }
+  
+  expandBoxToGivenRatio(m_screenRatio,                               // input
+                        m_viewXll, m_viewYll, m_viewWidX, m_viewWidY // in/out
+                        );
   
 //   paint->setWindow(m_screenXll,  m_screenYll,
 //                    m_screenWidX, m_screenWidY
