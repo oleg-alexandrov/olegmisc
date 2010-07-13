@@ -122,15 +122,20 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
   // Zoom to selection if the mouse went down and right,
   // zoom out if the mouse went up and left, and print
   // the current coordinates otherwise.
-  if       (m_mouseRelX > m_mousePrsX && m_mouseRelY > m_mousePrsY){
+  
+  // Any selection smaller than this will be ignored as perhaps the
+  // user moved the mouse unintentionally between press and release.
+  int tol = 5; 
+  if       (m_mouseRelX > m_mousePrsX + tol && m_mouseRelY > m_mousePrsY + tol){
     update(); // Will zoom to the region selected with the mouse
     return;
-  }else if (m_mouseRelX < m_mousePrsX && m_mouseRelY < m_mousePrsY ){
+  }else if (m_mouseRelX + tol < m_mousePrsX && m_mouseRelY + tol < m_mousePrsY ){
     zoomOut();
     return;
-  }else if (m_mouseRelX == m_mousePrsX && m_mouseRelY == m_mousePrsY){
+  }else if (abs(m_mouseRelX - m_mousePrsX) <= tol &&
+            abs(m_mouseRelY - m_mousePrsY) <= tol){
 
-    // Print the physcal coordinates of the point the mouse was clicked at
+    // Print the physcal coordinates of the point the mouse was released at
     int prec = 6, wid = prec + 6;
     cout.precision(prec);
     
