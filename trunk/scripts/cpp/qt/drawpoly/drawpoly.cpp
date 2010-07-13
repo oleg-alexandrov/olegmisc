@@ -425,17 +425,18 @@ void drawPoly::setUpViewBox(// inputs
 
 void drawPoly::showPoly( QPainter *paint ){
 
-  // Screen dimensions
-  QRect v       = paint->viewport();
+  // Dimensions of the plotting window in pixels exluding any window
+  // frame/menu bar/status bar
+  QRect v       = this->rect();
   m_screenXll   = v.left();
   m_screenYll   = v.top();
   m_screenWidX  = v.width();
   m_screenWidY  = v.height();
   m_screenRatio = double(m_screenWidY)/double(m_screenWidX);
-  //cout << "Screen is " << m_screenXll << ' ' << m_screenYll << ' '
-  //     << m_screenWidX << ' ' << m_screenWidY  << ' ' << m_screenRatio << endl;
 
-  // To have the polygon show up a bit inside the screen use some padding
+  // To have the polygon show up a bit inside the screen use some padding.
+  // This must be set early as converting from screen to world coordinates
+  // depends on this.
   m_padX = 0.0; m_padY = m_screenRatio*m_padX; // Units are pixels
 
   if (m_resetView){
