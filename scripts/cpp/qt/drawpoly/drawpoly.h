@@ -28,6 +28,8 @@ public:
   void shiftDown();
   void toggleAnno();
   void resetView();
+  void cutPolysToHighlight();
+  void undoLast();
 
 public slots:
 
@@ -36,13 +38,15 @@ protected:
   void paintEvent( QPaintEvent * E);
   void mousePressEvent( QMouseEvent *E);
   void mouseMoveEvent( QMouseEvent *E);
-  void keyPressEvent( QKeyEvent *k );
+  void keyPressEvent( QKeyEvent *K );
   void mouseReleaseEvent ( QMouseEvent * E );
-  void wheelEvent(QWheelEvent *event);
+  void wheelEvent(QWheelEvent *E);
 
 private slots:
 
 private:
+  void drawRect(const utils::dRect & R, int lineWidth,
+                QPainter * paint);
   void centerViewAtPoint(double x, double y);
   void drawOneVertex(int x0, int y0, QColor color, int lineWidth,
                      int drawVertIndex, QPainter * paint);
@@ -78,6 +82,8 @@ private:
   double m_pixelSize, m_padX, m_padY;
   
   std::vector<xg_poly> m_polyVec;
+  std::vector< std::vector<xg_poly> > m_polyVecStack; // Used for undo
+  
   std::vector<bool>    m_plotVertsOnlyVec;
   
   int m_yFactor; // To compensate for Qt's origin in the upper-left corner
@@ -91,6 +97,13 @@ private:
   QRect   m_screenRect, m_rubberBand;
 
   bool m_showAnnotations;
+
+  std::vector<utils::dRect> m_highlights;
+
+  std::vector<int> m_actions;
+
+  static const int m_cutToHlt  = 1;
+  static const int m_createHlt = 2;
   
 };
 

@@ -50,6 +50,8 @@ void appWindow::shiftUp    (){ m_poly->shiftUp    (); }
 void appWindow::shiftDown  (){ m_poly->shiftDown  (); }
 void appWindow::resetView  (){ m_poly->resetView  (); }
 void appWindow::toggleAnno (){ m_poly->toggleAnno (); }
+void appWindow::cutToHlt   (){ m_poly->cutPolysToHighlight (); }
+void appWindow::undoLast   (){ m_poly->undoLast(); }
 
 void appWindow::createMenus(){
   
@@ -58,6 +60,11 @@ void appWindow::createMenus(){
   QPopupMenu* file = new QPopupMenu( menu );
   menu->insertItem("&File", file);
   file->insertItem("E&xit", qApp, SLOT(quit()), Key_Q);
+
+  QPopupMenu* edit = new QPopupMenu( menu );
+  menu->insertItem("&Edit", edit);
+  edit->insertItem("Cut to hlt", this, SLOT(cutToHlt()), Key_C);
+  edit->insertItem("Undo",       this, SLOT(undoLast()), Key_Z);
 
   QPopupMenu* view = new QPopupMenu( menu );
   menu->insertItem("&View", view);
