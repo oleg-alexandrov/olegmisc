@@ -573,11 +573,24 @@ void drawPoly::expandBoxToGivenRatio(// inputs
                                      double & widx, double & widy){
                            
   // Expand the given box to have the same aspect ratio as the screen.
+  assert(widx > 0.0 && widy > 0.0 && screenRatio > 0.0);
   double nwidx = widx, nwidy = widy;
   if (widy/widx <= screenRatio) nwidy = widx*screenRatio;
   else                          nwidx = widy/screenRatio;
-  assert(nwidx >= widx && nwidy >= widy
-         && abs(nwidy/nwidx - screenRatio) < 1.0e-5*screenRatio);
+
+  // Sanity checks
+  double tol = 1.0e-3;
+  bool check = ( nwidx >= widx*(1 - tol) && nwidy >= widy*(1 - tol)
+                 && abs(nwidy/nwidx - screenRatio) < tol*screenRatio );
+  if (!check){
+    cout << "ERROR!" << endl;
+    cout << "widx widy are "   << widx  << ' ' << widy  << endl;
+    cout << "nwidx nwidy are " << nwidx << ' ' << nwidy << endl;
+    cout << "Screen ratio is " << screenRatio << endl;
+    cout << "|nwidy/nwidx - screenRatio| = " << abs(nwidy/nwidx - screenRatio) << endl;
+    cout << "Max allowed error is " << 1.0e-5*screenRatio << endl;
+  }
+  assert(check);
 
   // Make the new bounding box have the same center as the old one
   xll += widx/2.0 - nwidx/2.0;
