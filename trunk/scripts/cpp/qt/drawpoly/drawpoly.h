@@ -17,7 +17,7 @@ class drawPoly : public QWidget
 public:
     drawPoly( QWidget *parent, const char *name,
               const std::vector<xg_poly> & polyVec,
-              const std::vector<bool>    & plotVertsOnlyVec,
+              const std::vector<bool>    & plotPointsOnlyVec,
               int yFactor
               );
   void zoomIn();
@@ -31,7 +31,8 @@ public:
   void cutToHlt();
   void undoLast();
   void savePoly();
-
+  void togglePE();
+  
 public slots:
 
 protected:
@@ -85,7 +86,7 @@ private:
   std::vector<xg_poly> m_polyVec;
   std::vector< std::vector<xg_poly> > m_polyVecStack; // Used for undo
   
-  std::vector<bool>    m_plotVertsOnlyVec;
+  std::vector<bool>    m_plotPointsOnlyVec;
   
   int m_yFactor; // To compensate for Qt's origin in the upper-left corner
 
@@ -105,7 +106,8 @@ private:
 
   static const int m_cutToHlt  = 1;
   static const int m_createHlt = 2;
-  
+
+  int m_showEdges, m_showPoints, m_showPointsEdges, m_toggleShowPointsEdges;
 };
 
 #endif // DRAWPOLY_H

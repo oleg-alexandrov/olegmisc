@@ -15,7 +15,7 @@ class appWindow : public QMainWindow {
 public:
   appWindow(QWidget* parent, const char* name,
             const std::vector<xg_poly> & polyVec,
-            const std::vector<bool>    & plotVertsOnlyVec,
+            const std::vector<bool>    & plotPointsOnlyVec,
             int yFactor,
             int widX, int widY, WFlags f=0);
   ~appWindow();
@@ -36,6 +36,7 @@ private slots:
   void cutToHlt   ();
   void undoLast   ();
   void savePoly   ();
+  void togglePE   ();
   
 private:
   drawPoly * m_poly;

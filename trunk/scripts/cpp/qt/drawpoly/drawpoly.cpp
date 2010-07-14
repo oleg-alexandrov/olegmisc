@@ -29,13 +29,13 @@ const int drawPoly::m_createHlt;
 
 drawPoly::drawPoly( QWidget *parent, const char *name,
                     const std::vector<xg_poly> & polyVec,
-                    const std::vector<bool>    & plotVertsOnlyVec,
+                    const std::vector<bool>    & plotPointsOnlyVec,
                     int yFactor
                     ):
   QWidget(parent, name), m_yFactor(yFactor) {
 
-  m_polyVec          = polyVec;
-  m_plotVertsOnlyVec = plotVertsOnlyVec;
+  m_polyVec           = polyVec;
+  m_plotPointsOnlyVec = plotPointsOnlyVec;
   
   resetTransformSettings();
 
@@ -51,7 +51,11 @@ drawPoly::drawPoly( QWidget *parent, const char *name,
   m_showAnnotations = true;
   
   m_rubberBand      = QRect( 0, 0, 0, 0); // initial rubberband
-  
+
+  m_showEdges             = 1;
+  m_showPointsEdges       = 2;
+  m_showPoints            = 3;
+  m_toggleShowPointsEdges = m_showEdges;
 }
 
 void drawPoly::showPoly( QPainter *paint ){
@@ -148,9 +152,12 @@ void drawPoly::showPoly( QPainter *paint ){
   // Draw the polygons
   for (int vecIter  = 0; vecIter < (int)m_polyVec.size(); vecIter++){
 
-    bool plotVertsOnly = m_plotVertsOnlyVec[vecIter];
-    if (plotVertsOnly) drawVertIndex++;
-
+    bool plotPointsOnly = m_plotPointsOnlyVec[vecIter];
+    if (plotPointsOnly                               ||
+        m_toggleShowPointsEdges == m_showPoints      ||
+        m_toggleShowPointsEdges == m_showPointsEdges 
+        ) drawVertIndex++;
+    
     xg_poly clipPoly;
     m_polyVec[vecIter].clipPoly(//inuts
                                 m_viewXll,  m_viewYll,
@@ -187,7 +194,11 @@ void drawPoly::showPoly( QPainter *paint ){
 
         // Qt's built in points are too small. Instead of drawing a point
         // draw a small shape. 
-        if (plotVertsOnly &&
+        if ( ( plotPointsOnly                               ||
+               m_toggleShowPointsEdges == m_showPoints      ||
+               m_toggleShowPointsEdges == m_showPointsEdges
+               )
+            &&
             x0 > m_screenXll && x0 < m_screenXll + m_screenWidX && 
             y0 > m_screenYll && y0 < m_screenYll + m_screenWidY
             ){
@@ -195,7 +206,7 @@ void drawPoly::showPoly( QPainter *paint ){
         }
       }
       
-      if (!plotVertsOnly){
+      if (!plotPointsOnly && m_toggleShowPointsEdges != m_showPoints){
         paint->setBrush( NoBrush );
         paint->setPen( QPen(color, lineWidth) );
         paint->drawPolygon( pa );
@@ -814,4 +825,11 @@ void drawPoly::savePoly(){
   poly.write_poly(fileName);
   
   return;
+}
+
+void drawPoly::togglePE(){
+
+  m_toggleShowPointsEdges = m_toggleShowPointsEdges%3 + 1;
+  update();
+  
 }
