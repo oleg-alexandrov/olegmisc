@@ -22,12 +22,12 @@ int main(int argc, char** argv){
   int widX, widY;
   extractWindowDims(argc - 1, argv + 1, widX, widY); // argv[0] is prog name
 
-  bool plotVertsOnly = false; // plot the edges or just the vertices
+  bool plotPointsOnly = false; // plot the edges or just the vertices
 
   int yFactor = -1; // To compensate for Qt's origin in the upper-left corner
 
-  vector<xg_poly> polyVec;          polyVec.resize(argc);
-  vector<bool>    plotVertsOnlyVec; plotVertsOnlyVec.clear();
+  vector<xg_poly> polyVec;           polyVec.resize(argc);
+  vector<bool>    plotPointsOnlyVec; plotPointsOnlyVec.clear();
   
   int numClips = 0;
   for (int argIter = 1; argIter < argc; argIter++){
@@ -36,7 +36,7 @@ int main(int argc, char** argv){
     if (strlen(filename) == 0) continue;
 
     if ( strstr(filename, "-p") ){
-      plotVertsOnly = !plotVertsOnly;
+      plotPointsOnly = !plotPointsOnly;
       continue;
     }
     
@@ -58,7 +58,7 @@ int main(int argc, char** argv){
     }
     polyVec[numClips].set_annotations(annotations);
 
-    plotVertsOnlyVec.push_back(plotVertsOnly);
+    plotPointsOnlyVec.push_back(plotPointsOnly);
     
     numClips++;
     
@@ -73,7 +73,7 @@ int main(int argc, char** argv){
   QApplication app(argc, argv);
   char * name = "polyViewer";
   
-  appWindow m(NULL,  name, polyVec, plotVertsOnlyVec,
+  appWindow m(NULL,  name, polyVec, plotPointsOnlyVec,
               yFactor, widX, widY);
   m.resize(widX, widY);
   m.setCaption(name);

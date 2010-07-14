@@ -19,14 +19,14 @@ using namespace std;
 
 appWindow::appWindow(QWidget* parent, const char* name,
                      const std::vector<xg_poly> & polyVec,
-                     const std::vector<bool>    & plotVertsOnlyVec,
+                     const std::vector<bool>    & plotPointsOnlyVec,
                      int yFactor,
                      int widX, int widY, WFlags f):
   QMainWindow(parent, name, f){
 
   createMenus();
 
-  m_poly = new drawPoly (this, name, polyVec, plotVertsOnlyVec, yFactor);
+  m_poly = new drawPoly (this, name, polyVec, plotPointsOnlyVec, yFactor);
   setCentralWidget(m_poly);
   
   m_poly->resize( widX, widY );
@@ -53,6 +53,7 @@ void appWindow::toggleAnno (){ m_poly->toggleAnno (); }
 void appWindow::cutToHlt   (){ m_poly->cutToHlt   (); }
 void appWindow::undoLast   (){ m_poly->undoLast   (); }
 void appWindow::savePoly   (){ m_poly->savePoly   (); }
+void appWindow::togglePE   (){ m_poly->togglePE   (); }
 
 void appWindow::createMenus(){
   
@@ -70,15 +71,16 @@ void appWindow::createMenus(){
 
   QPopupMenu* view = new QPopupMenu( menu );
   menu->insertItem("&View", view);
-  view->insertItem("Zoom out", this, SLOT(zoomOut()), Key_Minus);
   //view->insertSeparator();
-  view->insertItem("Zoom in",  this, SLOT(zoomIn()),  Key_Equal);
-  view->insertItem("Move left", this, SLOT(shiftLeft()), Key_Left);
-  view->insertItem("Move right", this, SLOT(shiftRight()), Key_Right);
-  view->insertItem("Move up", this, SLOT(shiftUp()), Key_Up);
-  view->insertItem("Move down", this, SLOT(shiftDown()), Key_Down);
-  view->insertItem("Reset view", this, SLOT(resetView()), Key_R);
-  view->insertItem("Toggle anno", this, SLOT(toggleAnno()), Key_A);
+  view->insertItem("Zoom out",      this, SLOT(zoomOut()),    Key_Minus);
+  view->insertItem("Zoom in",       this, SLOT(zoomIn()),     Key_Equal);
+  view->insertItem("Move left",     this, SLOT(shiftLeft()),  Key_Left);
+  view->insertItem("Move right",    this, SLOT(shiftRight()), Key_Right);
+  view->insertItem("Move up",       this, SLOT(shiftUp()),    Key_Up);
+  view->insertItem("Move down",     this, SLOT(shiftDown()),  Key_Down);
+  view->insertItem("Reset view",    this, SLOT(resetView()),  Key_R);
+  view->insertItem("Toggle anno",   this, SLOT(toggleAnno()), Key_A);
+  view->insertItem("Toggle points", this, SLOT(togglePE()),   Key_P);
 
   QPopupMenu* help = new QPopupMenu( menu );
   help->insertItem("&About", this, SLOT(help()));
