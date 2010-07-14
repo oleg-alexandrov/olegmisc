@@ -35,6 +35,7 @@ private slots:
   void toggleAnno ();
   void cutToHlt   ();
   void undoLast   ();
+  void savePoly   ();
   
 private:
   drawPoly * m_poly;
