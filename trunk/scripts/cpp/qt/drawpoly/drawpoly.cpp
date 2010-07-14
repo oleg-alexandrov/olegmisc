@@ -723,7 +723,7 @@ void drawPoly::drawRect(const utils::dRect & R, int lineWidth,
   return;
 }
 
-void drawPoly::cutPolysToHighlight(){
+void drawPoly::cutToHlt(){
   
   // Cut to the last highlight
   int numH = m_highlights.size();
@@ -792,5 +792,26 @@ void drawPoly::undoLast(){
 
   }
 
+  return;
+}
+
+void drawPoly::savePoly(){
+
+  if (m_polyVec.size() == 0){
+    cerr << "No polygons to save" << endl;
+  }
+
+  char * fileName = "out.xg";
+  cout << "Will save to " << fileName << endl;
+
+  xg_poly poly = m_polyVec[0];
+  double * yv  = (double*)poly.get_yv(); 
+  int numVerts = poly.get_totalNumVerts();
+  // To do: the operation below should be done inside of the xg_poly class
+  for (int s = 0; s < numVerts; s++){
+    yv[s] *= m_yFactor; // To compensate for Qt's origin in the ul corner
+  }
+  poly.write_poly(fileName);
+  
   return;
 }

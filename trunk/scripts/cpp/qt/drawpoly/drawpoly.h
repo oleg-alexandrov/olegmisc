@@ -28,8 +28,9 @@ public:
   void shiftDown();
   void toggleAnno();
   void resetView();
-  void cutPolysToHighlight();
+  void cutToHlt();
   void undoLast();
+  void savePoly();
 
 public slots:
 
