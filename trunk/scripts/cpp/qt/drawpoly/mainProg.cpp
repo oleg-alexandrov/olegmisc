@@ -35,7 +35,7 @@ int main(int argc, char** argv){
     char * filename = argv[argIter];
 
     if ( strstr(filename, "-h") ){
-      cout << "Usage: " << argv[0] << " [ -geo 600x600 ] file1.xg ... "
+      cout << "Usage: " << argv[0] << " [ -geo 1000x800 ] file1.xg ... "
            << " [ -p ] file10.xg " << endl;
       exit(0);
     }
