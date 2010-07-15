@@ -218,7 +218,8 @@ void drawPoly::showPoly( QPainter *paint ){
     if (m_showAnnotations){
       
       int numAnno = annotations.size();
-      if (numAnno > 2000){
+      if (numAnno > 500){
+        // Showing annotations is a slow process
         //cout << "Too many annotations, zoom in to see them" << endl;
       }else{
         for (int aIter = 0; aIter < numAnno; aIter++){
