@@ -85,7 +85,7 @@ void utils::parseCmdOptionsLoadData(//inputs
     }
     
     //cout << "Reading " << filename << endl;
-    if ( ! polyVec[numClips].read_poly(filename) ) exit(1);
+    if ( ! polyVec[numClips].read_poly(filename, plotPointsOnly) ) exit(1);
 
     // Flip the polygons to compensate for Qt's origin
     // being in the upper-right corner
