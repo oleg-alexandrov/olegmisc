@@ -30,9 +30,12 @@ int main(int argc, char** argv){
   int numPolys            = poly.get_numPolys();
   //int totalNumVerts     = poly.get_totalNumVerts();
 
-  double xll = 100, xur = 426;
-  double yll = 100, yur = 501.214;
+//   double xll = 100, xur = 426;
+//   double yll = 100, yur = 501.214;
 
+  double xll = 196.5,   yll = 607.411;
+  double xur = 633.425, yur = 995.075;
+    
   vector<double> cutX, cutY;
   vector<int> cutNumPolys;
 

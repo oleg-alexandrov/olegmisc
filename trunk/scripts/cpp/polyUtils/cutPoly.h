@@ -7,8 +7,9 @@
 #include <cstdlib>
 
 namespace utils{
-  void cutEdge(double x0, double y0, double x1, double y1, double H,
-             double & cutx, double & cuty);
+  void cutEdge(double x0, double y0, double x1, double y1,
+               double nx, double ny, double H,
+               double & cutx, double & cuty);
   
 void cutPoly(// inputs -- the polygons
              int numPolys, const int * numVerts,
@@ -22,9 +23,9 @@ void cutPoly(// inputs -- the polygons
              std::vector< int>    & cutNumPolys);
   
 void cutToHalfSpace(// inputs 
+                    double nx, double ny, double dotH,
                     int numV, 
                     const double * xv, const double * yv,
-                    double H, // cutting line -- cut to the left
                     // outputs -- the cut polygons
                     std::vector< double> & cutX,
                     std::vector< double> & cutY,
