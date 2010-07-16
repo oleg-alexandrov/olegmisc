@@ -6,12 +6,12 @@ undef $/;          # read one whole file in one scalar
 MAIN:{
   
   if (scalar(@ARGV) < 2){
-    print "Usage: $0 file.xg layer\n";
+    print "Usage: $0 layer file.xg\n";
     exit(0);
   }
 
-  my $file  = $ARGV[0];
-  my $layer = $ARGV[1];
+  my $layer = $ARGV[0];
+  my $file  = $ARGV[1];
   
   open(FILE, "<$file"); my $text = <FILE>; close(FILE);
 
