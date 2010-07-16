@@ -20,8 +20,9 @@ int main(int argc, char** argv){
   }
   
   char * filename = argv[1];
+  bool isPointCloud = false;
   cout << "Reading " << filename << endl;
-  if (! poly.read_poly(filename) ) exit(1);
+  if (! poly.read_poly(filename, isPointCloud) ) exit(1);
 
   const double * xv       = poly.get_xv();
   const double * yv       = poly.get_yv();
@@ -44,7 +45,8 @@ int main(int argc, char** argv){
   double scale = 1.0;
   char * layer = "";
   vector<string> colorsOut, layersOut; 
-  write_xg(outFile, cutX, cutY, cutNumPolys, cutNumPolys.size(), cutX.size(),
+  write_xg(outFile, isPointCloud,
+           cutX, cutY, cutNumPolys, cutNumPolys.size(), cutX.size(),
            colorsOut, "yellow", scale, layersOut, layer);
 
   return 0;
