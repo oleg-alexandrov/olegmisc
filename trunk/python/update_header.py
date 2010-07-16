@@ -236,7 +236,7 @@ if __name__ == '__main__':
     cpp_file = sys.argv[1]
     
     h_file = cpp_file;
-    h_file = re.sub(r".cpp", ".h", h_file)
+    h_file = re.sub(r"\.cpp", ".h", h_file)
 
     if (not os.path.exists(h_file)) or (not os.path.isfile(h_file)):
       print "File", h_file, "does not exist"
