@@ -25,7 +25,7 @@ MAIN:{
     if ($text !~ /color/i){
       $text = "color = $col\n" . $text;
     }else{
-      $text =~ s/color.*?\w+/color = $col/i;
+      $text =~ s/color.*?\w+\s*\n/color = $col\n/ig;
     }
     
     open(FILE, ">$file");
