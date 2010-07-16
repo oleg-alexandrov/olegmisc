@@ -20,6 +20,7 @@ public:
               const std::vector<bool>    & plotPointsOnlyVec,
               int yFactor
               );
+  
   void zoomIn();
   void zoomOut();
   void shiftRight();
@@ -27,6 +28,7 @@ public:
   void shiftUp();
   void shiftDown();
   void toggleAnno();
+  void toggleFilled();
   void resetView();
   void cutToHlt();
   void undoLast();
@@ -99,7 +101,8 @@ private:
   QRect   m_screenRect, m_rubberBand;
 
   bool m_showAnnotations;
-
+  bool m_showFilledPolys;
+  
   std::vector<utils::dRect> m_highlights;
 
   std::vector<int> m_actions;

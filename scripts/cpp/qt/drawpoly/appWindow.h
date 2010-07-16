@@ -24,24 +24,25 @@ public slots:
 void help();
   
 private slots:
-  void createMenus();
-  void zoomIn     ();
-  void zoomOut    ();
-  void shiftRight ();
-  void shiftLeft  ();
-  void shiftUp    ();
-  void shiftDown  ();
-  void resetView  ();
-  void toggleAnno ();
-  void cutToHlt   ();
-  void undoLast   ();
-  void savePoly   ();
-  void togglePE   ();
+  void createMenus  ();
+  void zoomIn       ();
+  void zoomOut      ();
+  void shiftRight   ();
+  void shiftLeft    ();
+  void shiftUp      ();
+  void shiftDown    ();
+  void resetView    ();
+  void toggleAnno   ();
+  void toggleFilled ();
+  void cutToHlt     ();
+  void undoLast     ();
+  void savePoly     ();
+  void togglePE     ();
   
 private:
-  drawPoly * m_poly;
-  QPopupMenu* options;
-  QPrinter* printer;
+  drawPoly   * m_poly;
+  QPopupMenu * options;
+  QPrinter   * printer;
   int dbf_id;
   
 };
