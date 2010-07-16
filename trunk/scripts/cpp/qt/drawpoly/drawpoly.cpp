@@ -46,10 +46,12 @@ drawPoly::drawPoly( QWidget *parent, const char *name,
   // double
   m_viewXll         = 0.0; m_viewYll  = 0.0;
   m_viewWidX        = 0.0; m_viewWidY = 0.0;
-  m_resetView       = true;
-  m_prevClickExists = false;
-  m_showAnnotations = true;
-  m_showFilledPolys = false;
+
+  m_resetView          = true;
+  m_prevClickExists    = false;
+  m_showAnnotations    = true;
+  m_showFilledPolys    = false;
+  m_showInReverseOrder = false;
   
   m_rubberBand      = QRect( 0, 0, 0, 0); // initial rubberband
 
@@ -151,8 +153,11 @@ void drawPoly::showPoly( QPainter *paint ){
   int drawVertIndex = -1; // Will draw a vertex with a shape dependent on this
   
   // Draw the polygons
-  for (int vecIter  = 0; vecIter < (int)m_polyVec.size(); vecIter++){
+  for (int vi  = 0; vi < (int)m_polyVec.size(); vi++){
 
+    int vecIter = vi;
+    if (m_showInReverseOrder) vecIter = (int)m_polyVec.size() - 1 - vi;
+    
     bool plotPointsOnly = m_plotPointsOnlyVec[vecIter];
     if (plotPointsOnly                               ||
         m_toggleShowPointsEdges == m_showPoints      ||
@@ -851,6 +856,13 @@ void drawPoly::savePoly(){
 void drawPoly::togglePE(){
 
   m_toggleShowPointsEdges = m_toggleShowPointsEdges%3 + 1;
+  update();
+  
+}
+
+void drawPoly::toggleOrder(){
+
+  m_showInReverseOrder = !m_showInReverseOrder;
   update();
   
 }

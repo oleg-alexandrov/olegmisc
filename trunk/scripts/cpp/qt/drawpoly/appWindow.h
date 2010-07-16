@@ -38,6 +38,7 @@ private slots:
   void undoLast     ();
   void savePoly     ();
   void togglePE     ();
+  void toggleOrder  ();
   
 private:
   drawPoly   * m_poly;

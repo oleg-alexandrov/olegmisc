@@ -34,6 +34,7 @@ public:
   void undoLast();
   void savePoly();
   void togglePE();
+  void toggleOrder();
   
 public slots:
 
@@ -112,6 +113,8 @@ private:
   static const int m_createHlt = 2;
 
   int m_showEdges, m_showPoints, m_showPointsEdges, m_toggleShowPointsEdges;
+  bool m_showInReverseOrder;
+  
 };
 
 #endif // DRAWPOLY_H
