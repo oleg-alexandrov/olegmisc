@@ -14,76 +14,29 @@ using namespace utils;
 
 int main(int argc, char** argv){
 
+  char * progName = argv[0];
   if (argc < 2){
-    cerr << "Usage: " << argv[0] <<  " poly.xg" << endl;
+    printUsage(progName);
     exit(1);
   }
-
-  int widX, widY;
-  extractWindowDims(argc - 1, argv + 1, widX, widY); // argv[0] is prog name
-
-  bool plotPointsOnly = false; // plot the edges or just the vertices
 
   int yFactor = -1; // To compensate for Qt's origin in the upper-left corner
-
-  vector<xg_poly> polyVec;           polyVec.resize(argc);
-  vector<bool>    plotPointsOnlyVec; plotPointsOnlyVec.clear();
-  
-  int numClips = 0;
-  for (int argIter = 1; argIter < argc; argIter++){
-
-    char * filename = argv[argIter];
-
-    if ( strstr(filename, "-h") || strstr(filename, "--h") ||
-         strstr(filename, "-?") ){
-      cout << "Usage: " << argv[0] << " [ -geo 1000x800 ] file_1.xg ... "
-           << "[ -p ] file_N.xg " << endl;
-      exit(0);
-    }
-
-    if (strlen(filename) == 0) continue;
-
-    if ( strstr(filename, "-p") ){
-      plotPointsOnly = !plotPointsOnly;
-      continue;
-    }
-    
-    //cout << "Reading " << filename << endl;
-    if ( ! polyVec[numClips].read_poly(filename) ) exit(1);
-  
-    double * xv = (double*)polyVec[numClips].get_xv();
-    double * yv = (double*)polyVec[numClips].get_yv();
-    int numV    = polyVec[numClips].get_totalNumVerts();
-    for (int s = 0; s < numV; s++){
-      xv[s] = xv[s];
-      yv[s] = yFactor*yv[s];
-    }
-
-    // Flip the annotations as well
-    std::vector<anno> annotations = polyVec[numClips].get_annotations();
-    for (int s = 0; s < (int)annotations.size(); s++){
-      annotations[s].y *= yFactor;
-    }
-    polyVec[numClips].set_annotations(annotations);
-
-    plotPointsOnlyVec.push_back(plotPointsOnly);
-    
-    numClips++;
-    
-  }
-
-  if (numClips == 0){
-    cerr << "No polygons to plot" << endl;
-    exit(1);
-  }
-  polyVec.resize(numClips);
+  int windowWidX, windowWidY;
+  vector<xg_poly> polyVec;          
+  vector<bool>    plotPointsOnlyVec;
+  parseCmdOptionsLoadData(//inputs
+                          argc, argv, progName, yFactor,
+                          // outputs
+                          windowWidX, windowWidY,
+                          polyVec, plotPointsOnlyVec
+                          );
 
   QApplication app(argc, argv);
   char * name = "polyViewer";
   
   appWindow m(NULL,  name, polyVec, plotPointsOnlyVec,
-              yFactor, widX, widY);
-  m.resize(widX, widY);
+              yFactor, windowWidX, windowWidY);
+  m.resize(windowWidX, windowWidY);
   m.setCaption(name);
   if ( QApplication::desktop()->width() > m.width() + 10
        && QApplication::desktop()->height() > m.height() +30 )

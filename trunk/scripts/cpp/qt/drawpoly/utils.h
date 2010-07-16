@@ -1,16 +1,45 @@
 #ifndef UTILS_H
 #define UTILS_H
 #include <cmath>
+#include <iostream>
+#include "../../polyUtils/xg_poly.h"
+
 namespace utils{
 
   void extractWindowDims(// inputs
                          int numArgs, char ** args,
                          // outputs
-                         int & widX, int & widY
+                         int & windowWidX, int & windowWidY
                          );
+
+  void parseCmdOptionsLoadData(//inputs
+                               int argc, char** argv, char * progName,
+                               int yFactor,
+                               // outputs
+                               int & windowWidX, int & windowWidY,
+                               std::vector<xg_poly>  & polyVec, 
+                               std::vector<bool>     & plotPointsOnlyVec
+                               );
+
+  inline void printUsage(char * progName){
     
-  class dRect{
+    std::cout << "Usage: " << progName << " [ -geo 1000x800 ] file_1.xg ... "
+              << "[ -p ] file_N.xg " << std::endl;
+
+  }
   
+  inline int iround(double x){ return (int)round(x); }
+  inline int iceil (double x){ return (int)ceil( x); }
+  inline int ifloor(double x){ return (int)floor(x); }
+  inline int isign (double x){
+    if (x > 0) return  1;
+    if (x < 0) return -1;
+    return 0;
+  }
+
+  
+  class dRect{
+    
   public:
     dRect(double xll = 0, double yll = 0, double xur = 0, double yur = 0): 
       m_xll(xll), m_yll(yll), m_xur(xur), m_yur(yur) {}
@@ -23,6 +52,7 @@ namespace utils{
     double height() const { return m_yur - m_yll;}
 
   private:
+
     double m_xll;
     double m_yll;
     double m_xur;
@@ -37,14 +67,6 @@ namespace utils{
     R            = dRect(left, top, right, bot);
   }
   
-  inline int iround(double x){ return (int)round(x); }
-  inline int iceil (double x){ return (int)ceil( x); }
-  inline int ifloor(double x){ return (int)floor(x); }
-  inline int isign (double x){
-    if (x > 0) return  1;
-    if (x < 0) return -1;
-    return 0;
-  }
   
 }
 
