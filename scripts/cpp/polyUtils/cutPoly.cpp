@@ -88,7 +88,9 @@ void utils::cutToHalfSpace(// inputs
       cutX.push_back(cutx);
       cutY.push_back(cuty);
 
-      C.val = cuty; C.index = numCutPts; ptsOnCutline.push_back(C);
+      C.val = cuty; C.index = numCutPts;
+      ptsOnCutline.push_back(C);
+
       numCutPts++; 
       
     }else if (x0 > H){
@@ -99,7 +101,9 @@ void utils::cutToHalfSpace(// inputs
       cutX.push_back(cutx);
       cutY.push_back(cuty);
       
-      C.val = cuty; C.index = numCutPts; ptsOnCutline.push_back(C);
+      C.val = cuty; C.index = numCutPts;
+      ptsOnCutline.push_back(C);
+
       numCutPts++; 
 
     }else if (x0 == H){
@@ -111,8 +115,12 @@ void utils::cutToHalfSpace(// inputs
       
       cutX.push_back(x0);
       cutY.push_back(y0);
-      
-      C.val = y0; C.index = numCutPts; ptsOnCutline.push_back(C);
+
+      if (xp >= H || xn >= H){
+        C.val = y0; C.index = numCutPts;
+        ptsOnCutline.push_back(C);
+      }
+
       numCutPts++; 
       
     }
