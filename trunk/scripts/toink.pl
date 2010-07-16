@@ -4,6 +4,10 @@ use diagnostics;   # expand the cryptic warnings
 undef $/;          # read one whole file in one scalar
 
 MAIN:{
+
+  if (scalar(@ARGV) == 1){
+    push(@ARGV, $ENV{HOME} . "/poly.svg");
+  }
   
   if (scalar(@ARGV) < 2){
     print "Usage: $0 file.xg file.svg\n";
@@ -11,27 +15,44 @@ MAIN:{
   }
 
   my $file_xg = $ARGV[0];
-  open(FILE, "<$file_xg"); my $text = <FILE>; close(FILE);
+  my ($layer, $center);
+  my @polys = get_polys($file_xg, \$layer, \$center);
 
-  my $out = get_top();
-
+  my $out   = get_top();
   my $count = 0;
-  my @polys = get_polys($text);
   foreach my $poly (@polys){
     $out .= get_path() . $poly . get_id($count);
     $count++;
   }
-  
-  $out .=  get_bot();
+  $out .= get_bot();
 
   my $file_svg = $ARGV[1];
   open(FILE, ">$file_svg"); print FILE $out; close(FILE);
+
+  open(FILE, ">meta.txt");
+  print FILE "$center\n";
+  print FILE "$layer\n";
+  print FILE "svg file $file_svg\n";
+  close(FILE);
   
+  print "Reading $file_xg\n";
+  print "Writing $file_svg\n";
+
 }
 
 sub get_polys{
 
-  my $text = shift;
+  my $file_xg = shift;
+  my $layer   = shift;
+  my $center  = shift;
+  
+  open(FILE, "<$file_xg"); my $text = <FILE>; close(FILE);
+
+  $$layer = "layer";
+  
+  if ($text =~ /;\s*(\d+)\s*:\s*(\d+)/){
+    $$layer .= " ; $1:$2";
+  }
   
   $text =~ s/color\s*=.*?\n//g;
   $text =~ s/\s*;.*?(\n|$)/$1/g;
@@ -45,9 +66,7 @@ sub get_polys{
   $ctx = $1;
   $cty = $2;
 
-  open(FILE, ">center.xg");
-  print FILE $ctx . " " . $cty . "\n";
-  close(FILE);
+  $$center = "center $ctx $cty";
 
   my $scale = 1;
   my @polys = split(/NEXT\s*/, $text);
