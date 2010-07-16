@@ -49,6 +49,7 @@ drawPoly::drawPoly( QWidget *parent, const char *name,
   m_resetView       = true;
   m_prevClickExists = false;
   m_showAnnotations = true;
+  m_showFilledPolys = false;
   
   m_rubberBand      = QRect( 0, 0, 0, 0); // initial rubberband
 
@@ -207,8 +208,13 @@ void drawPoly::showPoly( QPainter *paint ){
       }
       
       if (!plotPointsOnly && m_toggleShowPointsEdges != m_showPoints){
-        paint->setBrush( NoBrush );
-        paint->setPen( QPen(color, lineWidth) );
+        if (m_showFilledPolys){
+          paint->setBrush( color );
+          paint->setPen( NoPen );
+        }else {
+          paint->setBrush( NoBrush );
+          paint->setPen( QPen(color, lineWidth) );
+        }
         paint->drawPolygon( pa );
       }
       
@@ -710,6 +716,11 @@ void drawPoly::drawOneVertex(int x0, int y0, QColor color, int lineWidth,
 
 void drawPoly::toggleAnno(){
   m_showAnnotations = !m_showAnnotations;
+  update();
+}
+
+void drawPoly::toggleFilled(){
+  m_showFilledPolys = !m_showFilledPolys;
   update();
 }
 
