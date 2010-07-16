@@ -49,6 +49,7 @@ protected:
 private slots:
 
 private:
+  bool isPolyZeroDim(const QPointArray & pa);
   void drawRect(const utils::dRect & R, int lineWidth,
                 QPainter * paint);
   void centerViewAtPoint(double x, double y);

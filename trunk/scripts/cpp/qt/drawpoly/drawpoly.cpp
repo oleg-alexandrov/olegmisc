@@ -158,7 +158,7 @@ void drawPoly::showPoly( QPainter *paint ){
         m_toggleShowPointsEdges == m_showPoints      ||
         m_toggleShowPointsEdges == m_showPointsEdges 
         ) drawVertIndex++;
-    
+
     xg_poly clipPoly;
     m_polyVec[vecIter].clipPoly(//inuts
                                 m_viewXll,  m_viewYll,
@@ -215,7 +215,14 @@ void drawPoly::showPoly( QPainter *paint ){
           paint->setBrush( NoBrush );
           paint->setPen( QPen(color, lineWidth) );
         }
-        paint->drawPolygon( pa );
+
+        if ( pa.size() >= 1 && isPolyZeroDim(pa) ){
+          // Treat the case of polygons which are made up of just one point 
+          drawOneVertex(pa[0].x(), pa[0].y(), color, lineWidth, drawVertIndex, paint);
+        }else{
+          paint->drawPolygon( pa );
+        }
+        
       }
       
     }
@@ -669,6 +676,8 @@ void drawPoly::setUpViewBox(// inputs
 void drawPoly::drawOneVertex(int x0, int y0, QColor color, int lineWidth,
                              int drawVertIndex, QPainter * paint){
 
+  drawVertIndex = max(0, drawVertIndex);
+
   int len = 6;
   paint->setPen( QPen(color, lineWidth) );
 
@@ -844,4 +853,14 @@ void drawPoly::togglePE(){
   m_toggleShowPointsEdges = m_toggleShowPointsEdges%3 + 1;
   update();
   
+}
+
+bool drawPoly::isPolyZeroDim(const QPointArray & pa){
+
+  int numPts = pa.size();
+  for (int s = 1; s < numPts; s++){
+    if (pa[0] != pa[s]) return false;
+  }
+  
+  return true;
 }
