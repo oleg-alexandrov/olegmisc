@@ -9,12 +9,12 @@ namespace localPolyUtils{
 
   struct valIndex{
     double val;
-    int index;
+    int    index;
+    bool   isOutward;
   };
 
-  inline bool lessThan(valIndex A, valIndex B){
-    return A.val < B.val;
-  }
+  inline bool lessThan   (valIndex A, valIndex B){ return A.val < B.val;}
+  inline bool greaterThan(valIndex A, valIndex B){ return A.val > B.val;}
   
 }
 
@@ -31,8 +31,6 @@ void utils::cutPoly(// inputs -- the polygons
                      std::vector< double> & cutY,
                      std::vector< int>    & cutNumPolys){
 
-  cout << "Calling cutPoly!" << endl;
-  
   // Intersect the polygon with each of the the half-planes
   // nx*x + ny*y <= (nx + ny)*H.
   // There are four values for the triplet (nx, ny, H):
@@ -55,7 +53,7 @@ void utils::cutPoly(// inputs -- the polygons
   vector<double> hPolyX, hPolyY;
   vector<int>    hPolyNumP;
 
-  for (int c = 1; c < 2; c++){
+  for (int c = 0; c < 4; c++){
 
     P2.clear(); X2.clear(); Y2.clear();
     
@@ -64,8 +62,6 @@ void utils::cutPoly(// inputs -- the polygons
     double H    = cutParams[3*c + 2];
     double dotH = (nx + ny)*H; // This formula works only for nx*ny == 0.
 
-    cout << "cutting with " << nx << ' ' << ny << ' ' << dotH << endl;
-    
     int start = 0;
     for (int pIter = 0; pIter < (int)P1.size(); pIter++){
       
@@ -92,7 +88,6 @@ void utils::cutPoly(// inputs -- the polygons
      P1 = P2; X1 = X2; Y1 = Y2;
   }
 
-
   cutNumPolys = P1; cutX = X1; cutY = Y1;
   
   return;
@@ -107,7 +102,7 @@ void utils::cutToHalfSpace(// inputs
                            std::vector< double> & cutY,
                            std::vector< int>    & cutNumPolys){
 
-  
+
   vector<valIndex> ptsOnCutline; ptsOnCutline.clear();
   valIndex C;
   
@@ -140,7 +135,9 @@ void utils::cutToHalfSpace(// inputs
       cutX.push_back(cutx);
       cutY.push_back(cuty);
 
-      C.val = cuty; C.index = cutPtsIndex;
+      C.val       = nx*cuty - ny*cutx;
+      C.index     = cutPtsIndex;
+      C.isOutward = true;
       ptsOnCutline.push_back(C);
 
       cutPtsIndex++; 
@@ -155,7 +152,9 @@ void utils::cutToHalfSpace(// inputs
       cutX.push_back(cutx);
       cutY.push_back(cuty);
       
-      C.val = cuty; C.index = cutPtsIndex;
+      C.val       = nx*cuty - ny*cutx;
+      C.index     = cutPtsIndex;
+      C.isOutward = false;
       ptsOnCutline.push_back(C);
 
       cutPtsIndex++; 
@@ -174,8 +173,12 @@ void utils::cutToHalfSpace(// inputs
       cutY.push_back(ycurr);
 
       if (dotPrev >= dotH || dotNext >= dotH){
-        C.val = ycurr; C.index = cutPtsIndex;
+
+        C.val       = nx*cuty - ny*cutx;
+        C.index     = cutPtsIndex;
+        C.isOutward = (dotPrev < dotH);
         ptsOnCutline.push_back(C);
+        
       }
 
       cutPtsIndex++; 
@@ -184,28 +187,53 @@ void utils::cutToHalfSpace(// inputs
     
   }
 
+  int numPtsOnCutline = ptsOnCutline.size();
+  if (numPtsOnCutline == 0){
+    cutNumPolys.push_back( cutX.size() );
+    return;
+  }
   
+  // There must be an even number of points on a cutline.  For each
+  // point at which we cross the cut line to the other side there must
+  // be a corresponding point at which we come back.
+  int numOut = 0, numIn = 0;
+  for (int s = 0; s < numPtsOnCutline; s++){
+    if (ptsOnCutline[s].isOutward) numOut++;
+    else                           numIn++;
+    //valIndex C = ptsOnCutline[s];
+    //cout << "val index is outward "
+    //    << C.val << ' ' << C.index << ' ' << C.isOutward << endl; 
+  }
+  assert(numIn == numOut);
+
   // Find the connected components in the cut polygons
   // To do: Move this to its own function.
   
   vector<double> X, Y;
   vector<int> P;
   X.clear(); Y.clear(); P.clear();
-  
-  sort( ptsOnCutline.begin(), ptsOnCutline.end(), lessThan );
 
-#if 1
-  static int c = 0;
-  char file[100];
-  sprintf(file, "cut%d.xg", c);
-  c++;
-  cout << "Writing to " << file << endl;
-  ofstream ch(file);
-  for (int s = 0; s < (int)cutX.size(); s++){
-    ch << cutX[s] << ' ' << cutY[s] << endl;
-    ch << "anno " << cutX[s] << ' ' << cutY[s]  << ' ' << s << endl;
+  // Decide along which direction will travel on the cutting line.
+  // The first point must go from inside the half-plane to outside.
+  // To do: Write more efficient code here
+  sort( ptsOnCutline.begin(), ptsOnCutline.end(), lessThan );
+  if (!ptsOnCutline[0].isOutward){
+    sort( ptsOnCutline.begin(), ptsOnCutline.end(), greaterThan );
   }
-  ch.close();
+
+#define DEBUG_CUT 0
+#if DEBUG_CUT
+  static int c = -1;
+  c++;
+  char file[100];
+  sprintf(file, "beforeCleanup%d.xg", c);
+  cout << "\nWriting to " << file << endl;
+  ofstream before(file);
+  for (int s = 0; s < (int)cutX.size(); s++){
+    before << cutX[s] << ' ' << cutY[s] << endl;
+    before << "anno " << cutX[s] << ' ' << cutY[s]  << ' ' << s << endl;
+  }
+  before.close();
   
   for (int s = 0; s < (int)ptsOnCutline.size(); s++){
     cout << "point on cutline is "
@@ -217,13 +245,7 @@ void utils::cutToHalfSpace(// inputs
   int numCutPts = cutX.size();
   wasVisited.assign(numCutPts, 0);
 
-  int ptIter = 0, numPtsOnCutline = ptsOnCutline.size();
-
-  // There must be an even number of points on a cutline.  For each
-  // point at which we cross the cut line to the other side there must
-  // be a corresponding point at which we come back.
-  assert(numPtsOnCutline%2 == 0);
-  
+  int ptIter = 0;
   while(1){
 
     // Stop when all points are visited
@@ -231,7 +253,6 @@ void utils::cutToHalfSpace(// inputs
     for (int v = 0; v < numCutPts; v++){
       if (!wasVisited[v]){
         ptIter  = v;
-        cout << "ptIter = " << ptIter << endl;
         success = true;
         break;
       }
@@ -257,7 +278,6 @@ void utils::cutToHalfSpace(// inputs
       if (nx*cutX[ptIter] + ny*cutY[ptIter] != dotH){
         // The point is not at the cutline
         ptIter = (ptIter + 1)%numCutPts;
-        cout << "ptIter = " << ptIter << endl;
         continue;
       }
 
@@ -267,8 +287,8 @@ void utils::cutToHalfSpace(// inputs
       // cutline at that point rather than crossing over to the other
       // side.
       // To do: Use here some faster lookup, such as a map.
-      int cutlineIter = 0;
       bool success = false;
+      int cutlineIter = 0;
       for (cutlineIter = 0; cutlineIter < numPtsOnCutline; cutlineIter++){
         if (ptsOnCutline[cutlineIter].index == ptIter){
           success = true;
@@ -277,7 +297,6 @@ void utils::cutToHalfSpace(// inputs
       }
       if (!success){
         ptIter = (ptIter + 1)%numCutPts;
-        cout << "ptIter = " << ptIter << endl;
         continue;
       }
 
@@ -285,15 +304,16 @@ void utils::cutToHalfSpace(// inputs
         // The point ptIter is at the cutline on the way out.
         // Find the point where it re-enters the current half-plane.
         assert(cutlineIter < numPtsOnCutline - 1);
+        assert(ptsOnCutline[cutlineIter].isOutward);
+          
         ptIter = ptsOnCutline[cutlineIter + 1].index;
-        cout << "ptIter = " << ptIter << endl;
         continue;
         
       }else{
-        // The pont ptIter is at the cutline on the way in.
+        // The point ptIter is at the cutline on the way in.
         // The next point will be inside the current half-plane.
+        assert(!ptsOnCutline[cutlineIter].isOutward);
         ptIter = (ptIter + 1)%numCutPts;
-        cout << "ptIter = " << ptIter << endl;
         continue;
       }
       
@@ -305,16 +325,15 @@ void utils::cutToHalfSpace(// inputs
   cutY        = Y;
   cutNumPolys = P;
 
-#if 1
-  sprintf(file, "cut%d.xg", c);
-  c++;
+#if DEBUG_CUT
+  sprintf(file, "afterCleanup%d.xg", c);
   cout << "Writing to " << file << endl;
-  ofstream ch2(file);
+  ofstream after(file);
   for (int s = 0; s < (int)cutX.size(); s++){
-    ch2 << cutX[s] << ' ' << cutY[s] << endl;
-    ch2 << "anno " << cutX[s] << ' ' << cutY[s]  << ' ' << s << endl;
+    after << cutX[s] << ' ' << cutY[s] << endl;
+    after << "anno " << cutX[s] << ' ' << cutY[s]  << ' ' << s << endl;
   }
-  ch2.close();
+  after.close();
 #endif
   
 }
