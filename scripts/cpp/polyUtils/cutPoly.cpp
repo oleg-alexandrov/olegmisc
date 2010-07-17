@@ -14,7 +14,6 @@ namespace localPolyUtils{
   };
 
   inline bool lessThan   (valIndex A, valIndex B){ return A.val < B.val;}
-  inline bool greaterThan(valIndex A, valIndex B){ return A.val > B.val;}
   
 }
 
@@ -218,7 +217,7 @@ void utils::cutToHalfSpace(// inputs
   // To do: Write more efficient code here
   sort( ptsOnCutline.begin(), ptsOnCutline.end(), lessThan );
   if (!ptsOnCutline[0].isOutward){
-    sort( ptsOnCutline.begin(), ptsOnCutline.end(), greaterThan );
+    reverse( ptsOnCutline.begin(), ptsOnCutline.end() );
   }
 
 #define DEBUG_CUT 0
@@ -236,8 +235,10 @@ void utils::cutToHalfSpace(// inputs
   before.close();
   
   for (int s = 0; s < (int)ptsOnCutline.size(); s++){
-    cout << "point on cutline is "
-         << ptsOnCutline[s].index << ' ' << ptsOnCutline[s].val << endl; 
+    cout << "point on cutline is (index outward val) "
+         << ptsOnCutline[s].index     << ' '
+         << ptsOnCutline[s].isOutward << ' '
+         << ptsOnCutline[s].val       << endl; 
   }
 #endif
 
