@@ -30,18 +30,19 @@ void utils::cutPoly(// inputs -- the polygons
 
   int totalNumVerts = 0;
   for (int s = 0; s < numPolys; s++) totalNumVerts += numVerts[s];
-  
-  vector<double> X1(xv, xv + totalNumVerts), X2;
-  vector<double> Y1(yv, yv + totalNumVerts), Y2;
 
-  vector<int>    P1(numVerts, numVerts + numPolys), P2;
+  bool isDegenPoly = (totalNumVerts <= 2);
   
-  vector<double> hPolyX, hPolyY;
-  vector<int>    hPolyNumP;
+  vector<double> Xin(xv, xv + totalNumVerts);        // A copy of xv as vector
+  vector<double> Yin(yv, yv + totalNumVerts);        // A copy of yv as vector
+  vector<int>    Pin(numVerts, numVerts + numPolys); // A copy of numVerts 
+  
+  vector<double> cutHalfX, cutHalfY, Xout, Yout;
+  vector<int>    cutHalfP, Pout;
 
   for (int c = 0; c < 4; c++){
 
-    P2.clear(); X2.clear(); Y2.clear();
+    Pout.clear(); Xout.clear(); Yout.clear();
     
     double nx   = cutParams[3*c + 0];
     double ny   = cutParams[3*c + 1];
@@ -49,37 +50,39 @@ void utils::cutPoly(// inputs -- the polygons
     double dotH = (nx + ny)*H; // This formula works only for nx*ny == 0.
 
     int start = 0;
-    for (int pIter = 0; pIter < (int)P1.size(); pIter++){
+    for (int pIter = 0; pIter < (int)Pin.size(); pIter++){
       
-      if (pIter > 0) start += P1[pIter - 1];
+      if (pIter > 0) start += Pin[pIter - 1];
       
-      int numV = P1[pIter];
+      int numV = Pin[pIter];
       if (numV == 0) continue;
       
-      cutToHalfSpace(nx, ny, dotH,
-                     numV, &X1[0] + start, &Y1[0] + start,
-                     hPolyX, hPolyY, hPolyNumP);
+      cutToHalfSpace(isDegenPoly, nx, ny, dotH,
+                     numV, vecPtr(Xin) + start, vecPtr(Yin) + start,
+                     cutHalfX, cutHalfY, cutHalfP);
       
-      for (int pIter = 0; pIter < (int)hPolyNumP.size(); pIter++){
-        P2.push_back( hPolyNumP[pIter] );
+      for (int pIterCut = 0; pIterCut < (int)cutHalfP.size(); pIterCut++){
+        Pout.push_back( cutHalfP[pIterCut] );
       }
       
-      for (int vIter = 0; vIter < (int)hPolyX.size(); vIter++){
-        X2.push_back( hPolyX[vIter] );
-        Y2.push_back( hPolyY[vIter] );
+      for (int vIter = 0; vIter < (int)cutHalfX.size(); vIter++){
+        Xout.push_back( cutHalfX[vIter] );
+        Yout.push_back( cutHalfY[vIter] );
       }
       
     }
+    
+    Pin = Pout; Xin = Xout; Yin = Yout;
+    
+  } // End iterating over cutting lines
 
-     P1 = P2; X1 = X2; Y1 = Y2;
-  }
-
-  cutNumPolys = P2; cutX = X2; cutY = Y2;
+  cutNumPolys = Pout; cutX = Xout; cutY = Yout;
   
   return;
 }
 
 void utils::cutToHalfSpace(// inputs 
+                           bool & isDegenPoly,
                            double nx, double ny, double dotH,
                            int numV, 
                            const double * xv, const double * yv,
@@ -173,8 +176,10 @@ void utils::cutToHalfSpace(// inputs
     
   }
 
+  if (cutX.size() <= 2) isDegenPoly = true; 
+  
   int numPtsOnCutline = ptsOnCutline.size();
-  if (numPtsOnCutline == 0 || cutX.size() <= 2){
+  if (numPtsOnCutline == 0 || isDegenPoly){
     cutNumPolys.push_back( cutX.size() );
     return;
   }

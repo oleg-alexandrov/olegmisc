@@ -44,6 +44,7 @@ namespace utils{
   
   
 void cutToHalfSpace(// inputs 
+                    bool & isDegenPoly, 
                     double nx, double ny, double dotH,
                     int numV, 
                     const double * xv, const double * yv,
