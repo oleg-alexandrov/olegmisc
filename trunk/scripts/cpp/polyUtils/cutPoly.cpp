@@ -2,22 +2,9 @@
 #include <cassert>
 #include <algorithm>
 #include <fstream>
+#include <cfloat>
 using namespace std;
 using namespace utils;
-
-namespace localPolyUtils{
-
-  struct valIndex{
-    double val;
-    int    index;
-    bool   isOutward;
-  };
-
-  inline bool lessThan   (valIndex A, valIndex B){ return A.val < B.val;}
-  
-}
-
-using namespace localPolyUtils;
 
 void utils::cutPoly(// inputs -- the polygons
                      int numPolys, const int * numVerts,
@@ -87,7 +74,7 @@ void utils::cutPoly(// inputs -- the polygons
      P1 = P2; X1 = X2; Y1 = Y2;
   }
 
-  cutNumPolys = P1; cutX = X1; cutY = Y1;
+  cutNumPolys = P2; cutX = X2; cutY = Y2;
   
   return;
 }
@@ -187,38 +174,19 @@ void utils::cutToHalfSpace(// inputs
   }
 
   int numPtsOnCutline = ptsOnCutline.size();
-  if (numPtsOnCutline == 0){
+  if (numPtsOnCutline == 0 || cutX.size() <= 2){
     cutNumPolys.push_back( cutX.size() );
     return;
   }
-  
-  // There must be an even number of points on a cutline.  For each
-  // point at which we cross the cut line to the other side there must
-  // be a corresponding point at which we come back.
-  int numOut = 0, numIn = 0;
-  for (int s = 0; s < numPtsOnCutline; s++){
-    if (ptsOnCutline[s].isOutward) numOut++;
-    else                           numIn++;
-    //valIndex C = ptsOnCutline[s];
-    //cout << "val index is outward "
-    //    << C.val << ' ' << C.index << ' ' << C.isOutward << endl; 
-  }
-  assert(numIn == numOut);
 
+  procPtsOnCutline(ptsOnCutline);
+  
   // Find the connected components in the cut polygons
   // To do: Move this to its own function.
   
   vector<double> X, Y;
   vector<int> P;
   X.clear(); Y.clear(); P.clear();
-
-  // Decide along which direction will travel on the cutting line.
-  // The first point must go from inside the half-plane to outside.
-  // To do: Write more efficient code here
-  sort( ptsOnCutline.begin(), ptsOnCutline.end(), lessThan );
-  if (!ptsOnCutline[0].isOutward){
-    reverse( ptsOnCutline.begin(), ptsOnCutline.end() );
-  }
 
 #define DEBUG_CUT 0
 #if DEBUG_CUT
@@ -235,6 +203,7 @@ void utils::cutToHalfSpace(// inputs
   before.close();
   
   for (int s = 0; s < (int)ptsOnCutline.size(); s++){
+    cout.precision(20);
     cout << "point on cutline is (index outward val) "
          << ptsOnCutline[s].index     << ' '
          << ptsOnCutline[s].isOutward << ' '
@@ -274,6 +243,7 @@ void utils::cutToHalfSpace(// inputs
       X.push_back(cutX[ptIter]);
       Y.push_back(cutY[ptIter]);
       wasVisited[ptIter] = 1;
+      //cout << "ptIter = " << ptIter << endl;
       numPtsInComp++;
       
       if (nx*cutX[ptIter] + ny*cutY[ptIter] != dotH){
@@ -301,11 +271,11 @@ void utils::cutToHalfSpace(// inputs
         continue;
       }
 
-      if (cutlineIter%2 == 0){
+      if (cutlineIter%2 == 0 && !ptsOnCutline[cutlineIter].isDuplicate
+          && cutlineIter < numPtsOnCutline - 1){
         // The point ptIter is at the cutline on the way out.
         // Find the point where it re-enters the current half-plane.
-        assert(cutlineIter < numPtsOnCutline - 1);
-        assert(ptsOnCutline[cutlineIter].isOutward);
+        //assert(ptsOnCutline[cutlineIter].isOutward);
           
         ptIter = ptsOnCutline[cutlineIter + 1].index;
         continue;
@@ -313,7 +283,7 @@ void utils::cutToHalfSpace(// inputs
       }else{
         // The point ptIter is at the cutline on the way in.
         // The next point will be inside the current half-plane.
-        assert(!ptsOnCutline[cutlineIter].isOutward);
+        //assert(!ptsOnCutline[cutlineIter].isOutward);
         ptIter = (ptIter + 1)%numCutPts;
         continue;
       }
@@ -357,10 +327,18 @@ void utils::cutEdge(double x0, double y0, double x1, double y1,
   
   double t = (H - dot0)/(dot1 - dot0);
   t = max(t, 0.0); t = min(t, 1.0); // extra precautions
-  
   cutx = (1-t)*x0 + t*x1;
   cuty = (1-t)*y0 + t*y1;
 
+  // Cut symmetrically in x0 and x1 to avoid problems later
+  t = (H - dot1)/(dot0 - dot1);
+  t = max(t, 0.0); t = min(t, 1.0); // extra precautions
+  double cutx2 = (1-t)*x1 + t*x0;
+  double cuty2 = (1-t)*y1 + t*y0;
+
+  cutx = 0.5*cutx + 0.5*cutx2;
+  cuty = 0.5*cuty + 0.5*cuty2;
+  
   // The above formulas have floating point errors. Use the fact that
   // the cutting line is either vertical or horizontal to recover
   // precisely one of the two coordinates above.
@@ -371,4 +349,69 @@ void utils::cutEdge(double x0, double y0, double x1, double y1,
   }
   
   return;
+}
+
+void utils::procPtsOnCutline(std::vector<valIndex> & ptsOnCutline){
+
+  // There must be an even number of points on a cutline.  For each
+  // point at which we cross the cut line to the other side there must
+  // be a corresponding point at which we come back.
+  int numPtsOnCutline = ptsOnCutline.size();
+  int numOut = 0, numIn = 0;
+  for (int s = 0; s < numPtsOnCutline; s++){
+    const valIndex & C = ptsOnCutline[s];
+    if (C.isOutward) numOut++;
+    else             numIn++;
+    //cout << "val index is outward "
+    //     << C.val << ' ' << C.index << ' ' << C.isOutward << endl; 
+  }
+  assert(numIn == numOut);
+
+  sort( ptsOnCutline.begin(), ptsOnCutline.end(), lessThan );
+
+  // Mark the duplicates
+  for (int s = 0; s < numPtsOnCutline; s++){
+
+    valIndex & C = ptsOnCutline[s]; //alias
+    
+    if (s < numPtsOnCutline - 1 && C.val == ptsOnCutline[s+1].val){
+      C.isDuplicate = true;
+      continue;
+    }
+    
+    if (s > 0 && C.val == ptsOnCutline[s-1].val){
+      C.isDuplicate = true;
+      continue;
+    }
+
+    C.isDuplicate = false;
+
+  }
+
+  // Decide the order in which we will visit the cutline points
+  // We want it in such a way that the first nonduplicate
+  // point to visit is outward.
+  for (int s = 0; s < numPtsOnCutline; s++){
+
+    valIndex & C = ptsOnCutline[s]; //alias
+    if (!C.isDuplicate && !C.isOutward){
+      reverse( ptsOnCutline.begin(), ptsOnCutline.end() );
+      break;
+    }
+    
+  }
+  
+  return;
+}
+
+double utils::polygonArea(int n, const double * x, const double * y){
+
+  double area = 0.0;
+  for (int s = 0; s < n; s++){
+    int sn = (s + 1)%n;
+    area += x[s]*y[sn] - x[sn]*y[s];
+  }
+
+  return area;
+  
 }
