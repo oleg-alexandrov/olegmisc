@@ -193,7 +193,7 @@ void utils::cutToHalfSpace(// inputs
   vector<int> P;
   X.clear(); Y.clear(); P.clear();
 
-#define DEBUG_CUT 0
+#define DEBUG_CUT 0 // Must be 0 in production code
 #if DEBUG_CUT
   static int c = -1;
   c++;
@@ -248,7 +248,9 @@ void utils::cutToHalfSpace(// inputs
       X.push_back(cutX[ptIter]);
       Y.push_back(cutY[ptIter]);
       wasVisited[ptIter] = 1;
-      //cout << "ptIter = " << ptIter << endl;
+#if DEBUG_CUT
+      cout << "ptIter = " << ptIter << endl;
+#endif
       numPtsInComp++;
       
       if (nx*cutX[ptIter] + ny*cutY[ptIter] != dotH){
@@ -399,10 +401,12 @@ void utils::procPtsOnCutline(std::vector<valIndex> & ptsOnCutline){
   for (int s = 0; s < numPtsOnCutline; s++){
 
     valIndex & C = ptsOnCutline[s]; //alias
-    if (!C.isDuplicate && !C.isOutward){
+    if (C.isDuplicate) continue;
+
+    if (!C.isOutward){
       reverse( ptsOnCutline.begin(), ptsOnCutline.end() );
-      break;
     }
+    break;
     
   }
   
