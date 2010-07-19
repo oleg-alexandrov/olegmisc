@@ -848,8 +848,15 @@ void drawPoly::savePoly(){
   for (int s = 0; s < numVerts; s++){
     yv[s] *= m_yFactor; // To compensate for Qt's origin in the ul corner
   }
-  poly.write_poly(fileName);
   
+  vector<anno> annotations = poly.get_annotations();
+  for (int s = 0; s < (int)annotations.size(); s++){
+    annotations[s].y *= m_yFactor;
+  }
+  poly.set_annotations(annotations);
+  
+  poly.write_poly(fileName);
+
   return;
 }
 
