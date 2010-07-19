@@ -859,7 +859,7 @@ void drawPoly::savePoly(){
     annotations[s].y *= m_yFactor;
   }
   poly.set_annotations(annotations);
-  
+
   poly.write_poly(fileName);
 
   return;
