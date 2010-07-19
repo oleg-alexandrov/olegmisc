@@ -841,10 +841,15 @@ void drawPoly::savePoly(){
   char * fileName = "out.xg";
   cout << "Will save to " << fileName << endl;
 
-  xg_poly poly = m_polyVec[0];
+  xg_poly poly;
+
+  for (int polyIter = 0; polyIter < (int)m_polyVec.size(); polyIter++){
+    poly.appendPolygons(m_polyVec[polyIter]); 
+  }
+
+  // To do: the operation below should be done inside of the xg_poly class
   double * yv  = (double*)poly.get_yv(); 
   int numVerts = poly.get_totalNumVerts();
-  // To do: the operation below should be done inside of the xg_poly class
   for (int s = 0; s < numVerts; s++){
     yv[s] *= m_yFactor; // To compensate for Qt's origin in the ul corner
   }
