@@ -50,6 +50,9 @@ protected:
 private slots:
 
 private:
+  bool isClosestGridPtFree(std::vector< std::vector<int> > & Grid,
+                           int x, int y);
+  void initScreenGrid(std::vector< std::vector<int> > & Grid);
   bool isPolyZeroDim(const QPointArray & pa);
   void drawRect(const utils::dRect & R, int lineWidth,
                 QPainter * paint);

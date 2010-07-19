@@ -138,8 +138,11 @@ void drawPoly::showPoly( QPainter *paint ){
   
   m_pixelSize = (m_screenWidX - 2*m_padX)/m_viewWidX;
   assert( abs(m_pixelSize - (m_screenWidY - 2*m_padY)/m_viewWidY)
-           < 1.0e-5*m_pixelSize );
-
+          < 1.0e-5*m_pixelSize );
+  
+  vector< vector<int> > Grid; // To not draw text too densely as that's slow
+  initScreenGrid(Grid);
+  
   // Plot the polygons
   int lineWidth = 1;
   QFont F;
@@ -230,29 +233,28 @@ void drawPoly::showPoly( QPainter *paint ){
         
       }
       
-    }
+    } // End plotting the current set of polygons
 
     // Plot the annotations
     if (m_showAnnotations){
       
       int numAnno = annotations.size();
-      if (numAnno > 500){
-        // Showing annotations is a slow process
-        //cout << "Too many annotations, zoom in to see them" << endl;
-      }else{
-        for (int aIter = 0; aIter < numAnno; aIter++){
-          const anno & A = annotations[aIter];
-          int x0, y0;
-          worldToPixelCoords(A.x, A.y, // inputs
-                             x0, y0    // outputs
-                             );
-          paint->setPen( QPen("gold", lineWidth) );
+      for (int aIter = 0; aIter < numAnno; aIter++){
+        const anno & A = annotations[aIter];
+        int x0, y0;
+        worldToPixelCoords(A.x, A.y, // inputs
+                           x0, y0    // outputs
+                           );
+        paint->setPen( QPen("gold", lineWidth) );
+        if (isClosestGridPtFree(Grid, x0, y0)){
           paint->drawText(x0, y0, A.label);
         }
+        
       }
-    }
+      
+    } // End placing annotations
     
-  }
+  } // End iterating over sets of polygons
 
   // Plot the highlights
   for (int h = 0; h < (int)m_highlights.size(); h++){
@@ -887,4 +889,44 @@ bool drawPoly::isPolyZeroDim(const QPointArray & pa){
   }
   
   return true;
+}
+
+void drawPoly::initScreenGrid(std::vector< std::vector<int> > & Grid){
+
+  // Split the screen into numGridPts x numGridPts rectangles.  For
+  // performance reasons, will not allow more than one string of text
+  // do be displayed in one rectangle. As such, if a polygon has a lot
+  // of text (annotations), the more you zoom in the more of the
+  // annotations you will see.
+  int numGridPts = 30; 
+  
+  Grid.resize(numGridPts);
+  for (int s = 0; s < (int)Grid.size(); s++){
+    Grid[s].resize(numGridPts);
+    for (int t = 0; t < (int)Grid[s].size(); t++){
+      Grid[s][t] = 0; // All points start free
+    }
+  }
+}
+
+bool drawPoly::isClosestGridPtFree(std::vector< std::vector<int> > & Grid,
+                                   int x, int y){
+
+  int numGridPts = Grid.size();
+  
+  // Take a point on the screen and snap it to the closest grid point
+  int sx = (int)round ((numGridPts - 1)*(double(x - m_screenXll)/double(m_screenWidX)));
+  sx = max(sx, 0); sx = min(sx, numGridPts - 1);
+  
+  int sy = (int)round ((numGridPts - 1)*(double(y - m_screenYll)/double(m_screenWidY)));
+  sy = max(sy, 0); sy = min(sy, numGridPts - 1);
+
+  if (Grid[sx][sy] == 0){
+    Grid[sx][sy] = 1; // No longer free for the next query
+    return true;
+  }else{
+    return false;
+  }
+  
+  return false;
 }
