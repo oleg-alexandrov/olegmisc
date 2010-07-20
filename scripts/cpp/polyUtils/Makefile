@@ -6,6 +6,8 @@ FC = g77 -O3
 XTRA_OBJ=cutPoly.cpp  read_write_xg.cpp dPoly.cpp 
 HDR= cutPoly.h read_write_xg.h dPoly.h
 
+all: test_dPoly testCutPoly 
+
 #start: the lines between start and end will be updated every time hdr is run.
 
 OBJ1  =  $(XTRA_OBJ)
@@ -36,9 +38,7 @@ testCutPoly.o: testCutPoly.cpp dPoly.h cutPoly.h
 
 #end
 
-all: test_dPoly testCutPoly 
-
-%.o:    %.cpp
+.o:    %.cpp
 	$(CPP)  -c $<
 
 %.o:    %.f

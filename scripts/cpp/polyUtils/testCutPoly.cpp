@@ -13,7 +13,6 @@ using namespace utils;
 
 int main(int argc, char** argv){
 
-  dPoly poly;
   if (argc <= 1){
     cout << "Usage: " << argv[0] << " file.xg" << endl;
     exit(1);
@@ -22,6 +21,8 @@ int main(int argc, char** argv){
   char * filename = argv[1];
   bool isPointCloud = false;
   cout << "Reading " << filename << endl;
+
+  dPoly poly;
   if (! poly.read_poly(filename, isPointCloud) ) exit(1);
 
   const double * xv       = poly.get_xv();
