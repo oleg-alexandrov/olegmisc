@@ -2,7 +2,7 @@
 #define UTILS_H
 #include <cmath>
 #include <iostream>
-#include "../../polyUtils/xg_poly.h"
+#include "../../polyUtils/dPoly.h"
 
 namespace utils{
 
@@ -17,7 +17,7 @@ namespace utils{
                                int yFactor,
                                // outputs
                                int & windowWidX, int & windowWidY,
-                               std::vector<xg_poly>  & polyVec, 
+                               std::vector<dPoly>  & polyVec, 
                                std::vector<bool>     & plotPointsOnlyVec
                                );
 

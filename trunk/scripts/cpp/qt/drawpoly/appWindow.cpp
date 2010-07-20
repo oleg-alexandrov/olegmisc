@@ -18,7 +18,7 @@
 using namespace std;
 
 appWindow::appWindow(QWidget* parent, const char* name,
-                     const std::vector<xg_poly> & polyVec,
+                     const std::vector<dPoly> & polyVec,
                      const std::vector<bool>    & plotPointsOnlyVec,
                      int yFactor,
                      int widX, int widY, WFlags f):

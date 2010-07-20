@@ -54,7 +54,7 @@ void utils::parseCmdOptionsLoadData(//inputs
                                     int yFactor,
                                     // outputs
                                     int & windowWidX, int & windowWidY,
-                                    std::vector<xg_poly>  & polyVec, 
+                                    std::vector<dPoly>  & polyVec, 
                                     std::vector<bool>     & plotPointsOnlyVec
                                     ){
 
