@@ -5,7 +5,7 @@
 #include <cassert>
 #include <limits>
 #include <fstream>
-#include "xg_poly.h"
+#include "dPoly.h"
 #include "cutPoly.h"
 
 using namespace std;
@@ -13,7 +13,7 @@ using namespace utils;
 
 int main(int argc, char** argv){
 
-  xg_poly poly;
+  dPoly poly;
   if (argc <= 1){
     cout << "Usage: " << argv[0] << " file.xg" << endl;
     exit(1);
