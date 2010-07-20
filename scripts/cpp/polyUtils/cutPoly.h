@@ -5,14 +5,24 @@
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
-
-template<class T>
-const T * vecPtr(const std::vector<T>& X){
-  if (X.size() == 0) return NULL;
-  else               return &X.front();   
-}
+#include <sstream>
+#include <string>
 
 namespace utils{
+
+  // To do: move these low-level utilities to a different file
+  template<class T>
+  const T * vecPtr(const std::vector<T>& X){
+    if (X.size() == 0) return NULL;
+    else               return &X.front();   
+  }
+
+  template<class T>
+  std::string num2str(T num){
+    std::ostringstream S;
+    S << num;
+    return S.str();
+  }
 
   struct valIndex{
     double val;
