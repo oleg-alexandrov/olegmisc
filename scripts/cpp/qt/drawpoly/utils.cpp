@@ -58,6 +58,10 @@ void utils::parseCmdOptionsLoadData(//inputs
                                     std::vector<bool>     & plotPointsOnlyVec
                                     ){
 
+  // To do: Loading better happen in the drawpoly class where the
+  // saving happens too. Here it is enough just to extract the
+  // filenames and parse the other optons.
+  
   polyVec.resize(argc);
   plotPointsOnlyVec.clear();
 
@@ -98,18 +102,34 @@ void utils::parseCmdOptionsLoadData(//inputs
     }
 
     // Flip the annotations as well
-    std::vector<anno> annotations = polyVec[numClips].get_annotations();
-    for (int s = 0; s < (int)annotations.size(); s++){
-      annotations[s].y *= yFactor;
+    std::vector<anno> annotations;
+    for (int annoType = 0; annoType < 2; annoType++){
+
+      if (annoType == 0){
+        polyVec[numClips].get_annotations(annotations);
+      }else{
+        polyVec[numClips].getAnnoAtVerts(annotations);
+      }   
+    
+    
+      for (int s = 0; s < (int)annotations.size(); s++){
+        annotations[s].y *= yFactor;
+      }
+      
+      if (annoType == 0){
+        polyVec[numClips].set_annotations(annotations);
+      }else{
+        polyVec[numClips].setAnnoAtVerts(annotations);
+      }
+      
+      plotPointsOnlyVec.push_back(plotPointsOnly);
+      
+      numClips++;
+    
     }
-    polyVec[numClips].set_annotations(annotations);
 
-    plotPointsOnlyVec.push_back(plotPointsOnly);
-    
-    numClips++;
-    
   }
-
+  
   if (numClips == 0){
     cerr << "No polygons to plot" << endl;
     exit(1);
