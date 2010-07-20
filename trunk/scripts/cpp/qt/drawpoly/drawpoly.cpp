@@ -188,12 +188,11 @@ void drawPoly::showPoly( QPainter *paint ){
     vector<anno> annotations;
     annotations.clear();
     if (m_showVertIndices){
-    clipPoly.getAnnoAtVerts(annotations);
+      clipPoly.getAnnoAtVerts(annotations);
     }else if (m_showAnnotations){
-      annotations = clipPoly.get_annotations();
+      clipPoly.get_annotations(annotations);
     }
     
-
     int start = 0;
     for (int pIter = 0; pIter < numPolys; pIter++){
 
@@ -241,7 +240,8 @@ void drawPoly::showPoly( QPainter *paint ){
 
         if ( pa.size() >= 1 && isPolyZeroDim(pa) ){
           // Treat the case of polygons which are made up of just one point 
-          drawOneVertex(pa[0].x(), pa[0].y(), color, lineWidth, drawVertIndex, paint);
+          drawOneVertex(pa[0].x(), pa[0].y(), color, lineWidth, drawVertIndex,
+                        paint);
         }else{
           paint->drawPolygon( pa );
         }
@@ -875,7 +875,7 @@ void drawPoly::savePoly(){
     yv[s] *= m_yFactor; // To compensate for Qt's origin in the ul corner
   }
   
-  vector<anno> annotations = poly.get_annotations();
+  vector<anno> annotations; poly.get_annotations(annotations);
   for (int s = 0; s < (int)annotations.size(); s++){
     annotations[s].y *= m_yFactor;
   }
