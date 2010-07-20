@@ -49,7 +49,9 @@ drawPoly::drawPoly( QWidget *parent, const char *name,
 
   m_resetView          = true;
   m_prevClickExists    = false;
+  
   m_showAnnotations    = true;
+  m_showVertIndices    = false;
   m_showFilledPolys    = false;
   m_showInReverseOrder = false;
   
@@ -176,18 +178,31 @@ void drawPoly::showPoly( QPainter *paint ){
                                 clipPoly
                                 );
     
-    const double * xv              = clipPoly.get_xv();
-    const double * yv              = clipPoly.get_yv();
-    const int    * numVerts        = clipPoly.get_numVerts();
-    int numPolys                   = clipPoly.get_numPolys();
-    const vector<string> colors    = clipPoly.get_colors();
-    const vector<anno> annotations = clipPoly.get_annotations();
-    //int numVerts                 = clipPoly.get_totalNumVerts();
+    const double * xv           = clipPoly.get_xv();
+    const double * yv           = clipPoly.get_yv();
+    const int    * numVerts     = clipPoly.get_numVerts();
+    int numPolys                = clipPoly.get_numPolys();
+    const vector<string> colors = clipPoly.get_colors();
+    //int numVerts              = clipPoly.get_totalNumVerts();
+    
+    vector<anno> annotations;
+    annotations.clear();
+    if (m_showVertIndices){
+    clipPoly.getAnnoAtVerts(annotations);
+    }else if (m_showAnnotations){
+      annotations = clipPoly.get_annotations();
+    }
+    
 
     int start = 0;
     for (int pIter = 0; pIter < numPolys; pIter++){
-    
-      QColor color = QColor( colors[pIter].c_str() );
+
+      // To do: Don't assume the bg is black, rather check what it is
+      string strColor = colors[pIter];
+      if (strColor == "black"){ // Avoid conflicts with the background
+        strColor = "white";
+      }
+      QColor color = QColor( strColor.c_str() );
 
       if (pIter > 0) start += numVerts[pIter - 1];
 
@@ -236,20 +251,16 @@ void drawPoly::showPoly( QPainter *paint ){
     } // End plotting the current set of polygons
 
     // Plot the annotations
-    if (m_showAnnotations){
-      
-      int numAnno = annotations.size();
-      for (int aIter = 0; aIter < numAnno; aIter++){
-        const anno & A = annotations[aIter];
-        int x0, y0;
-        worldToPixelCoords(A.x, A.y, // inputs
-                           x0, y0    // outputs
-                           );
-        paint->setPen( QPen("gold", lineWidth) );
-        if (isClosestGridPtFree(Grid, x0, y0)){
-          paint->drawText(x0, y0, A.label);
-        }
-        
+    int numAnno = annotations.size();
+    for (int aIter = 0; aIter < numAnno; aIter++){
+      const anno & A = annotations[aIter];
+      int x0, y0;
+      worldToPixelCoords(A.x, A.y, // inputs
+                         x0, y0    // outputs
+                         );
+      paint->setPen( QPen("gold", lineWidth) );
+      if (isClosestGridPtFree(Grid, x0, y0)){
+        paint->drawText(x0, y0, A.label);
       }
       
     } // End placing annotations
@@ -685,15 +696,15 @@ void drawPoly::drawOneVertex(int x0, int y0, QColor color, int lineWidth,
 
   drawVertIndex = max(0, drawVertIndex);
 
-  int len = 6;
+  int len = 3*(drawVertIndex+1); // To distinguish better points on top of each other
   paint->setPen( QPen(color, lineWidth) );
 
   int numTypes = 4;
   if (drawVertIndex%numTypes == 0){
     
     // Draw a small filled ellipse
-    paint->setBrush( color );
-    paint->drawEllipse(x0 - len/2, y0 - len/2, len, len);
+    paint->setBrush( NoBrush );
+    paint->drawEllipse(x0 - len, y0 - len, 2*len, 2*len);
     
   }else if (drawVertIndex%numTypes == 1){
     
@@ -712,7 +723,6 @@ void drawPoly::drawOneVertex(int x0, int y0, QColor color, int lineWidth,
   }else{
     
     // Draw an empty reversed triangle
-    len = int(len*1.5 + 0.5);
     paint->setBrush( NoBrush );
     paint->drawLine(x0 - len, y0 + len, x0 + len, y0 + len);
     paint->drawLine(x0 - len, y0 + len, x0 + 0,   y0 - len);
@@ -732,6 +742,13 @@ void drawPoly::drawOneVertex(int x0, int y0, QColor color, int lineWidth,
 
 void drawPoly::toggleAnno(){
   m_showAnnotations = !m_showAnnotations;
+  m_showVertIndices = false; // To be able to show the annotations
+  update();
+}
+
+void drawPoly::toggleVertIndices(){
+  m_showVertIndices = !m_showVertIndices;
+  m_showAnnotations = false;
   update();
 }
 
@@ -784,6 +801,8 @@ void drawPoly::cutToHlt(){
                                 // output
                                 clipPoly
                                 );
+
+    clipPoly.compAnnoAtVerts(); 
 
     m_polyVec[vecIter] = clipPoly;    
   }

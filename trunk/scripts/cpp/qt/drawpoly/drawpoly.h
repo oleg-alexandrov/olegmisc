@@ -28,6 +28,7 @@ public:
   void shiftUp();
   void shiftDown();
   void toggleAnno();
+  void toggleVertIndices();
   void toggleFilled();
   void resetView();
   void cutToHlt();
@@ -116,7 +117,7 @@ private:
   static const int m_createHlt = 2;
 
   int m_showEdges, m_showPoints, m_showPointsEdges, m_toggleShowPointsEdges;
-  bool m_showInReverseOrder;
+  bool m_showInReverseOrder, m_showVertIndices;
   
 };
 
