@@ -87,6 +87,7 @@ void utils::parseCmdOptionsLoadData(//inputs
       plotPointsOnly = !plotPointsOnly;
       continue;
     }
+    plotPointsOnlyVec.push_back(plotPointsOnly);
     
     //cout << "Reading " << filename << endl;
     if ( ! polyVec[numClips].read_poly(filename, plotPointsOnly) ) exit(1);
@@ -103,31 +104,14 @@ void utils::parseCmdOptionsLoadData(//inputs
 
     // Flip the annotations as well
     std::vector<anno> annotations;
-    for (int annoType = 0; annoType < 2; annoType++){
-
-      if (annoType == 0){
-        polyVec[numClips].get_annotations(annotations);
-      }else{
-        polyVec[numClips].getAnnoAtVerts(annotations);
-      }   
-    
-    
-      for (int s = 0; s < (int)annotations.size(); s++){
-        annotations[s].y *= yFactor;
-      }
-      
-      if (annoType == 0){
-        polyVec[numClips].set_annotations(annotations);
-      }else{
-        polyVec[numClips].setAnnoAtVerts(annotations);
-      }
-      
-      plotPointsOnlyVec.push_back(plotPointsOnly);
-      
-      numClips++;
-    
+    polyVec[numClips].get_annotations(annotations);
+    for (int s = 0; s < (int)annotations.size(); s++){
+      annotations[s].y *= yFactor;
     }
-
+    polyVec[numClips].set_annotations(annotations);
+      
+    numClips++;
+    
   }
   
   if (numClips == 0){
