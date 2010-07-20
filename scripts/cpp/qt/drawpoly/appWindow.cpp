@@ -42,20 +42,21 @@ appWindow::~appWindow(){
   
 }
 
-void appWindow::zoomOut      (){ m_poly->zoomOut      (); }
-void appWindow::zoomIn       (){ m_poly->zoomIn       (); }
-void appWindow::shiftRight   (){ m_poly->shiftRight   (); }
-void appWindow::shiftLeft    (){ m_poly->shiftLeft    (); }
-void appWindow::shiftUp      (){ m_poly->shiftUp      (); }
-void appWindow::shiftDown    (){ m_poly->shiftDown    (); }
-void appWindow::resetView    (){ m_poly->resetView    (); }
-void appWindow::toggleAnno   (){ m_poly->toggleAnno   (); }
-void appWindow::toggleFilled (){ m_poly->toggleFilled (); }
-void appWindow::cutToHlt     (){ m_poly->cutToHlt     (); }
-void appWindow::undoLast     (){ m_poly->undoLast     (); }
-void appWindow::savePoly     (){ m_poly->savePoly     (); }
-void appWindow::togglePE     (){ m_poly->togglePE     (); }
-void appWindow::toggleOrder  (){ m_poly->toggleOrder  (); }
+void appWindow::zoomOut           (){ m_poly->zoomOut           (); }
+void appWindow::zoomIn            (){ m_poly->zoomIn            (); }
+void appWindow::shiftRight        (){ m_poly->shiftRight        (); }
+void appWindow::shiftLeft         (){ m_poly->shiftLeft         (); }
+void appWindow::shiftUp           (){ m_poly->shiftUp           (); }
+void appWindow::shiftDown         (){ m_poly->shiftDown         (); }
+void appWindow::resetView         (){ m_poly->resetView         (); }
+void appWindow::toggleAnno        (){ m_poly->toggleAnno        (); }
+void appWindow::toggleVertIndices (){ m_poly->toggleVertIndices (); }
+void appWindow::toggleFilled      (){ m_poly->toggleFilled      (); }
+void appWindow::cutToHlt          (){ m_poly->cutToHlt          (); }
+void appWindow::undoLast          (){ m_poly->undoLast          (); }
+void appWindow::savePoly          (){ m_poly->savePoly          (); }
+void appWindow::togglePE          (){ m_poly->togglePE          (); }
+void appWindow::toggleOrder       (){ m_poly->toggleOrder       (); }
 
 void appWindow::createMenus(){
   
@@ -74,17 +75,18 @@ void appWindow::createMenus(){
   QPopupMenu* view = new QPopupMenu( menu );
   menu->insertItem("&View", view);
   //view->insertSeparator();
-  view->insertItem("Zoom out",             this, SLOT(zoomOut()),      Key_Minus);
-  view->insertItem("Zoom in",              this, SLOT(zoomIn()),       Key_Equal);
-  view->insertItem("Move left",            this, SLOT(shiftLeft()),    Key_Left);
-  view->insertItem("Move right",           this, SLOT(shiftRight()),   Key_Right);
-  view->insertItem("Move up",              this, SLOT(shiftUp()),      Key_Up);
-  view->insertItem("Move down",            this, SLOT(shiftDown()),    Key_Down);
-  view->insertItem("Reset view",           this, SLOT(resetView()),    Key_R);
-  view->insertItem("Toggle anno",          this, SLOT(toggleAnno()),   Key_A);
-  view->insertItem("Toggle points",        this, SLOT(togglePE()),     Key_P);
-  view->insertItem("Toggle display order", this, SLOT(toggleOrder()), Key_O);
-  view->insertItem("Toggle filled",        this, SLOT(toggleFilled()), Key_F);
+  view->insertItem("Zoom out",              this, SLOT(zoomOut()),           Key_Minus);
+  view->insertItem("Zoom in",               this, SLOT(zoomIn()),            Key_Equal);
+  view->insertItem("Move left",             this, SLOT(shiftLeft()),         Key_Left);
+  view->insertItem("Move right",            this, SLOT(shiftRight()),        Key_Right);
+  view->insertItem("Move up",               this, SLOT(shiftUp()),           Key_Up);
+  view->insertItem("Move down",             this, SLOT(shiftDown()),         Key_Down);
+  view->insertItem("Reset view",            this, SLOT(resetView()),         Key_R);
+  view->insertItem("Toggle annotations",    this, SLOT(toggleAnno()),        Key_A);
+  view->insertItem("Toggle display order",  this, SLOT(toggleOrder()),       Key_O);
+  view->insertItem("Toggle filled",         this, SLOT(toggleFilled()),      Key_F);
+  view->insertItem("Toggle points display", this, SLOT(togglePE()),          Key_P);
+  view->insertItem("Toggle vertex indices", this, SLOT(toggleVertIndices()), Key_V);
 
   QPopupMenu* help = new QPopupMenu( menu );
   help->insertItem("&About", this, SLOT(help()));

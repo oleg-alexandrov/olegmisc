@@ -24,21 +24,22 @@ public slots:
 void help();
   
 private slots:
-  void createMenus  ();
-  void zoomIn       ();
-  void zoomOut      ();
-  void shiftRight   ();
-  void shiftLeft    ();
-  void shiftUp      ();
-  void shiftDown    ();
-  void resetView    ();
-  void toggleAnno   ();
-  void toggleFilled ();
-  void cutToHlt     ();
-  void undoLast     ();
-  void savePoly     ();
-  void togglePE     ();
-  void toggleOrder  ();
+  void createMenus       ();
+  void zoomIn            ();
+  void zoomOut           ();
+  void shiftRight        ();
+  void shiftLeft         ();
+  void shiftUp           ();
+  void shiftDown         ();
+  void resetView         ();
+  void toggleAnno        ();
+  void toggleVertIndices ();
+  void toggleFilled      ();
+  void cutToHlt          ();
+  void undoLast          ();
+  void savePoly          ();
+  void togglePE          ();
+  void toggleOrder       ();
   
 private:
   drawPoly   * m_poly;
