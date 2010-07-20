@@ -28,7 +28,7 @@ const int drawPoly::m_cutToHlt;
 const int drawPoly::m_createHlt;
 
 drawPoly::drawPoly( QWidget *parent, const char *name,
-                    const std::vector<xg_poly> & polyVec,
+                    const std::vector<dPoly> & polyVec,
                     const std::vector<bool>    & plotPointsOnlyVec,
                     int yFactor
                     ):
@@ -169,7 +169,7 @@ void drawPoly::showPoly( QPainter *paint ){
         m_toggleShowPointsEdges == m_showPointsEdges 
         ) drawVertIndex++;
 
-    xg_poly clipPoly;
+    dPoly clipPoly;
     m_polyVec[vecIter].clipPoly(//inuts
                                 m_viewXll,  m_viewYll,
                                 m_viewXll + m_viewWidX,
@@ -647,7 +647,7 @@ void drawPoly::expandBoxToGivenRatio(// inputs
 }
 
 void drawPoly::setUpViewBox(// inputs
-                            const std::vector<xg_poly> & polyVec,
+                            const std::vector<dPoly> & polyVec,
                             // outputs
                             double & xll, double & yll,
                             double &widx, double & widy){
@@ -794,7 +794,7 @@ void drawPoly::cutToHlt(){
   
   for (int vecIter  = 0; vecIter < (int)m_polyVec.size(); vecIter++){
 
-    xg_poly clipPoly;
+    dPoly clipPoly;
     m_polyVec[vecIter].clipPoly(//inuts
                                 H.left(), H.top(),
                                 H.right(), H.bottom(),
@@ -862,13 +862,13 @@ void drawPoly::savePoly(){
   char * fileName = "out.xg";
   cout << "Will save to " << fileName << endl;
 
-  xg_poly poly;
+  dPoly poly;
 
   for (int polyIter = 0; polyIter < (int)m_polyVec.size(); polyIter++){
     poly.appendPolygons(m_polyVec[polyIter]); 
   }
 
-  // To do: the operation below should be done inside of the xg_poly class
+  // To do: the operation below should be done inside of the dPoly class
   double * yv  = (double*)poly.get_yv(); 
   int numVerts = poly.get_totalNumVerts();
   for (int s = 0; s < numVerts; s++){

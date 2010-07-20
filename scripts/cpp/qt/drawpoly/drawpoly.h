@@ -9,14 +9,14 @@
 #include <qdatetime.h>
 #include <vector>
 #include "utils.h"
-#include "../../polyUtils/xg_poly.h"
+#include "../../polyUtils/dPoly.h"
 
 class drawPoly : public QWidget
 {
     Q_OBJECT
 public:
     drawPoly( QWidget *parent, const char *name,
-              const std::vector<xg_poly> & polyVec,
+              const std::vector<dPoly> & polyVec,
               const std::vector<bool>    & plotPointsOnlyVec,
               int yFactor
               );
@@ -76,7 +76,7 @@ private:
                                     double & widx, double & widy);
   
   static void setUpViewBox(// inputs
-                           const std::vector<xg_poly> & polyVec,
+                           const std::vector<dPoly> & polyVec,
                            // outputs
                            double & xll, double & yll,
                            double &widx, double & widy);
@@ -91,8 +91,8 @@ private:
   // Transform the polygons to the device coordinate system
   double m_pixelSize, m_padX, m_padY;
   
-  std::vector<xg_poly> m_polyVec;
-  std::vector< std::vector<xg_poly> > m_polyVecStack; // Used for undo
+  std::vector<dPoly> m_polyVec;
+  std::vector< std::vector<dPoly> > m_polyVecStack; // Used for undo
   
   std::vector<bool>    m_plotPointsOnlyVec;
   

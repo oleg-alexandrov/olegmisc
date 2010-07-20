@@ -6,7 +6,7 @@
 #include <qintdict.h>
 #include <qcanvas.h>
 #include "drawpoly.h"
-class xg_poly;
+class dPoly;
 
 
 class appWindow : public QMainWindow {
@@ -14,7 +14,7 @@ class appWindow : public QMainWindow {
 
 public:
   appWindow(QWidget* parent, const char* name,
-            const std::vector<xg_poly> & polyVec,
+            const std::vector<dPoly> & polyVec,
             const std::vector<bool>    & plotPointsOnlyVec,
             int yFactor,
             int widX, int widY, WFlags f=0);

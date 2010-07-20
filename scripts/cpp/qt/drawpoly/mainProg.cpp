@@ -22,7 +22,7 @@ int main(int argc, char** argv){
 
   int yFactor = -1; // To compensate for Qt's origin in the upper-left corner
   int windowWidX, windowWidY;
-  vector<xg_poly> polyVec;          
+  vector<dPoly> polyVec;          
   vector<bool>    plotPointsOnlyVec;
   parseCmdOptionsLoadData(//inputs
                           argc, argv, progName, yFactor,
