@@ -48,6 +48,12 @@ protected:
 private slots:
 
 private:
+  void readOnePoly(// inputs
+                   std::string & filename,
+                   bool plotPointsOnly,
+                   // output
+                   dPoly & poly
+                   );
   bool isClosestGridPtFree(std::vector< std::vector<int> > & Grid,
                            int x, int y);
   void initScreenGrid(std::vector< std::vector<int> > & Grid);
