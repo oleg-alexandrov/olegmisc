@@ -1,12 +1,8 @@
 #ifndef DRAWPOLY_H
 #define DRAWPOLY_H
 
-#include <qpopupmenu.h>
-#include <qmainwindow.h>
-#include <qintdict.h>
-#include <qcanvas.h>
 #include <qwidget.h>
-#include <qdatetime.h>
+#include <qpixmap.h>
 #include <vector>
 #include "utils.h"
 #include "../../polyUtils/dPoly.h"
@@ -32,7 +28,8 @@ public:
   void resetView();
   void cutToHlt();
   void undoLast();
-  void loadPoly();
+  void initOpenPoly();
+  void openPoly();
   void savePoly();
   void togglePE();
   void toggleOrder();

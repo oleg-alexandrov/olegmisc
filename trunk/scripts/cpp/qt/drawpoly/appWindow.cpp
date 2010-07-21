@@ -1,5 +1,4 @@
 #include <qapplication.h>
-#include <qfiledialog.h>
 #include <qlabel.h>
 #include <qmainwindow.h>
 #include <qmenubar.h>
@@ -46,6 +45,7 @@ void appWindow::toggleVertIndices (){ m_poly->toggleVertIndices (); }
 void appWindow::toggleFilled      (){ m_poly->toggleFilled      (); }
 void appWindow::cutToHlt          (){ m_poly->cutToHlt          (); }
 void appWindow::undoLast          (){ m_poly->undoLast          (); }
+void appWindow::openPoly          (){ m_poly->openPoly          (); }
 void appWindow::savePoly          (){ m_poly->savePoly          (); }
 void appWindow::togglePE          (){ m_poly->togglePE          (); }
 void appWindow::toggleOrder       (){ m_poly->toggleOrder       (); }
@@ -56,6 +56,7 @@ void appWindow::createMenus(){
 
   QPopupMenu* file = new QPopupMenu( menu );
   menu->insertItem("File", file);
+  file->insertItem("Open", this, SLOT(openPoly()), Key_O);
   file->insertItem("Save", this, SLOT(savePoly()), Key_S);
   file->insertItem("Exit", qApp, SLOT(quit()), Key_Q);
 

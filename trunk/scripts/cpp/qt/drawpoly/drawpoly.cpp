@@ -1,26 +1,13 @@
-#include <iostream>
 #include <cassert>
+#include <cfloat>    // defines DBL_MAX
 #include <cmath>
 #include <cstdlib>
-#include <cassert>
-#include <limits>
-#include <qapplication.h>
-#include <qbitmap.h>
-#include <qdatetime.h>
-#include <qimage.h>
-#include <qlabel.h>
-#include <qmainwindow.h>
-#include <qmenubar.h>
-#include <qmessagebox.h>
-#include <qpainter.h>
-#include <qprinter.h>
-#include <qprogressdialog.h>
-#include <qstatusbar.h>
-#include <qtimer.h>
-#include <qevent.h>
-#include "drawpoly.h"
 #include <iomanip>   // required for use of setw()
-#include <cfloat>    // defines DBL_MAX
+#include <iostream>
+#include <qapplication.h>
+#include <qfiledialog.h>
+#include <qpainter.h>
+#include "drawpoly.h"
 using namespace std;
 using namespace utils;
 
@@ -62,7 +49,7 @@ drawPoly::drawPoly( QWidget *parent,
   m_toggleShowPointsEdges = m_showEdges;
 
   resetTransformSettings();
-  loadPoly();
+  initOpenPoly();
 }
 
 void drawPoly::showPoly( QPainter *paint ){
@@ -855,7 +842,7 @@ void drawPoly::undoLast(){
   return;
 }
 
-void drawPoly::loadPoly(){
+void drawPoly::initOpenPoly(){
 
   int numFiles = m_polyFilesVec.size();
   m_polyVec.resize(numFiles);
@@ -891,6 +878,15 @@ void drawPoly::loadPoly(){
 }
 
   
+void drawPoly::openPoly(){
+  QString s = QFileDialog::getOpenFileName(
+                                           "/home",
+                                           "Images (*.png *.xpm *.jpg)",
+                                           this,
+                                           "open file dialog"
+                                           "Choose a file" );
+}
+
 void drawPoly::savePoly(){
 
   if (m_polyVec.size() == 0){
