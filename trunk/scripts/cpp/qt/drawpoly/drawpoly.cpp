@@ -848,45 +848,79 @@ void drawPoly::initOpenPoly(){
   m_polyVec.resize(numFiles);
   
   for (int fileIter = 0; fileIter < numFiles; fileIter++){
-
-    if ( ! m_polyVec[fileIter].read_poly(m_polyFilesVec[fileIter].c_str(),
-                                         m_plotPointsOnlyVec[fileIter]) ){
-      exit(1);
-    }
-
-    // Flip the polygons to compensate for Qt's origin
-    // being in the upper-right corner
-    double * xv = (double*)m_polyVec[fileIter].get_xv();
-    double * yv = (double*)m_polyVec[fileIter].get_yv();
-    int numV    = m_polyVec[fileIter].get_totalNumVerts();
-    for (int s = 0; s < numV; s++){
-      xv[s] = xv[s];
-      yv[s] = m_yFactor*yv[s];
-    }
-
-    // Flip the annotations as well
-    vector<anno> annotations;
-    m_polyVec[fileIter].get_annotations(annotations);
-    for (int s = 0; s < (int)annotations.size(); s++){
-      annotations[s].y *= m_yFactor;
-    }
-    m_polyVec[fileIter].set_annotations(annotations);
+    
+    readOnePoly(// inputs
+                m_polyFilesVec[fileIter], m_plotPointsOnlyVec[fileIter],
+                // output
+                m_polyVec[fileIter]
+                );
     
   }
 
   return;
 }
 
-  
 void drawPoly::openPoly(){
   QString s = QFileDialog::getOpenFileName(
-                                           "/home",
-                                           "Images (*.png *.xpm *.jpg)",
+                                           "/home/oleg/",
+                                           "(*.xg *.ly1 *.ly2)",
                                            this,
                                            "open file dialog"
                                            "Choose a file" );
+
+  string fileName     = string(s.data());
+  bool plotPointsOnly = false;
+
+  int numFiles = m_polyFilesVec.size();
+  m_polyFilesVec.resize      (numFiles+1);
+  m_plotPointsOnlyVec.resize (numFiles+1);
+  m_polyVec.resize           (numFiles+1);
+
+  m_polyFilesVec[numFiles]      = fileName;
+  m_plotPointsOnlyVec[numFiles] = plotPointsOnly;
+  readOnePoly(// inputs
+              m_polyFilesVec[numFiles], m_plotPointsOnlyVec[numFiles],
+              // output
+              m_polyVec[numFiles]
+              );
+
+  resetView();
+
+  return;
 }
 
+void drawPoly::readOnePoly(// inputs
+                           std::string & filename,
+                           bool plotPointsOnly,
+                           dPoly & poly            // output
+                           ){
+  
+  if ( ! poly.read_poly(filename.c_str(), plotPointsOnly) ){
+    exit(1);
+  }
+  
+  // Flip the polygons to compensate for Qt's origin
+  // being in the upper-right corner
+  double * xv = (double*)poly.get_xv();
+  double * yv = (double*)poly.get_yv();
+  int numV    = poly.get_totalNumVerts();
+  for (int s = 0; s < numV; s++){
+    xv[s] = xv[s];
+    yv[s] = m_yFactor*yv[s];
+  }
+  
+  // Flip the annotations as well
+  vector<anno> annotations;
+  poly.get_annotations(annotations);
+  for (int s = 0; s < (int)annotations.size(); s++){
+    annotations[s].y *= m_yFactor;
+  }
+  poly.set_annotations(annotations);
+  
+  return;
+}
+
+  
 void drawPoly::savePoly(){
 
   if (m_polyVec.size() == 0){
