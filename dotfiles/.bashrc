@@ -8,16 +8,19 @@ set history=10000
 set filec
 set show-all-if-ambiguous on
 
-# Make the backspace behave
-stty erase '^?'
+if [ "$SSH_TTY" != "" ]; then # If we have a tty
 
-# Bind the windows key for use in fvwm
-xmodmap -e  "add mod3 = Super_L"
+  # Make the backspace behave
+  stty erase '^?'
 
-# Disable control s and control q, so that I can use them in vim.
-#stty -a # see what is enabled
-stty stop  undef # control s
-stty start undef # control q
+  # Disable control s and control q, so that I can use them in vim.
+  #stty -a # see what is enabled
+  stty stop  undef # control s
+  stty start undef # control q
+
+  # Bind the windows key for use in fvwm
+  xmodmap -e  "add mod3 = Super_L"
+fi
 
 ## Pager macros
 function mymore {
@@ -65,33 +68,35 @@ function cdw {
 function setbuildenv
 {
   export BASE=$HOME/$W/dev; 
-  export b=$HOME/$W/build/;
+  export b=$HOME/$W/build;
   export bt=$HOME/$W/build/test;
   export bb=$HOME/$W/build/bin;
 }
 
 function a {
 
-  # make an alias available to all other open shells right when it is defined
+  # Refresh the aliases
   if [ -f ~/.unaliases    ]; then source ~/.unaliases;    fi;
   if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi;
 
   if [ "$*" ]; then  
-    alias "$*";
-  else
-    alias;  
-  fi;
 
-  alias > ~/.bash_aliases; 
-  perl -pi -e "s#^([^\s]+=)#alias \$1#g" ~/.bash_aliases;
+    alias "$*"; # Create the given alias
 
-  # Echo the defined alias  
-  if [ "$*" ]; then   
+    alias > ~/.bash_aliases; 
+    perl -pi -e "s#^([^\s]+=)#alias \$1#g" ~/.bash_aliases;
+    
+    # Echo the defined alias  
     eqv=$( echo "$*" | perl -pi -e "s#[^=]##g" )
     if [ "$eqv" != "" ]; then  
-       val=$( echo "$*" | perl -pi -e "s#=.*?\$##g" )
-       alias $val
+        val=$( echo "$*" | perl -pi -e "s#=.*?\$##g" )
+        alias $val
     fi;
+
+  else
+
+    alias;  # Just list the aliases
+
   fi;
  
 }
@@ -155,18 +160,6 @@ function ovl {
   perl -pi -e "s#\"overwriteLayers\" \"false\"#\"overwriteLayers\" \"true\"#g" $1
   grep  -i --colour=auto overwriteLayers $1
 }
-
-function cvr {
-  
-  # Add recursively to CVS
-  dir=$1
-  
-  files=$( find $dir | grep -v CVS )
-  for file in $files; do
-    cvs add $file
-  done
-
-} 
 
 # -<colour opc>--------------------------------
 COLOR_0="\[\033[0;30m\]" # Black
