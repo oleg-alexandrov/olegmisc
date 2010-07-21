@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <iostream>
 #include <cassert>
+#include <cfloat>
 #include "read_write_xg.h"
 
 #include "dPoly.h"
@@ -216,6 +217,29 @@ void dPoly::compAnnoAtVerts(){
       m_annotationsAtVerts.push_back(A);
     }
 
+  }
+
+  return;
+}
+
+void dPoly::findClosestPointAndDist(// inputs
+                                    double x0, double y0,
+                                    // outputs
+                                    double & min_x, double & min_y,
+                                    double & min_dist
+                                    ){
+
+  min_x = x0; min_y = y0; min_dist = DBL_MAX;
+  
+  for (int s = 0; s < m_totalNumVerts; s++){
+
+    double dist = distance(x0, y0, m_xv[s], m_yv[s]);
+    if (dist <= min_dist){
+      min_dist = dist;
+      min_x    = m_xv[s];
+      min_y    = m_yv[s];
+    }
+    
   }
 
   return;
