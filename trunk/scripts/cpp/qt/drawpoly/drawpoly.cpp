@@ -33,8 +33,8 @@ drawPoly::drawPoly( QWidget *parent,
   m_viewXll  = 0.0; m_viewYll  = 0.0;
   m_viewWidX = 0.0; m_viewWidY = 0.0;
 
-  m_resetView          = true;
-  m_prevClickExists    = false;
+  m_resetView       = true;
+  m_prevClickExists = false;
   
   m_showAnnotations    = true;
   m_showVertIndices    = false;
@@ -157,7 +157,7 @@ void drawPoly::showPoly( QPainter *paint ){
         m_toggleShowPointsEdges == m_showPoints      ||
         m_toggleShowPointsEdges == m_showPointsEdges 
         ) drawVertIndex++;
-
+    
     dPoly clipPoly;
     m_polyVec[vecIter].clipPoly(//inuts
                                 m_viewXll,  m_viewYll,
@@ -177,6 +177,7 @@ void drawPoly::showPoly( QPainter *paint ){
     vector<anno> annotations;
     annotations.clear();
     if (m_showVertIndices){
+      m_polyVec[vecIter].compAnnoAtVerts(); // This slows down subsequent code 
       clipPoly.getAnnoAtVerts(annotations);
     }else if (m_showAnnotations){
       clipPoly.get_annotations(annotations);
@@ -790,8 +791,6 @@ void drawPoly::cutToHlt(){
                                 // output
                                 clipPoly
                                 );
-
-    clipPoly.compAnnoAtVerts(); 
 
     m_polyVec[vecIter] = clipPoly;    
   }
