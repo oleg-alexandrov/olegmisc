@@ -20,6 +20,7 @@ appWindow::appWindow(QWidget* parent, const char* progName,
   m_progName = progName;
   
   createMenus();
+  statusBar();
 
   m_poly = new drawPoly (this, polyFilesVec, plotPointsOnlyVec);
   m_poly->setBackgroundColor (QColor("black"));
@@ -83,7 +84,7 @@ void appWindow::createMenus(){
   help->insertItem("About", this, SLOT(help()));
   menu->insertItem("Help", help);
 
-  statusBar();
+  return;
 }
 
 void appWindow::help(){
@@ -95,6 +96,8 @@ void appWindow::help(){
                        QMessageBox::NoIcon, 1, 0, 0, this, 0, FALSE );
   about->setButtonText( 1, "OK" );
   about->show();
+
+  return;
 }
 
 

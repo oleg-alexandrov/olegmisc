@@ -38,7 +38,7 @@ private slots:
   
 private:
   drawPoly   * m_poly;
-  std::string m_progName;
+  std::string  m_progName;
 };
 
 #endif
