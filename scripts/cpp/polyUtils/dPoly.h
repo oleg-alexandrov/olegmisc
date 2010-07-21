@@ -85,7 +85,15 @@ public:
 
   void bdBox(double & xll, double & yll, double & xur, double & yur) const;
   
+  void findClosestPointAndDist(// inputs
+                             double x0, double y0,
+                             // outputs
+                             double & min_x, double & min_y,
+                             double & min_dist
+                             );
+  
 private:
+  
   // m_isPointCloud tells if the poly is an unstructured set of points
   bool                     m_isPointCloud; 
 

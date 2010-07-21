@@ -24,6 +24,10 @@ namespace utils{
     return S.str();
   }
 
+  inline double distance(double x0, double y0, double x1, double y1){
+    return sqrt( (x1 - x0)*(x1 - x0) + (y1 - y0)*(y1 - y0) );
+  }
+  
   struct valIndex{
     double val;
     int    index;
