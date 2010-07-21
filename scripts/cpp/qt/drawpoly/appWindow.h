@@ -1,11 +1,10 @@
 #ifndef EXAMPLE_H
 #define EXAMPLE_H
 
-#include <qpopupmenu.h>
 #include <qmainwindow.h>
-#include <qintdict.h>
-#include <qcanvas.h>
-#include "drawpoly.h"
+#include <string>
+#include <vector>
+class drawPoly;
 
 class appWindow : public QMainWindow {
   Q_OBJECT
@@ -39,8 +38,6 @@ private slots:
   
 private:
   drawPoly   * m_poly;
-  QPopupMenu * options;
-  int dbf_id;
   std::string m_progName;
 };
 
