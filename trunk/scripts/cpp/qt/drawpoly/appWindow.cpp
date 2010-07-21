@@ -58,17 +58,17 @@ void appWindow::createMenus(){
   QMenuBar* menu = menuBar();
 
   QPopupMenu* file = new QPopupMenu( menu );
-  menu->insertItem("&File", file);
+  menu->insertItem("File", file);
   file->insertItem("Save", this, SLOT(savePoly()), Key_S);
-  file->insertItem("E&xit", qApp, SLOT(quit()), Key_Q);
+  file->insertItem("Exit", qApp, SLOT(quit()), Key_Q);
 
   QPopupMenu* edit = new QPopupMenu( menu );
-  menu->insertItem("&Edit", edit);
-  edit->insertItem("Cut to hlt", this, SLOT(cutToHlt()), Key_C);
-  edit->insertItem("Undo",       this, SLOT(undoLast()), Key_Z);
+  menu->insertItem("Edit", edit);
+  edit->insertItem("Cut to highlight", this, SLOT(cutToHlt()), Key_C);
+  edit->insertItem("Undo",             this, SLOT(undoLast()), Key_Z);
 
   QPopupMenu* view = new QPopupMenu( menu );
-  menu->insertItem("&View", view);
+  menu->insertItem("View", view);
   //view->insertSeparator();
   view->insertItem("Zoom out",              this, SLOT(zoomOut()),           Key_Minus);
   view->insertItem("Zoom in",               this, SLOT(zoomIn()),            Key_Equal);
@@ -84,9 +84,9 @@ void appWindow::createMenus(){
   view->insertItem("Toggle vertex indices", this, SLOT(toggleVertIndices()), Key_V);
 
   QPopupMenu* help = new QPopupMenu( menu );
-  help->insertItem("&About", this, SLOT(help()));
+  help->insertItem("About", this, SLOT(help()));
   help->setItemChecked(dbf_id, TRUE);
-  menu->insertItem("&Help",help);
+  menu->insertItem("Help", help);
 
   statusBar();
 }
