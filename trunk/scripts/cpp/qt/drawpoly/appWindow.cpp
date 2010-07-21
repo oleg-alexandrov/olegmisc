@@ -1,14 +1,10 @@
-#include <qdatetime.h>
-#include <qmainwindow.h>
-#include <qstatusbar.h>
-#include <qmessagebox.h>
-#include <qmenubar.h>
 #include <qapplication.h>
-#include <qpainter.h>
+#include <qfiledialog.h>
 #include <qlabel.h>
-#include <qimage.h>
-#include <qprogressdialog.h>
-#include <stdlib.h>
+#include <qmainwindow.h>
+#include <qmenubar.h>
+#include <qmessagebox.h>
+#include <cstdlib>
 #include <iostream>
 #include <cmath>
 #include "appWindow.h"
@@ -85,7 +81,6 @@ void appWindow::createMenus(){
 
   QPopupMenu* help = new QPopupMenu( menu );
   help->insertItem("About", this, SLOT(help()));
-  help->setItemChecked(dbf_id, TRUE);
   menu->insertItem("Help", help);
 
   statusBar();
