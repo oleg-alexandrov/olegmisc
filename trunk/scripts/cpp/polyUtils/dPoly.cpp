@@ -131,7 +131,6 @@ void dPoly::clipPoly(// inputs
     if (annoType == 0){
       get_annotations(annotations);
     }else{
-      compAnnoAtVerts();
       getAnnoAtVerts(annotations);
     }   
     
@@ -199,7 +198,7 @@ void dPoly::getAnnoAtVerts(std::vector<anno> & annotations){
 void dPoly::compAnnoAtVerts(){
 
   m_annotationsAtVerts.clear();
-
+  
   const double * xv = get_xv();
   const double * yv = get_yv();
 
