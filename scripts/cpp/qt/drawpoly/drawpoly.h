@@ -15,10 +15,9 @@ class drawPoly : public QWidget
 {
     Q_OBJECT
 public:
-    drawPoly( QWidget *parent, const char *name,
-              const std::vector<dPoly> & polyVec,
-              const std::vector<bool>    & plotPointsOnlyVec,
-              int yFactor
+    drawPoly( QWidget *parent, 
+              const std::vector<std::string> & polyFilesVec,
+              const std::vector<bool>        & plotPointsOnlyVec
               );
   
   void zoomIn();
@@ -33,6 +32,7 @@ public:
   void resetView();
   void cutToHlt();
   void undoLast();
+  void loadPoly();
   void savePoly();
   void togglePE();
   void toggleOrder();
@@ -94,6 +94,7 @@ private:
   std::vector<dPoly> m_polyVec;
   std::vector< std::vector<dPoly> > m_polyVecStack; // Used for undo
   
+  std::vector<std::string> m_polyFilesVec;
   std::vector<bool>    m_plotPointsOnlyVec;
   
   int m_yFactor; // To compensate for Qt's origin in the upper-left corner

@@ -6,25 +6,21 @@
 #include <qintdict.h>
 #include <qcanvas.h>
 #include "drawpoly.h"
-class dPoly;
-
 
 class appWindow : public QMainWindow {
   Q_OBJECT
 
 public:
-  appWindow(QWidget* parent, const char* name,
-            const std::vector<dPoly> & polyVec,
-            const std::vector<bool>    & plotPointsOnlyVec,
-            int yFactor,
-            int widX, int widY, WFlags f=0);
+  appWindow(QWidget* parent, const char* progName,
+            const std::vector<std::string> & polyFilesVec,
+            const std::vector<bool>        & plotPointsOnlyVec);
   ~appWindow();
   
 public slots:
 void help();
   
 private slots:
-  void createMenus       ();
+  void createMenus();
   void zoomIn            ();
   void zoomOut           ();
   void shiftRight        ();
@@ -44,7 +40,6 @@ private slots:
 private:
   drawPoly   * m_poly;
   QPopupMenu * options;
-  QPrinter   * printer;
   int dbf_id;
   std::string m_progName;
 };

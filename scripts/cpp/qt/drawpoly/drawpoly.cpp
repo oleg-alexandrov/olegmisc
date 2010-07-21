@@ -27,25 +27,24 @@ using namespace utils;
 const int drawPoly::m_cutToHlt;
 const int drawPoly::m_createHlt;
 
-drawPoly::drawPoly( QWidget *parent, const char *name,
-                    const std::vector<dPoly> & polyVec,
-                    const std::vector<bool>    & plotPointsOnlyVec,
-                    int yFactor
+drawPoly::drawPoly( QWidget *parent, 
+                    const std::vector<std::string> & polyFilesVec,
+                    const std::vector<bool>        & plotPointsOnlyVec
                     ):
-  QWidget(parent, name), m_yFactor(yFactor) {
+  QWidget(parent){
 
-  m_polyVec           = polyVec;
+  m_polyFilesVec      = polyFilesVec;
   m_plotPointsOnlyVec = plotPointsOnlyVec;
   
-  resetTransformSettings();
-
+  m_yFactor = -1; // To compensate for Qt's origin in the upper-left corner
+  
   // int
   m_screenXll  = 0; m_screenYll  = 0;
   m_screenWidX = 0; m_screenWidY = 0;
 
   // double
-  m_viewXll         = 0.0; m_viewYll  = 0.0;
-  m_viewWidX        = 0.0; m_viewWidY = 0.0;
+  m_viewXll  = 0.0; m_viewYll  = 0.0;
+  m_viewWidX = 0.0; m_viewWidY = 0.0;
 
   m_resetView          = true;
   m_prevClickExists    = false;
@@ -61,6 +60,9 @@ drawPoly::drawPoly( QWidget *parent, const char *name,
   m_showPointsEdges       = 2;
   m_showPoints            = 3;
   m_toggleShowPointsEdges = m_showEdges;
+
+  resetTransformSettings();
+  loadPoly();
 }
 
 void drawPoly::showPoly( QPainter *paint ){
@@ -853,6 +855,42 @@ void drawPoly::undoLast(){
   return;
 }
 
+void drawPoly::loadPoly(){
+
+  int numFiles = m_polyFilesVec.size();
+  m_polyVec.resize(numFiles);
+  
+  for (int fileIter = 0; fileIter < numFiles; fileIter++){
+
+    if ( ! m_polyVec[fileIter].read_poly(m_polyFilesVec[fileIter].c_str(),
+                                         m_plotPointsOnlyVec[fileIter]) ){
+      exit(1);
+    }
+
+    // Flip the polygons to compensate for Qt's origin
+    // being in the upper-right corner
+    double * xv = (double*)m_polyVec[fileIter].get_xv();
+    double * yv = (double*)m_polyVec[fileIter].get_yv();
+    int numV    = m_polyVec[fileIter].get_totalNumVerts();
+    for (int s = 0; s < numV; s++){
+      xv[s] = xv[s];
+      yv[s] = m_yFactor*yv[s];
+    }
+
+    // Flip the annotations as well
+    vector<anno> annotations;
+    m_polyVec[fileIter].get_annotations(annotations);
+    for (int s = 0; s < (int)annotations.size(); s++){
+      annotations[s].y *= m_yFactor;
+    }
+    m_polyVec[fileIter].set_annotations(annotations);
+    
+  }
+
+  return;
+}
+
+  
 void drawPoly::savePoly(){
 
   if (m_polyVec.size() == 0){
