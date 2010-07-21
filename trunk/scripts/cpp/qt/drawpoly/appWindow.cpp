@@ -5,7 +5,6 @@
 #include <qmenubar.h>
 #include <qapplication.h>
 #include <qpainter.h>
-#include <qprinter.h>
 #include <qlabel.h>
 #include <qimage.h>
 #include <qprogressdialog.h>
@@ -17,24 +16,18 @@
 
 using namespace std;
 
-appWindow::appWindow(QWidget* parent, const char* name,
-                     const std::vector<dPoly> & polyVec,
-                     const std::vector<bool>    & plotPointsOnlyVec,
-                     int yFactor,
-                     int widX, int widY, WFlags f):
-  QMainWindow(parent, name, f){
+appWindow::appWindow(QWidget* parent, const char* progName,
+                     const std::vector<std::string> & polyFilesVec,
+                     const std::vector<bool>        & plotPointsOnlyVec):
+  QMainWindow(parent, progName){
 
-  m_progName = name;
+  m_progName = progName;
   
   createMenus();
 
-  m_poly = new drawPoly (this, name, polyVec, plotPointsOnlyVec, yFactor);
-  setCentralWidget(m_poly);
-  
-  m_poly->resize( widX, widY );
+  m_poly = new drawPoly (this, polyFilesVec, plotPointsOnlyVec);
   m_poly->setBackgroundColor (QColor("black"));
-  m_poly->setCaption(name);
-  m_poly->show();
+  setCentralWidget(m_poly);
 
 }
 

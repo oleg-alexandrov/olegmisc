@@ -49,20 +49,15 @@ void utils::extractWindowDims(// inputs
   
 }
 
-void utils::parseCmdOptionsLoadData(//inputs
-                                    int argc, char** argv, char * progName,
-                                    int yFactor,
-                                    // outputs
-                                    int & windowWidX, int & windowWidY,
-                                    std::vector<dPoly>  & polyVec, 
-                                    std::vector<bool>     & plotPointsOnlyVec
-                                    ){
+void utils::parseCmdOptions(//inputs
+                            int argc, char** argv, char * exeName,
+                            // outputs
+                            int & windowWidX,      int & windowWidY,
+                            std::vector<std::string>   & polyFilesVec, 
+                            std::vector<bool>          & plotPointsOnlyVec
+                            ){
 
-  // To do: Loading better happen in the drawpoly class where the
-  // saving happens too. Here it is enough just to extract the
-  // filenames and parse the other optons.
-  
-  polyVec.resize(argc);
+  polyFilesVec.clear();
   plotPointsOnlyVec.clear();
 
   // Skip argv[0] as that's the program name
@@ -70,55 +65,34 @@ void utils::parseCmdOptionsLoadData(//inputs
 
   bool plotPointsOnly = false; // plot the edges or just the vertices
   
-  int numClips = 0;
   for (int argIter = 1; argIter < argc; argIter++){
 
     char * filename = argv[argIter];
 
+    if (filename == NULL || strlen(filename) == 0) continue;
+
     if ( strstr(filename, "-h") || strstr(filename, "--h") ||
          strstr(filename, "-?") ){
-      printUsage(progName);
+      printUsage(exeName);
       exit(0);
     }
-
-    if (strlen(filename) == 0) continue;
 
     if ( strstr(filename, "-p") ){
       plotPointsOnly = !plotPointsOnly;
       continue;
     }
+
+    // Other command line options are ignored
+    if (filename[0] == '-') continue;
+    
     plotPointsOnlyVec.push_back(plotPointsOnly);
-    
-    //cout << "Reading " << filename << endl;
-    if ( ! polyVec[numClips].read_poly(filename, plotPointsOnly) ) exit(1);
-
-    // Flip the polygons to compensate for Qt's origin
-    // being in the upper-right corner
-    double * xv = (double*)polyVec[numClips].get_xv();
-    double * yv = (double*)polyVec[numClips].get_yv();
-    int numV    = polyVec[numClips].get_totalNumVerts();
-    for (int s = 0; s < numV; s++){
-      xv[s] = xv[s];
-      yv[s] = yFactor*yv[s];
-    }
-
-    // Flip the annotations as well
-    std::vector<anno> annotations;
-    polyVec[numClips].get_annotations(annotations);
-    for (int s = 0; s < (int)annotations.size(); s++){
-      annotations[s].y *= yFactor;
-    }
-    polyVec[numClips].set_annotations(annotations);
-      
-    numClips++;
-    
+    polyFilesVec.push_back(string(filename));
   }
   
-  if (numClips == 0){
+  if (polyFilesVec.size() == 0){
     cerr << "No polygons to plot" << endl;
     exit(1);
   }
-  polyVec.resize(numClips);
 
   return;
 }

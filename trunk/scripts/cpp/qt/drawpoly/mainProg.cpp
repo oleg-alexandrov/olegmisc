@@ -14,35 +14,30 @@ using namespace utils;
 
 int main(int argc, char** argv){
 
-  char * progName = argv[0];
+  char * exeName = argv[0];
   if (argc < 2){
-    printUsage(progName);
+    printUsage(exeName);
     exit(1);
   }
 
-  int yFactor = -1; // To compensate for Qt's origin in the upper-left corner
   int windowWidX, windowWidY;
-  vector<dPoly> polyVec;          
+  vector<string>  polyFilesVec;
   vector<bool>    plotPointsOnlyVec;
-  parseCmdOptionsLoadData(//inputs
-                          argc, argv, progName, yFactor,
-                          // outputs
-                          windowWidX, windowWidY,
-                          polyVec, plotPointsOnlyVec
-                          );
+  
+  parseCmdOptions(// inputs
+                  argc, argv, exeName,
+                  // outputs
+                  windowWidX, windowWidY,
+                  polyFilesVec, plotPointsOnlyVec
+                  );
 
   QApplication app(argc, argv);
-  char * name = "drawPoly";
+  char * progName = "drawPoly";
   
-  appWindow m(NULL,  name, polyVec, plotPointsOnlyVec,
-              yFactor, windowWidX, windowWidY);
+  appWindow m(NULL, progName, polyFilesVec, plotPointsOnlyVec);
   m.resize(windowWidX, windowWidY);
-  m.setCaption(name);
-  if ( QApplication::desktop()->width() > m.width() + 10
-       && QApplication::desktop()->height() > m.height() +30 )
-    m.show();
-  else
-    m.showMaximized();
+  m.setCaption(progName);
+  m.show();
   
   QObject::connect( qApp, SIGNAL(lastWindowClosed()), qApp, SLOT(quit()) );
   
