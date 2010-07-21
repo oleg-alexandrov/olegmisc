@@ -32,7 +32,7 @@ int main(int argc, char** argv){
                           );
 
   QApplication app(argc, argv);
-  char * name = "polyViewer";
+  char * name = "drawPoly";
   
   appWindow m(NULL,  name, polyVec, plotPointsOnlyVec,
               yFactor, windowWidX, windowWidY);

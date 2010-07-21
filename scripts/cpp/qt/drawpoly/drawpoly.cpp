@@ -917,7 +917,7 @@ void drawPoly::initScreenGrid(std::vector< std::vector<int> > & Grid){
   // do be displayed in one rectangle. As such, if a polygon has a lot
   // of text (annotations), the more you zoom in the more of the
   // annotations you will see.
-  int numGridPts = 30; 
+  int numGridPts = 20; 
   
   Grid.resize(numGridPts);
   for (int s = 0; s < (int)Grid.size(); s++){
@@ -940,8 +940,9 @@ bool drawPoly::isClosestGridPtFree(std::vector< std::vector<int> > & Grid,
   int sy = (int)round ((numGridPts - 1)*(double(y - m_screenYll)/double(m_screenWidY)));
   sy = max(sy, 0); sy = min(sy, numGridPts - 1);
 
-  if (Grid[sx][sy] == 0){
-    Grid[sx][sy] = 1; // No longer free for the next query
+  int maxAllow = 2; // Allow at most this many text labels around one grid point
+  if (Grid[sx][sy] <= maxAllow - 1){
+    Grid[sx][sy]++;
     return true;
   }else{
     return false;

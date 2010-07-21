@@ -46,7 +46,7 @@ private:
   QPopupMenu * options;
   QPrinter   * printer;
   int dbf_id;
-  
+  std::string m_progName;
 };
 
 #endif

@@ -24,6 +24,8 @@ appWindow::appWindow(QWidget* parent, const char* name,
                      int widX, int widY, WFlags f):
   QMainWindow(parent, name, f){
 
+  m_progName = name;
+  
   createMenus();
 
   m_poly = new drawPoly (this, name, polyVec, plotPointsOnlyVec, yFactor);
@@ -97,10 +99,11 @@ void appWindow::createMenus(){
 }
 
 void appWindow::help(){
-  
+
+  string aboutStr = string("About ") + m_progName;
   static QMessageBox* about
-    = new QMessageBox( "About polyViewer",
-                       " © 2010 Oleg Alexandrov  ",
+    = new QMessageBox( aboutStr.c_str(),
+                       "© 2010 Oleg Alexandrov  ",
                        QMessageBox::NoIcon, 1, 0, 0, this, 0, FALSE );
   about->setButtonText( 1, "OK" );
   about->show();
