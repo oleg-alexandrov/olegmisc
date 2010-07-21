@@ -32,6 +32,7 @@ private slots:
   void toggleFilled      ();
   void cutToHlt          ();
   void undoLast          ();
+  void openPoly          ();
   void savePoly          ();
   void togglePE          ();
   void toggleOrder       ();
