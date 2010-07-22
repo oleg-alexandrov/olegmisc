@@ -158,6 +158,12 @@ void drawPoly::showPoly( QPainter *paint ){
         m_toggleShowPointsEdges == m_showPointsEdges 
         ) drawVertIndex++;
     
+    if (m_showVertIndices){
+      // Note: Having annotations at vertices can make the display slow for large
+      // polygons.
+      m_polyVec[vecIter].compAnnoAtVerts();
+    }
+    
     dPoly clipPoly;
     m_polyVec[vecIter].clipPoly(//inuts
                                 m_viewXll,  m_viewYll,
@@ -177,7 +183,6 @@ void drawPoly::showPoly( QPainter *paint ){
     vector<anno> annotations;
     annotations.clear();
     if (m_showVertIndices){
-      m_polyVec[vecIter].compAnnoAtVerts(); // This slows down subsequent code 
       clipPoly.getAnnoAtVerts(annotations);
     }else if (m_showAnnotations){
       clipPoly.get_annotations(annotations);
@@ -781,10 +786,10 @@ void drawPoly::cutToHlt(){
   m_polyVecStack.push_back(m_polyVec); // So that we can undo later
   
   dRect H = m_highlights[numH - 1];
-  
-  for (int vecIter  = 0; vecIter < (int)m_polyVec.size(); vecIter++){
 
-    dPoly clipPoly;
+  dPoly clipPoly;
+  for (int vecIter = 0; vecIter < (int)m_polyVec.size(); vecIter++){
+
     m_polyVec[vecIter].clipPoly(//inuts
                                 H.left(), H.top(),
                                 H.right(), H.bottom(),
