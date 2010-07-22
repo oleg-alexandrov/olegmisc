@@ -415,7 +415,8 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
     bool printCoords = false;
     int prec = 6, wid = prec + 6;
     cout.precision(prec);
-    
+    cout.setf(ios::floatfield);
+        
     double wx, wy;
     pixelToWorldCoords(m_mouseRelX, m_mouseRelY, wx, wy);
 
@@ -452,7 +453,7 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
     }
 
     if (printCoords){
-
+      
       cout << "Point: ("
            << setw(wid) << wx << ", "
            << setw(wid) << wy*m_yFactor << ")";
