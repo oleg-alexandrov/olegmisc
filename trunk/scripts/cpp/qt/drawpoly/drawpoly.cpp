@@ -6,6 +6,7 @@
 #include <iostream>
 #include <qapplication.h>
 #include <qfiledialog.h>
+#include <qdir.h>
 #include <qpainter.h>
 #include "drawpoly.h"
 using namespace std;
@@ -889,14 +890,18 @@ void drawPoly::initOpenPoly(){
 }
 
 void drawPoly::openPoly(){
+
   QString s = QFileDialog::getOpenFileName(
-                                           "/home/oleg/",
+                                           QDir::currentDirPath(),
                                            "(*.xg *.ly1 *.ly2)",
                                            this,
                                            "open file dialog"
                                            "Choose a file" );
 
-  string fileName     = string(s.data());
+  if (s.length() == 0) return;
+  
+  string fileName = string(s.data());
+
   bool plotPointsOnly = false;
 
   int numFiles = m_polyFilesVec.size();

@@ -89,11 +89,6 @@ void utils::parseCmdOptions(//inputs
     polyFilesVec.push_back(string(filename));
   }
   
-  if (polyFilesVec.size() == 0){
-    cerr << "No polygons to plot" << endl;
-    exit(1);
-  }
-
   return;
 }
 
