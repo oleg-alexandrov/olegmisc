@@ -893,7 +893,7 @@ void drawPoly::openPoly(){
 
   QString s = QFileDialog::getOpenFileName(
                                            QDir::currentDirPath(),
-                                           "(*.xg *.ly1 *.ly2)",
+                                           "(*.xg *.ly*)",
                                            this,
                                            "open file dialog"
                                            "Choose a file" );
