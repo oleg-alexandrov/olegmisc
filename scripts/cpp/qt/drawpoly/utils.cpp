@@ -98,3 +98,31 @@ void utils::parseCmdOptions(//inputs
 }
 
   
+void utils::findClosestPointAndDist(// inputs
+                                    double x0, double y0,
+                                    std::vector<dPoly> & polyVec,
+                                    // outputs
+                                    double & min_x, double & min_y,
+                                    double & min_dist
+                                    ){
+
+  min_x = x0; min_y = y0; min_dist = DBL_MAX;
+  
+  for (int s = 0; s < (int)polyVec.size(); s++){
+
+    double min_x0 = x0, min_y0 = y0, min_dist0 = DBL_MAX;
+    polyVec[s].findClosestPointAndDist(x0, y0,                   // inputs
+                                       min_x0, min_y0, min_dist0 // outputs
+                                       );
+
+    if (min_dist0 <= min_dist){
+      min_dist = min_dist0;
+      min_x    = min_x0;
+      min_y    = min_y0;
+    }
+    
+  }
+
+  return;
+}
+
