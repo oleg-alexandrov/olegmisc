@@ -363,8 +363,8 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
   cout << "Mouse released at "
        << m_mouseRelX << ' ' << m_mouseRelY << endl;
 #endif
-  
-  if (E->state() - 1  == Qt::ControlButton){
+
+  if (E->state() == (Qt::LeftButton | Qt::ControlButton) ){
 
     // Draw highlights with control + left mouse button
     // To do: Move this to its own function
@@ -412,6 +412,7 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
             abs(m_mouseRelY - m_mousePrsY) <= tol){
 
     // Print the physcal coordinates of the point the mouse was released at
+    bool printCoords = false;
     int prec = 6, wid = prec + 6;
     cout.precision(prec);
     
@@ -422,10 +423,12 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
     int len = 3, lineWidth = 1;
     paint.setPen( QPen("white", lineWidth) );
     paint.setBrush( NoBrush );
-    
-    // Snap to the closest vertex, unless the middle mouse button was pressed
-    if (E->button() != Qt::MidButton){
 
+    // Snap to the closest vertex with the left mouse button
+    if (E->state() == Qt::LeftButton){
+
+      printCoords = true;
+      
       double min_x, min_y, min_dist;
       findClosestPointAndDist(wx, wy, m_polyVec,     // inputs
                               min_x, min_y, min_dist // outputs
@@ -437,28 +440,41 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
 
       paint.drawEllipse(m_mouseRelX - len, m_mouseRelY - len, 2*len, 2*len);
     
-    }else{
+    }else if (E->state() == (Qt::LeftButton | Qt::ShiftButton)
+              ||
+              E->state() == (Qt::MidButton)
+              ){
+      
+      // Don't snap with the shift-left button or the middle button
+      printCoords = true;
       paint.drawRect(m_mouseRelX - len, m_mouseRelY - len, 2*len, 2*len);
+      
+    }
+
+    if (printCoords){
+
+      cout << "Point: ("
+           << setw(wid) << wx << ", "
+           << setw(wid) << wy*m_yFactor << ")";
+      if (m_prevClickExists){
+        cout  << " dist from prev: ("
+              << setw(wid) << wx - m_prevClickedX << ", "
+              << setw(wid) << (wy - m_prevClickedY)*m_yFactor
+              << ") Euclidean: "
+              << setw(wid) << sqrt( (wx - m_prevClickedX)*(wx - m_prevClickedX)
+                                    + 
+                                    (wy - m_prevClickedY)*(wy - m_prevClickedY)
+                                    );
+      }
+      cout << endl;
+      
+      m_prevClickExists = true;
+      m_prevClickedX    = wx;
+      m_prevClickedY    = wy;
+
+      return;
     }
     
-    cout << "Point: ("
-         << setw(wid) << wx << ", "
-         << setw(wid) << wy*m_yFactor << ")";
-    if (m_prevClickExists){
-      cout  << " dist from prev: ("
-            << setw(wid) << wx - m_prevClickedX << ", "
-            << setw(wid) << (wy - m_prevClickedY)*m_yFactor
-            << ") Euclidean: "
-            << setw(wid) << sqrt( (wx - m_prevClickedX)*(wx - m_prevClickedX)
-                                  + 
-                                  (wy - m_prevClickedY)*(wy - m_prevClickedY)
-                                  );
-    }
-    cout << endl;
-
-    m_prevClickExists = true;
-    m_prevClickedX    = wx;
-    m_prevClickedY    = wy;
     return;
   }
   
