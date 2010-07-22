@@ -411,6 +411,11 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
     double wx, wy;
     pixelToWorldCoords(m_mouseRelX, m_mouseRelY, wx, wy);
 
+    QPainter paint(this);
+    int len = 3, lineWidth = 1;
+    paint.setPen( QPen("white", lineWidth) );
+    paint.setBrush( NoBrush );
+    
     // Snap to the closest vertex, unless the middle mouse button was pressed
     if (E->button() != Qt::MidButton){
 
@@ -423,12 +428,10 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
                          m_mouseRelX, m_mouseRelY // outputs
                          );
 
-      QPainter paint(this);
-      int R = 3, lineWidth = 1;
-      paint.setPen( QPen("white", lineWidth) );
-      paint.setBrush( NoBrush );
-      paint.drawEllipse(m_mouseRelX - R, m_mouseRelY - R, 2*R, 2*R);
+      paint.drawEllipse(m_mouseRelX - len, m_mouseRelY - len, 2*len, 2*len);
     
+    }else{
+      paint.drawRect(m_mouseRelX - len, m_mouseRelY - len, 2*len, 2*len);
     }
     
     cout << "Point: ("
