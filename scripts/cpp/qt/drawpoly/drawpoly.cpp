@@ -77,7 +77,8 @@ void drawPoly::showPoly( QPainter *paint ){
                  );
     m_resetView = false;
   }
-  
+
+  //  This is necessary when the screen is resized
   expandBoxToGivenRatio(m_screenRatio,                               // input
                         m_viewXll, m_viewYll, m_viewWidX, m_viewWidY // in/out
                         );
@@ -89,37 +90,43 @@ void drawPoly::showPoly( QPainter *paint ){
 //                      m_screenWidX, m_screenWidY
 //                      );
 
+  // Create the new view
+  double xll, yll, xur, yur, widx, widy;
+    
   if (m_mouseRelX > m_mousePrsX && m_mouseRelY > m_mousePrsY){
     
     // Form a new view based on the rectangle selected with the mouse.
     // Enlarge this rectangle if necessary to keep the aspect ratio.
 
     // The call to pixelToWorldCoords uses the existing view internally
-    double xll, yll, xur, yur;
     pixelToWorldCoords(m_mousePrsX, m_mousePrsY, xll, yll);
     pixelToWorldCoords(m_mouseRelX, m_mouseRelY, xur, yur);
-    
-    double widx = xur - xll;
-    double widy = yur - yll;
+    widx = xur - xll;
+    widy = yur - yll;
 
+  }else{
+
+    // Modify the view for given shift or zoom
+    xll  = m_viewXll + m_viewWidX*( (1 - m_zoomFactor)/2.0 + m_shiftX );
+    yll  = m_viewYll + m_viewWidY*( (1 - m_zoomFactor)/2.0 + m_shiftY );
+    widx = m_viewWidX*m_zoomFactor;
+    widy = m_viewWidY*m_zoomFactor;
+    
+  }
+
+  // If the view becomes too small, don't accept it
+  if (widx == 0 || widy == 0){
+    cerr << "Cannot zoom in more" << endl;
+  }else{
     expandBoxToGivenRatio(//inputs
                           m_screenRatio,  
                           // input/outputs
                           xll, yll, widx, widy
                           );
-
+    
     // Overwrite the view
     m_viewXll = xll; m_viewWidX = widx;
     m_viewYll = yll; m_viewWidY = widy;
-    
-  }else{
-
-    // Modify the view for given shift or zoom
-    m_viewXll  += m_viewWidX*( (1 - m_zoomFactor)/2.0 + m_shiftX );
-    m_viewYll  += m_viewWidY*( (1 - m_zoomFactor)/2.0 + m_shiftY );
-    m_viewWidX *= m_zoomFactor;
-    m_viewWidY *= m_zoomFactor;
-    
   }
 
   // Having computed the new view reset the numbers used to manipulate
