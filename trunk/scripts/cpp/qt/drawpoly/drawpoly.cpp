@@ -344,15 +344,19 @@ void drawPoly::mousePressEvent( QMouseEvent *E){
 
 void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
 
+  // To do: This code needs to be modularized
+
   const QPoint Q = E->pos();
   m_mouseRelX = Q.x();
   m_mouseRelY = Q.y();
 
-//   cout << "Mouse pressed at "
-//        << m_mousePrsX << ' ' << m_mousePrsY << endl;
-//   cout << "Mouse released at "
-//        << m_mouseRelX << ' ' << m_mouseRelY << endl;
-
+#if 0
+  cout << "Mouse pressed at "
+       << m_mousePrsX << ' ' << m_mousePrsY << endl;
+  cout << "Mouse released at "
+       << m_mouseRelX << ' ' << m_mouseRelY << endl;
+#endif
+  
   if (E->state() - 1  == Qt::ControlButton){
 
     // Draw highlights with control + left mouse button
@@ -388,34 +392,6 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
   }
   m_rubberBand = QRect( m_mouseRelX, m_mouseRelY, 0, 0); //empty rect
   
-  // Pressed mid-button enables left/right/up/down navigation
-  const ButtonState button = E->button();
-  if (button == Qt::MidButton){
-
-    if (abs(m_mouseRelX - m_mousePrsX) > abs(m_mouseRelY - m_mousePrsY) ){
-
-      if ( m_mouseRelX - m_mousePrsX > 0){
-        shiftLeft();
-      }else{
-        shiftRight();
-      }
-      
-    }else{
-      
-      if ( m_mouseRelY - m_mousePrsY > 0){
-        shiftUp();
-      }else{
-        shiftDown();
-      }
-      
-    }
-    return;
-  }
-
-  // Zoom to selection if the mouse went down and right,
-  // zoom out if the mouse went up and left, and print
-  // the current coordinates otherwise.
-  
   // Any selection smaller than this will be ignored as perhaps the
   // user moved the mouse unintentionally between press and release.
   int tol = 5; 
@@ -434,6 +410,27 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
     
     double wx, wy;
     pixelToWorldCoords(m_mouseRelX, m_mouseRelY, wx, wy);
+
+    // Snap to the closest vertex, unless the middle mouse button was pressed
+    if (E->button() != Qt::MidButton){
+
+      double min_x, min_y, min_dist;
+      findClosestPointAndDist(wx, wy, m_polyVec,     // inputs
+                              min_x, min_y, min_dist // outputs
+                              );
+      wx = min_x; wy = min_y;
+      worldToPixelCoords(wx, wy,                  // inputs
+                         m_mouseRelX, m_mouseRelY // outputs
+                         );
+
+      QPainter paint(this);
+      int R = 3, lineWidth = 1;
+      paint.setPen( QPen("white", lineWidth) );
+      paint.setBrush( NoBrush );
+      paint.drawEllipse(m_mouseRelX - R, m_mouseRelY - R, 2*R, 2*R);
+    
+    }
+    
     cout << "Point: ("
          << setw(wid) << wx << ", "
          << setw(wid) << wy*m_yFactor << ")";
