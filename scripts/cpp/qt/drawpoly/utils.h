@@ -31,8 +31,8 @@ void findClosestPointAndDist(// inputs
 
   inline void printUsage(char * progName){
     
-    std::cout << "Usage: " << progName << " [ -geo 1000x800 ] file_1.xg ... "
-              << "[ -p ] file_N.xg " << std::endl;
+    std::cout << "Usage: " << progName << " [ -geo[metry] 1000x800 ] file_1.xg ... "
+              << "[ -p[oints] ] file_N.xg " << std::endl;
 
   }
   
