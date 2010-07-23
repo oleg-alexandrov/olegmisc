@@ -42,7 +42,7 @@ drawPoly::drawPoly( QWidget *parent,
   m_showFilledPolys    = false;
   m_showInReverseOrder = false;
   
-  m_rubberBand      = QRect( 0, 0, 0, 0); // initial rubberband
+  m_rubberBand = QRect( 0, 0, 0, 0); // initial rubberband
 
   m_showEdges             = 1;
   m_showPointsEdges       = 2;
@@ -493,9 +493,10 @@ void drawPoly::wipeRubberBand(QPainter * paint, QRect & rubberBand){
   int right = max(R.left(), R.right());
   int top   = min(R.top(), R.bottom());
   int bot   = max(R.top(), R.bottom());
-  int wd    = R.width();
-  int ht    = R.height();
+  int wd    = abs(R.width());
+  int ht    = abs(R.height());
   int px    = 1; 
+
   paint->drawPixmap (left,  top, m_cache, left,  top, wd, px);
   paint->drawPixmap (left,  top, m_cache, left,  top, px, ht);
   paint->drawPixmap (left,  bot, m_cache, left,  bot, wd, px);
@@ -520,8 +521,8 @@ void drawPoly::mouseMoveEvent( QMouseEvent *E){
   wipeRubberBand(&painter, m_rubberBand);
   
   // Create the new rubberband
-  QRect rubberBand( m_mousePrsX, m_mousePrsY,
-                    x - m_mousePrsX, y - m_mousePrsY );
+  QRect rubberBand( min(m_mousePrsX, x), min(m_mousePrsY, y),
+                    abs(x - m_mousePrsX), abs(y - m_mousePrsY) );
   painter.drawRect(rubberBand);
   m_rubberBand = rubberBand; // Save this for the future
   
