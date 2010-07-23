@@ -107,7 +107,7 @@ void utils::cutToHalfSpace(// inputs
 
     double dotCurr = nx*xcurr + ny*ycurr;
     double dotNext = nx*xnext + ny*ynext;
-    double cutx, cuty;
+    double cutx = 0.0, cuty = 0.0;
     
     if (dotCurr < dotH){
 
@@ -162,7 +162,7 @@ void utils::cutToHalfSpace(// inputs
 
       if (dotPrev >= dotH || dotNext >= dotH){
 
-        C.val       = nx*cuty - ny*cutx;
+        C.val       = nx*ycurr - ny*xcurr;
         C.index     = cutPtsIndex;
         C.isOutward = (dotPrev < dotH);
         ptsOnCutline.push_back(C);
@@ -202,7 +202,7 @@ void utils::cutToHalfSpace(// inputs
     before << "anno " << cutX[s] << ' ' << cutY[s]  << ' ' << s << endl;
   }
   before.close();
-  
+
   for (int s = 0; s < (int)ptsOnCutline.size(); s++){
     cout.precision(20);
     cout << "point on cutline is (index outward val) "

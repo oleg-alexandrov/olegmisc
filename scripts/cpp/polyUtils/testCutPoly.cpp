@@ -34,14 +34,13 @@ int main(int argc, char** argv){
 //   double xll = 100, xur = 426;
 //   double yll = 100, yur = 501.214;
 
-  double xll = 196.5,   yll = 607.411;
-  double xur = 633.425, yur = 995.075;
+  double w[] = {373.255, -54.6423, 1086, 4837};
     
   vector<double> cutX, cutY;
   vector<int> cutNumPolys;
 
-  cutPoly(numPolys, numVerts, xv, yv, xll, yll, xur, yur, // inputs
-          cutX, cutY, cutNumPolys                         // outputs
+  cutPoly(numPolys, numVerts, xv, yv, w[0], w[1], w[2], w[3], // inputs
+          cutX, cutY, cutNumPolys                             // outputs
           );
   
   char * outFile = "clipped.xg";
@@ -52,7 +51,15 @@ int main(int argc, char** argv){
   write_xg(outFile, isPointCloud,
            cutX, cutY, cutNumPolys, cutNumPolys.size(), cutX.size(),
            colorsOut, "yellow", scale, layersOut, annotations);
-  
+
+  ofstream win("window.xg");
+  cout << "Writing to window.xg" << endl;
+  win << "color = cyan" << endl;
+  win << w[0] << ' ' << w[1] << endl;
+  win << w[2] << ' ' << w[1] << endl;
+  win << w[2] << ' ' << w[3] << endl;
+  win << w[0] << ' ' << w[3] << endl;
+  win.close();
   return 0;
   
 }
