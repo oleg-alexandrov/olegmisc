@@ -6,6 +6,8 @@
 using namespace std;
 using namespace utils;
 
+#define DEBUG_CUT_POLY 0 // Must be 0 in production code
+
 void utils::cutPoly(// inputs -- the polygons
                      int numPolys, const int * numVerts,
                      const double * xv, const double * yv,
@@ -31,8 +33,6 @@ void utils::cutPoly(// inputs -- the polygons
   int totalNumVerts = 0;
   for (int s = 0; s < numPolys; s++) totalNumVerts += numVerts[s];
 
-  bool isDegenPoly = (totalNumVerts <= 2);
-  
   vector<double> Xin(xv, xv + totalNumVerts);        // A copy of xv as vector
   vector<double> Yin(yv, yv + totalNumVerts);        // A copy of yv as vector
   vector<int>    Pin(numVerts, numVerts + numPolys); // A copy of numVerts 
@@ -57,7 +57,7 @@ void utils::cutPoly(// inputs -- the polygons
       int numV = Pin[pIter];
       if (numV == 0) continue;
       
-      cutToHalfSpace(isDegenPoly, nx, ny, dotH,
+      cutToHalfSpace(nx, ny, dotH,
                      numV, vecPtr(Xin) + start, vecPtr(Yin) + start,
                      cutHalfX, cutHalfY, cutHalfP);
       
@@ -82,7 +82,6 @@ void utils::cutPoly(// inputs -- the polygons
 }
 
 void utils::cutToHalfSpace(// inputs 
-                           bool & isDegenPoly,
                            double nx, double ny, double dotH,
                            int numV, 
                            const double * xv, const double * yv,
@@ -176,15 +175,13 @@ void utils::cutToHalfSpace(// inputs
     
   }
 
-  if (cutX.size() <= 2) isDegenPoly = true; 
-  
   int numPtsOnCutline = ptsOnCutline.size();
-  if (numPtsOnCutline == 0 || isDegenPoly){
+  if (numPtsOnCutline == 0){
     cutNumPolys.push_back( cutX.size() );
     return;
   }
 
-  procPtsOnCutline(ptsOnCutline);
+  processPointsOnCutline(ptsOnCutline);
   
   // Find the connected components in the cut polygons
   // To do: Move this to its own function.
@@ -193,8 +190,7 @@ void utils::cutToHalfSpace(// inputs
   vector<int> P;
   X.clear(); Y.clear(); P.clear();
 
-#define DEBUG_CUT 0 // Must be 0 in production code
-#if DEBUG_CUT
+#if DEBUG_CUT_POLY
   static int c = -1;
   c++;
   char file[100];
@@ -232,7 +228,6 @@ void utils::cutToHalfSpace(// inputs
         break;
       }
     }
-
     if (!success) break; 
 
     int numPtsInComp = 0;
@@ -242,16 +237,18 @@ void utils::cutToHalfSpace(// inputs
       
       if (wasVisited[ptIter]){
         P.push_back(numPtsInComp);
-        break; // Arrived back to the starting point
+        break; // Arrived back to the starting point of the given component
       }
       
       X.push_back(cutX[ptIter]);
       Y.push_back(cutY[ptIter]);
       wasVisited[ptIter] = 1;
-#if DEBUG_CUT
+#if DEBUG_CUT_POLY
       cout << "ptIter = " << ptIter << endl;
 #endif
       numPtsInComp++;
+
+      // Decide which point we will visit next
       
       if (nx*cutX[ptIter] + ny*cutY[ptIter] != dotH){
         // The point is not at the cutline
@@ -278,21 +275,20 @@ void utils::cutToHalfSpace(// inputs
         continue;
       }
 
-      if (cutlineIter%2 == 0 && !ptsOnCutline[cutlineIter].isDuplicate
-          && cutlineIter < numPtsOnCutline - 1){
-        // The point ptIter is at the cutline on the way out.
-        // Find the point where it re-enters the current half-plane.
-        //assert(ptsOnCutline[cutlineIter].isOutward);
-          
-        ptIter = ptsOnCutline[cutlineIter + 1].index;
+      if (ptsOnCutline[cutlineIter].isOutward){
+
+        // We are getting out of the polygon. Find the point at
+        // which we come back.
+        ptIter = ptsOnCutline[cutlineIter].nextIndexInward;
         continue;
         
       }else{
+        
         // The point ptIter is at the cutline on the way in.
         // The next point will be inside the current half-plane.
-        //assert(!ptsOnCutline[cutlineIter].isOutward);
         ptIter = (ptIter + 1)%numCutPts;
         continue;
+        
       }
       
     } // End iterating over all connected components
@@ -303,7 +299,7 @@ void utils::cutToHalfSpace(// inputs
   cutY        = Y;
   cutNumPolys = P;
 
-#if DEBUG_CUT
+#if DEBUG_CUT_POLY
   sprintf(file, "afterCleanup%d.xg", c);
   cout << "Writing to " << file << endl;
   ofstream after(file);
@@ -358,69 +354,48 @@ void utils::cutEdge(double x0, double y0, double x1, double y1,
   return;
 }
 
-void utils::procPtsOnCutline(std::vector<valIndex> & ptsOnCutline){
+void utils::processPointsOnCutline(std::vector<valIndex> & ptsOnCutline){
 
-  // There must be an even number of points on a cutline.  For each
-  // point at which we cross the cut line to the other side there must
-  // be a corresponding point at which we come back.
-  int numPtsOnCutline = ptsOnCutline.size();
-  int numOut = 0, numIn = 0;
-  for (int s = 0; s < numPtsOnCutline; s++){
-    const valIndex & C = ptsOnCutline[s];
-    if (C.isOutward) numOut++;
-    else             numIn++;
-    //cout << "val index is outward "
-    //     << C.val << ' ' << C.index << ' ' << C.isOutward << endl; 
-  }
-  assert(numIn == numOut);
-
+  
+  // Sort the cutline points along the cutline (the sort direction
+  // does not matter).
   sort( ptsOnCutline.begin(), ptsOnCutline.end(), lessThan );
 
-  // Mark the duplicates
+  // Find the position of each outward and each inward point on the cutline
+  vector<int> outwardPositions, inwardPositions;
+  outwardPositions.clear(); inwardPositions.clear();
+  int numPtsOnCutline = ptsOnCutline.size();
   for (int s = 0; s < numPtsOnCutline; s++){
-
-    valIndex & C = ptsOnCutline[s]; //alias
-    
-    if (s < numPtsOnCutline - 1 && C.val == ptsOnCutline[s+1].val){
-      C.isDuplicate = true;
-      continue;
-    }
-    
-    if (s > 0 && C.val == ptsOnCutline[s-1].val){
-      C.isDuplicate = true;
-      continue;
-    }
-
-    C.isDuplicate = false;
-
+    const valIndex & C = ptsOnCutline[s];
+    if (C.isOutward) outwardPositions.push_back(s);
+    else             inwardPositions.push_back (s);
+    //cout << "val index isOutward "
+    //     << C.val << ' ' << C.index << ' ' << C.isOutward << endl; 
   }
 
-  // Decide the order in which we will visit the cutline points
-  // We want it in such a way that the first nonduplicate
-  // point to visit is outward.
-  for (int s = 0; s < numPtsOnCutline; s++){
+  // There must be an even number of points on a cutline. That holds
+  // true for any closed curve, with or without self-intersections.
+  // Each time we cross the cutline to the other side at some point
+  // there must be a corresponding point at which we come back. Match
+  // the i-th outward point to the corresponding i-th inward point.
+  int numOut = outwardPositions.size();
+  int numIn  = inwardPositions.size();
+  assert(numIn == numOut);
+  for (int i = 0; i < numOut; i++){
 
-    valIndex & C = ptsOnCutline[s]; //alias
-    if (C.isDuplicate) continue;
-
-    if (!C.isOutward){
-      reverse( ptsOnCutline.begin(), ptsOnCutline.end() );
+    valIndex & C = ptsOnCutline[outwardPositions[i]]; //alias
+    
+    if (C.isOutward){
+      C.nextIndexInward = ptsOnCutline[inwardPositions[i]].index;
+#if DEBUG_CUT_POLY
+      cout << "Going from " << C.index << " to " << C.nextIndexInward << endl;
+#endif
+    }else{
+      C.nextIndexInward = -1; // To not leave it uninitialized
     }
-    break;
     
   }
   
   return;
 }
 
-double utils::polygonArea(int n, const double * x, const double * y){
-
-  double area = 0.0;
-  for (int s = 0; s < n; s++){
-    int sn = (s + 1)%n;
-    area += x[s]*y[sn] - x[sn]*y[s];
-  }
-
-  return area;
-  
-}

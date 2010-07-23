@@ -32,7 +32,7 @@ namespace utils{
     double val;
     int    index;
     bool   isOutward;
-    bool   isDuplicate;
+    int    nextIndexInward; // Useful only when isOutward is true
   };
 
   inline int iround(double x){ return (int)round(x); }
@@ -87,9 +87,7 @@ namespace utils{
 
   inline bool lessThan (valIndex A, valIndex B){ return A.val < B.val; }
   
-  void procPtsOnCutline(std::vector<valIndex> & ptsOnCutline);
-
-  double polygonArea(int n, const double * x, const double * y);
+  void processPointsOnCutline(std::vector<valIndex> & ptsOnCutline);
 
   void cutEdge(double x0, double y0, double x1, double y1,
                double nx, double ny, double H,
@@ -97,7 +95,6 @@ namespace utils{
   
   
 void cutToHalfSpace(// inputs 
-                    bool & isDegenPoly, 
                     double nx, double ny, double dotH,
                     int numV, 
                     const double * xv, const double * yv,
