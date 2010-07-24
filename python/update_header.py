@@ -254,13 +254,10 @@ if __name__ == '__main__':
       count = count + 1
       namespace = get_namespace(scope)
       if namespace == "": continue
-      
       #print "namespace is ", namespace
-      #print "scope is --", scope
       
       cpp_map       = parse_cpp(cpp_text, namespace)
       scopes[count] = parse_update_h(scope, cpp_map, namespace)
-      #print "Answer is ", scopes[count]
       
     h_text = "".join(scopes)
 
