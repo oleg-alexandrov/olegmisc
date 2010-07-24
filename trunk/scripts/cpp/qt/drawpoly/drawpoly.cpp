@@ -778,6 +778,8 @@ void drawPoly::toggleFilled(){
   update();
 }
 
+// actions
+
 void drawPoly::drawRect(const utils::dRect & R, int lineWidth,
                         QPainter * paint){
 
@@ -1053,3 +1055,4 @@ bool drawPoly::isClosestGridPtFree(std::vector< std::vector<int> > & Grid,
   
   return false;
 }
+
