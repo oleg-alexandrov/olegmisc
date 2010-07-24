@@ -14,22 +14,20 @@ def get_namespace(text):
 
   namespace = ""
 
-  m = re.match(r"^.*\n\s*(?:class|struct|namespace)\s+(\w+)\s*:*.*?\{",
+  m = re.match(r"^\s*(?:class|struct|namespace)\s+(\w+)\s*:*.*?\{",
               text, re.S)
   if m:
       namespace = m.group(1)
+      return namespace
   else:
-    print "Can't identify the namespace!"
-    sys.exit(1);
+    return ""
   
-  return namespace
-
-def balanced_parens(text):
+def balanced_parens(text, lparen, rparen):
 
     text = re.sub("//.*?($|\n)", "", text)
 
-    lp = re.findall(r"\(", text)
-    rp = re.findall(r"\)", text)
+    lp = re.findall(lparen, text)
+    rp = re.findall(rparen, text)
 
     return len(lp) == len(rp)
 
@@ -38,7 +36,7 @@ def len_woc(text):
   text = re.sub("//.*?($|\n)", "", text)
   return len(text)
 
-def extract_blocks(text):
+def extract_blocks(text, lparen, rparen):
 
     # A block consists of several consecutive lines such
     # that the parentheses in each block are balanced.
@@ -57,7 +55,7 @@ def extract_blocks(text):
         if lcount < len(lines):
             block = block + "\n"
 
-        if balanced_parens(block):
+        if balanced_parens(block, lparen, rparen):
             blocks.append(block)
             block = ""
 
@@ -101,7 +99,7 @@ def parse_cpp(cpp_text, namespace):
 
     cpp_map = {} # Needed if there are multiple functions with same name
     
-    blocks = extract_blocks(cpp_text)
+    blocks = extract_blocks(cpp_text, '\(', '\)')
     count  = 1 # Used to keep the order of blocks
     
     for block in blocks:
@@ -128,12 +126,12 @@ def parse_update_h(h_text, cpp_map, namespace):
     # Update the h file by overwriting each block with the
     # corresponding block from the cpp file.
 
-    h_blocks = extract_blocks(h_text)
+    h_blocks = extract_blocks(h_text, '\(', '\)')
     h_map    = {}
     count    = -1
 
     for h_block in h_blocks:
-
+      
         count = count + 1
         
         p = re.match("""
@@ -245,12 +243,30 @@ if __name__ == '__main__':
     fh = open(cpp_file, 'r'); cpp_text = fh.read(); fh.close()
     fh = open(h_file,   'r'); h_text   = fh.read(); fh.close()
 
-    namespace = get_namespace(h_text)
-    cpp_map = parse_cpp(cpp_text, namespace)
+    # Identify all scopes (blocks between { and }). For each of those
+    # scopes which is a namespace/class/struct, find all cpp files
+    # with it and update that scope.
     
-    h_text  = parse_update_h(h_text, cpp_map, namespace)
+    scopes = extract_blocks(h_text, '\{', '\}')
+    count    = -1
+    for scope in scopes:
+
+      count = count + 1
+      namespace = get_namespace(scope)
+      if namespace == "": continue
+      
+      #print "namespace is ", namespace
+      #print "scope is --", scope
+      
+      cpp_map       = parse_cpp(cpp_text, namespace)
+      scopes[count] = parse_update_h(scope, cpp_map, namespace)
+      #print "Answer is ", scopes[count]
+      
+    h_text = "".join(scopes)
 
     fh = open(h_file, 'w'); fh.write(h_text); fh.close()
 
     h_file = re.sub(r"^.*/", "", h_file)
     print "Updated ", h_file
+
+      
