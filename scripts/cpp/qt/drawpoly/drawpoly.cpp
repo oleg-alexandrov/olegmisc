@@ -926,7 +926,8 @@ void drawPoly::openPoly(){
 void drawPoly::readOnePoly(// inputs
                            std::string & filename,
                            bool plotPointsOnly,
-                           dPoly & poly            // output
+                           // output
+                           dPoly & poly           
                            ){
   
   if ( ! poly.read_poly(filename.c_str(), plotPointsOnly) ){
