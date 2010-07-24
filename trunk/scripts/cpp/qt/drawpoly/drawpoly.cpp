@@ -354,12 +354,9 @@ void drawPoly::mousePressEvent( QMouseEvent *E){
 
 void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
 
-  // To do: This code needs to be modularized
-
   const QPoint Q = E->pos();
   m_mouseRelX = Q.x();
   m_mouseRelY = Q.y();
-
 #if 0
   cout << "Mouse pressed at "
        << m_mousePrsX << ' ' << m_mousePrsY << endl;
@@ -368,39 +365,14 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
 #endif
 
   if (E->state() == (Qt::LeftButton | Qt::ControlButton) ){
-
-    // Draw highlights with control + left mouse button
-    // To do: Move this to its own function
-    
-    double xll, yll, xur, yur;
-    pixelToWorldCoords(m_mousePrsX, m_mousePrsY, // inputs
-                       xll, yll    // outputs
-                       );
-    pixelToWorldCoords(m_mouseRelX, m_mouseRelY, // inputs
-                       xur, yur    // outputs
-                       );
-
-    dRect R(xll, yll, xur, yur);
-    normalize(R);
-    m_highlights.push_back(R);
-
-    m_actions.push_back(m_createHlt);
-    
-    resetTransformSettings();
+    // Draw a  highlight with control + left mouse button
+    // ending at the current point
+    createHighlight(m_mousePrsX, m_mousePrsY, m_mouseRelX, m_mouseRelY);
+    resetTransformSettings(); // To not zoom around the mosue release coords
     update();
-    
     return;
   }
 
-  // From here on we assume the control key was not pressed
-  // when the mouse was released.
-  
-  // Wipe the previous rubberband, if non-empty
-  if (m_rubberBand.width() > 0 || m_rubberBand.height() > 0){
-    wipeRubberBand(m_rubberBand);
-  }
-  m_rubberBand = QRect( m_mouseRelX, m_mouseRelY, 0, 0); //empty rect
-  
   // Any selection smaller than this will be ignored as perhaps the
   // user moved the mouse unintentionally between press and release.
   int tol = 5; 
@@ -415,8 +387,28 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
   }else if (abs(m_mouseRelX - m_mousePrsX) <= tol &&
             abs(m_mouseRelY - m_mousePrsY) <= tol){
     printCurrCoords(E);
+    return;
   }    
    
+  return;
+}
+
+void drawPoly::createHighlight(// inputs are in pixels
+                               int pxll, int pyll, int pxur, int pyur
+                               ){
+    
+  double xll, yll, xur, yur;
+  pixelToWorldCoords(pxll, pyll, // inputs
+                     xll, yll    // outputs
+                     );
+  pixelToWorldCoords(pxur, pyur, // inputs
+                     xur, yur    // outputs
+                     );
+  
+  dRect R( min(xll, xur), min(yll, yur), max(xll, xur), max(yll, yur) );
+  m_highlights.push_back(R);
+  m_actions.push_back(m_createHlt);
+  
   return;
 }
 
@@ -483,12 +475,12 @@ void drawPoly::printCurrCoords(QMouseEvent * E){
 }
 
 
-void drawPoly::wipeRubberBand(QRect & rubberBand){
+void drawPoly::wipeRubberBand(QRect & R){
   
   // Wipe the current rubberband by overwriting the region it occupies
   // (a set of four segments forming a rectangle) with the cached
   // version of image before the rubberband was drawn.
-  QRect R   = rubberBand;
+
   int left  = min(R.left(), R.right());
   int right = max(R.left(), R.right());
   int top   = min(R.top(), R.bottom());
@@ -503,6 +495,8 @@ void drawPoly::wipeRubberBand(QRect & rubberBand){
   paint.drawPixmap (left,  bot, m_cache, left,  bot, wd, px);
   paint.drawPixmap (right, top, m_cache, right, top, px, ht);
 
+  R = QRect(0, 0, 0, 0); // wipe
+  
   return;
 }
 
@@ -511,19 +505,16 @@ void drawPoly::mouseMoveEvent( QMouseEvent *E){
   const QPoint Q = E->pos();
   int x = Q.x();
   int y = Q.y();
-
   //cout << "Mouse moved to " << x << ' ' << y << endl;
-  wipeRubberBand(m_rubberBand);
-
+  
   QPainter painter(this);
   painter.setPen(Qt::white);
   painter.setBrush( NoBrush );
   
-  // Create the new rubberband
-  QRect rubberBand( min(m_mousePrsX, x), min(m_mousePrsY, y),
-                    abs(x - m_mousePrsX), abs(y - m_mousePrsY) );
-  painter.drawRect(rubberBand);
-  m_rubberBand = rubberBand; // Save this for the future
+  wipeRubberBand(m_rubberBand);
+  m_rubberBand = QRect( min(m_mousePrsX, x), min(m_mousePrsY, y),
+                        abs(x - m_mousePrsX), abs(y - m_mousePrsY) );
+  painter.drawRect(m_rubberBand);
   
 }
 
@@ -819,17 +810,17 @@ void drawPoly::cutToHlt(){
   
   dRect H = m_highlights[numH - 1];
 
-  dPoly clipPoly;
+  dPoly clipedPoly;
   for (int vecIter = 0; vecIter < (int)m_polyVec.size(); vecIter++){
 
     m_polyVec[vecIter].clipPoly(//inuts
                                 H.left(), H.top(),
                                 H.right(), H.bottom(),
                                 // output
-                                clipPoly
+                                clipedPoly
                                 );
 
-    m_polyVec[vecIter] = clipPoly;    
+    m_polyVec[vecIter] = clipedPoly;    
   }
 
   m_highlights.resize(numH - 1);

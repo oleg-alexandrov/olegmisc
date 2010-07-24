@@ -49,6 +49,9 @@ protected:
 private slots:
 
 private:
+  void createHighlight(// inputs are in pixels
+                       int pxll, int pyll, int pxur, int pyur
+                       );
   void printCurrCoords(QMouseEvent * E);
   void readOnePoly(// inputs
                    std::string & filename,
@@ -65,7 +68,7 @@ private:
   void centerViewAtPoint(double x, double y);
   void drawOneVertex(int x0, int y0, QColor color, int lineWidth,
                      int drawVertIndex, QPainter * paint);
-  void wipeRubberBand(QRect & rubberBand);
+  void wipeRubberBand(QRect & R);
 
   void showPoly( QPainter *paint );
   void resetTransformSettings();
