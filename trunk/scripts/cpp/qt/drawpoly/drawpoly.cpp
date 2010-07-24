@@ -386,7 +386,9 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
     return;
   }else if (abs(m_mouseRelX - m_mousePrsX) <= tol &&
             abs(m_mouseRelY - m_mousePrsY) <= tol){
-    printCurrCoords(E);
+    printCurrCoords(E->state(),              // input
+                    m_mouseRelX, m_mouseRelY // in-out
+                    );
     return;
   }    
    
@@ -412,16 +414,19 @@ void drawPoly::createHighlight(// inputs are in pixels
   return;
 }
 
-void drawPoly::printCurrCoords(QMouseEvent * E){
+void drawPoly::printCurrCoords(const ButtonState & state, // input
+                               int & currX, int  & currY  // in-out
+                               ){
   
-  // Print the physcal coordinates of the point the mouse was released at
-
+  // Snap or not the current point to the closest polygon vertex
+  // and print its coordinates.
+  
   int prec = 6, wid = prec + 6;
   cout.precision(prec);
   cout.setf(ios::floatfield);
         
   double wx, wy;
-  pixelToWorldCoords(m_mouseRelX, m_mouseRelY, wx, wy);
+  pixelToWorldCoords(currX, currY, wx, wy);
 
   QPainter paint(this);
   int len = 3, lineWidth = 1;
@@ -429,26 +434,26 @@ void drawPoly::printCurrCoords(QMouseEvent * E){
   paint.setBrush( NoBrush );
 
   // Snap to the closest vertex with the left mouse button
-  if (E->state() == Qt::LeftButton){
+  if (state == Qt::LeftButton){
       
     double min_x, min_y, min_dist;
     findClosestPointAndDist(wx, wy, m_polyVec,     // inputs
                             min_x, min_y, min_dist // outputs
                             );
     wx = min_x; wy = min_y;
-    worldToPixelCoords(wx, wy,                  // inputs
-                       m_mouseRelX, m_mouseRelY // outputs
+    worldToPixelCoords(wx, wy,      // inputs
+                       currX, currY // outputs
                        );
 
-    paint.drawEllipse(m_mouseRelX - len, m_mouseRelY - len, 2*len, 2*len);
+    paint.drawEllipse(currX - len, currY - len, 2*len, 2*len);
     
-  }else if (E->state() == (Qt::LeftButton | Qt::ShiftButton)
+  }else if (state == (Qt::LeftButton | Qt::ShiftButton)
             ||
-            E->state() == (Qt::MidButton)
+            state == (Qt::MidButton)
             ){
       
     // Don't snap with the shift-left button or the middle button
-    paint.drawRect(m_mouseRelX - len, m_mouseRelY - len, 2*len, 2*len);
+    paint.drawRect(currX - len, currY - len, 2*len, 2*len);
       
   }
 
