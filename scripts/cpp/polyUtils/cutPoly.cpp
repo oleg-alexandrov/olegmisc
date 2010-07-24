@@ -86,9 +86,9 @@ void utils::cutToHalfSpace(// inputs
                            int numV, 
                            const double * xv, const double * yv,
                            // outputs -- the cut polygons
-                           std::vector< double> & cutX,
-                           std::vector< double> & cutY,
-                           std::vector< int>    & cutNumPolys){
+                           std::vector<double> & cutX,
+                           std::vector<double> & cutY,
+                           std::vector<int>    & cutNumPolys){
 
 
   vector<valIndex> ptsOnCutline; ptsOnCutline.clear();
