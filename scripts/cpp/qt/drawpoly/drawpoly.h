@@ -52,7 +52,9 @@ private:
   void createHighlight(// inputs are in pixels
                        int pxll, int pyll, int pxur, int pyur
                        );
-  void printCurrCoords(QMouseEvent * E);
+  void printCurrCoords(const ButtonState & state, // input
+                       int & currX, int  & currY  // in-out
+                       );
   void readOnePoly(// inputs
                    std::string & filename,
                    bool plotPointsOnly,
