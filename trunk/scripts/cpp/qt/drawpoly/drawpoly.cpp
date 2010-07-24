@@ -397,8 +397,7 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
   
   // Wipe the previous rubberband, if non-empty
   if (m_rubberBand.width() > 0 || m_rubberBand.height() > 0){
-    QPainter painter(this);
-    wipeRubberBand(&painter, m_rubberBand);
+    wipeRubberBand(m_rubberBand);
   }
   m_rubberBand = QRect( m_mouseRelX, m_mouseRelY, 0, 0); //empty rect
   
@@ -484,7 +483,7 @@ void drawPoly::printCurrCoords(QMouseEvent * E){
 }
 
 
-void drawPoly::wipeRubberBand(QPainter * paint, QRect & rubberBand){
+void drawPoly::wipeRubberBand(QRect & rubberBand){
   
   // Wipe the current rubberband by overwriting the region it occupies
   // (a set of four segments forming a rectangle) with the cached
@@ -498,10 +497,11 @@ void drawPoly::wipeRubberBand(QPainter * paint, QRect & rubberBand){
   int ht    = abs(R.height());
   int px    = 1; 
 
-  paint->drawPixmap (left,  top, m_cache, left,  top, wd, px);
-  paint->drawPixmap (left,  top, m_cache, left,  top, px, ht);
-  paint->drawPixmap (left,  bot, m_cache, left,  bot, wd, px);
-  paint->drawPixmap (right, top, m_cache, right, top, px, ht);
+  QPainter paint(this);
+  paint.drawPixmap (left,  top, m_cache, left,  top, wd, px);
+  paint.drawPixmap (left,  top, m_cache, left,  top, px, ht);
+  paint.drawPixmap (left,  bot, m_cache, left,  bot, wd, px);
+  paint.drawPixmap (right, top, m_cache, right, top, px, ht);
 
   return;
 }
@@ -513,13 +513,11 @@ void drawPoly::mouseMoveEvent( QMouseEvent *E){
   int y = Q.y();
 
   //cout << "Mouse moved to " << x << ' ' << y << endl;
+  wipeRubberBand(m_rubberBand);
 
   QPainter painter(this);
   painter.setPen(Qt::white);
   painter.setBrush( NoBrush );
-
-  // Wipe the previous rubberband
-  wipeRubberBand(&painter, m_rubberBand);
   
   // Create the new rubberband
   QRect rubberBand( min(m_mousePrsX, x), min(m_mousePrsY, y),
