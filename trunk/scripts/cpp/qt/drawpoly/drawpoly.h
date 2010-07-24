@@ -7,8 +7,7 @@
 #include "utils.h"
 #include "../../polyUtils/dPoly.h"
 
-class drawPoly : public QWidget
-{
+class drawPoly : public QWidget{
     Q_OBJECT
 public:
     drawPoly( QWidget *parent, 
@@ -52,7 +51,7 @@ private:
                    std::string & filename,
                    bool plotPointsOnly,
                    // output
-                   dPoly & poly
+                   dPoly & poly           
                    );
   bool isClosestGridPtFree(std::vector< std::vector<int> > & Grid,
                            int x, int y);
