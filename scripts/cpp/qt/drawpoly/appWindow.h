@@ -36,6 +36,7 @@ private slots:
   void savePoly          ();
   void togglePE          ();
   void toggleOrder       ();
+  // actions
   
 private:
   drawPoly   * m_poly;

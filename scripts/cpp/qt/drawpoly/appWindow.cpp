@@ -49,6 +49,8 @@ void appWindow::openPoly          (){ m_poly->openPoly          (); }
 void appWindow::savePoly          (){ m_poly->savePoly          (); }
 void appWindow::togglePE          (){ m_poly->togglePE          (); }
 void appWindow::toggleOrder       (){ m_poly->toggleOrder       (); }
+// actions
+
 
 void appWindow::createMenus(){
   
@@ -100,7 +102,6 @@ void appWindow::help(){
 
   return;
 }
-
 
 
 

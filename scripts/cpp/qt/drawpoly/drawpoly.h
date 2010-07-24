@@ -32,6 +32,7 @@ public:
   void savePoly();
   void togglePE();
   void toggleOrder();
+  // actions
   
 public slots:
 
