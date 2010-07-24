@@ -49,6 +49,7 @@ void appWindow::openPoly          (){ m_poly->openPoly          (); }
 void appWindow::savePoly          (){ m_poly->savePoly          (); }
 void appWindow::togglePE          (){ m_poly->togglePE          (); }
 void appWindow::toggleOrder       (){ m_poly->toggleOrder       (); }
+void appWindow::toggleAddPoly       (){ m_poly->toggleAddPoly       (); }
 // actions
 
 

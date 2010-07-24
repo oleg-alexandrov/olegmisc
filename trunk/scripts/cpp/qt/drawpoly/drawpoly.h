@@ -32,6 +32,7 @@ public:
   void savePoly();
   void togglePE();
   void toggleOrder();
+  void toggleAddPoly();
   // actions
   
 public slots:
@@ -48,6 +49,7 @@ protected:
 private slots:
 
 private:
+  void printCurrCoords(QMouseEvent * E);
   void readOnePoly(// inputs
                    std::string & filename,
                    bool plotPointsOnly,
@@ -122,6 +124,8 @@ private:
 
   int m_showEdges, m_showPoints, m_showPointsEdges, m_toggleShowPointsEdges;
   bool m_showInReverseOrder, m_showVertIndices;
+
+  bool m_addPoly;
   
 };
 

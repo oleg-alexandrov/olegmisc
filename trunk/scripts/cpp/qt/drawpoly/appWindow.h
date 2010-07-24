@@ -36,6 +36,7 @@ private slots:
   void savePoly          ();
   void togglePE          ();
   void toggleOrder       ();
+  void toggleAddPoly       ();
   // actions
   
 private:

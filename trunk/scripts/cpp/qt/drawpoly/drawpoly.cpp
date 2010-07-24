@@ -49,6 +49,8 @@ drawPoly::drawPoly( QWidget *parent,
   m_showPoints            = 3;
   m_toggleShowPointsEdges = m_showEdges;
 
+  m_addPoly = false;
+  
   resetTransformSettings();
   initOpenPoly();
 }
@@ -403,85 +405,84 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
   // Any selection smaller than this will be ignored as perhaps the
   // user moved the mouse unintentionally between press and release.
   int tol = 5; 
-  if       (m_mouseRelX > m_mousePrsX + tol && m_mouseRelY > m_mousePrsY + tol){
+  if       (m_mouseRelX > m_mousePrsX + tol &&
+            m_mouseRelY > m_mousePrsY + tol){
     update(); // Will zoom to the region selected with the mouse
     return;
-  }else if (m_mouseRelX + tol < m_mousePrsX && m_mouseRelY + tol < m_mousePrsY ){
+  }else if (m_mouseRelX + tol < m_mousePrsX &&
+            m_mouseRelY + tol < m_mousePrsY ){
     zoomOut();
     return;
   }else if (abs(m_mouseRelX - m_mousePrsX) <= tol &&
             abs(m_mouseRelY - m_mousePrsY) <= tol){
-
-    // Print the physcal coordinates of the point the mouse was released at
-    bool printCoords = false;
-    int prec = 6, wid = prec + 6;
-    cout.precision(prec);
-    cout.setf(ios::floatfield);
-        
-    double wx, wy;
-    pixelToWorldCoords(m_mouseRelX, m_mouseRelY, wx, wy);
-
-    QPainter paint(this);
-    int len = 3, lineWidth = 1;
-    paint.setPen( QPen("white", lineWidth) );
-    paint.setBrush( NoBrush );
-
-    // Snap to the closest vertex with the left mouse button
-    if (E->state() == Qt::LeftButton){
-
-      printCoords = true;
-      
-      double min_x, min_y, min_dist;
-      findClosestPointAndDist(wx, wy, m_polyVec,     // inputs
-                              min_x, min_y, min_dist // outputs
-                              );
-      wx = min_x; wy = min_y;
-      worldToPixelCoords(wx, wy,                  // inputs
-                         m_mouseRelX, m_mouseRelY // outputs
-                         );
-
-      paint.drawEllipse(m_mouseRelX - len, m_mouseRelY - len, 2*len, 2*len);
-    
-    }else if (E->state() == (Qt::LeftButton | Qt::ShiftButton)
-              ||
-              E->state() == (Qt::MidButton)
-              ){
-      
-      // Don't snap with the shift-left button or the middle button
-      printCoords = true;
-      paint.drawRect(m_mouseRelX - len, m_mouseRelY - len, 2*len, 2*len);
-      
-    }
-
-    if (printCoords){
-      
-      cout << "Point: ("
-           << setw(wid) << wx << ", "
-           << setw(wid) << wy*m_yFactor << ")";
-      if (m_prevClickExists){
-        cout  << " dist from prev: ("
-              << setw(wid) << wx - m_prevClickedX << ", "
-              << setw(wid) << (wy - m_prevClickedY)*m_yFactor
-              << ") Euclidean: "
-              << setw(wid) << sqrt( (wx - m_prevClickedX)*(wx - m_prevClickedX)
-                                    + 
-                                    (wy - m_prevClickedY)*(wy - m_prevClickedY)
-                                    );
-      }
-      cout << endl;
-      
-      m_prevClickExists = true;
-      m_prevClickedX    = wx;
-      m_prevClickedY    = wy;
-
-      return;
-    }
-    
-    return;
-  }
-  
+    printCurrCoords(E);
+  }    
+   
   return;
 }
+
+void drawPoly::printCurrCoords(QMouseEvent * E){
+  
+  // Print the physcal coordinates of the point the mouse was released at
+
+  int prec = 6, wid = prec + 6;
+  cout.precision(prec);
+  cout.setf(ios::floatfield);
+        
+  double wx, wy;
+  pixelToWorldCoords(m_mouseRelX, m_mouseRelY, wx, wy);
+
+  QPainter paint(this);
+  int len = 3, lineWidth = 1;
+  paint.setPen( QPen("white", lineWidth) );
+  paint.setBrush( NoBrush );
+
+  // Snap to the closest vertex with the left mouse button
+  if (E->state() == Qt::LeftButton){
+      
+    double min_x, min_y, min_dist;
+    findClosestPointAndDist(wx, wy, m_polyVec,     // inputs
+                            min_x, min_y, min_dist // outputs
+                            );
+    wx = min_x; wy = min_y;
+    worldToPixelCoords(wx, wy,                  // inputs
+                       m_mouseRelX, m_mouseRelY // outputs
+                       );
+
+    paint.drawEllipse(m_mouseRelX - len, m_mouseRelY - len, 2*len, 2*len);
+    
+  }else if (E->state() == (Qt::LeftButton | Qt::ShiftButton)
+            ||
+            E->state() == (Qt::MidButton)
+            ){
+      
+    // Don't snap with the shift-left button or the middle button
+    paint.drawRect(m_mouseRelX - len, m_mouseRelY - len, 2*len, 2*len);
+      
+  }
+
+  cout << "Point: ("
+       << setw(wid) << wx << ", "
+       << setw(wid) << wy*m_yFactor << ")";
+  if (m_prevClickExists){
+    cout  << " dist from prev: ("
+          << setw(wid) << wx - m_prevClickedX << ", "
+          << setw(wid) << (wy - m_prevClickedY)*m_yFactor
+          << ") Euclidean: "
+          << setw(wid) << sqrt( (wx - m_prevClickedX)*(wx - m_prevClickedX)
+                                + 
+                                (wy - m_prevClickedY)*(wy - m_prevClickedY)
+                                );
+  }
+  cout << endl;
+  
+  m_prevClickExists = true;
+  m_prevClickedX    = wx;
+  m_prevClickedY    = wy;
+
+  return;
+}
+
 
 void drawPoly::wipeRubberBand(QPainter * paint, QRect & rubberBand){
   
@@ -776,6 +777,11 @@ void drawPoly::toggleVertIndices(){
 void drawPoly::toggleFilled(){
   m_showFilledPolys = !m_showFilledPolys;
   update();
+}
+
+void drawPoly::toggleAddPoly(){
+  
+
 }
 
 // actions
