@@ -50,11 +50,13 @@ drawPoly::drawPoly( QWidget *parent,
   m_showPoints            = 3;
   m_toggleShowPointsEdges = m_showEdges;
 
-  m_addPoly = false; // To do: Code using this needs to be written
+  m_createPoly = false;
+  m_currPolyX.clear(); m_currPolyY.clear();
   
   resetTransformSettings();
-  
-  readAllPolys();
+
+  // For some reason, moving this up does not work well
+  readAllPolys(); // To do: avoid global variables here
 
   return;
 }
@@ -391,6 +393,12 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
 
   wipeRubberBand(m_rubberBand); // Wipe any rubberband artifacts
 
+  if (m_createPoly){
+    // Add the current point to the polygn being drawn
+    addPolyVert(m_mouseRelX, m_mouseRelY);
+    return;
+  }
+  
   if (E->state() == (Qt::LeftButton | Qt::ControlButton) ){
     // Draw a  highlight with control + left mouse button
     // ending at the current point
@@ -487,6 +495,75 @@ void drawPoly::keyPressEvent( QKeyEvent *K ){
   
 }
 
+void drawPoly::addPolyVert(int px, int py){
+
+  // Add a point to the polygn being drawn
+  
+  // If the current point on the polygon being created is closer than
+  // this distance (in pixels) from the first point of the polygon, we
+  // will assume we arrived back to the first point so we finished
+  // creating the polygon.
+  int ptol = 5;
+
+  double wx, wy;
+  pixelToWorldCoords(px, py, wx, wy);
+
+  // See if we arrived back at the first point
+  double wtol = pixelToWorldDist(ptol);
+  int pSize = m_currPolyX.size();
+  if (pSize >= 1 &&
+      distance(m_currPolyX[0], m_currPolyY[0], wx, wy)  <= wtol
+      ){
+    
+    dPoly P;
+    P.reset();
+    P.appendPolygon(pSize, vecPtr(m_currPolyX), vecPtr(m_currPolyY),
+                    "green", "233:0");
+      
+    // To do: make undo work
+    m_polyVec.push_back(P);
+    m_plotPointsOnlyVec.push_back(false);
+    m_polyFilesVec.push_back("new.xg");
+      
+    m_createPoly = false;
+    m_currPolyX.clear();
+    m_currPolyY.clear();
+    update();
+    return;
+  }
+
+  m_currPolyX.push_back(wx);
+  m_currPolyY.push_back(wy);
+  pSize = m_currPolyX.size();
+  
+  QPainter paint(this);
+  int lineWidth = 1;
+  char * color  = "white";
+  paint.setBrush( NoBrush );
+  paint.setPen( QPen(color, lineWidth) );
+
+  // To do: The block below better become its own function
+  // which can draw points, poly lines, and polygons
+  QPointArray pa(pSize);
+  for (int vIter = 0; vIter < pSize; vIter++){
+      
+    int x0, y0;
+    worldToPixelCoords(m_currPolyX[vIter], m_currPolyY[vIter], // inputs
+                       x0, y0                                  // outputs
+                       );
+    pa[vIter] = QPoint(x0, y0);
+
+    if (vIter == 0){
+      // Emphasize the starting point of the polygon
+      paint.drawRect(x0 - ptol,  y0 - ptol, 2*ptol, 2*ptol); 
+    }
+  }
+
+  paint.drawPolyline( pa );
+
+  return;
+}
+
 void drawPoly::createHighlight(// inputs are in pixels
                                int pxll, int pyll, int pxur, int pyur
                                ){
@@ -498,7 +575,9 @@ void drawPoly::createHighlight(// inputs are in pixels
   pixelToWorldCoords(pxur, pyur, // inputs
                      xur, yur    // outputs
                      );
-  
+
+  // To do: Use dPoly instead of dRect so that we can plot
+  // highlights exactly in the same way as we plot polygons.
   dRect R( min(xll, xur), min(yll, yur), max(xll, xur), max(yll, yur) );
   m_highlights.push_back(R);
   m_actions.push_back(m_createHlt);
@@ -794,9 +873,12 @@ void drawPoly::toggleFilled(){
   update();
 }
 
-void drawPoly::toggleAddPoly(){
-  
+void drawPoly::createPoly(){
 
+  // This flag will change the behavior of mouseReleaseEvent() so that
+  // we can start adding points to the polygon with the mouse.
+  m_createPoly = true;
+  
 }
 
 // actions
@@ -1077,3 +1159,12 @@ bool drawPoly::isClosestGridPtFree(std::vector< std::vector<int> > & Grid,
   return false;
 }
 
+double drawPoly::pixelToWorldDist(int pd){
+
+  double x0, x1, y0, y1;
+  pixelToWorldCoords(0,  0, x0, y0);
+  pixelToWorldCoords(pd, 0, x1, y1);
+
+  return abs(x0 - x1);
+  
+}
