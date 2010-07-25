@@ -32,7 +32,7 @@ public:
   void savePoly();
   void togglePE();
   void toggleOrder();
-  void toggleAddPoly();
+  void createPoly();
   // actions
   
 public slots:
@@ -49,6 +49,8 @@ protected:
 private slots:
 
 private:
+  void addPolyVert(int px, int py);
+  double pixelToWorldDist(int pd);
   void createHighlight(// inputs are in pixels
                        int pxll, int pyll, int pxur, int pyur
                        );
@@ -130,8 +132,8 @@ private:
   int m_showEdges, m_showPoints, m_showPointsEdges, m_toggleShowPointsEdges;
   bool m_showInReverseOrder, m_showVertIndices;
 
-  bool m_addPoly;
-  
+  bool m_createPoly;
+  std::vector<double> m_currPolyX, m_currPolyY; 
 };
 
 #endif // DRAWPOLY_H

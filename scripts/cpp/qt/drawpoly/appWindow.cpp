@@ -49,7 +49,7 @@ void appWindow::openPoly          (){ m_poly->openPoly          (); }
 void appWindow::savePoly          (){ m_poly->savePoly          (); }
 void appWindow::togglePE          (){ m_poly->togglePE          (); }
 void appWindow::toggleOrder       (){ m_poly->toggleOrder       (); }
-void appWindow::toggleAddPoly       (){ m_poly->toggleAddPoly       (); }
+void appWindow::createPoly        (){ m_poly->createPoly        (); }
 // actions
 
 
@@ -59,14 +59,15 @@ void appWindow::createMenus(){
 
   QPopupMenu* file = new QPopupMenu( menu );
   menu->insertItem("File", file);
-  file->insertItem("Open", this, SLOT(openPoly()), CTRL+Key_O);
-  file->insertItem("Save", this, SLOT(savePoly()), CTRL+Key_S);
+  file->insertItem("Open", this, SLOT(openPoly()), Key_O);
+  file->insertItem("Save", this, SLOT(savePoly()), Key_S);
   file->insertItem("Exit", qApp, SLOT(quit()), Key_Q);
 
   QPopupMenu* edit = new QPopupMenu( menu );
   menu->insertItem("Edit", edit);
-  edit->insertItem("Cut to highlight", this, SLOT(cutToHlt()), Key_C);
   edit->insertItem("Undo",             this, SLOT(undoLast()), Key_Z);
+  edit->insertItem("Cut to highlight", this, SLOT(cutToHlt()), Key_C);
+  edit->insertItem("Create polygon",   this, SLOT(createPoly()), Key_N);
 
   QPopupMenu* view = new QPopupMenu( menu );
   menu->insertItem("View", view);
@@ -79,7 +80,7 @@ void appWindow::createMenus(){
   view->insertItem("Move down",             this, SLOT(shiftDown()),         Key_Down);
   view->insertItem("Reset view",            this, SLOT(resetView()),         Key_R);
   view->insertItem("Toggle annotations",    this, SLOT(toggleAnno()),        Key_A);
-  view->insertItem("Toggle display order",  this, SLOT(toggleOrder()),       Key_O);
+  view->insertItem("Toggle display order",  this, SLOT(toggleOrder()),       Key_D);
   view->insertItem("Toggle filled",         this, SLOT(toggleFilled()),      Key_F);
   view->insertItem("Toggle points display", this, SLOT(togglePE()),          Key_P);
   view->insertItem("Toggle vertex indices", this, SLOT(toggleVertIndices()), Key_V);
