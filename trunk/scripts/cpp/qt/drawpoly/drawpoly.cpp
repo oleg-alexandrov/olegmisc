@@ -12,14 +12,15 @@
 using namespace std;
 using namespace utils;
 
+// To do: Make these members or put them in a namespace.
+// Do the same with other constatns.
 const int drawPoly::m_cutToHlt;
 const int drawPoly::m_createHlt;
 
 drawPoly::drawPoly( QWidget *parent, 
                     const std::vector<std::string> & polyFilesVec,
                     const std::vector<bool>        & plotPointsOnlyVec
-                    ):
-  QWidget(parent){
+                    ): QWidget(parent){
 
   m_polyFilesVec      = polyFilesVec;
   m_plotPointsOnlyVec = plotPointsOnlyVec;
@@ -42,21 +43,26 @@ drawPoly::drawPoly( QWidget *parent,
   m_showFilledPolys    = false;
   m_showInReverseOrder = false;
   
-  m_rubberBand = QRect( 0, 0, 0, 0); // initial rubberband
+  m_rubberBand = QRect(0, 0, 0, 0); // initial rubberband
 
   m_showEdges             = 1;
   m_showPointsEdges       = 2;
   m_showPoints            = 3;
   m_toggleShowPointsEdges = m_showEdges;
 
-  m_addPoly = false;
+  m_addPoly = false; // To do: Code using this needs to be written
   
   resetTransformSettings();
-  initOpenPoly();
+  
+  readAllPolys();
+
+  return;
 }
 
 void drawPoly::showPoly( QPainter *paint ){
 
+  // To do: this function needs modularization
+  
   // Dimensions of the plotting window in pixels exluding any window
   // frame/menu bar/status bar
   QRect v       = this->rect();
@@ -345,11 +351,30 @@ void drawPoly::mousePressEvent( QMouseEvent *E){
   const QPoint Q = E->pos();
   m_mousePrsX = Q.x();
   m_mousePrsY = Q.y();
+#if 0
+  cout << "Mouse pressed at "
+       << m_mousePrsX << ' ' << m_mousePrsY << endl;
+#endif
   
-  m_rubberBand = QRect( m_mousePrsX, m_mousePrsY, 0, 0); // initial rubberband
-//   cout << "Mouse pressed at "
-//        << m_mousePrsX << ' ' << m_mousePrsY << endl;
+  m_rubberBand = QRect(m_mousePrsX, m_mousePrsY, 0, 0); // initial rubberband
+}
 
+void drawPoly::mouseMoveEvent( QMouseEvent *E){
+
+  const QPoint Q = E->pos();
+  int x = Q.x();
+  int y = Q.y();
+  //cout << "Mouse moved to " << x << ' ' << y << endl;
+  
+  QPainter painter(this);
+  painter.setPen(Qt::white);
+  painter.setBrush( NoBrush );
+  
+  wipeRubberBand(m_rubberBand);
+  m_rubberBand = QRect( min(m_mousePrsX, x), min(m_mousePrsY, y),
+                        abs(x - m_mousePrsX), abs(y - m_mousePrsY) );
+  painter.drawRect(m_rubberBand);
+  
 }
 
 void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
@@ -395,6 +420,71 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
   }    
    
   return;
+}
+
+
+void drawPoly::wheelEvent(QWheelEvent *E){
+
+  int delta = E->delta();
+
+  if (E->state() == Qt::ControlButton){
+
+    // The control button was pressed. Zoom in/out around the current point.
+
+    int pixelx = E->x();
+    int pixely = E->y();
+    double x, y;
+    pixelToWorldCoords(pixelx, pixely, x, y);
+    centerViewAtPoint(x, y);
+    
+    if (delta > 0){
+      zoomIn();
+    }else if (delta < 0){
+      zoomOut();
+    }
+    
+  }else{
+  
+    if (delta > 0){
+      shiftUp();
+    }else if (delta < 0){
+      shiftDown();
+    }
+    
+  }
+  
+  E->accept();
+}
+
+void drawPoly::keyPressEvent( QKeyEvent *K ){
+
+  switch ( K->key() ) {
+  case Qt::Key_Minus:
+    zoomOut();
+    break;
+  case Qt::Key_Plus:
+    zoomIn();
+    break;
+  case Qt::Key_Equal:
+    zoomIn();
+    break;
+  case Qt::Key_Right:
+    shiftRight();
+    break;
+  case Qt::Key_Left:
+    shiftLeft();
+    break;
+  case Qt::Key_Up:
+    shiftUp();
+    break;
+  case Qt::Key_Down:
+    shiftDown();
+    break;
+  case Qt::Key_Q:
+    QApplication::exit(); 
+    break;
+  }
+  
 }
 
 void drawPoly::createHighlight(// inputs are in pixels
@@ -507,88 +597,6 @@ void drawPoly::wipeRubberBand(QRect & R){
   return;
 }
 
-void drawPoly::mouseMoveEvent( QMouseEvent *E){
-
-  const QPoint Q = E->pos();
-  int x = Q.x();
-  int y = Q.y();
-  //cout << "Mouse moved to " << x << ' ' << y << endl;
-  
-  QPainter painter(this);
-  painter.setPen(Qt::white);
-  painter.setBrush( NoBrush );
-  
-  wipeRubberBand(m_rubberBand);
-  m_rubberBand = QRect( min(m_mousePrsX, x), min(m_mousePrsY, y),
-                        abs(x - m_mousePrsX), abs(y - m_mousePrsY) );
-  painter.drawRect(m_rubberBand);
-  
-}
-
-void drawPoly::wheelEvent(QWheelEvent *E){
-
-  int delta = E->delta();
-
-  if (E->state() == Qt::ControlButton){
-
-    // The control button was pressed. Zoom in/out around the current point.
-
-    int pixelx = E->x();
-    int pixely = E->y();
-    double x, y;
-    pixelToWorldCoords(pixelx, pixely, x, y);
-    centerViewAtPoint(x, y);
-    
-    if (delta > 0){
-      zoomIn();
-    }else if (delta < 0){
-      zoomOut();
-    }
-    
-  }else{
-  
-    if (delta > 0){
-      shiftUp();
-    }else if (delta < 0){
-      shiftDown();
-    }
-    
-  }
-  
-  E->accept();
-}
-
-void drawPoly::keyPressEvent( QKeyEvent *K ){
-
-  switch ( K->key() ) {
-  case Qt::Key_Minus:
-    zoomOut();
-    break;
-  case Qt::Key_Plus:
-    zoomIn();
-    break;
-  case Qt::Key_Equal:
-    zoomIn();
-    break;
-  case Qt::Key_Right:
-    shiftRight();
-    break;
-  case Qt::Key_Left:
-    shiftLeft();
-    break;
-  case Qt::Key_Up:
-    shiftUp();
-    break;
-  case Qt::Key_Down:
-    shiftDown();
-    break;
-  case Qt::Key_Q:
-    QApplication::exit(); 
-    break;
-  }
-  
-}
-
 void drawPoly::pixelToWorldCoords(int px, int py,
                                   double & wx, double & wy){
 
@@ -607,6 +615,8 @@ void drawPoly::worldToPixelCoords(double wx, double wy,
 
 void drawPoly::paintEvent( QPaintEvent * E){
 
+  // This function will be called by update()
+  
   // Instead of drawing on the screen right away, draw onto
   // a cache, then display the cache. We'll use the cache
   // later to avoid repainting when the view does not change.
@@ -632,7 +642,9 @@ void drawPoly::expandBoxToGivenRatio(// inputs
                                      // inputs/outputs
                                      double & xll,  double & yll,
                                      double & widx, double & widy){
-                           
+
+  // To do: Move this to utilities
+  
   // Expand the given box to have the same aspect ratio as the screen.
   assert(widx > 0.0 && widy > 0.0 && screenRatio > 0.0);
   double nwidx = widx, nwidy = widy;
@@ -670,6 +682,8 @@ void drawPoly::setUpViewBox(// inputs
                             double & xll, double & yll,
                             double &widx, double & widy){
 
+  // To do: Move these to utilities
+  
   // Given a set of polygons, set up a box containing these polygons.
 
   double xur, yur; // local variables
@@ -712,9 +726,14 @@ void drawPoly::setUpViewBox(// inputs
 void drawPoly::drawOneVertex(int x0, int y0, QColor color, int lineWidth,
                              int drawVertIndex, QPainter * paint){
 
+  // Draw a vertex as a small shape (a circle, rectangle, triangle)
+  
   drawVertIndex = max(0, drawVertIndex);
 
-  int len = 3*(drawVertIndex+1); // To distinguish better points on top of each other
+  // Use variable size shapes to distinguish better points on top of
+  // each other
+  int len = 3*(drawVertIndex+1); 
+
   paint->setPen( QPen(color, lineWidth) );
 
   int numTypes = 4;
@@ -876,7 +895,7 @@ void drawPoly::undoLast(){
   return;
 }
 
-void drawPoly::initOpenPoly(){
+void drawPoly::readAllPolys(){
 
   int numFiles = m_polyFilesVec.size();
   m_polyVec.resize(numFiles);
