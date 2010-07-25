@@ -27,7 +27,7 @@ public:
   void resetView();
   void cutToHlt();
   void undoLast();
-  void initOpenPoly();
+  void readAllPolys();
   void openPoly();
   void savePoly();
   void togglePE();
