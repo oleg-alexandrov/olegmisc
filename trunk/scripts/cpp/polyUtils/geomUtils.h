@@ -11,6 +11,12 @@ namespace utils{
   }
 
   template<class T>
+  T * vecPtr(std::vector<T>& X){
+    if (X.size() == 0) return NULL;
+    else               return &X.front();   
+  }
+
+  template<class T>
   std::string num2str(T num){
     std::ostringstream S;
     S << num;
@@ -30,6 +36,10 @@ namespace utils{
     return 0;
   }
 
+  void snapPolyLineTo45DegAngles(bool isClosedPolyLine,
+                                 int numVerts, double * xv, double * yv);
+  void snapOneEdgeTo45(int numAngles, double* xs, double* ys,
+                       double & x0, double & y0, double & x1, double & y1);
   
   class dRect{
     
@@ -45,7 +55,7 @@ namespace utils{
     double height() const { return m_yur - m_yll;}
 
   private:
-
+    
     double m_xll;
     double m_yll;
     double m_xur;
