@@ -126,8 +126,8 @@ private:
 
   std::vector<int> m_actions;
 
-  static const int m_cutToHlt  = 1;
-  static const int m_createHlt = 2;
+  static const int m_polyChanged  = 1;
+  static const int m_createHlt    = 2;
 
   int m_showEdges, m_showPoints, m_showPointsEdges, m_toggleShowPointsEdges;
   bool m_showInReverseOrder, m_showVertIndices;
