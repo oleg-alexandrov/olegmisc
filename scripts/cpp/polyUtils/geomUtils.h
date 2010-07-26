@@ -1,7 +1,7 @@
 #ifndef GEOMUTILS_H
 #define GEOMUTILS_H
 #include <sstream>
-
+#include <vector>
 namespace utils{
 
   template<class T>
