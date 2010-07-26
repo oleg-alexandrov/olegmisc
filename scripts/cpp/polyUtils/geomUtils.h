@@ -1,5 +1,6 @@
 #ifndef GEOMUTILS_H
 #define GEOMUTILS_H
+#include <sstream>
 
 namespace utils{
 
