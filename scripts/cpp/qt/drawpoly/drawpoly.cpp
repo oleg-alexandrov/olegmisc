@@ -14,7 +14,7 @@ using namespace utils;
 
 // To do: Make these members or put them in a namespace.
 // Do the same with other constatns.
-const int drawPoly::m_cutToHlt;
+const int drawPoly::m_polyChanged;
 const int drawPoly::m_createHlt;
 
 drawPoly::drawPoly( QWidget *parent, 
@@ -511,19 +511,27 @@ void drawPoly::addPolyVert(int px, int py){
   // See if we arrived back at the first point
   double wtol = pixelToWorldDist(ptol);
   int pSize = m_currPolyX.size();
+  bool isClosedPolyLine = false;
   if (pSize >= 1 &&
       distance(m_currPolyX[0], m_currPolyY[0], wx, wy)  <= wtol
       ){
+
+    isClosedPolyLine = true;
+    snapPolyLineTo45DegAngles(isClosedPolyLine, pSize,
+                              vecPtr(m_currPolyX), vecPtr(m_currPolyY));
     
     dPoly P;
     P.reset();
     P.appendPolygon(pSize, vecPtr(m_currPolyX), vecPtr(m_currPolyY),
-                    "green", "233:0");
+                    "green", "1:0");
       
-    // To do: make undo work
+    // So that we can undo later
+    m_polyVecStack.push_back(m_polyVec); 
+    m_actions.push_back(m_polyChanged);
+    
     m_polyVec.push_back(P);
     m_plotPointsOnlyVec.push_back(false);
-    m_polyFilesVec.push_back("new.xg");
+    m_polyFilesVec.push_back("new.xg"); // bug here when saving multiple files
       
     m_createPoly = false;
     m_currPolyX.clear();
@@ -535,6 +543,9 @@ void drawPoly::addPolyVert(int px, int py){
   m_currPolyX.push_back(wx);
   m_currPolyY.push_back(wy);
   pSize = m_currPolyX.size();
+  isClosedPolyLine = false;
+  snapPolyLineTo45DegAngles(isClosedPolyLine, pSize,
+                            vecPtr(m_currPolyX), vecPtr(m_currPolyY));
   
   QPainter paint(this);
   int lineWidth = 1;
@@ -932,7 +943,7 @@ void drawPoly::cutToHlt(){
   }
 
   m_highlights.resize(numH - 1);
-  m_actions.push_back(m_cutToHlt);
+  m_actions.push_back(m_polyChanged);
   
   update();
   
@@ -960,7 +971,7 @@ void drawPoly::undoLast(){
     m_highlights.resize(numH - 1);
     update();
     
-  }else if (lastAction == m_cutToHlt){
+  }else if (lastAction == m_polyChanged){
   
     int numCopies = m_polyVecStack.size();
     if (numCopies == 0){
