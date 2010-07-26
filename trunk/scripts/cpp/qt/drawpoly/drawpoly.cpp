@@ -779,7 +779,7 @@ void drawPoly::setUpViewBox(// inputs
 
   // Treat the case of empty polygons
   if (xur < xll || yur < yll){
-    xll = 0.0; yll = 0.0; xur = 1.0; yur = 1.0;
+    xll = 0.0; yll = 0.0; xur = 1000.0; yur = 1000.0;
   }
 
   // Treat the case when the polygons are degenerate
