@@ -50,6 +50,7 @@ void appWindow::savePoly          (){ m_poly->savePoly          (); }
 void appWindow::togglePE          (){ m_poly->togglePE          (); }
 void appWindow::toggleOrder       (){ m_poly->toggleOrder       (); }
 void appWindow::createPoly        (){ m_poly->createPoly        (); }
+void appWindow::deletePoly        (){ m_poly->deletePoly        (); }
 // actions
 
 

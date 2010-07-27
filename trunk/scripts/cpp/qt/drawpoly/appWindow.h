@@ -14,9 +14,10 @@ public:
             const std::vector<std::string> & polyFilesVec,
             const std::vector<bool>        & plotPointsOnlyVec);
   ~appWindow();
+
   
 public slots:
-void help();
+  void help();
   
 private slots:
   void createMenus();
@@ -37,6 +38,7 @@ private slots:
   void togglePE          ();
   void toggleOrder       ();
   void createPoly        ();
+  void deletePoly        ();
   // actions
   
 private:

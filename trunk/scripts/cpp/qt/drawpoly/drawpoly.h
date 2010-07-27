@@ -3,6 +3,7 @@
 
 #include <qwidget.h>
 #include <qpixmap.h>
+#include <qevent.h>
 #include <vector>
 #include "utils.h"
 #include "../../polyUtils/dPoly.h"
@@ -32,7 +33,6 @@ public:
   void savePoly();
   void togglePE();
   void toggleOrder();
-  void createPoly();
   // actions
   
 public slots:
@@ -45,8 +45,11 @@ protected:
   void keyPressEvent( QKeyEvent *K );
   void mouseReleaseEvent ( QMouseEvent * E );
   void wheelEvent(QWheelEvent *E);
+  void contextMenuEvent(QContextMenuEvent *E);
 
-private slots:
+public slots:
+  void createPoly();
+  void deletePoly();
 
 private:
   void addPolyVert(int px, int py);
