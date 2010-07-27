@@ -39,7 +39,9 @@ namespace utils{
   void snapPolyLineTo45DegAngles(bool isClosedPolyLine,
                                  int numVerts, double * xv, double * yv);
   void snapOneEdgeTo45(int numAngles, double* xs, double* ys,
-                       double & x0, double & y0, double & x1, double & y1);
+                       bool snap2ndClosest, 
+                       double & x0, double & y0,
+                       double & x1, double & y1);
   
   class dRect{
     
