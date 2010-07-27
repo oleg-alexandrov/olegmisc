@@ -499,11 +499,11 @@ void drawPoly::keyPressEvent( QKeyEvent *K ){
 void drawPoly::contextMenuEvent(QContextMenuEvent *E){
 
   int x = E->x(), y = E->y();
-  cout << "The mouse is at " << x << ' ' << y << endl;
+  //cout << "The mouse is at " << x << ' ' << y << endl;
 
   double wx, wy;
   pixelToWorldCoords(x, y, wx, wy);
-  cout << "Mouse pressed at " << wx << ' ' << m_yFactor*wy << endl;
+  //cout << "Mouse pressed at " << wx << ' ' << m_yFactor*wy << endl;
   
   QPopupMenu menu(this);
   menu.insertItem("Create polygon", this, SLOT(createPoly()));
