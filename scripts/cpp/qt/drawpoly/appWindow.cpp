@@ -60,7 +60,7 @@ void appWindow::createMenus(){
 
   QPopupMenu* file = new QPopupMenu( menu );
   menu->insertItem("File", file);
-  file->insertItem("Open", this, SLOT(openPoly()), Key_O);
+  file->insertItem("Open", this, SLOT(openPoly()), Key_Control+Key_O);
   file->insertItem("Save", this, SLOT(savePoly()), Key_S);
   file->insertItem("Exit", qApp, SLOT(quit()), Key_Q);
 
@@ -81,7 +81,7 @@ void appWindow::createMenus(){
   view->insertItem("Move down",             this, SLOT(shiftDown()),         Key_Down);
   view->insertItem("Reset view",            this, SLOT(resetView()),         Key_R);
   view->insertItem("Toggle annotations",    this, SLOT(toggleAnno()),        Key_A);
-  view->insertItem("Toggle display order",  this, SLOT(toggleOrder()),       Key_D);
+  view->insertItem("Toggle display order",  this, SLOT(toggleOrder()),       Key_O);
   view->insertItem("Toggle filled",         this, SLOT(toggleFilled()),      Key_F);
   view->insertItem("Toggle points display", this, SLOT(togglePE()),          Key_P);
   view->insertItem("Toggle vertex indices", this, SLOT(toggleVertIndices()), Key_V);
