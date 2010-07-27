@@ -6,6 +6,7 @@
 #include <iostream>
 #include <qapplication.h>
 #include <qfiledialog.h>
+#include <qpopupmenu.h>
 #include <qdir.h>
 #include <qpainter.h>
 #include "drawpoly.h"
@@ -64,7 +65,7 @@ drawPoly::drawPoly( QWidget *parent,
 void drawPoly::showPoly( QPainter *paint ){
 
   // To do: this function needs modularization
-  
+  //cout << "now in showPoly!" << endl;
   // Dimensions of the plotting window in pixels exluding any window
   // frame/menu bar/status bar
   QRect v       = this->rect();
@@ -495,6 +496,45 @@ void drawPoly::keyPressEvent( QKeyEvent *K ){
   
 }
 
+void drawPoly::contextMenuEvent(QContextMenuEvent *E){
+
+  int x = E->x(), y = E->y();
+  cout << "The mouse is at " << x << ' ' << y << endl;
+
+  double wx, wy;
+  pixelToWorldCoords(x, y, wx, wy);
+  cout << "Mouse pressed at " << wx << ' ' << m_yFactor*wy << endl;
+  
+  QPopupMenu menu(this);
+  menu.insertItem("Create polygon", this, SLOT(createPoly()));
+  menu.insertItem("Delete polygon", this, SLOT(deletePoly()));
+  menu.exec(E->globalPos());
+}
+
+void drawPoly::paintEvent( QPaintEvent * E){
+
+  // This function will be called by update()
+  
+  // Instead of drawing on the screen right away, draw onto
+  // a cache, then display the cache. We'll use the cache
+  // later to avoid repainting when the view does not change.
+  m_screenRect = E->rect();
+  QSize expandedSize = m_screenRect.size().expandedTo(m_cache.size());
+  m_cache.resize(expandedSize);
+  m_cache.fill(this, m_screenRect.topLeft());
+
+  QPainter paint( &m_cache, this );
+  paint.translate(-m_screenRect.x(), -m_screenRect.y());
+  showPoly( &paint );
+
+  // Copy the buffer to the screen
+  bitBlt(this, m_screenRect.x(), m_screenRect.y(), &m_cache, 0, 0,
+         m_screenRect.width(), m_screenRect.height()
+         );
+
+  return;
+}
+
 void drawPoly::addPolyVert(int px, int py){
 
   // Add a point to the polygn being drawn
@@ -703,30 +743,6 @@ void drawPoly::worldToPixelCoords(double wx, double wy,
   
 }
 
-void drawPoly::paintEvent( QPaintEvent * E){
-
-  // This function will be called by update()
-  
-  // Instead of drawing on the screen right away, draw onto
-  // a cache, then display the cache. We'll use the cache
-  // later to avoid repainting when the view does not change.
-  m_screenRect = E->rect();
-  QSize expandedSize = m_screenRect.size().expandedTo(m_cache.size());
-  m_cache.resize(expandedSize);
-  m_cache.fill(this, m_screenRect.topLeft());
-
-  QPainter paint( &m_cache, this );
-  paint.translate(-m_screenRect.x(), -m_screenRect.y());
-  showPoly( &paint );
-
-  // Copy the buffer to the screen
-  bitBlt(this, m_screenRect.x(), m_screenRect.y(), &m_cache, 0, 0,
-         m_screenRect.width(), m_screenRect.height()
-         );
-
-  return;
-}
-
 void drawPoly::expandBoxToGivenRatio(// inputs
                                      double screenRatio, 
                                      // inputs/outputs
@@ -890,6 +906,10 @@ void drawPoly::createPoly(){
   // we can start adding points to the polygon with the mouse.
   m_createPoly = true;
   
+}
+
+void drawPoly::deletePoly(){
+  cout << "Now in drawPoly::deletePoly()" << endl;
 }
 
 // actions
@@ -1179,3 +1199,4 @@ double drawPoly::pixelToWorldDist(int pd){
   return abs(x0 - x1);
   
 }
+
