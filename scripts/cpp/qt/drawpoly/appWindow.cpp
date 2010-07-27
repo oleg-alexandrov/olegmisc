@@ -60,7 +60,7 @@ void appWindow::createMenus(){
 
   QPopupMenu* file = new QPopupMenu( menu );
   menu->insertItem("File", file);
-  file->insertItem("Open", this, SLOT(openPoly()), Key_Control+Key_O);
+  file->insertItem("Open", this, SLOT(openPoly()), Qt::CTRL+Key_O);
   file->insertItem("Save", this, SLOT(savePoly()), Key_S);
   file->insertItem("Exit", qApp, SLOT(quit()), Key_Q);
 
