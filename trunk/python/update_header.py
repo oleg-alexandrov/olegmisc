@@ -199,7 +199,7 @@ def parse_update_h(h_text, cpp_map, namespace):
     p = re.match("""
     ^(
     .*\n\s*
-    (?:public:|private:|class\s*\w+\s*\{|namespace\s*\w+\s*\{)
+    (?:public:|private:|(?:class|struct)\s*\w+\s*\{|namespace\s*\w+\s*\{)
     .*?[\n]
     )           # end of group 1
     ([ \t]*)    # indentation level (group 2)
