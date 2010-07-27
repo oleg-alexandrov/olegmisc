@@ -57,12 +57,15 @@ void utils::snapPolyLineTo45DegAngles(bool isClosedPolyLine,
     double t = ( (x1-x0)*(y2-y1) - (y1-y0)*(x2-x1) )/det;
     xv[numVerts - 1] = round( t*(x3-x0) + x0 );
     yv[numVerts - 1] = round( t*(y3-y0) + y0 );
+  }else{
+    xv[numVerts - 1] = x2;
+    yv[numVerts - 1] = y2;
   }
 
   // Validate
-  for (int v = 0; v < numVerts - 1; v++){
-    double dx = xv[v+1] - xv[v];
-    double dy = yv[v+1] - yv[v];
+  for (int v = 0; v < numVerts; v++){
+    double dx = xv[(v+1)%numVerts] - xv[v];
+    double dy = yv[(v+1)%numVerts] - yv[v];
     if ( !( dx == 0 || dy == 0 || abs(dx) == abs(dy) ) ){
       cerr << "Error: Expecting vectors with angles of 45 degrees."  << endl;
       cerr << "Instead, got the vector (" << dx << ", " << dy << ")" << endl;
