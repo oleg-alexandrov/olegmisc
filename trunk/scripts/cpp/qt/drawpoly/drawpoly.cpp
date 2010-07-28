@@ -906,6 +906,8 @@ void drawPoly::createPoly(){
 
 void drawPoly::deletePoly(){
 
+  if (m_polyVec.size() == 0) return;
+  
   // So that we can undo later
   m_polyVecStack.push_back(m_polyVec); 
   m_actions.push_back(m_polyChanged);
