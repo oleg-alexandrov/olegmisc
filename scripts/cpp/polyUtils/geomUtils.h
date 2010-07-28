@@ -43,6 +43,14 @@ namespace utils{
                        double & x0, double & y0,
                        double & x1, double & y1);
   
+  void minDistFromPtToSeg(//inputs
+                          double xin, double yin,
+                          double x0, double y0,
+                          double x1, double y1,
+                          // outputs
+                          double & xout, double & yout,
+                          double & minDist
+                          );
   class dRect{
     
   public:

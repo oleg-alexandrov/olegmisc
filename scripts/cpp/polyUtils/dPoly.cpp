@@ -3,8 +3,8 @@
 #include <iostream>
 #include <cassert>
 #include <cfloat>
+#include <cassert>
 #include "read_write_xg.h"
-
 #include "dPoly.h"
 using namespace std;
 using namespace utils;
@@ -240,6 +240,74 @@ void dPoly::findClosestPointAndDist(// inputs
     }
     
   }
+
+  return;
+}
+
+void dPoly::findClosestPolyIndex(//inputs
+                                 double x0, double y0,
+                                 // outputs
+                                 int & minIndex, double & minDist
+                                 ){
+
+  // Given a set of polygons and a point, find the index of the polygon
+  // closest to the point. Return that closest distance as well.
+
+  minIndex = -1;
+  minDist  = DBL_MAX;
+  
+  int start = 0;
+  double xval, yval;
+  for (int pIter = 0; pIter < m_numPolys; pIter++){
+      
+    if (pIter > 0) start += m_numVerts[pIter - 1];
+      
+    for (int vIter = 0; vIter < m_numVerts[pIter]; vIter++){
+
+      int beg = start + vIter;
+      int end = start + (vIter + 1)%m_numVerts[pIter];
+
+      double dist = DBL_MAX;
+      minDistFromPtToSeg(// inputs
+                         x0, y0, m_xv[beg], m_yv[beg], m_xv[end], m_yv[end],
+                         // outputs
+                         xval, yval, dist
+                         );
+
+      if (dist <= minDist){
+        minIndex = pIter;
+        minDist  = dist;
+      }
+
+    }
+    
+  }
+
+  return;
+}
+
+void dPoly::erasePoly(int polyIndex){
+
+  assert(0 <= polyIndex && polyIndex < m_numPolys);
+
+  int start = 0;
+  for (int pIter = 0; pIter < polyIndex; pIter++){
+    start += m_numVerts[pIter]; 
+  }
+
+  m_xv.erase(m_xv.begin() + start,
+             m_xv.begin() + start + m_numVerts[polyIndex]);
+  
+  m_yv.erase(m_yv.begin() + start,
+             m_yv.begin() + start + m_numVerts[polyIndex]);
+
+  m_totalNumVerts -= m_numVerts[polyIndex];
+  m_numPolys      -= 1;
+  
+  m_colors.erase(m_colors.begin()     + polyIndex);
+  m_layers.erase(m_layers.begin()     + polyIndex);
+  m_numVerts.erase(m_numVerts.begin() + polyIndex); // better be last
+  m_annotationsAtVerts.clear();
 
   return;
 }
