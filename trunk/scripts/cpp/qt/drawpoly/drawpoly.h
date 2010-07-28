@@ -136,7 +136,9 @@ private:
   bool m_showInReverseOrder, m_showVertIndices;
 
   bool m_createPoly;
-  std::vector<double> m_currPolyX, m_currPolyY; 
+  std::vector<double> m_currPolyX, m_currPolyY;
+
+  double m_menuX, m_menuY;
 };
 
 #endif // DRAWPOLY_H

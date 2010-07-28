@@ -499,11 +499,7 @@ void drawPoly::keyPressEvent( QKeyEvent *K ){
 void drawPoly::contextMenuEvent(QContextMenuEvent *E){
 
   int x = E->x(), y = E->y();
-  //cout << "The mouse is at " << x << ' ' << y << endl;
-
-  double wx, wy;
-  pixelToWorldCoords(x, y, wx, wy);
-  //cout << "Mouse pressed at " << wx << ' ' << m_yFactor*wy << endl;
+  pixelToWorldCoords(x, y, m_menuX, m_menuY);
   
   QPopupMenu menu(this);
   menu.insertItem("Create polygon", this, SLOT(createPoly()));
@@ -909,7 +905,38 @@ void drawPoly::createPoly(){
 }
 
 void drawPoly::deletePoly(){
-  cout << "Now in drawPoly::deletePoly()" << endl;
+
+  // So that we can undo later
+  m_polyVecStack.push_back(m_polyVec); 
+  m_actions.push_back(m_polyChanged);
+
+  double minDist   = DBL_MAX;
+  int minVecIndex  = -1;
+  int minPolyIndex = -1;
+  
+  for (int vecIter = 0; vecIter < (int)m_polyVec.size(); vecIter++){
+
+    double dist   = DBL_MAX;
+    int polyIndex = -1;
+    m_polyVec[vecIter].findClosestPolyIndex(m_menuX, m_menuY, // in
+                                            polyIndex, dist   // out
+                                            );
+
+    if (dist <= minDist){
+      minVecIndex  = vecIter;
+      minPolyIndex = polyIndex;
+      minDist      = dist;
+    }
+    
+  }
+
+  if (minVecIndex >= 0 && minPolyIndex >= 0){
+    m_polyVec[minVecIndex].erasePoly(minPolyIndex);
+  }
+
+  update();
+  
+  return;
 }
 
 // actions
