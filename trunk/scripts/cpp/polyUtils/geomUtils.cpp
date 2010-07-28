@@ -138,3 +138,33 @@ void utils::snapOneEdgeTo45(int numAngles, double* xs, double* ys,
   
   return;
 }
+
+void utils::minDistFromPtToSeg(//inputs
+                               double xin, double yin,
+                               double x0, double y0,
+                               double x1, double y1,
+                               // outputs
+                               double & xout, double & yout,
+                               double & minDist
+                               ){
+
+  // Given the point (xin, yin) and the segment going from (x0, y0) to
+  // (x1, y1), find the point (xout, yout) on this segment (not on its
+  // continuation) closest to (xin, yin).
+  
+  double a = (x1  - x0)*(x1 - x0) + (y1  - y0)*(y1 - y0);
+  double b = (xin - x0)*(x1 - x0) + (yin - y0)*(y1 - y0);
+
+  double t;
+  if (a == 0.0) t = 0.0;
+  else          t = b/a;
+  t = max(t, 0.0);
+  t = min(t, 1.0);
+
+  xout = x0 + t*(x1 - x0);
+  yout = y0 + t*(y1 - y0);
+
+  minDist = sqrt ( (xin  - xout)*(xin - xout) + (yin  - yout)*(yin - yout) );
+
+  return;
+}
