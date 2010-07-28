@@ -138,6 +138,8 @@ private:
   bool m_createPoly;
   std::vector<double> m_currPolyX, m_currPolyY;
 
+  bool m_zoomToMouseSelection;
+  
   double m_menuX, m_menuY;
 };
 

@@ -53,6 +53,10 @@ drawPoly::drawPoly( QWidget *parent,
 
   m_createPoly = false;
   m_currPolyX.clear(); m_currPolyY.clear();
+
+  m_zoomToMouseSelection = false;
+  m_mousePrsX  = 0;   m_mousePrsY = 0;
+  m_mouseRelX  = 0;   m_mouseRelY = 0;
   
   resetTransformSettings();
 
@@ -105,7 +109,7 @@ void drawPoly::showPoly( QPainter *paint ){
   // Create the new view
   double xll, yll, xur, yur, widx, widy;
     
-  if (m_mouseRelX > m_mousePrsX && m_mouseRelY > m_mousePrsY){
+  if (m_zoomToMouseSelection){
     
     // Form a new view based on the rectangle selected with the mouse.
     // Enlarge this rectangle if necessary to keep the aspect ratio.
@@ -116,6 +120,8 @@ void drawPoly::showPoly( QPainter *paint ){
     widx = xur - xll;
     widy = yur - yll;
 
+    m_zoomToMouseSelection = false;
+
   }else{
 
     // Modify the view for given shift or zoom
@@ -124,6 +130,8 @@ void drawPoly::showPoly( QPainter *paint ){
     widx = m_viewWidX*m_zoomFactor;
     widy = m_viewWidY*m_zoomFactor;
     
+    resetTransformSettings(); // Wipe the zoom and shift data 
+  
   }
 
   // If the view becomes too small, don't accept it
@@ -141,11 +149,6 @@ void drawPoly::showPoly( QPainter *paint ){
     m_viewYll = yll; m_viewWidY = widy;
   }
 
-  // Having computed the new view reset the numbers used to manipulate
-  // it so that we can start fresh with new manipulations next time
-  // (but starting from the newly computed view).
-  resetTransformSettings();
-  
   m_pixelSize = (m_screenWidX - 2*m_padX)/m_viewWidX;
   assert( abs(m_pixelSize - (m_screenWidY - 2*m_padY)/m_viewWidY)
           < 1.0e-5*m_pixelSize );
@@ -295,37 +298,31 @@ void drawPoly::showPoly( QPainter *paint ){
 }
 
 void drawPoly::zoomIn(){
-  resetTransformSettings();
   m_zoomFactor = 0.5;
   update();
 }
 
 void drawPoly::zoomOut(){
-  resetTransformSettings();
   m_zoomFactor = 2.0;
   update();
 }
 
 void drawPoly::shiftRight(){
-  resetTransformSettings();
   m_shiftX = 0.25;
   update();
 }
 
 void drawPoly::shiftLeft(){
-  resetTransformSettings();
   m_shiftX = -0.25;
   update();
 }
 
 void drawPoly::shiftUp(){
-  resetTransformSettings();
   m_shiftY = -0.25;
   update();
 }
 
 void drawPoly::shiftDown(){
-  resetTransformSettings();
   m_shiftY = 0.25;
   update();
 }
@@ -336,7 +333,6 @@ void drawPoly::centerViewAtPoint(double x, double y){
 }
 
 void drawPoly::resetView(){
-  resetTransformSettings();
   m_resetView = true;
   update();
 }
@@ -344,9 +340,7 @@ void drawPoly::resetView(){
 
 void drawPoly::resetTransformSettings(){
   m_zoomFactor = 1.0;
-  m_shiftX     = 0.0; m_shiftY    = 0.0;
-  m_mousePrsX  = 0;   m_mousePrsY = 0;
-  m_mouseRelX  = 0;   m_mouseRelY = 0;
+  m_shiftX     = 0.0; m_shiftY = 0.0;
 }
 
 void drawPoly::mousePressEvent( QMouseEvent *E){
@@ -404,7 +398,6 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
     // Draw a  highlight with control + left mouse button
     // ending at the current point
     createHighlight(m_mousePrsX, m_mousePrsY, m_mouseRelX, m_mouseRelY);
-    resetTransformSettings(); // To not zoom around the mosue release coords
     update();
     return;
   }
@@ -414,7 +407,8 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
   int tol = 5; 
   if       (m_mouseRelX > m_mousePrsX + tol &&
             m_mouseRelY > m_mousePrsY + tol){
-    update(); // Will zoom to the region selected with the mouse
+    m_zoomToMouseSelection = true; // Will zoom to the region selected with the mouse
+    update(); 
     return;
   }else if (m_mouseRelX + tol < m_mousePrsX &&
             m_mouseRelY + tol < m_mousePrsY ){
