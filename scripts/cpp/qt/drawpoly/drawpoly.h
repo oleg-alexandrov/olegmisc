@@ -39,7 +39,7 @@ public slots:
 
 protected:
 
-  void paintEvent( QPaintEvent * E);
+  void paintEvent( QPaintEvent *E);
   void mousePressEvent( QMouseEvent *E);
   void mouseMoveEvent( QMouseEvent *E);
   void keyPressEvent( QKeyEvent *K );
@@ -120,7 +120,8 @@ private:
   
   // For double buffering
   QPixmap m_cache;
-  QRect   m_screenRect, m_rubberBand;
+
+  QRect   m_rubberBand;
 
   bool m_showAnnotations;
   bool m_showFilledPolys;
