@@ -501,26 +501,24 @@ void drawPoly::contextMenuEvent(QContextMenuEvent *E){
   menu.exec(E->globalPos());
 }
 
-void drawPoly::paintEvent( QPaintEvent * E){
+void drawPoly::paintEvent( QPaintEvent*){
 
   // This function will be called by update()
   
   // Instead of drawing on the screen right away, draw onto
   // a cache, then display the cache. We'll use the cache
   // later to avoid repainting when the view does not change.
-  m_screenRect = E->rect();
-  QSize expandedSize = m_screenRect.size().expandedTo(m_cache.size());
+  QRect R = this->rect();
+  QSize expandedSize = R.size().expandedTo(m_cache.size());
   m_cache.resize(expandedSize);
-  m_cache.fill(this, m_screenRect.topLeft());
+  m_cache.fill(this, R.topLeft());
 
   QPainter paint( &m_cache, this );
-  paint.translate(-m_screenRect.x(), -m_screenRect.y());
+  paint.translate(-R.x(), -R.y());
   showPoly( &paint );
 
   // Copy the buffer to the screen
-  bitBlt(this, m_screenRect.x(), m_screenRect.y(), &m_cache, 0, 0,
-         m_screenRect.width(), m_screenRect.height()
-         );
+  bitBlt( this, R.x(), R.y(), &m_cache, 0, 0, R.width(), R.height() );
 
   return;
 }
