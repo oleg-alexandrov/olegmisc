@@ -195,23 +195,41 @@ def parse_update_h(h_text, cpp_map, namespace):
         for cpp_block in cpp_map[key]:
           new_blocks[cpp_map[key][cpp_block]] = cpp_block # Needed for sorting
 
-    # Append the new blocks after the last public:/private:/namespace/class tag
+    # See first if we can match the namespace
     p = re.match("""
     ^(
-    .*\n\s*
-    (?:public:|private:|(?:class|struct)\s*\w+\s*\{|namespace\s*\w+\s*\{)
+    \s*
+    (?:|namespace\s*\w+\s*\{)
     .*?[\n]
     )           # end of group 1
     ([ \t]*)    # indentation level (group 2)
     (.*)$       # group 3, whatever is left
     """, h_text, re.S | re.X)
 
-    if not p:
+    if p:
+      groups = [p.group(1), p.group(2), p.group(3)]
+    else:
+
+      # See if we can match a class/struct
+      p = re.match("""
+      ^(
+      .*\n\s*
+      (?:public:|private:|(?:class|struct)\s*\w+\s*\{)
+      .*?[\n]
+      )           # end of group 1
+      ([ \t]*)    # indentation level (group 2)
+      (.*)$       # group 3, whatever is left
+      """, h_text, re.S | re.X)
+      
+      if p:
+        groups = [p.group(1), p.group(2), p.group(3)]
+        
+      else:
         print "Could not find a place to append the new blocks to"
         sys.exit(1)
 
     new_chunk    = ""
-    indent_level = p.group(2)
+    indent_level = groups[1]
 
     sorted_keys = new_blocks.keys()
     sorted_keys.sort()
@@ -221,7 +239,7 @@ def parse_update_h(h_text, cpp_map, namespace):
     if new_chunk == "":
         return h_text # Nothing else to do
 
-    h_text = p.group(1) + new_chunk + p.group(2) + p.group(3)
+    h_text = groups[0] + new_chunk + groups[1] + groups[2]
 
     return h_text
 
