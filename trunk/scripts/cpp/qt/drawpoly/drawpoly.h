@@ -39,7 +39,7 @@ public slots:
 
 protected:
 
-  void paintEvent( QPaintEvent *E);
+  void paintEvent( QPaintEvent*);
   void mousePressEvent( QMouseEvent *E);
   void mouseMoveEvent( QMouseEvent *E);
   void keyPressEvent( QKeyEvent *K );
@@ -52,6 +52,8 @@ public slots:
   void deletePoly();
 
 private:
+  void drawCurrPolyLine(QPainter * paint);
+  void drawPolyLine();
   void addPolyVert(int px, int py);
   double pixelToWorldDist(int pd);
   void createHighlight(// inputs are in pixels
@@ -142,6 +144,12 @@ private:
   bool m_zoomToMouseSelection;
   
   double m_menuX, m_menuY;
+
+  // If the current point on the polygon being created is closer than
+  // this distance (in pixels) from the first point of the polygon, we
+  // will assume we arrived back to the first point so we finished
+  // creating the polygon.
+  int m_pixelTol;
 };
 
 #endif // DRAWPOLY_H
