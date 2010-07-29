@@ -58,6 +58,8 @@ drawPoly::drawPoly( QWidget *parent,
   m_mousePrsX  = 0;   m_mousePrsY = 0;
   m_mouseRelX  = 0;   m_mouseRelY = 0;
   
+  m_pixelTol = 5;
+  
   resetTransformSettings();
 
   // For some reason, moving this up does not work well
@@ -293,8 +295,11 @@ void drawPoly::showPoly( QPainter *paint ){
   dRect R(m_viewXll, m_viewYll,
           m_viewXll + m_viewWidX, m_viewYll + m_viewWidY);
   drawRect(R, lineWidth, paint);
-    
-   return;
+
+  // This draws the polygon being created if in that mode
+  drawCurrPolyLine(paint);
+
+  return;
 }
 
 void drawPoly::zoomIn(){
@@ -352,6 +357,8 @@ void drawPoly::mousePressEvent( QMouseEvent *E){
   cout << "Mouse pressed at "
        << m_mousePrsX << ' ' << m_mousePrsY << endl;
 #endif
+
+  if (m_createPoly) return;
   
   m_rubberBand = QRect(m_mousePrsX, m_mousePrsY, 0, 0); // initial rubberband
 }
@@ -363,6 +370,8 @@ void drawPoly::mouseMoveEvent( QMouseEvent *E){
   int y = Q.y();
   //cout << "Mouse moved to " << x << ' ' << y << endl;
   
+  if (m_createPoly) return;
+
   QPainter painter(this);
   painter.setPen(Qt::white);
   painter.setBrush( NoBrush );
@@ -416,6 +425,8 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
     return;
   }else if (abs(m_mouseRelX - m_mousePrsX) <= tol &&
             abs(m_mouseRelY - m_mousePrsY) <= tol){
+
+  
     printCurrCoords(E->state(),              // input
                     m_mouseRelX, m_mouseRelY // in-out
                     );
@@ -527,17 +538,11 @@ void drawPoly::addPolyVert(int px, int py){
 
   // Add a point to the polygn being drawn
   
-  // If the current point on the polygon being created is closer than
-  // this distance (in pixels) from the first point of the polygon, we
-  // will assume we arrived back to the first point so we finished
-  // creating the polygon.
-  int ptol = 5;
-
   double wx, wy;
   pixelToWorldCoords(px, py, wx, wy);
 
   // See if we arrived back at the first point
-  double wtol = pixelToWorldDist(ptol);
+  double wtol = pixelToWorldDist(m_pixelTol);
   int pSize = m_currPolyX.size();
   bool isClosedPolyLine = false;
   if (pSize >= 1 &&
@@ -574,12 +579,23 @@ void drawPoly::addPolyVert(int px, int py){
   isClosedPolyLine = false;
   snapPolyLineTo45DegAngles(isClosedPolyLine, pSize,
                             vecPtr(m_currPolyX), vecPtr(m_currPolyY));
-  
+
   QPainter paint(this);
+  drawCurrPolyLine(&paint);
+  
+}
+
+void drawPoly::drawCurrPolyLine(QPainter * paint){
+
+  int pSize = m_currPolyX.size();
+  if (pSize == 0){
+    return;
+  }
+  
   int lineWidth = 1;
   char * color  = "white";
-  paint.setBrush( NoBrush );
-  paint.setPen( QPen(color, lineWidth) );
+  paint->setBrush( NoBrush );
+  paint->setPen( QPen(color, lineWidth) );
 
   // To do: The block below better become its own function
   // which can draw points, poly lines, and polygons
@@ -593,12 +609,12 @@ void drawPoly::addPolyVert(int px, int py){
     pa[vIter] = QPoint(x0, y0);
 
     if (vIter == 0){
-      // Emphasize the starting point of the polygon
-      paint.drawRect(x0 - ptol,  y0 - ptol, 2*ptol, 2*ptol); 
+      paint->drawRect(x0 - m_pixelTol,  y0 - m_pixelTol,
+                     2*m_pixelTol, 2*m_pixelTol); 
     }
   }
 
-  paint.drawPolyline( pa );
+  paint->drawPolyline( pa );
 
   return;
 }
