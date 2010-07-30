@@ -6,6 +6,7 @@
 #include <iostream>
 #include <qapplication.h>
 #include <qfiledialog.h>
+#include <qcursor.h>
 #include <qpopupmenu.h>
 #include <qdir.h>
 #include <qpainter.h>
@@ -23,6 +24,8 @@ drawPoly::drawPoly( QWidget *parent,
                     const std::vector<bool>        & plotPointsOnlyVec
                     ): QWidget(parent){
 
+  setStandardCursor();
+  
   m_polyFilesVec      = polyFilesVec;
   m_plotPointsOnlyVec = plotPointsOnlyVec;
   
@@ -358,8 +361,6 @@ void drawPoly::mousePressEvent( QMouseEvent *E){
        << m_mousePrsX << ' ' << m_mousePrsY << endl;
 #endif
 
-  if (m_createPoly) return;
-  
   m_rubberBand = QRect(m_mousePrsX, m_mousePrsY, 0, 0); // initial rubberband
 }
 
@@ -370,8 +371,6 @@ void drawPoly::mouseMoveEvent( QMouseEvent *E){
   int y = Q.y();
   //cout << "Mouse moved to " << x << ' ' << y << endl;
   
-  if (m_createPoly) return;
-
   QPainter painter(this);
   painter.setPen(Qt::white);
   painter.setBrush( NoBrush );
@@ -397,12 +396,6 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
 
   wipeRubberBand(m_rubberBand); // Wipe any rubberband artifacts
 
-  if (m_createPoly){
-    // Add the current point to the polygn being drawn
-    addPolyVert(m_mouseRelX, m_mouseRelY);
-    return;
-  }
-  
   if (E->state() == (Qt::LeftButton | Qt::ControlButton) ){
     // Draw a  highlight with control + left mouse button
     // ending at the current point
@@ -416,17 +409,26 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
   int tol = 5; 
   if       (m_mouseRelX > m_mousePrsX + tol &&
             m_mouseRelY > m_mousePrsY + tol){
+    
     m_zoomToMouseSelection = true; // Will zoom to the region selected with the mouse
     update(); 
     return;
+    
   }else if (m_mouseRelX + tol < m_mousePrsX &&
             m_mouseRelY + tol < m_mousePrsY ){
+    
     zoomOut();
     return;
+    
   }else if (abs(m_mouseRelX - m_mousePrsX) <= tol &&
             abs(m_mouseRelY - m_mousePrsY) <= tol){
 
   
+    if (m_createPoly){
+      addPolyVert(m_mouseRelX, m_mouseRelY);
+      return;
+    }
+    
     printCurrCoords(E->state(),              // input
                     m_mouseRelX, m_mouseRelY // in-out
                     );
@@ -537,7 +539,6 @@ void drawPoly::paintEvent( QPaintEvent*){
 void drawPoly::addPolyVert(int px, int py){
 
   // Add a point to the polygn being drawn
-  
   double wx, wy;
   pixelToWorldCoords(px, py, wx, wy);
 
@@ -569,7 +570,10 @@ void drawPoly::addPolyVert(int px, int py){
     m_createPoly = false;
     m_currPolyX.clear();
     m_currPolyY.clear();
+
+    setStandardCursor();
     update();
+    
     return;
   }
 
@@ -909,7 +913,8 @@ void drawPoly::createPoly(){
   // This flag will change the behavior of mouseReleaseEvent() so that
   // we can start adding points to the polygon with the mouse.
   m_createPoly = true;
-  
+
+  setPolyDrawCursor();
 }
 
 void drawPoly::deletePoly(){
@@ -1237,3 +1242,12 @@ double drawPoly::pixelToWorldDist(int pd){
   
 }
 
+void drawPoly::setStandardCursor(){
+  QCursor C(Qt::ArrowCursor);
+  setCursor(C);
+}
+
+void drawPoly::setPolyDrawCursor(){
+  QCursor C(Qt::CrossCursor);
+  setCursor(C);
+}

@@ -98,6 +98,9 @@ private:
                            double & xll, double & yll,
                            double &widx, double & widy);
   
+  void setStandardCursor();
+  void setPolyDrawCursor();
+  
   double m_zoomFactor, m_shiftX, m_shiftY;
   int m_mousePrsX,  m_mousePrsY, m_mouseRelX,  m_mouseRelY;
   int m_screenXll,  m_screenYll, m_screenWidX, m_screenWidY;
