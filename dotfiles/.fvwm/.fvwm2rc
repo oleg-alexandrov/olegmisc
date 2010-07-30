@@ -28,10 +28,12 @@ MenuStyle * MenuFace VGradient 128 1 #2c80A0 1 #1c5572
 AddToFunc InitFunction    "I" Module FvwmPager  *
 AddToFunc InitFunction "I" Module FvwmCommandS
 AddToFunc InitFunction "I" Exec $HOME/bin/fvwm_dual_monitor.pl&
+AddToFunc InitFunction "I" Exec xclock -d -twentyfour -bg black -fg green -brief -geo -0+0&
 
 AddToFunc RestartFunction "I" Module FvwmPager  *
 AddToFunc RestartFunction "I" Module FvwmCommandS
 AddToFunc RestartFunction "I" Exec $HOME/bin/fvwm_dual_monitor.pl&
+AddToFunc RestartFunction "I" Exec xclock -d -twentyfour -bg black -fg green -brief -geo -0+0&
 
 #ModulePath $HOME/diverse/fvwm2
 ImagePath $HOME/diverse/icons/:/usr/X11/include/X11/pixmaps/:/usr/X11R6/include/X11/pixmaps:/usr/include/X11/pixmaps/:/home/grad/aoleg/diverse/htmls/icons/
@@ -80,7 +82,7 @@ Style "FvwmPager"   NoTitle,BorderWidth 3
 Style "FvwmPager"   Color white/royalblue3
 
 ## Other programs
-Style "*clock*"   NoTitle, NoHandles, Sticky, WindowListSkip ,Borderwidth 3, Color white/royalblue3
+Style "*clock*"   NoTitle, NoHandles, Sticky, WindowListSkip, Borderwidth 0, Color white/royalblue3
 Style "*mail*"   NoTitle, NoHandles, Sticky, WindowListSkip ,Borderwidth 3, Color white/royalblue3
 Style "xload"   NoTitle, NoHandles, Sticky, WindowListSkip,ClickToFocus, BorderWidth 3, Color white/royalblue3 
 Style "Pine"   Icon xnomail.xpm
@@ -159,8 +161,8 @@ Key Up    A   C   Scroll +0   -100
 Key Down  A   C   Scroll +0   +100
 
 # Pop-up the pager temorarily
-Key Home  A   3   Module FvwmPager -transient *
-Key End   A   3   Module FvwmPager -transient *
+Key Home  A   3   Module FvwmPager -transient 0 3
+Key End   A   3   Module FvwmPager -transient 0 3
 
 # Use the left windows key for moving the cursor  
 # Put this in .bashrc: xmodmap -e  "add mod3 = Super_L"
@@ -299,7 +301,7 @@ Mouse 1   FS    N   Resize-or-Raise
 Mouse 1   T     N   Move-or-Raise
 Mouse 1   I     N   Move-or-Iconify
 Mouse 2   I     N   Iconify
-Mouse 0   W     M   RaiseLower
+#Mouse 0   W     M   RaiseLower
 Mouse 2   T     M   Move
 Mouse 1   T     N   Close
 
