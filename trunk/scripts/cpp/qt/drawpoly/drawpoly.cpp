@@ -396,6 +396,11 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
 
   wipeRubberBand(m_rubberBand); // Wipe any rubberband artifacts
 
+  if (E->state() == (Qt::LeftButton | Qt::AltButton) ){
+    pixelToWorldCoords(m_mouseRelX, m_mouseRelY, m_menuX, m_menuY); // clean this up
+    deletePoly();
+  }
+  
   if (E->state() == (Qt::LeftButton | Qt::ControlButton) ){
     // Draw a  highlight with control + left mouse button
     // ending at the current point
