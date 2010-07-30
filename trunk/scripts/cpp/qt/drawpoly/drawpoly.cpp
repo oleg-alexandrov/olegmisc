@@ -613,6 +613,7 @@ void drawPoly::drawCurrPolyLine(QPainter * paint){
     pa[vIter] = QPoint(x0, y0);
 
     if (vIter == 0){
+      // Emphasize the starting point of the polygon
       paint->drawRect(x0 - m_pixelTol,  y0 - m_pixelTol,
                      2*m_pixelTol, 2*m_pixelTol); 
     }
