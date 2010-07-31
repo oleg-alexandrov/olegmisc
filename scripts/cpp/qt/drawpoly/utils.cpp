@@ -121,3 +121,29 @@ void utils::findClosestPointAndDist(// inputs
   return;
 }
 
+std::string utils::inFileToOutFile(const std::string & inFile){
+
+  string outFile = "";
+
+  bool lastDot = true;
+  for (int s = (int)inFile.length() - 1; s >= 0; s--){
+
+    string currChar = inFile.substr(s, 1);
+    if ( currChar == "/"){
+      break; // strip path
+    }else if (currChar == "." && lastDot){
+      outFile = string("_out") + currChar + outFile;
+      lastDot = false;
+    }else{
+      outFile = currChar + outFile;
+    }
+    
+  }
+
+  if (outFile.length() == 0){
+    cerr << "Invalid filename" << endl;
+  }
+  
+  return outFile;
+  
+}

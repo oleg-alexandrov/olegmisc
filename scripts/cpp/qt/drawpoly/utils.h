@@ -29,9 +29,12 @@ void findClosestPointAndDist(// inputs
                        std::vector<bool>          & plotPointsOnlyVec
                        );
 
+  std::string inFileToOutFile(const std::string & inFile);
+
   inline void printUsage(char * progName){
     
-    std::cout << "Usage: " << progName << " [ -geo[metry] 1000x800 ] file_1.xg ... "
+    std::cout << "Usage: " << progName
+              << " [ -geo[metry] 1000x800 ] file_1.xg ... "
               << "[ -p[oints] ] file_N.xg " << std::endl;
 
   }

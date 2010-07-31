@@ -46,7 +46,8 @@ void appWindow::toggleFilled      (){ m_poly->toggleFilled      (); }
 void appWindow::cutToHlt          (){ m_poly->cutToHlt          (); }
 void appWindow::undoLast          (){ m_poly->undoLast          (); }
 void appWindow::openPoly          (){ m_poly->openPoly          (); }
-void appWindow::savePoly          (){ m_poly->savePoly          (); }
+void appWindow::saveOnePoly       (){ m_poly->saveOnePoly       (); }
+void appWindow::saveMultiplePoly  (){ m_poly->saveMultiplePoly  (); }
 void appWindow::togglePE          (){ m_poly->togglePE          (); }
 void appWindow::toggleOrder       (){ m_poly->toggleOrder       (); }
 void appWindow::createPoly        (){ m_poly->createPoly        (); }
@@ -61,7 +62,10 @@ void appWindow::createMenus(){
   QPopupMenu* file = new QPopupMenu( menu );
   menu->insertItem("File", file);
   file->insertItem("Open", this, SLOT(openPoly()), Qt::CTRL+Key_O);
-  file->insertItem("Save", this, SLOT(savePoly()), Key_S);
+  file->insertItem("Save as one polygon", this, SLOT(saveOnePoly()),
+                   Qt::CTRL+Key_S);
+  file->insertItem("Save as multiple polygons", this,
+                   SLOT(saveMultiplePoly()), Qt::ALT+Key_S);
   file->insertItem("Exit", qApp, SLOT(quit()), Key_Q);
 
   QPopupMenu* edit = new QPopupMenu( menu );

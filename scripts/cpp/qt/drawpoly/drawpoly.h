@@ -30,7 +30,8 @@ public:
   void undoLast();
   void readAllPolys();
   void openPoly();
-  void savePoly();
+  void saveOnePoly();
+  void saveMultiplePoly();
   void togglePE();
   void toggleOrder();
   // actions
