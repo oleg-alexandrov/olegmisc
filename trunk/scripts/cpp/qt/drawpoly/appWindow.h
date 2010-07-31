@@ -34,7 +34,8 @@ private slots:
   void cutToHlt          ();
   void undoLast          ();
   void openPoly          ();
-  void savePoly          ();
+  void saveOnePoly       ();
+  void saveMultiplePoly  ();
   void togglePE          ();
   void toggleOrder       ();
   void createPoly        ();

@@ -397,7 +397,9 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
   wipeRubberBand(m_rubberBand); // Wipe any rubberband artifacts
 
   if (E->state() == (Qt::LeftButton | Qt::AltButton) ){
-    pixelToWorldCoords(m_mouseRelX, m_mouseRelY, m_menuX, m_menuY); // clean this up
+    // To do: consolidate this with the other call to this function.
+    // See if can pass the relevant variables as input arguments.
+    pixelToWorldCoords(m_mouseRelX, m_mouseRelY, m_menuX, m_menuY); 
     deletePoly();
   }
   
@@ -558,7 +560,8 @@ void drawPoly::addPolyVert(int px, int py){
     isClosedPolyLine = true;
     snapPolyLineTo45DegAngles(isClosedPolyLine, pSize,
                               vecPtr(m_currPolyX), vecPtr(m_currPolyY));
-    
+
+    // To do: get the layer from existing polygons
     dPoly P;
     P.reset();
     P.appendPolygon(pSize, vecPtr(m_currPolyX), vecPtr(m_currPolyY),
@@ -570,7 +573,8 @@ void drawPoly::addPolyVert(int px, int py){
     
     m_polyVec.push_back(P);
     m_plotPointsOnlyVec.push_back(false);
-    m_polyFilesVec.push_back("new.xg"); // bug here when saving multiple files
+    string fileName = "poly" + num2str(m_polyFilesVec.size()) + ".xg";
+    m_polyFilesVec.push_back(fileName);
       
     m_createPoly = false;
     m_currPolyX.clear();
@@ -931,6 +935,7 @@ void drawPoly::deletePoly(){
   m_polyVecStack.push_back(m_polyVec); 
   m_actions.push_back(m_polyChanged);
 
+  // To do: the code below should go to utilities
   double minDist   = DBL_MAX;
   int minVecIndex  = -1;
   int minPolyIndex = -1;
@@ -1120,6 +1125,8 @@ void drawPoly::readOnePoly(// inputs
   
   // Flip the polygons to compensate for Qt's origin
   // being in the upper-right corner
+  // To do: This operation which is repeated a lot must be in the
+  // dPoly class. Search everywhere for m_yFactor.
   double * xv = (double*)poly.get_xv();
   double * yv = (double*)poly.get_yv();
   int numV    = poly.get_totalNumVerts();
@@ -1129,6 +1136,7 @@ void drawPoly::readOnePoly(// inputs
   }
   
   // Flip the annotations as well
+  // To do: Put this code in one place
   vector<anno> annotations;
   poly.get_annotations(annotations);
   for (int s = 0; s < (int)annotations.size(); s++){
@@ -1140,14 +1148,13 @@ void drawPoly::readOnePoly(// inputs
 }
 
   
-void drawPoly::savePoly(){
+void drawPoly::saveOnePoly(){
 
   if (m_polyVec.size() == 0){
     cerr << "No polygons to save" << endl;
   }
 
-  char * fileName = "out.xg";
-  cout << "Will save to " << fileName << endl;
+  char * fileName = "out_poly.xg";
 
   dPoly poly;
 
@@ -1169,6 +1176,41 @@ void drawPoly::savePoly(){
   poly.set_annotations(annotations);
 
   poly.write_poly(fileName);
+  cout << "Polygon saved to " << fileName << endl;
+
+  return;
+}
+
+void drawPoly::saveMultiplePoly(){
+
+  string allFiles = "";
+  for (int polyIter = 0; polyIter < (int)m_polyVec.size(); polyIter++){
+
+    dPoly poly = m_polyVec[polyIter];
+    
+    // To do: the operation below should be done inside of the dPoly class
+    double * yv  = (double*)poly.get_yv(); 
+    int numVerts = poly.get_totalNumVerts();
+    for (int s = 0; s < numVerts; s++){
+      yv[s] *= m_yFactor; // To compensate for Qt's origin in the ul corner
+    }
+
+    // To do: Make this a member of the class (flip anno and verts)
+    vector<anno> annotations;
+    poly.get_annotations(annotations);
+    for (int s = 0; s < (int)annotations.size(); s++){
+      annotations[s].y *= m_yFactor;
+    }
+    poly.set_annotations(annotations);
+    
+    string fileName = inFileToOutFile(m_polyFilesVec[polyIter]);
+    poly.write_poly(fileName.c_str());
+    allFiles += " " + fileName;
+  }
+
+  if ((int)m_polyVec.size() > 0){
+    cout << "Polygons saved to" << allFiles << endl;
+  }
 
   return;
 }
