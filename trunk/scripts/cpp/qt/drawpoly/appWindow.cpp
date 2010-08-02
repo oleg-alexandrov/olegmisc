@@ -49,7 +49,7 @@ void appWindow::openPoly          (){ m_poly->openPoly          (); }
 void appWindow::saveOnePoly       (){ m_poly->saveOnePoly       (); }
 void appWindow::saveMultiplePoly  (){ m_poly->saveMultiplePoly  (); }
 void appWindow::togglePE          (){ m_poly->togglePE          (); }
-void appWindow::toggleOrder       (){ m_poly->toggleOrder       (); }
+void appWindow::changeOrder       (){ m_poly->changeOrder       (); }
 void appWindow::createPoly        (){ m_poly->createPoly        (); }
 void appWindow::deletePoly        (){ m_poly->deletePoly        (); }
 // actions
@@ -84,8 +84,8 @@ void appWindow::createMenus(){
   view->insertItem("Move up",               this, SLOT(shiftUp()),           Key_Up);
   view->insertItem("Move down",             this, SLOT(shiftDown()),         Key_Down);
   view->insertItem("Reset view",            this, SLOT(resetView()),         Key_R);
+  view->insertItem("Change display order",  this, SLOT(changeOrder()),       Key_O);
   view->insertItem("Toggle annotations",    this, SLOT(toggleAnno()),        Key_A);
-  view->insertItem("Toggle display order",  this, SLOT(toggleOrder()),       Key_O);
   view->insertItem("Toggle filled",         this, SLOT(toggleFilled()),      Key_F);
   view->insertItem("Toggle points display", this, SLOT(togglePE()),          Key_P);
   view->insertItem("Toggle vertex indices", this, SLOT(toggleVertIndices()), Key_V);

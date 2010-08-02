@@ -45,7 +45,7 @@ drawPoly::drawPoly( QWidget *parent,
   m_showAnnotations    = true;
   m_showVertIndices    = false;
   m_showFilledPolys    = false;
-  m_showInReverseOrder = false;
+  m_changeDisplayOrder = false;
   
   m_rubberBand = QRect(0, 0, 0, 0); // initial rubberband
 
@@ -174,10 +174,15 @@ void drawPoly::showPoly( QPainter *paint ){
   int drawVertIndex = -1; // Will draw a vertex with a shape dependent on this
   
   // Draw the polygons
+  setupDisplayOrder(m_polyVec.size(),     // input
+                    m_plotPointsOnlyVec,  // input
+                    m_changeDisplayOrder, // in-out
+                    m_polyVecOrder        // outputs
+                    );
+  
   for (int vi  = 0; vi < (int)m_polyVec.size(); vi++){
 
-    int vecIter = vi;
-    if (m_showInReverseOrder) vecIter = (int)m_polyVec.size() - 1 - vi;
+    int vecIter = m_polyVecOrder[vi];
     
     bool plotPointsOnly = m_plotPointsOnlyVec[vecIter];
     if (plotPointsOnly                               ||
@@ -1222,9 +1227,9 @@ void drawPoly::togglePE(){
   
 }
 
-void drawPoly::toggleOrder(){
+void drawPoly::changeOrder(){
 
-  m_showInReverseOrder = !m_showInReverseOrder;
+  m_changeDisplayOrder = true;
   update();
   
 }
@@ -1298,4 +1303,60 @@ void drawPoly::setStandardCursor(){
 void drawPoly::setPolyDrawCursor(){
   QCursor C(Qt::CrossCursor);
   setCursor(C);
+}
+
+void drawPoly::setupDisplayOrder(int                 numPolys, 
+                                 std::vector<bool> & plotPointsOnlyVec,
+                                 bool              & changeDisplayOrder,
+                                 std::vector<int>  & polyVecOrder){
+
+
+  // Decide the order in which polygons are displayed. 
+
+  if ((int)polyVecOrder.size() != numPolys){
+
+    // Default order
+    polyVecOrder.resize(numPolys);
+    for (int c = 0; c < numPolys; c++){
+      polyVecOrder[c] = c;
+    }
+    
+  }else if (changeDisplayOrder && numPolys >= 1){
+
+    changeDisplayOrder = false;
+
+    assert((int)plotPointsOnlyVec.size() == numPolys);
+
+    bool hasNonPointPolys = false;
+    for (int c = 0; c < numPolys; c++){
+      if (!plotPointsOnlyVec[c]){
+        hasNonPointPolys = true;
+        break;
+      }
+    }
+    if (!hasNonPointPolys){
+      return;
+    }
+    
+    // Cycle left
+    bool firstCycle = true;
+    while (
+           // We want the last polygon (the one displayed on top)
+           // to not be made up of points only.
+           firstCycle || plotPointsOnlyVec[polyVecOrder[numPolys - 1]]
+           ){
+      
+      firstCycle = false;
+      
+      int bk = polyVecOrder[0];
+      for (int c = 1; c < numPolys; c++){
+        polyVecOrder[c-1] = polyVecOrder[c];
+      }
+      polyVecOrder[numPolys - 1] = bk;
+      
+    }
+    
+  }
+
+  return;
 }
