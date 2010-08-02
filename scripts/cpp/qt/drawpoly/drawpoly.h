@@ -33,7 +33,7 @@ public:
   void saveOnePoly();
   void saveMultiplePoly();
   void togglePE();
-  void toggleOrder();
+  void changeOrder();
   // actions
   
 public slots:
@@ -53,6 +53,10 @@ public slots:
   void deletePoly();
 
 private:
+  void setupDisplayOrder(int                 numPolys, 
+                         std::vector<bool> & plotPointsOnlyVec,
+                         bool              & changeDisplayOrder,
+                         std::vector<int>  & polyVecOrder);
   void drawCurrPolyLine(QPainter * paint);
   void drawPolyLine();
   void addPolyVert(int px, int py);
@@ -140,7 +144,7 @@ private:
   static const int m_createHlt    = 2;
 
   int m_showEdges, m_showPoints, m_showPointsEdges, m_toggleShowPointsEdges;
-  bool m_showInReverseOrder, m_showVertIndices;
+  bool m_changeDisplayOrder, m_showVertIndices;
 
   bool m_createPoly;
   std::vector<double> m_currPolyX, m_currPolyY;
@@ -154,6 +158,9 @@ private:
   // will assume we arrived back to the first point so we finished
   // creating the polygon.
   int m_pixelTol;
+
+  std::vector<int> m_polyVecOrder;
+  
 };
 
 #endif // DRAWPOLY_H
