@@ -158,7 +158,8 @@ void drawPoly::showPoly( QPainter *paint ){
   assert( abs(m_pixelSize - (m_screenWidY - 2*m_padY)/m_viewWidY)
           < 1.0e-5*m_pixelSize );
   
-  vector< vector<int> > Grid; // To not draw text too densely as that's slow
+  // Use a grid to not draw text too densely as that's slow
+  vector< vector<int> > Grid; 
   initScreenGrid(Grid);
   
   // Plot the polygons
@@ -171,15 +172,16 @@ void drawPoly::showPoly( QPainter *paint ){
   // F.setStyleStrategy(QFont::NoAntialias);
   paint->setFont(F);
 
-  int drawVertIndex = -1; // Will draw a vertex with a shape dependent on this
+  // Will draw a vertex with a shape dependent on this index
+  int drawVertIndex = -1; 
   
-  // Draw the polygons
-  setupDisplayOrder(m_polyVec.size(),     // input
-                    m_plotPointsOnlyVec,  // input
-                    m_changeDisplayOrder, // in-out
-                    m_polyVecOrder        // outputs
+  setupDisplayOrder(//inputs
+                    m_polyVec.size(), m_plotPointsOnlyVec,
+                    // inputs-outputs
+                    m_changeDisplayOrder, m_polyVecOrder        
                     );
   
+  // Draw the polygons
   for (int vi  = 0; vi < (int)m_polyVec.size(); vi++){
 
     int vecIter = m_polyVecOrder[vi];
@@ -191,8 +193,8 @@ void drawPoly::showPoly( QPainter *paint ){
         ) drawVertIndex++;
     
     if (m_showVertIndices){
-      // Note: Having annotations at vertices can make the display slow for large
-      // polygons.
+      // Note: Having annotations at vertices can make the display
+      // slow for large polygons.
       m_polyVec[vecIter].compAnnoAtVerts();
     }
     
@@ -307,6 +309,15 @@ void drawPoly::showPoly( QPainter *paint ){
   // This draws the polygon being created if in that mode
   drawCurrPolyLine(paint);
 
+  // Draw the mark if there
+  if (m_markX.size() > 0){
+    int x0, y0;
+    worldToPixelCoords(m_markX[0], m_markY[0], // inputs
+                       x0, y0                  // outputs
+                       );
+    drawMark(x0, y0, "white", lineWidth, paint);
+  }
+  
   return;
 }
 
@@ -521,6 +532,7 @@ void drawPoly::contextMenuEvent(QContextMenuEvent *E){
   pixelToWorldCoords(x, y, m_menuX, m_menuY);
   
   QPopupMenu menu(this);
+  menu.insertItem("Save mark at point", this, SLOT(saveMark()));
   menu.insertItem("Create polygon", this, SLOT(createPoly()));
   menu.insertItem("Delete polygon", this, SLOT(deletePoly()));
   menu.exec(E->globalPos());
@@ -906,6 +918,20 @@ void drawPoly::drawOneVertex(int x0, int y0, QColor color, int lineWidth,
   return;
 }
 
+void drawPoly::drawMark(int x0, int y0, QColor color, int lineWidth,
+                        QPainter * paint){
+  
+  int len = 6;
+
+  paint->setBrush( NoBrush );
+  paint->setPen( QPen(color, lineWidth) );
+
+  // Draw a cross
+  paint->drawLine(x0 - len, y0 - len, x0 + len, y0 + len);
+  paint->drawLine(x0 - len, y0 + len, x0 + len, y0 - len);
+  
+}
+
 void drawPoly::toggleAnno(){
   m_showAnnotations = !m_showAnnotations;
   m_showVertIndices = false; // To be able to show the annotations
@@ -968,6 +994,31 @@ void drawPoly::deletePoly(){
   update();
   
   return;
+}
+
+void drawPoly::saveMark(){
+
+  // When saving the mark don't overwrite existing files
+  int markIndex = 0;
+  string markFile;
+  while(1){
+    markIndex++;
+    markFile = "mark" + num2str(markIndex) + ".xg";
+    ifstream mark(markFile.c_str());
+    if (!mark) break;
+  }
+  
+  cout << "Saving the mark to " << markFile << endl;
+  ofstream mark(markFile.c_str());
+  mark << "color = white" << endl;
+  mark << m_menuX << ' ' << m_yFactor*m_menuY << endl;
+  mark << "NEXT" << endl;
+  mark.close();
+
+  // Plot the mark
+  m_markX.resize(1); m_markX[0] = m_menuX;
+  m_markY.resize(1); m_markY[0] = m_menuY;
+  update();
 }
 
 // actions
