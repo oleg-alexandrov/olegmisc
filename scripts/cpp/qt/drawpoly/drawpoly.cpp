@@ -998,7 +998,7 @@ void drawPoly::deletePoly(){
 
 void drawPoly::saveMark(){
 
-  // When saving the mark don't overwrite existing files
+  // When saving the mark don't overwrite existing marks
   int markIndex = 0;
   string markFile;
   while(1){
