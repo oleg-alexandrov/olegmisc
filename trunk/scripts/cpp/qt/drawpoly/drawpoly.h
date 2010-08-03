@@ -51,8 +51,11 @@ protected:
 public slots:
   void createPoly();
   void deletePoly();
+  void saveMark();
 
 private:
+  void drawMark(int x0, int y0, QColor color, int lineWidth,
+              QPainter * paint);
   void setupDisplayOrder(int                 numPolys, 
                          std::vector<bool> & plotPointsOnlyVec,
                          bool              & changeDisplayOrder,
@@ -148,6 +151,7 @@ private:
 
   bool m_createPoly;
   std::vector<double> m_currPolyX, m_currPolyY;
+  std::vector<double> m_markX, m_markY;
 
   bool m_zoomToMouseSelection;
   
