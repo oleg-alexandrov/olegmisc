@@ -61,11 +61,16 @@ drawPoly::drawPoly( QWidget *parent,
   m_mousePrsX  = 0;   m_mousePrsY = 0;
   m_mouseRelX  = 0;   m_mouseRelY = 0;
   
+  // Points closer than this are in some situations considered equal
   m_pixelTol = 5;
+  
+  m_useNmScale  = false;
+  m_nmScale     = 1.0;
+  m_nmScaleFile = "scale.txt";
   
   resetTransformSettings();
 
-  // For some reason, moving this up does not work well
+  // This statement must be the last
   readAllPolys(); // To do: avoid global variables here
 
   return;
@@ -533,6 +538,7 @@ void drawPoly::contextMenuEvent(QContextMenuEvent *E){
   
   QPopupMenu menu(this);
   menu.insertItem("Save mark at point", this, SLOT(saveMark()));
+  menu.insertItem("Toggle nm scale", this, SLOT(toggleNmScale()));
   menu.insertItem("Create polygon", this, SLOT(createPoly()));
   menu.insertItem("Delete polygon", this, SLOT(deletePoly()));
   menu.exec(E->globalPos());
@@ -677,6 +683,16 @@ void drawPoly::printCurrCoords(const ButtonState & state, // input
   
   // Snap or not the current point to the closest polygon vertex
   // and print its coordinates.
+
+  double s;
+  string unit;
+  if (m_useNmScale){
+    s    = m_nmScale;
+    unit = " (nm):";
+  }else{
+    s    = 1.0;
+    unit = ":     ";
+  }
   
   int prec = 6, wid = prec + 6;
   cout.precision(prec);
@@ -713,19 +729,19 @@ void drawPoly::printCurrCoords(const ButtonState & state, // input
     paint.drawRect(currX - len, currY - len, 2*len, 2*len);
       
   }
-
-  cout << "Point: ("
-       << setw(wid) << wx << ", "
-       << setw(wid) << wy*m_yFactor << ")";
+  
+  cout << "Point" << unit << " ("
+       << setw(wid) << s*wx << ", "
+       << setw(wid) << s*wy*m_yFactor << ")";
   if (m_prevClickExists){
     cout  << " dist from prev: ("
-          << setw(wid) << wx - m_prevClickedX << ", "
-          << setw(wid) << (wy - m_prevClickedY)*m_yFactor
+          << setw(wid) << s*(wx - m_prevClickedX) << ", "
+          << setw(wid) << s*(wy - m_prevClickedY)*m_yFactor
           << ") Euclidean: "
-          << setw(wid) << sqrt( (wx - m_prevClickedX)*(wx - m_prevClickedX)
-                                + 
-                                (wy - m_prevClickedY)*(wy - m_prevClickedY)
-                                );
+          << setw(wid) << s*sqrt( (wx - m_prevClickedX)*(wx - m_prevClickedX)
+                                  + 
+                                  (wy - m_prevClickedY)*(wy - m_prevClickedY)
+                                  );
   }
   cout << endl;
   
@@ -1019,6 +1035,40 @@ void drawPoly::saveMark(){
   m_markX.resize(1); m_markX[0] = m_menuX;
   m_markY.resize(1); m_markY[0] = m_menuY;
   update();
+}
+
+void drawPoly::toggleNmScale(){
+
+  m_useNmScale = !m_useNmScale;
+  if (!m_useNmScale){
+    cout << "Using the dbu scale" << endl;
+    return;
+  }
+  
+  ifstream scaleHandle(m_nmScaleFile.c_str());
+  if (!scaleHandle){
+    cerr << "File " << m_nmScaleFile << " does not exist" << endl;
+    m_useNmScale = false;
+    return;
+  }
+
+  string dummy;
+  if (! (scaleHandle >> dummy >> m_nmScale) ){
+    cerr << "Could not read the nm scale factor from "
+         << m_nmScaleFile << endl;
+    m_useNmScale = false;
+    return;
+  }
+
+  if (m_nmScale <= 0.0){
+    cerr << "The nm scale factor must be greater than 0" << endl;
+    m_useNmScale = false;
+    return;
+  }
+  
+  cout << "nm scale factor is " << m_nmScale << endl;
+
+  return;
 }
 
 // actions

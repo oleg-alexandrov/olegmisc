@@ -52,10 +52,11 @@ public slots:
   void createPoly();
   void deletePoly();
   void saveMark();
+  void toggleNmScale();
 
 private:
   void drawMark(int x0, int y0, QColor color, int lineWidth,
-              QPainter * paint);
+                QPainter * paint);
   void setupDisplayOrder(int                 numPolys, 
                          std::vector<bool> & plotPointsOnlyVec,
                          bool              & changeDisplayOrder,
@@ -164,6 +165,12 @@ private:
   int m_pixelTol;
 
   std::vector<int> m_polyVecOrder;
+
+  // To print points at the nm scale as opposed to the database unit
+  // (dbu) scale.
+  bool m_useNmScale;
+  double m_nmScale;
+  std::string m_nmScaleFile;
   
 };
 
