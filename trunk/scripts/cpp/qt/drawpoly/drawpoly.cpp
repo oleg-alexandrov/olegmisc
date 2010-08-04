@@ -66,7 +66,11 @@ drawPoly::drawPoly( QWidget *parent,
   
   m_useNmScale  = false;
   m_nmScale     = 1.0;
-  m_nmScaleFile = "scale.txt";
+#ifdef SCALE_FILE
+  m_nmScaleFile = SCALE_FILE;
+#else
+    m_nmScaleFile = "scale.txt";
+#endif
   
   resetTransformSettings();
 
