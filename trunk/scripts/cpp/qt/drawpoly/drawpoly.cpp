@@ -588,25 +588,47 @@ void drawPoly::addPolyVert(int px, int py){
     snapPolyLineTo45DegAngles(isClosedPolyLine, pSize,
                               vecPtr(m_currPolyX), vecPtr(m_currPolyY));
 
-    // To do: get the layer from existing polygons
+    // Get the layer and color from the closest existing polygon
+    double minDist   = DBL_MAX;
+    int minVecIndex  = -1;
+    int minPolyIndex = -1;
+    findClosestPolyAndDist(// inputs
+                           m_currPolyX[0], m_currPolyY[0],
+                           m_polyVec,  
+                           // outputs
+                           minVecIndex, minPolyIndex,  
+                           minDist
+                           );
+    string color, layer;
+    if (minVecIndex >= 0 && minPolyIndex >= 0){
+      vector<string> layers = m_polyVec[minVecIndex].get_layers();
+      vector<string> colors = m_polyVec[minVecIndex].get_colors();
+      color = colors.at(minPolyIndex);
+      layer = layers.at(minPolyIndex);
+    }else{
+      color = "green";
+      layer = "1:0";
+    }
+
+    // Form the new polygon
     dPoly P;
     P.reset();
-    P.appendPolygon(pSize, vecPtr(m_currPolyX), vecPtr(m_currPolyY),
-                    "green", "1:0");
+    P.appendPolygon(pSize, vecPtr(m_currPolyX), vecPtr(m_currPolyY), color, layer);
       
     // So that we can undo later
     m_polyVecStack.push_back(m_polyVec); 
     m_actions.push_back(m_polyChanged);
-    
+
+    // Append the new polygon
     m_polyVec.push_back(P);
     m_plotPointsOnlyVec.push_back(false);
     string fileName = "poly" + num2str(m_polyFilesVec.size()) + ".xg";
     m_polyFilesVec.push_back(fileName);
-      
+
+    // Reset
     m_createPoly = false;
     m_currPolyX.clear();
     m_currPolyY.clear();
-
     setStandardCursor();
     update();
     
@@ -986,27 +1008,17 @@ void drawPoly::deletePoly(){
   m_polyVecStack.push_back(m_polyVec); 
   m_actions.push_back(m_polyChanged);
 
-  // To do: the code below should go to utilities
   double minDist   = DBL_MAX;
   int minVecIndex  = -1;
   int minPolyIndex = -1;
+  findClosestPolyAndDist(// inputs
+                         m_menuX, m_menuY,
+                         m_polyVec,  
+                         // outputs
+                         minVecIndex, minPolyIndex,  
+                         minDist
+                         );
   
-  for (int vecIter = 0; vecIter < (int)m_polyVec.size(); vecIter++){
-
-    double dist   = DBL_MAX;
-    int polyIndex = -1;
-    m_polyVec[vecIter].findClosestPolyIndex(m_menuX, m_menuY, // in
-                                            polyIndex, dist   // out
-                                            );
-
-    if (dist <= minDist){
-      minVecIndex  = vecIter;
-      minPolyIndex = polyIndex;
-      minDist      = dist;
-    }
-    
-  }
-
   if (minVecIndex >= 0 && minPolyIndex >= 0){
     m_polyVec[minVecIndex].erasePoly(minPolyIndex);
   }
@@ -1070,7 +1082,7 @@ void drawPoly::toggleNmScale(){
     return;
   }
   
-  cout << "nm scale factor is " << m_nmScale << endl;
+  cout << "Using the nm scale factor " << m_nmScale << endl;
 
   return;
 }

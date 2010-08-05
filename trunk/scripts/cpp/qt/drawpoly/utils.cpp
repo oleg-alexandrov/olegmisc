@@ -121,6 +121,37 @@ void utils::findClosestPointAndDist(// inputs
   return;
 }
 
+void utils::findClosestPolyAndDist(// inputs
+                                   double x0, double y0,
+                                   std::vector<dPoly> & polyVec,
+                                   // outputs
+                                   int & minVecIndex, int & minPolyIndex,
+                                   double & min_dist
+                                   ){
+
+  min_dist     = DBL_MAX;
+  minVecIndex  = -1;
+  minPolyIndex = -1;
+  
+  for (int vecIter = 0; vecIter < (int)polyVec.size(); vecIter++){
+
+    double dist   = DBL_MAX;
+    int polyIndex = -1;
+    polyVec[vecIter].findClosestPolyIndex(x0, y0,           // in
+                                          polyIndex, dist   // out
+                                          );
+
+    if (dist <= min_dist){
+      minVecIndex  = vecIter;
+      minPolyIndex = polyIndex;
+      min_dist     = dist;
+    }
+    
+  }
+
+  return;
+}
+
 std::string utils::inFileToOutFile(const std::string & inFile){
 
   string outFile = "";
