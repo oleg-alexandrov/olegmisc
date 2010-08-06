@@ -315,7 +315,9 @@ void dPoly::erasePoly(int polyIndex){
 }
 
 bool dPoly::readPoly(const char * filename){
- 
+
+  reset();
+  
   ifstream fh(filename);
   if( !fh ){
     cerr << "Could not open " << filename << endl;
