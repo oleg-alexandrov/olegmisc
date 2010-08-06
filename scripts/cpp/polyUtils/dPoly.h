@@ -20,6 +20,8 @@ public:
   void set_isPointCloud(bool isPointCloud){ m_isPointCloud = isPointCloud; }
   bool isPointCloud() { return m_isPointCloud;}
   
+  bool readPoly(const char * filename);
+  
   bool read_poly(const char * filename, bool isPointCloud){
     m_isPointCloud = isPointCloud;
     bool success = utils::read_xg(filename, isPointCloud,

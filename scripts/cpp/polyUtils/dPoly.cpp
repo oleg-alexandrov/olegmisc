@@ -4,6 +4,8 @@
 #include <cassert>
 #include <cfloat>
 #include <cassert>
+#include <cstring>
+#include <string>
 #include "read_write_xg.h"
 #include "dPoly.h"
 using namespace std;
@@ -310,4 +312,50 @@ void dPoly::erasePoly(int polyIndex){
   m_annotationsAtVerts.clear();
 
   return;
+}
+
+bool dPoly::readPoly(const char * filename){
+ 
+  ifstream fh(filename);
+  if( !fh ){
+    cerr << "Could not open " << filename << endl;
+    return false;
+  }
+
+  string line;
+  string color = "yellow"; // default color
+  
+  while( getline(fh, line) ) {
+
+    cout << "Line is " << line << endl;
+
+    // Convert to lowercase
+    transform(line.begin(), line.end(), line.begin(), ::tolower);
+
+    // If the current line has a color, store it in 'color'.
+    // Else keep both 'line' and 'color' unchanged.
+    searchForColor((char*)line.c_str(), color); // Fix this hackish approach
+    
+    istringstream iss(line);
+    string val;
+    if ( (iss >> val) && (val == "next") ){
+      cout << "Found a next statement in: '" << line << "'" << endl;
+      // Put here logic for closing the polygon
+      continue;
+    }
+
+    // Extract the coordinates and the layer
+    istringstream iss2 (line);
+    double x, y;
+    string layer = "";
+    if ( !(iss2 >> x >> y) ) continue;
+    
+    // This line has valid coordinates, which we stored in x and y.
+    // Now find the layer as well.
+    searchForLayer(line, layer);
+    cout << "Extracted: " << x << ' ' << y << ' ' << layer << endl;
+
+  }
+  
+  return true;
 }

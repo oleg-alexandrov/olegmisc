@@ -18,12 +18,16 @@ int main(int argc, char** argv){
   }
   
   char * filename = argv[1];
+  
+  poly.readPoly(filename);
+  
+  return 0;
+  
   bool isPointCloud = false;
   cout << "Reading " << filename << endl;
   if (! poly.read_poly(filename, isPointCloud) ) exit(1);
 
   char * outFile = "out.xg";
-  cout << "Writing to " << outFile << endl;
   poly.write_poly(outFile);
   
   return 0;
