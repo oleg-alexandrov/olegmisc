@@ -39,8 +39,7 @@ MAIN: {
 
       # don't put an annotation at the last vertex, as that's just the
       # first one repeated
-      $line =~ s/\s*\;.*?$//g; # strip comments
-      next unless ($line =~ /^\s*([\d\-\+\.]+\s+[\d\-\+\.]+)\s*$/);
+      next unless ($line =~ /^\s*([\d\-\+\.]+\s+[\d\-\+\.]+)/);
       $lines[$ctr] = $line . "\n" . "anno " . $1 . " " . $vert_count;
       $vert_count++;
       
@@ -55,5 +54,5 @@ MAIN: {
   print FILE $text . "\n";
   close(FILE);
 
-  system("xgraph -ng -geometry 1000x800+0+0 Annotated.xg")
+  #system("xgraph -ng -geometry 1000x800+0+0 Annotated.xg")
 }
