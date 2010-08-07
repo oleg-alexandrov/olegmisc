@@ -43,7 +43,8 @@ drawPoly::drawPoly( QWidget *parent,
   m_prevClickExists = false;
   
   m_showAnnotations    = true;
-  m_showVertIndexAnno    = false;
+  m_showVertIndexAnno  = false;
+  m_showLayerAnno      = false;
   m_showFilledPolys    = false;
   m_changeDisplayOrder = false;
   
@@ -201,10 +202,14 @@ void drawPoly::showPoly( QPainter *paint ){
         m_toggleShowPointsEdges == m_showPointsEdges 
         ) drawVertIndex++;
     
+    // Note: Having annotations at vertices can make the display
+    // slow for large polygons.
+    // The operations below must happen before cutting,
+    // as cutting will inherit the result computed here.
     if (m_showVertIndexAnno){
-      // Note: Having annotations at vertices can make the display
-      // slow for large polygons.
       m_polyVec[vecIter].compVertIndexAnno();
+    }else if (m_showLayerAnno){
+      m_polyVec[vecIter].compLayerAnno();
     }
     
     dPoly clipPoly;
@@ -227,6 +232,8 @@ void drawPoly::showPoly( QPainter *paint ){
     annotations.clear();
     if (m_showVertIndexAnno){
       clipPoly.get_vertIndexAnno(annotations);
+    }else if (m_showLayerAnno){
+      clipPoly.get_layerAnno(annotations);
     }else if (m_showAnnotations){
       clipPoly.get_annotations(annotations);
     }
@@ -975,14 +982,23 @@ void drawPoly::drawMark(int x0, int y0, QColor color, int lineWidth,
 }
 
 void drawPoly::toggleAnno(){
-  m_showAnnotations = !m_showAnnotations;
-  m_showVertIndexAnno = false; // To be able to show the annotations
+  m_showAnnotations   = !m_showAnnotations;
+  m_showVertIndexAnno = false;
+  m_showLayerAnno     = false;
   update();
 }
 
-void drawPoly::toggleVertIndices(){
+void drawPoly::toggleVertIndexAnno(){
   m_showVertIndexAnno = !m_showVertIndexAnno;
-  m_showAnnotations = false;
+  m_showAnnotations   = false;
+  m_showLayerAnno     = false;
+  update();
+}
+
+void drawPoly::toggleLayerAnno(){
+  m_showLayerAnno     = !m_showLayerAnno;
+  m_showAnnotations   = false;
+  m_showVertIndexAnno = false;
   update();
 }
 

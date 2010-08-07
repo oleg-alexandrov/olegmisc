@@ -33,25 +33,26 @@ appWindow::~appWindow(){
   
 }
 
-void appWindow::zoomOut           (){ m_poly->zoomOut           (); }
-void appWindow::zoomIn            (){ m_poly->zoomIn            (); }
-void appWindow::shiftRight        (){ m_poly->shiftRight        (); }
-void appWindow::shiftLeft         (){ m_poly->shiftLeft         (); }
-void appWindow::shiftUp           (){ m_poly->shiftUp           (); }
-void appWindow::shiftDown         (){ m_poly->shiftDown         (); }
-void appWindow::resetView         (){ m_poly->resetView         (); }
-void appWindow::toggleAnno        (){ m_poly->toggleAnno        (); }
-void appWindow::toggleVertIndices (){ m_poly->toggleVertIndices (); }
-void appWindow::toggleFilled      (){ m_poly->toggleFilled      (); }
-void appWindow::cutToHlt          (){ m_poly->cutToHlt          (); }
-void appWindow::undoLast          (){ m_poly->undoLast          (); }
-void appWindow::openPoly          (){ m_poly->openPoly          (); }
-void appWindow::saveOnePoly       (){ m_poly->saveOnePoly       (); }
-void appWindow::saveMultiplePoly  (){ m_poly->saveMultiplePoly  (); }
-void appWindow::togglePE          (){ m_poly->togglePE          (); }
-void appWindow::changeOrder       (){ m_poly->changeOrder       (); }
-void appWindow::createPoly        (){ m_poly->createPoly        (); }
-void appWindow::deletePoly        (){ m_poly->deletePoly        (); }
+void appWindow::zoomOut             (){ m_poly->zoomOut             (); }
+void appWindow::zoomIn              (){ m_poly->zoomIn              (); }
+void appWindow::shiftRight          (){ m_poly->shiftRight          (); }
+void appWindow::shiftLeft           (){ m_poly->shiftLeft           (); }
+void appWindow::shiftUp             (){ m_poly->shiftUp             (); }
+void appWindow::shiftDown           (){ m_poly->shiftDown           (); }
+void appWindow::resetView           (){ m_poly->resetView           (); }
+void appWindow::toggleAnno          (){ m_poly->toggleAnno          (); }
+void appWindow::toggleVertIndexAnno (){ m_poly->toggleVertIndexAnno (); }
+void appWindow::toggleLayerAnno     (){ m_poly->toggleLayerAnno     (); }
+void appWindow::toggleFilled        (){ m_poly->toggleFilled        (); }
+void appWindow::cutToHlt            (){ m_poly->cutToHlt            (); }
+void appWindow::undoLast            (){ m_poly->undoLast            (); }
+void appWindow::openPoly            (){ m_poly->openPoly            (); }
+void appWindow::saveOnePoly         (){ m_poly->saveOnePoly         (); }
+void appWindow::saveMultiplePoly    (){ m_poly->saveMultiplePoly    (); }
+void appWindow::togglePE            (){ m_poly->togglePE            (); }
+void appWindow::changeOrder         (){ m_poly->changeOrder         (); }
+void appWindow::createPoly          (){ m_poly->createPoly          (); }
+void appWindow::deletePoly          (){ m_poly->deletePoly          (); }
 // actions
 
 
@@ -88,7 +89,8 @@ void appWindow::createMenus(){
   view->insertItem("Toggle annotations",    this, SLOT(toggleAnno()),        Key_A);
   view->insertItem("Toggle filled",         this, SLOT(toggleFilled()),      Key_F);
   view->insertItem("Toggle points display", this, SLOT(togglePE()),          Key_P);
-  view->insertItem("Toggle vertex indices", this, SLOT(toggleVertIndices()), Key_V);
+  view->insertItem("Toggle show vertex indices", this, SLOT(toggleVertIndexAnno()), Key_V);
+  view->insertItem("Toggle show layers", this, SLOT(toggleLayerAnno()), Key_L);
 
   QPopupMenu* help = new QPopupMenu( menu );
   help->insertItem("About", this, SLOT(help()));
