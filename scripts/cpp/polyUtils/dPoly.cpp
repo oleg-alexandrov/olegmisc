@@ -128,13 +128,15 @@ void dPoly::clipPoly(// inputs
   // polygons which are in the cutting box.
   vector<anno> annotations, annoInBox;
 
-  for (int annoType = 0; annoType < 2; annoType++){
+  for (int annoType = 0; annoType < 3; annoType++){
     
     if (annoType == 0){
       get_annotations(annotations);
-    }else{
+    }else if (annoType == 1){
       get_vertIndexAnno(annotations);
-    }   
+    }else{
+      get_layerAnno(annotations);
+    }
     
     annoInBox.clear();
     for (int s = 0; s < (int)annotations.size(); s++){
@@ -150,8 +152,10 @@ void dPoly::clipPoly(// inputs
 
     if (annoType == 0){
       clippedPoly.set_annotations(annoInBox);
-    }else{
+    }else if (annoType == 1){
       clippedPoly.set_vertIndexAnno(annoInBox);
+    }else{
+      clippedPoly.set_layerAnno(annoInBox);
     }
 
   }
@@ -205,6 +209,14 @@ void dPoly::get_vertIndexAnno(std::vector<anno> & annotations) const{
   annotations = m_vertIndexAnno;
 }
 
+void dPoly::set_layerAnno(const std::vector<anno> & annotations){
+  m_layerAnno = annotations;
+}
+
+void dPoly::get_layerAnno(std::vector<anno> & annotations) const{
+  annotations = m_layerAnno;
+}
+
 void dPoly::compVertIndexAnno(){
 
   m_vertIndexAnno.clear();
@@ -224,6 +236,34 @@ void dPoly::compVertIndexAnno(){
       A.y     = yv[start + v];
       A.label = num2str(v); 
       m_vertIndexAnno.push_back(A);
+    }
+
+  }
+
+  return;
+}
+
+void dPoly::compLayerAnno(){
+
+  m_layerAnno.clear();
+  
+  const double * xv = get_xv();
+  const double * yv = get_yv();
+
+  int start = 0;
+  for (int pIter = 0; pIter < m_numPolys; pIter++){
+      
+    if (pIter > 0) start += m_numVerts[pIter - 1];
+
+    for (int v = 0; v < m_numVerts[pIter]; v++){
+
+      anno A;
+      int vn = (v+1)%m_numVerts[pIter];
+      
+      A.x     = (xv[start + v] + xv[start + vn])/2.0; // put anno at midpt
+      A.y     = (yv[start + v] + yv[start + vn])/2.0; // put anno at midpt
+      A.label = m_layers[pIter]; 
+      m_layerAnno.push_back(A);
     }
 
   }
@@ -318,6 +358,7 @@ void dPoly::erasePoly(int polyIndex){
   m_layers.erase(m_layers.begin()     + polyIndex);
   m_numVerts.erase(m_numVerts.begin() + polyIndex); // better be last
   m_vertIndexAnno.clear();
+  m_layerAnno.clear();
 
   return;
 }
