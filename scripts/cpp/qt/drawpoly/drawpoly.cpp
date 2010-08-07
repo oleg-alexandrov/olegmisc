@@ -43,7 +43,7 @@ drawPoly::drawPoly( QWidget *parent,
   m_prevClickExists = false;
   
   m_showAnnotations    = true;
-  m_showVertIndices    = false;
+  m_showVertIndexAnno    = false;
   m_showFilledPolys    = false;
   m_changeDisplayOrder = false;
   
@@ -69,7 +69,7 @@ drawPoly::drawPoly( QWidget *parent,
 #ifdef SCALE_FILE
   m_nmScaleFile = SCALE_FILE;
 #else
-    m_nmScaleFile = "scale.txt";
+  m_nmScaleFile = "scale.txt";
 #endif
   
   resetTransformSettings();
@@ -113,12 +113,12 @@ void drawPoly::showPoly( QPainter *paint ){
                         m_viewXll, m_viewYll, m_viewWidX, m_viewWidY // in/out
                         );
   
-//   paint->setWindow(m_screenXll,  m_screenYll,
-//                    m_screenWidX, m_screenWidY
-//                    );
-//   paint->setViewport(m_screenXll,  m_screenYll,
-//                      m_screenWidX, m_screenWidY
-//                      );
+  //   paint->setWindow(m_screenXll,  m_screenYll,
+  //                    m_screenWidX, m_screenWidY
+  //                    );
+  //   paint->setViewport(m_screenXll,  m_screenYll,
+  //                      m_screenWidX, m_screenWidY
+  //                      );
 
   // Create the new view
   double xll, yll, xur, yur, widx, widy;
@@ -201,10 +201,10 @@ void drawPoly::showPoly( QPainter *paint ){
         m_toggleShowPointsEdges == m_showPointsEdges 
         ) drawVertIndex++;
     
-    if (m_showVertIndices){
+    if (m_showVertIndexAnno){
       // Note: Having annotations at vertices can make the display
       // slow for large polygons.
-      m_polyVec[vecIter].compAnnoAtVerts();
+      m_polyVec[vecIter].compVertIndexAnno();
     }
     
     dPoly clipPoly;
@@ -225,8 +225,8 @@ void drawPoly::showPoly( QPainter *paint ){
     
     vector<anno> annotations;
     annotations.clear();
-    if (m_showVertIndices){
-      clipPoly.getAnnoAtVerts(annotations);
+    if (m_showVertIndexAnno){
+      clipPoly.get_vertIndexAnno(annotations);
     }else if (m_showAnnotations){
       clipPoly.get_annotations(annotations);
     }
@@ -259,10 +259,10 @@ void drawPoly::showPoly( QPainter *paint ){
                m_toggleShowPointsEdges == m_showPoints      ||
                m_toggleShowPointsEdges == m_showPointsEdges
                )
-            &&
-            x0 > m_screenXll && x0 < m_screenXll + m_screenWidX && 
-            y0 > m_screenYll && y0 < m_screenYll + m_screenWidY
-            ){
+             &&
+             x0 > m_screenXll && x0 < m_screenXll + m_screenWidX && 
+             y0 > m_screenYll && y0 < m_screenYll + m_screenWidY
+             ){
           drawOneVertex(x0, y0, color, lineWidth, drawVertIndex, paint);
         }
       }
@@ -673,7 +673,7 @@ void drawPoly::drawCurrPolyLine(QPainter * paint){
     if (vIter == 0){
       // Emphasize the starting point of the polygon
       paint->drawRect(x0 - m_pixelTol,  y0 - m_pixelTol,
-                     2*m_pixelTol, 2*m_pixelTol); 
+                      2*m_pixelTol, 2*m_pixelTol); 
     }
   }
 
@@ -893,8 +893,8 @@ void drawPoly::setUpViewBox(// inputs
   widx = xur - xll; assert(widx > 0.0);
   widy = yur - yll; assert(widy > 0.0);
 
-//   cout << "Bd box ll corner and widths are "
-//        << xll  << ' ' << yll << ' ' << widx << ' ' << widy << endl;
+  //   cout << "Bd box ll corner and widths are "
+  //        << xll  << ' ' << yll << ' ' << widx << ' ' << widy << endl;
 
   // Expand the box slightly for plotting purposes
   double factor = 0.05;
@@ -976,12 +976,12 @@ void drawPoly::drawMark(int x0, int y0, QColor color, int lineWidth,
 
 void drawPoly::toggleAnno(){
   m_showAnnotations = !m_showAnnotations;
-  m_showVertIndices = false; // To be able to show the annotations
+  m_showVertIndexAnno = false; // To be able to show the annotations
   update();
 }
 
 void drawPoly::toggleVertIndices(){
-  m_showVertIndices = !m_showVertIndices;
+  m_showVertIndexAnno = !m_showVertIndexAnno;
   m_showAnnotations = false;
   update();
 }

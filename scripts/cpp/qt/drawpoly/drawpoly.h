@@ -148,7 +148,7 @@ private:
   static const int m_createHlt    = 2;
 
   int m_showEdges, m_showPoints, m_showPointsEdges, m_toggleShowPointsEdges;
-  bool m_changeDisplayOrder, m_showVertIndices;
+  bool m_changeDisplayOrder, m_showVertIndexAnno;
 
   bool m_createPoly;
   std::vector<double> m_currPolyX, m_currPolyY;
