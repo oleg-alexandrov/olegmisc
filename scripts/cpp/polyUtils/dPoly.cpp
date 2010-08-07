@@ -29,11 +29,11 @@ void dPoly::bdBox(double & xll, double & yll, double & xur, double & yur)
 };
 
 void dPoly::appendPolygon(int numVerts,
-                            const double * xv,
-                            const double * yv,
-                            const std::string & color,
-                            const std::string & layer
-                            ){
+                          const double * xv,
+                          const double * yv,
+                          const std::string & color,
+                          const std::string & layer
+                          ){
 
   if (numVerts <= 0) return;
   
@@ -52,10 +52,10 @@ void dPoly::appendPolygon(int numVerts,
 }
 
 void dPoly::clipPoly(// inputs
-                       double clip_xll, double clip_yll,
-                       double clip_xur, double clip_yur,
-                       dPoly & clippedPoly // output
-                       ){
+                     double clip_xll, double clip_yll,
+                     double clip_xur, double clip_yur,
+                     dPoly & clippedPoly // output
+                     ){
 
   assert(this != &clippedPoly); // source and destination must be different
   
@@ -133,7 +133,7 @@ void dPoly::clipPoly(// inputs
     if (annoType == 0){
       get_annotations(annotations);
     }else{
-      getAnnoAtVerts(annotations);
+      get_vertIndexAnno(annotations);
     }   
     
     annoInBox.clear();
@@ -151,7 +151,7 @@ void dPoly::clipPoly(// inputs
     if (annoType == 0){
       clippedPoly.set_annotations(annoInBox);
     }else{
-      clippedPoly.setAnnoAtVerts(annoInBox);
+      clippedPoly.set_vertIndexAnno(annoInBox);
     }
 
   }
@@ -189,17 +189,25 @@ void dPoly::appendPolygons(const dPoly & poly){
   return;
 }
 
-void dPoly::setAnnoAtVerts(const std::vector<anno> & annotations){
-  m_annotationsAtVerts = annotations;
+void dPoly::get_annotations (std::vector<anno> & annotations) const {
+  annotations =  m_annotations;
 }
 
-void dPoly::getAnnoAtVerts(std::vector<anno> & annotations){
-  annotations = m_annotationsAtVerts;
+void dPoly::set_annotations(const std::vector<anno> & A){
+  m_annotations = A;
 }
 
-void dPoly::compAnnoAtVerts(){
+void dPoly::set_vertIndexAnno(const std::vector<anno> & annotations){
+  m_vertIndexAnno = annotations;
+}
 
-  m_annotationsAtVerts.clear();
+void dPoly::get_vertIndexAnno(std::vector<anno> & annotations) const{
+  annotations = m_vertIndexAnno;
+}
+
+void dPoly::compVertIndexAnno(){
+
+  m_vertIndexAnno.clear();
   
   const double * xv = get_xv();
   const double * yv = get_yv();
@@ -215,7 +223,7 @@ void dPoly::compAnnoAtVerts(){
       A.x     = xv[start + v];
       A.y     = yv[start + v];
       A.label = num2str(v); 
-      m_annotationsAtVerts.push_back(A);
+      m_vertIndexAnno.push_back(A);
     }
 
   }
@@ -309,7 +317,7 @@ void dPoly::erasePoly(int polyIndex){
   m_colors.erase(m_colors.begin()     + polyIndex);
   m_layers.erase(m_layers.begin()     + polyIndex);
   m_numVerts.erase(m_numVerts.begin() + polyIndex); // better be last
-  m_annotationsAtVerts.clear();
+  m_vertIndexAnno.clear();
 
   return;
 }

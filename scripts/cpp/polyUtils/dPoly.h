@@ -50,6 +50,8 @@ public:
     m_colors.clear();
     m_layers.clear();
     m_annotations.clear();
+    m_vertIndexAnno.clear();
+    m_layerAnno.clear();
   }
 
   void appendPolygon(int numVerts,
@@ -76,14 +78,13 @@ public:
   std::vector<std::string> get_layers  () const { return m_layers;                  }
 
   // Annotations
-  void getAnnoAtVerts(std::vector<anno> & annotations);
-  void setAnnoAtVerts(const std::vector<anno> & annotations);
-  void get_annotations (std::vector<anno> & annotations) const {
-    annotations =  m_annotations;
-  }
-  void set_annotations(const std::vector<anno> & A){m_annotations = A;  }
-  void addAnno(const anno & A){m_annotations.push_back(A);              }
-  void compAnnoAtVerts();
+  void get_vertIndexAnno(std::vector<anno> & annotations) const;
+  void set_vertIndexAnno(const std::vector<anno> & annotations);
+  
+  void get_annotations (std::vector<anno> & annotations) const;
+  void set_annotations(const std::vector<anno> & A);
+  void addAnno(const anno & A){m_annotations.push_back(A); }
+  void compVertIndexAnno();
 
   void bdBox(double & xll, double & yll, double & xur, double & yur) const;
   
@@ -114,7 +115,8 @@ private:
   std::vector<std::string> m_colors;
   std::vector<std::string> m_layers;
   std::vector<anno>        m_annotations;
-  std::vector<anno>        m_annotationsAtVerts;
+  std::vector<anno>        m_vertIndexAnno; // Anno showing vertex index
+  std::vector<anno>        m_layerAnno;     // Anno showing layer number
   
 };
 
