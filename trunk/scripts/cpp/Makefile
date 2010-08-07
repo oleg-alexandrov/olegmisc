@@ -10,7 +10,13 @@ XTRA_OBJ=
 OBJ1  =  $(XTRA_OBJ)
 
 
-stack: stack.o $(OBJ1) $(HDR) 
+linked_ints: linked_ints.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
+permIndex: permIndex.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
+stack_as_linked_list: stack_as_linked_list.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 # object files which contain headers must be recompiled when headers change
