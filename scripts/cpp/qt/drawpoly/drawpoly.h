@@ -23,7 +23,8 @@ public:
   void shiftUp();
   void shiftDown();
   void toggleAnno();
-  void toggleVertIndices();
+  void toggleVertIndexAnno();
+  void toggleLayerAnno();
   void toggleFilled();
   void resetView();
   void cutToHlt();
@@ -148,7 +149,7 @@ private:
   static const int m_createHlt    = 2;
 
   int m_showEdges, m_showPoints, m_showPointsEdges, m_toggleShowPointsEdges;
-  bool m_changeDisplayOrder, m_showVertIndexAnno;
+  bool m_changeDisplayOrder, m_showVertIndexAnno, m_showLayerAnno;
 
   bool m_createPoly;
   std::vector<double> m_currPolyX, m_currPolyY;

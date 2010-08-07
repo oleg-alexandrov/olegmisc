@@ -20,26 +20,27 @@ public slots:
   void help();
   
 private slots:
-  void createMenus();
-  void zoomIn            ();
-  void zoomOut           ();
-  void shiftRight        ();
-  void shiftLeft         ();
-  void shiftUp           ();
-  void shiftDown         ();
-  void resetView         ();
-  void toggleAnno        ();
-  void toggleVertIndices ();
-  void toggleFilled      ();
-  void cutToHlt          ();
-  void undoLast          ();
-  void openPoly          ();
-  void saveOnePoly       ();
-  void saveMultiplePoly  ();
-  void togglePE          ();
-  void changeOrder       ();
-  void createPoly        ();
-  void deletePoly        ();
+  void createMenus         ();
+  void zoomIn              ();
+  void zoomOut             ();
+  void shiftRight          ();
+  void shiftLeft           ();
+  void shiftUp             ();
+  void shiftDown           ();
+  void resetView           ();
+  void toggleAnno          ();
+  void toggleVertIndexAnno ();
+  void toggleLayerAnno     ();
+  void toggleFilled        ();
+  void cutToHlt            ();
+  void undoLast            ();
+  void openPoly            ();
+  void saveOnePoly         ();
+  void saveMultiplePoly    ();
+  void togglePE            ();
+  void changeOrder         ();
+  void createPoly          ();
+  void deletePoly          ();
   // actions
   
 private:
