@@ -78,13 +78,16 @@ public:
   std::vector<std::string> get_layers  () const { return m_layers;                  }
 
   // Annotations
-  void get_vertIndexAnno(std::vector<anno> & annotations) const;
-  void set_vertIndexAnno(const std::vector<anno> & annotations);
-  
-  void get_annotations (std::vector<anno> & annotations) const;
-  void set_annotations(const std::vector<anno> & A);
+  void get_annotations   (std::vector<anno> & annotations) const;
+  void get_layerAnno     (std::vector<anno> & annotations) const;
+  void get_vertIndexAnno (std::vector<anno> & annotations) const;
+  void set_annotations   (const std::vector<anno> & A);
+  void set_layerAnno     (const std::vector<anno> & annotations);
+  void set_vertIndexAnno (const std::vector<anno> & annotations);
+
   void addAnno(const anno & A){m_annotations.push_back(A); }
   void compVertIndexAnno();
+  void compLayerAnno();
 
   void bdBox(double & xll, double & yll, double & xur, double & yur) const;
   
