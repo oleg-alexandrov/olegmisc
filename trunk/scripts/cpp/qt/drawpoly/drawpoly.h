@@ -35,6 +35,7 @@ public:
   void saveMultiplePoly();
   void togglePE();
   void changeOrder();
+  void runCmd(std::string cmd);
   // actions
   
 public slots:
@@ -56,6 +57,8 @@ public slots:
   void toggleNmScale();
 
 private:
+  void printViewCommand(double viewXll, double viewYll,
+                      double viewWidX, double viewWidY);
   void drawMark(int x0, int y0, QColor color, int lineWidth,
                 QPainter * paint);
   void setupDisplayOrder(int                 numPolys, 
@@ -155,7 +158,7 @@ private:
   std::vector<double> m_currPolyX, m_currPolyY;
   std::vector<double> m_markX, m_markY;
 
-  bool m_zoomToMouseSelection;
+  bool m_zoomToMouseSelection, m_viewChanged;
   
   double m_menuX, m_menuY;
 

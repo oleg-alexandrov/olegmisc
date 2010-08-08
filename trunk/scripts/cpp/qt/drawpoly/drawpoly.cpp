@@ -1,3 +1,4 @@
+#include <qwidget.h>
 #include <cassert>
 #include <cfloat>    // defines DBL_MAX
 #include <cmath>
@@ -59,6 +60,8 @@ drawPoly::drawPoly( QWidget *parent,
   m_currPolyX.clear(); m_currPolyY.clear();
 
   m_zoomToMouseSelection = false;
+  m_viewChanged          = false;
+  
   m_mousePrsX  = 0;   m_mousePrsY = 0;
   m_mouseRelX  = 0;   m_mouseRelY = 0;
   
@@ -113,13 +116,6 @@ void drawPoly::showPoly( QPainter *paint ){
   expandBoxToGivenRatio(m_screenRatio,                               // input
                         m_viewXll, m_viewYll, m_viewWidX, m_viewWidY // in/out
                         );
-  
-  //   paint->setWindow(m_screenXll,  m_screenYll,
-  //                    m_screenWidX, m_screenWidY
-  //                    );
-  //   paint->setViewport(m_screenXll,  m_screenYll,
-  //                      m_screenWidX, m_screenWidY
-  //                      );
 
   // Create the new view
   double xll, yll, xur, yur, widx, widy;
@@ -135,9 +131,7 @@ void drawPoly::showPoly( QPainter *paint ){
     widx = xur - xll;
     widy = yur - yll;
 
-    m_zoomToMouseSelection = false;
-
-  }else{
+  }else if(m_viewChanged){
 
     // Modify the view for given shift or zoom
     xll  = m_viewXll + m_viewWidX*( (1 - m_zoomFactor)/2.0 + m_shiftX );
@@ -149,21 +143,29 @@ void drawPoly::showPoly( QPainter *paint ){
   
   }
 
-  // If the view becomes too small, don't accept it
-  if (widx == 0 || widy == 0){
-    cerr << "Cannot zoom in more" << endl;
-  }else{
-    expandBoxToGivenRatio(//inputs
-                          m_screenRatio,  
-                          // input/outputs
-                          xll, yll, widx, widy
-                          );
+  if (m_zoomToMouseSelection || m_viewChanged){
     
-    // Overwrite the view
-    m_viewXll = xll; m_viewWidX = widx;
-    m_viewYll = yll; m_viewWidY = widy;
-  }
+    // If the view becomes too small, don't accept it
+    if (xll + widx <= xll || yll + widy <= yll){
+      cerr << "Cannot zoom to requested view."  << endl;
+    }else{
+      expandBoxToGivenRatio(//inputs
+                            m_screenRatio,  
+                            // input/outputs
+                            xll, yll, widx, widy
+                            );
+      
+      // Overwrite the view
+      m_viewXll = xll; m_viewWidX = widx;
+      m_viewYll = yll; m_viewWidY = widy;
+    }
 
+    printViewCommand(m_viewXll, m_viewYll, m_viewWidX, m_viewWidY);
+    m_zoomToMouseSelection = false;
+    m_viewChanged          = false;
+    
+  }
+  
   m_pixelSize = (m_screenWidX - 2*m_padX)/m_viewWidX;
   assert( abs(m_pixelSize - (m_screenWidY - 2*m_padY)/m_viewWidY)
           < 1.0e-5*m_pixelSize );
@@ -317,10 +319,10 @@ void drawPoly::showPoly( QPainter *paint ){
     drawRect(m_highlights[h], lineWidth, paint);
   }
   
-  // Plot the view box
-  dRect R(m_viewXll, m_viewYll,
-          m_viewXll + m_viewWidX, m_viewYll + m_viewWidY);
-  drawRect(R, lineWidth, paint);
+//   // Plot the view box
+//   dRect R(m_viewXll, m_viewYll,
+//           m_viewXll + m_viewWidX, m_viewYll + m_viewWidY);
+//   drawRect(R, lineWidth, paint);
 
   // This draws the polygon being created if in that mode
   drawCurrPolyLine(paint);
@@ -338,42 +340,50 @@ void drawPoly::showPoly( QPainter *paint ){
 }
 
 void drawPoly::zoomIn(){
-  m_zoomFactor = 0.5;
+  m_zoomFactor  = 0.5;
+  m_viewChanged = true;
   update();
 }
 
 void drawPoly::zoomOut(){
-  m_zoomFactor = 2.0;
+  m_zoomFactor  = 2.0;
+  m_viewChanged = true;
   update();
 }
 
 void drawPoly::shiftRight(){
-  m_shiftX = 0.25;
+  m_shiftX      = 0.25;
+  m_viewChanged = true;
   update();
 }
 
 void drawPoly::shiftLeft(){
-  m_shiftX = -0.25;
+  m_shiftX      = -0.25;
+  m_viewChanged = true;
   update();
 }
 
 void drawPoly::shiftUp(){
-  m_shiftY = -0.25;
+  m_shiftY      = -0.25;
+  m_viewChanged = true;
   update();
 }
 
 void drawPoly::shiftDown(){
-  m_shiftY = 0.25;
+  m_shiftY      = 0.25;
+  m_viewChanged = true;
   update();
 }
 
 void drawPoly::centerViewAtPoint(double x, double y){
-  m_viewXll = x - m_viewWidX/2.0;
-  m_viewYll = y - m_viewWidY/2.0;
+  m_viewXll     = x - m_viewWidX/2.0;
+  m_viewYll     = y - m_viewWidY/2.0;
+  m_viewChanged = true;
 }
 
 void drawPoly::resetView(){
-  m_resetView = true;
+  m_resetView   = true;
+  m_viewChanged = true;
   update();
 }
 
@@ -1491,5 +1501,46 @@ void drawPoly::setupDisplayOrder(int                 numPolys,
     
   }
 
+  return;
+}
+
+void drawPoly::printViewCommand(double viewXll, double viewYll,
+                                double viewWidX, double viewWidY){
+  
+  cout << "view " << viewXll << ' ' << m_yFactor*viewYll << ' '
+       << viewWidX << ' ' << viewWidY << endl;
+}
+                                               
+void drawPoly::runCmd(std::string cmd){
+
+  istringstream in(cmd);
+  string cmdName;
+
+  // Process a "view" command
+  double xll, yll, widx, widy;
+  if (
+      (in >> cmdName >> xll >> yll >> widx >> widy)
+      &&
+      cmdName == "view"
+      ){
+    
+    if (xll + widx > xll &&
+        yll + widy > yll 
+        ){
+
+      m_viewXll = xll;           m_viewWidX = widx;
+      m_viewYll = m_yFactor*yll; m_viewWidY = widy;
+      
+      m_viewChanged = true;
+      update();
+      
+    }else{
+      cerr << "Invalid view request" << endl;
+    }
+    
+  }else{
+    cerr << "Invalid command: " << cmd << endl;
+  }
+  
   return;
 }

@@ -3,6 +3,8 @@
 #include <qmainwindow.h>
 #include <qmenubar.h>
 #include <qmessagebox.h>
+#include <qlineedit.h>
+#include <qlayout.h>
 #include <cstdlib>
 #include <iostream>
 #include <cmath>
@@ -11,25 +13,48 @@
 
 using namespace std;
 
+
 appWindow::appWindow(QWidget* parent, const char* progName,
                      const std::vector<std::string> & polyFilesVec,
                      const std::vector<bool>        & plotPointsOnlyVec):
   QMainWindow(parent, progName){
 
   m_progName = progName;
-  
-  createMenus();
-  statusBar();
 
+  QBoxLayout *topLayout = new QVBoxLayout(this, 0, -1, progName);
+  
+  QMenuBar* menubar = createMenus();
+  
   m_poly = new drawPoly (this, polyFilesVec, plotPointsOnlyVec);
   m_poly->setBackgroundColor (QColor("black"));
+  m_poly->setFocusPolicy(QWidget::StrongFocus);
+  m_poly->setFocus();
   setCentralWidget(m_poly);
-
+  
+  m_cmdLine = new QLineEdit(this);
+  m_cmdLine->setAlignment(Qt::AlignLeft);
+  m_cmdLine->setFocusPolicy(QWidget::StrongFocus);
+  //m_cmdLine->setGeometry(10,10, 130, 30);
+  connect( m_cmdLine, SIGNAL( returnPressed() ),
+           this, SLOT( procCmdLine() ) );
+    
+  topLayout->setMenuBar( menubar );
+  topLayout->addWidget( m_poly );
+  topLayout->addWidget( m_cmdLine );
+  
 }
 
 appWindow::~appWindow(){
 
   if (m_poly != NULL){ delete m_poly; m_poly = NULL; }
+  
+}
+
+void appWindow::procCmdLine(){
+  QString text = m_cmdLine->text();
+  m_poly->runCmd(text.data());
+  m_cmdLine->setText("");
+  m_poly->setFocus();
   
 }
 
@@ -56,12 +81,12 @@ void appWindow::deletePoly          (){ m_poly->deletePoly          (); }
 // actions
 
 
-void appWindow::createMenus(){
+QMenuBar* appWindow::createMenus(){
   
   QMenuBar* menu = menuBar();
 
   QPopupMenu* file = new QPopupMenu( menu );
-  menu->insertItem("File", file);
+  menu->insertItem("&File", file);
   file->insertItem("Open", this, SLOT(openPoly()), Qt::CTRL+Key_O);
   file->insertItem("Save as one polygon", this, SLOT(saveOnePoly()),
                    Qt::CTRL+Key_S);
@@ -70,13 +95,13 @@ void appWindow::createMenus(){
   file->insertItem("Exit", qApp, SLOT(quit()), Key_Q);
 
   QPopupMenu* edit = new QPopupMenu( menu );
-  menu->insertItem("Edit", edit);
+  menu->insertItem("&Edit", edit);
   edit->insertItem("Undo",             this, SLOT(undoLast()), Key_Z);
   edit->insertItem("Cut to highlight", this, SLOT(cutToHlt()), Key_C);
   edit->insertItem("Create polygon",   this, SLOT(createPoly()), Key_N);
 
   QPopupMenu* view = new QPopupMenu( menu );
-  menu->insertItem("View", view);
+  menu->insertItem("&View", view);
   //view->insertSeparator();
   view->insertItem("Zoom out",              this, SLOT(zoomOut()),           Key_Minus);
   view->insertItem("Zoom in",               this, SLOT(zoomIn()),            Key_Equal);
@@ -93,10 +118,10 @@ void appWindow::createMenus(){
   view->insertItem("Toggle show layers", this, SLOT(toggleLayerAnno()), Key_L);
 
   QPopupMenu* help = new QPopupMenu( menu );
-  help->insertItem("About", this, SLOT(help()));
+  help->insertItem("&About", this, SLOT(help()));
   menu->insertItem("Help", help);
 
-  return;
+  return menu;
 }
 
 void appWindow::help(){

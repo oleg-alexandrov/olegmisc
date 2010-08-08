@@ -2,6 +2,7 @@
 #define EXAMPLE_H
 
 #include <qmainwindow.h>
+#include <qlineedit.h>
 #include <string>
 #include <vector>
 class drawPoly;
@@ -20,7 +21,7 @@ public slots:
   void help();
   
 private slots:
-  void createMenus         ();
+  QMenuBar* createMenus    ();
   void zoomIn              ();
   void zoomOut             ();
   void shiftRight          ();
@@ -41,11 +42,14 @@ private slots:
   void changeOrder         ();
   void createPoly          ();
   void deletePoly          ();
+  void procCmdLine         ();
   // actions
   
 private:
-  drawPoly   * m_poly;
-  std::string  m_progName;
+  drawPoly    * m_poly;
+  QLineEdit   * m_cmdLine;
+  std::string   m_progName;
 };
+
 
 #endif
