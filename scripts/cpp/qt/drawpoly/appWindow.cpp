@@ -3,7 +3,7 @@
 #include <qmainwindow.h>
 #include <qmenubar.h>
 #include <qmessagebox.h>
-#include <qlineedit.h>
+#include <qstatusbar.h>
 #include <qlayout.h>
 #include <cstdlib>
 #include <iostream>
@@ -13,17 +13,19 @@
 
 using namespace std;
 
+cmdLine::cmdLine(QWidget* parent): QLineEdit(parent){}
+cmdLine::~cmdLine(){}
 
 appWindow::appWindow(QWidget* parent, const char* progName,
                      const std::vector<std::string> & polyFilesVec,
-                     const std::vector<bool>        & plotPointsOnlyVec):
+                     const std::vector<bool>        & plotPointsOnlyVec,
+                     int windowWidX, int windowWidY):
   QMainWindow(parent, progName){
 
   m_progName = progName;
+  resize(windowWidX, windowWidY);
 
-  QBoxLayout *topLayout = new QVBoxLayout(this, 0, -1, progName);
-  
-  QMenuBar* menubar = createMenus();
+  createMenus();
   
   m_poly = new drawPoly (this, polyFilesVec, plotPointsOnlyVec);
   m_poly->setBackgroundColor (QColor("black"));
@@ -31,17 +33,19 @@ appWindow::appWindow(QWidget* parent, const char* progName,
   m_poly->setFocus();
   setCentralWidget(m_poly);
   
-  m_cmdLine = new QLineEdit(this);
+  m_cmdLine = new cmdLine(this);
   m_cmdLine->setAlignment(Qt::AlignLeft);
   m_cmdLine->setFocusPolicy(QWidget::StrongFocus);
-  //m_cmdLine->setGeometry(10,10, 130, 30);
   connect( m_cmdLine, SIGNAL( returnPressed() ),
            this, SLOT( procCmdLine() ) );
-    
-  topLayout->setMenuBar( menubar );
-  topLayout->addWidget( m_poly );
-  topLayout->addWidget( m_cmdLine );
-  
+
+  QStatusBar * status = statusBar();
+  QRect Rp = status->rect();
+  m_cmdLine->setGeometry(Rp);
+  status->addWidget(m_cmdLine, 1);
+
+  m_cmdHist.clear();
+  m_histPos = 0;
 }
 
 appWindow::~appWindow(){
@@ -51,10 +55,48 @@ appWindow::~appWindow(){
 }
 
 void appWindow::procCmdLine(){
-  QString text = m_cmdLine->text();
-  m_poly->runCmd(text.data());
+  string cmd = m_cmdLine->text().data();
+  m_cmdHist.push_back(cmd);
+  m_poly->runCmd(cmd);
   m_cmdLine->setText("");
-  m_poly->setFocus();
+  m_histPos = m_cmdHist.size();
+  //m_poly->setFocus();
+}
+
+void appWindow::insertCmdFromHist(){
+
+  int numHistItems = m_cmdHist.size();
+  m_histPos = min(m_histPos, numHistItems);
+  m_histPos = max(0, m_histPos);
+  
+  if (m_histPos < numHistItems){
+    m_cmdLine->setText(m_cmdHist[m_histPos].c_str());
+  }else{
+    m_cmdLine->setText("");
+  }
+
+  return;
+}
+
+void appWindow::shiftUp (){
+
+  if (m_poly->hasFocus()){
+    m_poly->shiftUp ();
+  }else if(m_cmdLine->hasFocus()){
+    m_histPos--;
+    insertCmdFromHist();
+  }
+  
+}
+
+void appWindow::shiftDown (){
+
+  if (m_poly->hasFocus()){
+    m_poly->shiftDown ();
+  }else if(m_cmdLine->hasFocus()){
+    m_histPos++;
+    insertCmdFromHist();
+  }
   
 }
 
@@ -62,8 +104,6 @@ void appWindow::zoomOut             (){ m_poly->zoomOut             (); }
 void appWindow::zoomIn              (){ m_poly->zoomIn              (); }
 void appWindow::shiftRight          (){ m_poly->shiftRight          (); }
 void appWindow::shiftLeft           (){ m_poly->shiftLeft           (); }
-void appWindow::shiftUp             (){ m_poly->shiftUp             (); }
-void appWindow::shiftDown           (){ m_poly->shiftDown           (); }
 void appWindow::resetView           (){ m_poly->resetView           (); }
 void appWindow::toggleAnno          (){ m_poly->toggleAnno          (); }
 void appWindow::toggleVertIndexAnno (){ m_poly->toggleVertIndexAnno (); }
@@ -118,8 +158,8 @@ QMenuBar* appWindow::createMenus(){
   view->insertItem("Toggle show layers", this, SLOT(toggleLayerAnno()), Key_L);
 
   QPopupMenu* help = new QPopupMenu( menu );
-  help->insertItem("&About", this, SLOT(help()));
-  menu->insertItem("Help", help);
+  menu->insertItem("&Help", help);
+  help->insertItem("About", this, SLOT(help()));
 
   return menu;
 }
