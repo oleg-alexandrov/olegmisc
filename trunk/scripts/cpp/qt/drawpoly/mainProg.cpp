@@ -34,8 +34,8 @@ int main(int argc, char** argv){
   QApplication app(argc, argv);
   char * progName = "drawPoly";
   
-  appWindow m(NULL, progName, polyFilesVec, plotPointsOnlyVec);
-  m.resize(windowWidX, windowWidY);
+  appWindow m(NULL, progName, polyFilesVec, plotPointsOnlyVec,
+              windowWidX, windowWidY);
   m.setCaption(progName);
   m.show();
   
