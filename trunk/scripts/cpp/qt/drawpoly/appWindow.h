@@ -2,10 +2,10 @@
 #define EXAMPLE_H
 
 #include <qmainwindow.h>
-#include <qlineedit.h>
 #include <string>
 #include <vector>
 class drawPoly;
+class QLineEdit;
 
 class appWindow : public QMainWindow {
   Q_OBJECT
