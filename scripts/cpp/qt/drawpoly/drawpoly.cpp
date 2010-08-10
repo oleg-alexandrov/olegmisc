@@ -559,7 +559,9 @@ void drawPoly::contextMenuEvent(QContextMenuEvent *E){
   
   QPopupMenu menu(this);
   menu.insertItem("Save mark at point", this, SLOT(saveMark()));
-  menu.insertItem("Toggle nm scale", this, SLOT(toggleNmScale()));
+  int id = 1;
+  menu.insertItem("Use nm scale", this, SLOT(toggleNmScale()), 0, id);
+  menu.setItemChecked(id, m_useNmScale);
   menu.insertItem("Create polygon", this, SLOT(createPoly()));
   menu.insertItem("Delete polygon", this, SLOT(deletePoly()));
   menu.exec(E->globalPos());
