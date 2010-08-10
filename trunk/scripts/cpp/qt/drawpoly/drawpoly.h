@@ -16,29 +16,39 @@ public:
               const std::vector<bool>        & plotPointsOnlyVec
               );
   
-  void zoomIn();
-  void zoomOut();
-  void shiftRight();
-  void shiftLeft();
-  void shiftUp();
-  void shiftDown();
-  void toggleAnno();
-  void toggleVertIndexAnno();
-  void toggleLayerAnno();
-  void toggleFilled();
-  void resetView();
-  void cutToHlt();
-  void undoLast();
-  void readAllPolys();
+  void runCmd(std::string cmd);
+  
+public slots:
+
+  // File menu
   void openPoly();
   void saveOnePoly();
   void saveMultiplePoly();
-  void togglePE();
+
+  // Edit menu
+  void undoLast();
+  void cutToHlt();
+  void createPoly();
+
+  // View menu
+  void zoomOut();
+  void zoomIn();
+  void shiftLeft();
+  void shiftRight();
+  void shiftUp();
+  void shiftDown();
+  void resetView();
   void changeOrder();
-  void runCmd(std::string cmd);
-  // actions
-  
-public slots:
+  void toggleAnno();
+  void toggleFilled();
+  void togglePE();
+  void toggleVertIndexAnno();
+  void toggleLayerAnno();
+
+  // Right-click menu
+  void saveMark();
+  void toggleNmScale();
+  void deletePoly();
 
 protected:
 
@@ -50,13 +60,8 @@ protected:
   void wheelEvent(QWheelEvent *E);
   void contextMenuEvent(QContextMenuEvent *E);
 
-public slots:
-  void createPoly();
-  void deletePoly();
-  void saveMark();
-  void toggleNmScale();
-
 private:
+  void readAllPolys();
   void printViewCommand(double viewXll, double viewYll,
                       double viewWidX, double viewWidY);
   void drawMark(int x0, int y0, QColor color, int lineWidth,
