@@ -22,6 +22,7 @@ setopt sharehistory
 
 setopt CSH_NULL_GLOB    # don't complain if there are no matches
 setopt NULL_GLOB        # don't complain if there are no matches
+setopt GLOB_SUBST       # expand "*" into the list of files
 setopt AUTO_PUSHD       # make cd push the old directory onto the directory stack
 setopt complete_in_word # complete when the cursor is in the middle of a word
 setopt CSH_JUNKIE_LOOPS        # for i in *; echo $i; end
@@ -49,10 +50,10 @@ function expand-command-smartly () {
   # Bind this function to a keystroke as follows: 
   #zle -N expand-command-smartly
   #bindkey "^J" expand-command-smartly
-
+  
   BUFFER=$($HOME/bin/python/expand_cmdline.py "$BUFFER" $CURSOR)
-  CURSOR=$(echo $BUFFER | sed -e 's/__sep__.*//') 
-  BUFFER=$(echo $BUFFER | sed -e 's/^[0-9]*__sep__//') 
+  CURSOR=$(echo "$BUFFER" | sed -e 's/__sep__.*//') 
+  BUFFER=$(echo "$BUFFER" | sed -e 's/^[0-9]*__sep__//') 
   
 }
 zle -N expand-command-smartly
@@ -103,6 +104,12 @@ bindkey  "^[d"               delete-word
 bindkey  "^[[3;5~"           kill-line    
 bindkey  "^[f"               forward-word
 bindkey  "^[b"               backward-word
+
+function reread_aliases {
+  if [ -f ~/.unaliases    ]; then source ~/.unaliases;    fi;
+  if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi;
+}
+add-zsh-hook preexec reread_aliases
 
 # Init the prompt
 proml;
