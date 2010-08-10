@@ -11,11 +11,11 @@ MAIN:{
 
   $_ = <>;
 
-  s/\/\/.*?\n/\n/g; # strip comments
-  s/\n/ /g;          # strip newlines
+  #s/\/\/.*?\n/\n/g; # strip comments
+  #s/\n/ /g;          # strip newlines
   s/\*//g;
 
-  if (! /(^.*?)\((.*?)\)/ ){
+  if (! /(^.*?)\((.*?)\)/s ){
     print "Failed to match function prototype\n";
     exit(0);
   }
@@ -24,16 +24,35 @@ MAIN:{
   
   ($junk, $a)=split(' ', $a) if (/ /);
   
-  $b =~ s/\s*,\s*/,/g;
-  my @args = split(',', $b);
-  
-  for (my $i=0; $i<=$#args; $i++) {
-    @anarray=split(' ', $args[$i]);
-    $args[$i]=$anarray[$#anarray];
-    $args[$i] =~ s/\&//g;
+  my @lines = split("\n", $b);
+  foreach my $line (@lines){
+
+    my $comment = "";
+    if ($line =~ /^(.*?)(\/\/.*?)$/){
+      $line = $1; $comment = $2;
+    }
+    my $spaces = "";
+    if ($line =~ /^(\s+)(.*?)$/){
+      $spaces = $1;
+      $line   = $2;
+    }
+    
+    $line =~ s/\s*,\s*/, /g;
+    my @args = split(',', $line);
+    #print "$line--num args is " . scalar(@args) . "\n";
+    foreach my $arg (@args){
+      if ($arg =~ /^.* ([^\s]+?)\s*$/){
+        $arg = $1;
+      }
+    }
+    
+    $line = join(', ', @args);
+
+    $line = $spaces . $line;
+    $line .= $comment;
   }
-  
-  $b=join(', ', @args);
+
+  $b = join("\n", @lines);
   
   print "$a\($b\);";
 }
