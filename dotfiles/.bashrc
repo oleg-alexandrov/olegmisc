@@ -210,7 +210,7 @@ function proml
 
 PS1="${TITLEBAR}\
 \n$COLOR2${USER}@\h$COLOR3:$COLOR4\w\
-\n$LOX_TAG$COLOR2>$COLOR3>$COLOR1>$COLOR_9 "
+\nbash$LOX_TAG$COLOR2>$COLOR3>$COLOR1>$COLOR_9 "
 }
 
 # While this is an environment variable, it needs to be set here
