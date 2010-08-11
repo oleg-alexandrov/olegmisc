@@ -15,10 +15,6 @@ using namespace utils;
 int main(int argc, char** argv){
 
   char * exeName = argv[0];
-  if (argc < 2){
-    printUsage(exeName);
-    exit(1);
-  }
 
   int windowWidX, windowWidY;
   vector<string>  polyFilesVec;
