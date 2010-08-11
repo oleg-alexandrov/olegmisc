@@ -884,7 +884,7 @@ void drawPoly::setUpViewBox(// inputs
                             double & xll, double & yll,
                             double &widx, double & widy){
 
-  // To do: Move these to utilities
+  // To do: Move this to utilities
   
   // Given a set of polygons, set up a box containing these polygons.
 
@@ -902,7 +902,7 @@ void drawPoly::setUpViewBox(// inputs
 
   // Treat the case of empty polygons
   if (xur < xll || yur < yll){
-    xll = 0.0; yll = 0.0; xur = 1000.0; yur = 1000.0;
+    xll = 0.0; yll = -1000.0; xur = 1000.0; yur = 0.0;
   }
 
   // Treat the case when the polygons are degenerate
