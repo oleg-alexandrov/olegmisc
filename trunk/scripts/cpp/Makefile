@@ -13,9 +13,6 @@ OBJ1  =  $(XTRA_OBJ)
 linked_ints: linked_ints.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
-permIndex: permIndex.o $(OBJ1) $(HDR) 
-	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
-
 reverse_linked: reverse_linked.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
