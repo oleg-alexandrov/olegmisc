@@ -16,6 +16,9 @@ linked_ints: linked_ints.o $(OBJ1) $(HDR)
 permIndex: permIndex.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
+reverse_linked: reverse_linked.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 stack_as_linked_list: stack_as_linked_list.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
