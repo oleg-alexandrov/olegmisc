@@ -21,6 +21,6 @@ MAIN:{
   }
   $text = join("\n", @lines);
 
-  open(FILE, ">$file"); print FILE $text; close(FILE);
+  open(FILE, ">$file"); print FILE $text . "\n"; close(FILE);
   
 }
