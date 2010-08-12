@@ -15,8 +15,12 @@ MAIN:{
   }
 
   my $file_xg = $ARGV[0];
-  my ($layer, $center);
-  my @polys = get_polys($file_xg, \$layer, \$center);
+  print "Reading $file_xg\n";
+
+  my ($color, $layer, $center, @polys);
+  get_polys($file_xg,                           # input
+            \$color, \$layer, \$center, \@polys # outputs
+           );
 
   my $out   = get_top();
   my $count = 0;
@@ -27,31 +31,41 @@ MAIN:{
   $out .= get_bot();
 
   my $file_svg = $ARGV[1];
+  print "Writing $file_svg\n";
   open(FILE, ">$file_svg"); print FILE $out; close(FILE);
 
-  open(FILE, ">meta.txt");
-  print FILE "$center\n";
-  print FILE "$layer\n";
+  my $meta = "meta.txt";
+  print "Writing meta info to $meta\n";
+  open(FILE, ">$meta");
+  print FILE "color    $color\n";
+  print FILE "layer    $layer\n";
+  print FILE "center   $center\n";
   print FILE "svg file $file_svg\n";
   close(FILE);
   
-  print "Reading $file_xg\n";
-  print "Writing $file_svg\n";
-
 }
 
 sub get_polys{
 
   my $file_xg = shift;
+  my $color   = shift;
   my $layer   = shift;
   my $center  = shift;
+  my $polys   = shift;
   
   open(FILE, "<$file_xg"); my $text = <FILE>; close(FILE);
 
-  $$layer = "layer";
+  $text =~ s/[\!\#].*?\n/\n/g; # Wipe comments
   
+  if ($text =~ /color\b.*?(\w+)/){
+    $$color = $1;
+  }else{
+   $$color = "red"; 
+ }
+  
+  $$layer = "";
   if ($text =~ /;\s*(\d+)\s*:\s*(\d+)/){
-    $$layer .= " ; $1:$2";
+    $$layer = "$1:$2";
   }
   
   $text =~ s/color\s*=.*?\n//g;
@@ -65,13 +79,15 @@ sub get_polys{
   }
   $ctx = $1;
   $cty = $2;
-
-  $$center = "center $ctx $cty";
+  $ctx =~ s/\..*?$//g;
+  $cty =~ s/\..*?$//g;
+  
+  $$center = "$ctx $cty";
 
   my $scale = 1;
-  my @polys = split(/NEXT\s*/, $text);
+  @$polys = split(/NEXT\s*/, $text);
 
-  foreach my $poly (@polys){
+  foreach my $poly (@$polys){
     $poly =~ s/(.*?)\s+(.*?)\n/($1 - $ctx)*$scale . " " . -($2 - $cty)*$scale . "\n"/eg;
     $poly =~ s/\s*$//g;
     $poly =~ s/^\s*//g;
@@ -82,8 +98,8 @@ sub get_polys{
     
   }
   
-  return @polys;
 }
+
 sub get_top{
 
   return '<?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -124,7 +140,8 @@ sub get_top{
      inkscape:window-width="1280"
      inkscape:window-height="1005"
      inkscape:window-x="-4"
-     inkscape:window-y="-4" />
+     inkscape:window-y="-4"
+     showgrid="true" />
   <metadata
      id="metadata7">
     <rdf:RDF>
