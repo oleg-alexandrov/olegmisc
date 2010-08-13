@@ -100,7 +100,7 @@ def parse_cpp(cpp_text, namespace):
     cpp_map = {} # Needed if there are multiple functions with same name
     
     blocks = extract_blocks(cpp_text, '\(', '\)')
-    count  = 1 # Used to keep the order of blocks
+    count  = 1 # Used to keep the order of blocks. Must be > 0.
     
     for block in blocks:
 
@@ -126,13 +126,24 @@ def parse_update_h(h_text, cpp_map, namespace):
     # Update the h file by overwriting each block with the
     # corresponding block from the cpp file.
 
-    h_blocks = extract_blocks(h_text, '\(', '\)')
-    h_map    = {}
-    count    = -1
+    h_blocks_arr = extract_blocks(h_text, '\(', '\)')
 
-    for h_block in h_blocks:
+    # Copy h_blocks_arr into a map structure as besides elements
+    # i and i +1 we'll also want to have elements in between
+    h_blocks = {}
+    count    = -1
+    for h_block in h_blocks_arr:
+      count = count + 1
+      h_blocks[count] = h_blocks_arr[count]
       
-        count = count + 1
+    hsorted_keys = h_blocks.keys()
+    hsorted_keys.sort()
+    
+    h_map    = {}
+
+    for count in hsorted_keys:
+
+        h_block = h_blocks[count]
         
         p = re.match("""
         ^(\s*(?:static|virtual)?\s*)  # leading spaces, static, virtual
@@ -176,25 +187,69 @@ def parse_update_h(h_text, cpp_map, namespace):
         # We found the cpp function with the closest signature
         h_blocks[count] = best_cpp_with_extra
         h_blocks[count] = indent_block(h_blocks[count])
-        cpp_map[fun_name][best_cpp_block] = -1 # mark that we used this one 
+        
+        # mark that we used this one (this needs cleanup)
+        cpp_map[fun_name][best_cpp_block] = -abs(cpp_map[fun_name][best_cpp_block]) 
           
         #print "\n-------\nOverwriting\n\"" + h_block + "\"\nwith\n"
         #print "\"" + h_blocks[count] + "\n\"\n"
-    
-    h_text = "".join(h_blocks)
+
+    # Undo the negative sign done earlier (this needs cleanup)
+    for key in cpp_map:
+      for cpp_block in cpp_map[key]:
+        cpp_map[key][cpp_block] = abs(cpp_map[key][cpp_block])
+
+    # For a given new function in the cpp file find the closest functions
+    # in the cpp file before and after it which are present in the h
+    # file. Use that information to decide where to insert the new function
+    # in the h file.
+    closestIndexBefore = -1
+    closestFunBefore   = ""
+
+    for key in cpp_map:
+      
+      if h_map.has_key(key): continue
+      
+      for cpp_block in cpp_map[key]:
+        if h_map.has_key(key): continue # Needed
+        index = cpp_map[key][cpp_block]
+        #print "found new: ", key, cpp_block, index
+        for key2 in cpp_map:
+          for cpp_block2 in cpp_map[key2]:
+            if cpp_map[key2][cpp_block2] < index and \
+               cpp_map[key2][cpp_block2] > closestIndexBefore and \
+               h_map.has_key(key2):
+              closestIndexBefore = cpp_map[key2][cpp_block2]
+              closestFunBefore = key2 
+
+        #print "closest index is", closestFunBefore, closestIndexBefore
+        if closestIndexBefore >= 0:
+          h_map[key] = cpp_block
+          h_blocks[closestIndexBefore + 0.0001] = "  " + cpp_block+";\n"
+          #print "New index is ", closestIndexBefore + 0.1, h_blocks[closestIndexBefore + 0.1]
+        
+    hsorted_keys = h_blocks.keys()
+    hsorted_keys.sort()
+
+    h_text = ""
+    for count in hsorted_keys:
+      h_text += h_blocks[count]
 
     # Add a newline at the end if missing
     if not re.search("\n\s*$", h_text): h_text = h_text + "\n"
 
+    # If the above operation does not succeed, insert somewhere else
     # See what new functions were declared in the cpp file and are
-    # missing in the h file. Keep them in the same order as in the cpp file.
+    # missing in the h file. Keep them in the same order as in the cpp
+    # file.
     new_blocks = {}
     for key in cpp_map:
+      
+      if h_map.has_key(key): continue
+      
+      for cpp_block in cpp_map[key]:
+        new_blocks[cpp_map[key][cpp_block]] = cpp_block # Needed for sorting
         
-        if h_map.has_key(key): continue
-        for cpp_block in cpp_map[key]:
-          new_blocks[cpp_map[key][cpp_block]] = cpp_block # Needed for sorting
-
     # See first if we can match the namespace
     p = re.match("""
     ^(
@@ -205,11 +260,11 @@ def parse_update_h(h_text, cpp_map, namespace):
     ([ \t]*)    # indentation level (group 2)
     (.*)$       # group 3, whatever is left
     """, h_text, re.S | re.X)
-
+    
     if p:
       groups = [p.group(1), p.group(2), p.group(3)]
     else:
-
+     
       # See if we can match a class/struct
       p = re.match("""
       ^(
@@ -227,22 +282,22 @@ def parse_update_h(h_text, cpp_map, namespace):
       else:
         print "Could not find a place to append the new blocks to"
         sys.exit(1)
-
+      
     new_chunk    = ""
     indent_level = groups[1]
-
+    
     sorted_keys = new_blocks.keys()
     sorted_keys.sort()
     for num in sorted_keys:
       new_chunk = new_chunk + indent_level + indent_block(new_blocks[num]) + ";\n"
       
     if new_chunk == "":
-        return h_text # Nothing else to do
-
+      return h_text # Nothing else to do
+   
     h_text = groups[0] + new_chunk + groups[1] + groups[2]
-
+   
     return h_text
-
+ 
 if __name__ == '__main__':
 
     if len(sys.argv) < 2:
