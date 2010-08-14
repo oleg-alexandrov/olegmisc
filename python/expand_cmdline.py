@@ -60,7 +60,6 @@ def expandCmdLine(cmdLine, cursor):
       cursor  = cursor + 13
 
    elif ( numWords >= 2 and words[numWords-2] == "for" ):
-
       # Expand "for var" into a full for loop.
       var = words[numWords-1]
       words[numWords-2] = "for ((" + var + " = ; " + var + " < ; " + var + "++)); " + \
