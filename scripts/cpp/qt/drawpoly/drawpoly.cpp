@@ -509,13 +509,21 @@ void drawPoly::wheelEvent(QWheelEvent *E){
     }
     
   }else{
-  
-    if (delta > 0){
-      shiftUp();
-    }else if (delta < 0){
-      shiftDown();
+
+    // Shift wheel goes left and right. Without shift we go up and down.
+    if (E->state() == Qt::ShiftButton){
+      if (delta > 0){
+        shiftLeft();
+      }else if (delta < 0){
+        shiftRight();
+      }
+    }else{
+      if (delta > 0){
+        shiftUp();
+      }else if (delta < 0){
+        shiftDown();
+      }
     }
-    
   }
   
   E->accept();
