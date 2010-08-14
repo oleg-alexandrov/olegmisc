@@ -238,12 +238,10 @@ def parse_update_h(h_text, cpp_map, namespace):
     # Add a newline at the end if missing
     if not re.search("\n\s*$", h_text): h_text = h_text + "\n"
 
-    # If the above operation does not succeed, insert somewhere else
-    # See what new functions were declared in the cpp file and are
-    # missing in the h file. Keep them in the same order as in the cpp
-    # file.
+    # If the above operation does not succeed, insert the new functions
+    # at the beginning of the namespace or in private sections of the class.
     new_blocks = {}
-    for key in cpp_map:
+    for fun_name in cpp_map:
       
       if h_map.has_key(key): continue
       
