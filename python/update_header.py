@@ -126,6 +126,10 @@ def parse_update_h(h_text, cpp_map, namespace):
     # Update the h file by overwriting each block with the
     # corresponding block from the cpp file.
 
+    # This routine needs serious cleanup, and the ability to handle
+    # multiple functions in the h file with the same name
+    # (may need to change the output format of extract_blocks()).
+    
     h_blocks_arr = extract_blocks(h_text, '\(', '\)')
 
     # Copy h_blocks_arr into a map structure as besides elements
@@ -139,7 +143,7 @@ def parse_update_h(h_text, cpp_map, namespace):
     hsorted_keys = h_blocks.keys()
     hsorted_keys.sort()
     
-    h_map    = {}
+    h_map = {}
 
     for count in hsorted_keys:
 
@@ -156,7 +160,7 @@ def parse_update_h(h_text, cpp_map, namespace):
         if not p: continue
 
         fun_name         = p.group(3)
-        h_map[fun_name]  = h_block
+        h_map[fun_name]  = h_block # Will have problems with multiple funs with same name
 
         if not cpp_map.has_key(fun_name): continue
         if re.search("=", h_block):       continue # skip functions with default args
@@ -199,10 +203,10 @@ def parse_update_h(h_text, cpp_map, namespace):
       for cpp_block in cpp_map[key]:
         cpp_map[key][cpp_block] = abs(cpp_map[key][cpp_block])
 
-    # For a given new function in the cpp file find the closest functions
-    # in the cpp file before and after it which are present in the h
-    # file. Use that information to decide where to insert the new function
-    # in the h file.
+    # For a given new function in the cpp file find the closest
+    # function in the cpp file before it which is present in the h
+    # file. Use that information to decide where to insert the new
+    # function in the h file.
     closestIndexBefore = -1
     closestFunBefore   = ""
 
@@ -211,7 +215,8 @@ def parse_update_h(h_text, cpp_map, namespace):
       if h_map.has_key(key): continue
       
       for cpp_block in cpp_map[key]:
-        if h_map.has_key(key): continue # Needed
+
+        if h_map.has_key(key): continue
         index = cpp_map[key][cpp_block]
         #print "found new: ", key, cpp_block, index
         for key2 in cpp_map:
@@ -220,23 +225,33 @@ def parse_update_h(h_text, cpp_map, namespace):
                cpp_map[key2][cpp_block2] > closestIndexBefore and \
                h_map.has_key(key2):
               closestIndexBefore = cpp_map[key2][cpp_block2]
-              closestFunBefore = key2 
+              closestFunBefore   = key2 
 
-        #print "closest index is", closestFunBefore, closestIndexBefore
+        #print "closest index is ", closestFunBefore, "--", closestIndexBefore
+        
         if closestIndexBefore >= 0:
           h_map[key] = cpp_block
-          h_blocks[closestIndexBefore + 0.0001] = "  " + cpp_block+";\n"
-          #print "New index is ", closestIndexBefore + 0.1, h_blocks[closestIndexBefore + 0.1]
-        
+          
+          for count in h_blocks.keys():
+            if h_blocks[count] == h_map[closestFunBefore]:
+              closestIndexBefore = count
+              #print "Corresp index in the h file is: ", closestIndexBefore
+              
+          indexToAdd = closestIndexBefore + 0.1
+          h_blocks[indexToAdd] = "  " + cpp_block + ";\n"
+          #print "New index is ", indexToAdd, h_blocks[indexToAdd]
+          
+      # End adding new blocks to the h file map
+      
+    # Regenerate the header file after including information from the cpp file
+    h_text = ""
     hsorted_keys = h_blocks.keys()
     hsorted_keys.sort()
-
-    h_text = ""
     for count in hsorted_keys:
+      #print "count is ", count
+      #print "fun is ", h_blocks[count]
       h_text += h_blocks[count]
-
-    # Add a newline at the end if missing
-    if not re.search("\n\s*$", h_text): h_text = h_text + "\n"
+    if not re.search("\n\s*$", h_text): h_text = h_text + "\n" # newline at the end
 
     # If the above operation does not succeed, insert the new functions
     # at the beginning of the namespace or in private sections of the class.
