@@ -168,3 +168,131 @@ void utils::minDistFromPtToSeg(//inputs
 
   return;
 }
+
+
+
+void utils::searchForColor(char * line, std::string & color){
+  
+  const char * xgraph_colors[] = 
+    {"black", "white", "red", "blue", "green", "violet",
+     "orange", "yellow", "pink", "cyan", "light-gray",
+     "dark-gray", "fuchsia", "aqua", "navy", "gold"};
+
+  char * col = "color";
+  char * start = strstr(line, col);
+
+  if (start == NULL) return;
+  if (strlen(start) <= strlen(col)) return;
+  start += strlen(col);
+
+  // Strip the equal sign, quotes, etc.
+  for (int i = 0; i < (int)strlen(start); i++){
+
+    if (start[i] == '"' || start[i] == '=' || start[i] == '\''){
+      start[i] = ' ';
+    }
+    
+  }
+
+  const char *delimiter = " \t";
+  char * pch = strtok (start, delimiter);
+  if (pch == NULL) return;
+
+  color = string(pch);
+
+  int numColors = sizeof(xgraph_colors)/sizeof(char*);
+  
+  // If the color is given as a number, per xgraph's conventions
+  // (e.g., red is color 2), convert that number to the color name.
+  if ('0' <= pch[0] && pch[0] <= '9'){
+    int colorIndex = atoi(pch)%numColors;
+    color = string( xgraph_colors[colorIndex] );
+  }
+  
+  return;
+}
+
+bool utils::searchForAnnotation(char * line, anno & annotation){
+
+  // Search for annotations, which have the form:
+  // anno xval yval label
+  // Return true on success.
+  
+  char * an = "anno";
+  char * start = strstr(line, an);
+
+  if (start == NULL) return false;
+  if (strlen(start) <= strlen(an)) return false;
+  start += strlen(an);
+  
+  const char * delimiter = " \t";
+  char * pch;
+
+  pch = strtok (start, delimiter);
+  if (pch == NULL) return false;
+  string xstr = string(pch);
+  
+  pch = strtok (NULL, delimiter);
+  if (pch == NULL) return false;
+  string ystr = string(pch);
+  
+  pch = strtok (NULL, delimiter);
+  if (pch == NULL) return false;
+  string zstr = string(pch);
+
+  float val; 
+  double x, y;
+  
+  // Scan the first number
+  if (sscanf(xstr.c_str(), "%f", &val) == 1){
+    x = atof(xstr.c_str());
+  }else{
+    return false; // the first number is not valid
+  }
+  
+  // Scan the second number
+  if (sscanf(ystr.c_str(), "%f", &val) == 1){
+    y = atof(ystr.c_str());
+  }else{
+    return false; // the second number is not valid
+  }
+
+  annotation.x     = x;
+  annotation.y     = y;
+  annotation.label = zstr;
+
+  //  cout << "found annotation " << x << ' ' << y << ' ' << zstr << endl;
+  return true;
+}
+
+void utils::searchForLayer(std::string   lineStr, // input
+                           std::string & layer    // output
+                           ){
+
+  layer = "";
+  
+  // We are searching for ";" followed by zero or more spaces,
+  // followed by something like "65:0"
+  char * line = (char *) lineStr.c_str();
+
+  char * start1 = strstr(line, ";");
+  if (start1 == NULL) return;
+  start1++; // Move beyond ";"
+  if (*start1 == '\0') return;
+
+  int l1 = atoi(start1);
+
+  char * start2 = strstr(start1, ":");
+  if (start2 == NULL) return;
+  start2++; // Move beyond ":"
+  if (*start2 == '\0') return;
+  
+  int l2 = atoi(start2);
+
+  ostringstream strout;
+  strout << l1 << ':' << l2;
+  layer = strout.str();
+  
+  return;
+}
+
