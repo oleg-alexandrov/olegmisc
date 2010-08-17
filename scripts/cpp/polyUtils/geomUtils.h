@@ -2,6 +2,21 @@
 #define GEOMUTILS_H
 #include <sstream>
 #include <vector>
+#include <fstream>
+#include <cmath>
+
+struct anno {
+  
+  double x;
+  double y;
+  std::string label;
+  
+  void saveTo(std::ofstream & outfile) const{
+    outfile << "anno " << x << ' ' << y << ' ' << label << std::endl;
+  }
+
+};
+
 namespace utils{
 
   template<class T>
@@ -51,6 +66,15 @@ namespace utils{
                           double & xout, double & yout,
                           double & minDist
                           );
+  
+  void searchForLayer(std::string   lineStr, // input
+                      std::string & layer    // output
+                      );
+  
+  void searchForColor(char * line, std::string & color);
+
+  bool searchForAnnotation(char * line, anno & annotation);
+
   class dRect{
     
   public:
@@ -81,6 +105,7 @@ namespace utils{
   }
 
 }
+  
 
 #endif
   
