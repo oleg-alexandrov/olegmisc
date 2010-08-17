@@ -9,8 +9,8 @@ import re # Perl-style regular expressions
     
 def get_namespace(text):
 
-  # Identify the namespace in the header file. Look at the last of all
-  # namespaces if there's more than one.
+  # Identify the namespace/class name in the given text. Look at the
+  # last of all namespaces if there's more than one.
 
   namespace = ""
 
@@ -143,8 +143,9 @@ def parse_update_h(h_text, cpp_map, namespace):
     hsorted_keys = h_blocks.keys()
     hsorted_keys.sort()
     
-    h_map = {}
-
+    h_map    = {}
+    done_cpp = {}
+    
     for count in hsorted_keys:
 
         h_block = h_blocks[count]
@@ -167,13 +168,13 @@ def parse_update_h(h_text, cpp_map, namespace):
 
         # Find the function in the cpp file with the same name and
         # with the closest length (in terms of number of characters)
-        max_error_sig       = 1e+100
+        min_error_sig       = 1e+100
         best_cpp_block      = ""
         best_cpp_with_extra = ""
         for cpp_block in cpp_map[fun_name]:
 
           # Skip any cpp function used earlier
-          if cpp_map[fun_name][cpp_block] < 0: continue
+          if done_cpp.has_key(cpp_block): continue
 
           # Add the extra info present in the h file and not the cpp
           # file, like "virtual", "static", etc.
@@ -181,8 +182,8 @@ def parse_update_h(h_text, cpp_map, namespace):
 
           error_sig = abs(len_woc(h_block) - len_woc(cpp_with_extra))
           
-          if error_sig < max_error_sig:
-            max_error_sig       = error_sig
+          if error_sig < min_error_sig:
+            min_error_sig       = error_sig
             best_cpp_block      = cpp_block
             best_cpp_with_extra = cpp_with_extra
             
@@ -192,16 +193,11 @@ def parse_update_h(h_text, cpp_map, namespace):
         h_blocks[count] = best_cpp_with_extra
         h_blocks[count] = indent_block(h_blocks[count])
         
-        # mark that we used this one (this needs cleanup)
-        cpp_map[fun_name][best_cpp_block] = -abs(cpp_map[fun_name][best_cpp_block]) 
+        # mark that we used this one
+        done_cpp[best_cpp_block] = 1
           
         #print "\n-------\nOverwriting\n\"" + h_block + "\"\nwith\n"
         #print "\"" + h_blocks[count] + "\n\"\n"
-
-    # Undo the negative sign done earlier (this needs cleanup)
-    for key in cpp_map:
-      for cpp_block in cpp_map[key]:
-        cpp_map[key][cpp_block] = abs(cpp_map[key][cpp_block])
 
     # For a given new function in the cpp file find the closest
     # function in the cpp file before it which is present in the h
