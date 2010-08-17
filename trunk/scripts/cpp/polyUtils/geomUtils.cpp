@@ -171,14 +171,17 @@ void utils::minDistFromPtToSeg(//inputs
 
 
 
-void utils::searchForColor(char * line, std::string & color){
+void utils::searchForColor(std::string lineStr, // input, not a reference on purpose
+                           std::string & color  // output
+                           ){
   
   const char * xgraph_colors[] = 
     {"black", "white", "red", "blue", "green", "violet",
      "orange", "yellow", "pink", "cyan", "light-gray",
      "dark-gray", "fuchsia", "aqua", "navy", "gold"};
 
-  char * col = "color";
+  char * line  = (char*)lineStr.c_str();
+  char * col   = "color";
   char * start = strstr(line, col);
 
   if (start == NULL) return;

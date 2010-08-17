@@ -377,34 +377,38 @@ bool dPoly::readPoly(const char * filename){
   string color = "yellow"; // default color
   
   while( getline(fh, line) ) {
-
-    cout << "Line is " << line << endl;
+    
+    bool isLastLine = ( fh.peek() == EOF );
 
     // Convert to lowercase
     transform(line.begin(), line.end(), line.begin(), ::tolower);
 
     // If the current line has a color, store it in 'color'.
-    // Else keep both 'line' and 'color' unchanged.
-    searchForColor((char*)line.c_str(), color); // Fix this hackish approach
+    // Else keep 'color' unchanged.
+    searchForColor(line, color);
     
-    istringstream iss(line);
-    string val;
-    if ( (iss >> val) && (val == "next") ){
-      cout << "Found a next statement in: '" << line << "'" << endl;
-      // Put here logic for closing the polygon
-      continue;
-    }
-
     // Extract the coordinates and the layer
-    istringstream iss2 (line);
+    istringstream iss1 (line);
     double x, y;
     string layer = "";
-    if ( !(iss2 >> x >> y) ) continue;
-    
-    // This line has valid coordinates, which we stored in x and y.
-    // Now find the layer as well.
-    searchForLayer(line, layer);
-    cout << "Extracted: " << x << ' ' << y << ' ' << layer << endl;
+    if ( iss1 >> x >> y ){
+      // This line has valid coordinates, which we stored in x and y.
+      // Now find the layer as well.
+      searchForLayer(line, layer);
+      cout << "Extracted: " << x << ' ' << y << ' ' << layer << endl;
+    }
+
+    // If this is the last line in the file, or if we encountered a
+    // "next" statement, then close the current polygon and start a
+    // new one.
+    istringstream iss2(line);
+    string val;
+    if ( isLastLine ||
+         ( (iss2 >> val) && (val == "next") )
+         ){
+      cout << "Found a next/last statement in: '" << line << "'" << endl;
+      // Put here logic for closing the polygon
+    }
 
   }
   

@@ -71,7 +71,9 @@ namespace utils{
                       std::string & layer    // output
                       );
   
-  void searchForColor(char * line, std::string & color);
+  void searchForColor(std::string lineStr, // input, not reference on purpose
+                      std::string & color  // output
+                      );
 
   bool searchForAnnotation(char * line, anno & annotation);
 
