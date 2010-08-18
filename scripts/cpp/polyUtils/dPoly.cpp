@@ -365,6 +365,8 @@ void dPoly::erasePoly(int polyIndex){
 
 bool dPoly::readPoly(const char * filename){
 
+  // To do: Deal with annotations
+  
   reset();
   
   ifstream fh(filename);
@@ -375,6 +377,9 @@ bool dPoly::readPoly(const char * filename){
 
   string line;
   string color = "yellow"; // default color
+
+  // The current polygon has vertices in the range [beg, end)
+  int beg = 0, end = 0;
   
   while( getline(fh, line) ) {
     
@@ -388,12 +393,17 @@ bool dPoly::readPoly(const char * filename){
     searchForColor(line, color);
     
     // Extract the coordinates and the layer
-    istringstream iss1 (line);
+    istringstream iss_xy (line);
     double x, y;
     string layer = "";
-    if ( iss1 >> x >> y ){
-      // This line has valid coordinates, which we stored in x and y.
-      // Now find the layer as well.
+    if ( iss_xy >> x >> y ){
+
+      // This line has valid coordinates, which we read in x and y.
+      m_xv.push_back(x);
+      m_yv.push_back(y);
+      end++;
+      
+      // Find the layer for the current point.
       searchForLayer(line, layer);
       cout << "Extracted: " << x << ' ' << y << ' ' << layer << endl;
     }
@@ -401,16 +411,39 @@ bool dPoly::readPoly(const char * filename){
     // If this is the last line in the file, or if we encountered a
     // "next" statement, then close the current polygon and start a
     // new one.
-    istringstream iss2(line);
+    istringstream iss_next(line);
     string val;
     if ( isLastLine ||
-         ( (iss2 >> val) && (val == "next") )
+         ( (iss_next >> val) && (val == "next") )
          ){
       cout << "Found a next/last statement in: '" << line << "'" << endl;
-      // Put here logic for closing the polygon
-    }
 
-  }
+      if (beg < end){
+        // The current polygon is non-empty
+
+        if (beg < end - 1 && m_xv[beg] == m_xv[end - 1] && m_yv[beg] == m_yv[end - 1]){
+          // The first vertex equals to the last vertex in the current
+          // polygon. Then don't store the last vertex.
+          assert( end == (int)m_xv.size() && end == (int)m_yv.size() );
+          end--;
+          m_xv.resize(end);
+          m_yv.resize(end);
+        }
+        
+        m_layers.push_back(layer);
+        m_colors.push_back(color);
+
+        m_numPolys++;
+        m_numVerts.push_back(end - beg);
+        m_totalNumVerts = end;
+        
+        // Start a new polygon
+        beg = end;
+      }
+      
+    } // End processing the current polygon
+
+  } // End reading the file
   
   return true;
 }
