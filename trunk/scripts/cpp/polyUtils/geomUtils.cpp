@@ -175,10 +175,15 @@ void utils::searchForColor(std::string lineStr, // input, not a reference on pur
                            std::string & color  // output
                            ){
   
+//   const char * xgraph_colors[] = 
+//     {"black", "white", "red", "blue", "green", "violet",
+//      "orange", "yellow", "pink", "cyan", "lightGray",
+//      "darkGray", "fuchsia", "aqua", "navy", "gold"};
+
   const char * xgraph_colors[] = 
-    {"black", "white", "red", "blue", "green", "violet",
-     "orange", "yellow", "pink", "cyan", "light-gray",
-     "dark-gray", "fuchsia", "aqua", "navy", "gold"};
+    {"#4B0082", "white", "red", "blue", "green", "violet",
+     "orange", "yellow", "#EE3A8C", "cyan", "#A2B5CD",
+     "#6C7B8B", "#FF00FF", "#00CDCD", "#ADFF2F", "gold"};
 
   char * line  = (char*)lineStr.c_str();
   char * col   = "color";
