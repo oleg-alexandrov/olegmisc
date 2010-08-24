@@ -68,16 +68,16 @@ void utils::parseCmdOptions(//inputs
   for (int argIter = 1; argIter < argc; argIter++){
 
     char * filename = argv[argIter];
-
     if (filename == NULL || strlen(filename) == 0) continue;
 
-    if ( strstr(filename, "-h") || strstr(filename, "--h") ||
-         strstr(filename, "-?") ){
+    if (strncmp (filename, "-?",  2) == 0 ||
+        strncmp (filename, "-h",  2) == 0 ||
+        strncmp (filename, "--h", 3) == 0){
       printUsage(exeName);
       exit(0);
     }
 
-    if ( strstr(filename, "-p") ){
+    if ( strncmp (filename, "-p",  2) == 0 ){
       plotPointsOnly = !plotPointsOnly;
       continue;
     }
