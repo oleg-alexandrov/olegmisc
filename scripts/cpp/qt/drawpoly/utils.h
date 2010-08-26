@@ -34,6 +34,8 @@ namespace utils{
                        int argc, char** argv, char * exeName,
                        // outputs
                        int & windowWidX,      int & windowWidY,
+                       bool                       & useCmdLineColors, 
+                       std::vector<std::string>   & cmdLineColors, 
                        std::vector<std::string>   & polyFilesVec, 
                        std::vector<bool>          & plotPointsOnlyVec
                        );
@@ -43,7 +45,7 @@ namespace utils{
   inline void printUsage(char * progName){
     
     std::cout << "Usage: " << progName
-              << " [ -geo[metry] 1000x800 ] file_1.xg ... "
+              << " [ -geo[metry] 1000x800 ] [ -c[olor] ] file_1.xg ... "
               << "[ -p[oints] ] file_N.xg " << std::endl;
 
   }

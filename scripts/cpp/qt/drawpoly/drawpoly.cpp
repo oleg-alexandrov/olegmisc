@@ -15,18 +15,24 @@
 using namespace std;
 using namespace utils;
 
+// To do: handle colors correctly (convert dark-gray to darkGray, etc.).
+
 // To do: Make these members or put them in a namespace.
 // Do the same with other constatns.
 const int drawPoly::m_polyChanged;
 const int drawPoly::m_createHlt;
 
-drawPoly::drawPoly( QWidget *parent, 
+drawPoly::drawPoly( QWidget *parent,
+                    bool useCmdLineColors,
+                    const std::vector<std::string> & cmdLineColors,
                     const std::vector<std::string> & polyFilesVec,
                     const std::vector<bool>        & plotPointsOnlyVec
                     ): QWidget(parent){
 
   setStandardCursor();
-  
+
+  m_useCmdLineColors  = useCmdLineColors;
+  m_cmdLineColors     = cmdLineColors;
   m_polyFilesVec      = polyFilesVec;
   m_plotPointsOnlyVec = plotPointsOnlyVec;
   
@@ -1231,6 +1237,10 @@ void drawPoly::readAllPolys(){
                 // output
                 m_polyVec[fileIter]
                 );
+
+    if (m_useCmdLineColors){
+      m_polyVec[fileIter].setColor(m_cmdLineColors[fileIter]);
+    }
     
   }
 

@@ -12,6 +12,8 @@ class drawPoly : public QWidget{
     Q_OBJECT
 public:
     drawPoly( QWidget *parent, 
+              bool useCmdLineColors,
+              const std::vector<std::string> & cmdLineColors,
               const std::vector<std::string> & polyFilesVec,
               const std::vector<bool>        & plotPointsOnlyVec
               );
@@ -131,7 +133,9 @@ private:
   
   std::vector<dPoly> m_polyVec;
   std::vector< std::vector<dPoly> > m_polyVecStack; // Used for undo
-  
+
+  bool m_useCmdLineColors;
+  std::vector<std::string> m_cmdLineColors;
   std::vector<std::string> m_polyFilesVec;
   std::vector<bool>    m_plotPointsOnlyVec;
   
