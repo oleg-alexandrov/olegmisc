@@ -217,6 +217,14 @@ void dPoly::get_layerAnno(std::vector<anno> & annotations) const{
   annotations = m_layerAnno;
 }
 
+void dPoly::setColor(std::string color){
+
+  for (int s = 0; s < (int)m_colors.size(); s++){
+    m_colors[s] = color;
+  }
+  
+}
+
 void dPoly::compVertIndexAnno(){
 
   m_vertIndexAnno.clear();

@@ -77,6 +77,8 @@ public:
   std::vector<std::string> get_colors  () const { return m_colors;                  }
   std::vector<std::string> get_layers  () const { return m_layers;                  }
 
+  void setColor(std::string color);
+  
   // Annotations
   void get_annotations   (std::vector<anno> & annotations) const;
   void get_layerAnno     (std::vector<anno> & annotations) const;
