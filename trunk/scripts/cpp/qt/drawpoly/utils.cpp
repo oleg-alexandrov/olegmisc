@@ -53,16 +53,21 @@ void utils::parseCmdOptions(//inputs
                             int argc, char** argv, char * exeName,
                             // outputs
                             int & windowWidX,      int & windowWidY,
+                            bool                       & useCmdLineColors, 
+                            std::vector<std::string>   & cmdLineColors, 
                             std::vector<std::string>   & polyFilesVec, 
                             std::vector<bool>          & plotPointsOnlyVec
                             ){
 
+  useCmdLineColors = false;
+  cmdLineColors.clear();
   polyFilesVec.clear();
   plotPointsOnlyVec.clear();
 
   // Skip argv[0] as that's the program name
   extractWindowDims(argc - 1, argv + 1, windowWidX, windowWidY);
 
+  string color        = "yellow"; // default command line color
   bool plotPointsOnly = false; // plot the edges or just the vertices
   
   for (int argIter = 1; argIter < argc; argIter++){
@@ -82,11 +87,19 @@ void utils::parseCmdOptions(//inputs
       continue;
     }
 
+    if ( strncmp (filename, "-c",  2) == 0 && argIter < argc - 1){
+      useCmdLineColors = true;
+      color = argv[argIter + 1];
+      argIter++;
+      continue;
+    }
+
     // Other command line options are ignored
     if (filename[0] == '-') continue;
     
+    cmdLineColors.push_back(color);
+    polyFilesVec.push_back(filename);
     plotPointsOnlyVec.push_back(plotPointsOnly);
-    polyFilesVec.push_back(string(filename));
   }
   
   return;

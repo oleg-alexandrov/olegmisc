@@ -17,6 +17,8 @@ cmdLine::cmdLine(QWidget* parent): QLineEdit(parent){}
 cmdLine::~cmdLine(){}
 
 appWindow::appWindow(QWidget* parent, const char* progName,
+                     bool useCmdLineColors, 
+                     const std::vector<std::string> & cmdLineColors,
                      const std::vector<std::string> & polyFilesVec,
                      const std::vector<bool>        & plotPointsOnlyVec,
                      int windowWidX, int windowWidY):
@@ -26,7 +28,8 @@ appWindow::appWindow(QWidget* parent, const char* progName,
   resize(windowWidX, windowWidY);
 
   // Central widget
-  m_poly = new drawPoly (this, polyFilesVec, plotPointsOnlyVec);
+  m_poly = new drawPoly (this, useCmdLineColors, cmdLineColors,
+                         polyFilesVec, plotPointsOnlyVec);
   m_poly->setBackgroundColor (QColor("black"));
   m_poly->setFocusPolicy(QWidget::StrongFocus);
   m_poly->setFocus();
