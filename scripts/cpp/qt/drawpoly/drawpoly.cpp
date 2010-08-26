@@ -249,13 +249,16 @@ void drawPoly::showPoly( QPainter *paint ){
     int start = 0;
     for (int pIter = 0; pIter < numPolys; pIter++){
 
-      // To do: Don't assume the bg is black, rather check what it is
-      string strColor = colors[pIter];
-      if (strColor == "black"){ // Avoid conflicts with the background
-        strColor = "white";
+      // Change the poly file color if it is the background color or invalid
+      QColor color = QColor( colors[pIter] );
+      if ( color == backgroundColor() || color == QColor::Invalid){
+        if ( backgroundColor() != QColor("white") ){
+          color = QColor("white");
+        }else{
+          color = QColor("black");
+        }
       }
-      QColor color = QColor( strColor.c_str() );
-
+      
       if (pIter > 0) start += numVerts[pIter - 1];
 
       int pSize = numVerts[pIter];
