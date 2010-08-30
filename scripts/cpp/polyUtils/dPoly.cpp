@@ -409,7 +409,8 @@ bool dPoly::readPoly(const char * filename,
       m_annotations.push_back(annotation);
     }
     
-    // Extract the coordinates and the layer
+    // Extract the coordinates of the current vertex and the layer
+    // The format we expect is: x y ; layerNo (e.g., 2.3 -1.2 ; 5:16)
     istringstream iss_xy (line);
     double x, y;
     if ( iss_xy >> x >> y ){
