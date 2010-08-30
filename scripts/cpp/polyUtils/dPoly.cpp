@@ -387,14 +387,12 @@ bool dPoly::readPoly(const char * filename,
     return false;
   }
 
-  string line;
-  string color = "yellow"; // default color
-
   // The current polygon has vertices in the range [beg, end)
   int beg = 0, end = 0;
   
   anno annotation;
-  string layer;
+  string layer, line;
+  string color = "yellow"; // default color for polygons
   
   while( getline(fh, line) ) {
     
