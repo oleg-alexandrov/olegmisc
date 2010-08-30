@@ -1290,7 +1290,7 @@ void drawPoly::readOnePoly(// inputs
                            dPoly & poly           
                            ){
   
-  if ( ! poly.read_poly(filename.c_str(), plotPointsOnly) ){
+  if ( ! poly.readPoly(filename.c_str(), plotPointsOnly) ){
     exit(1);
   }
   

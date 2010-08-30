@@ -71,11 +71,11 @@ namespace utils{
                       std::string & layer    // output
                       );
   
-  void searchForColor(std::string lineStr, // input, not reference on purpose
+  void searchForColor(std::string lineStr, // input, not a reference on purpose
                       std::string & color  // output
                       );
 
-  bool searchForAnnotation(char * line, anno & annotation);
+  bool searchForAnnotation(std::string lineStr, anno & annotation);
 
   class dRect{
     

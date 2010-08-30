@@ -23,7 +23,7 @@ int main(int argc, char** argv){
   cout << "Reading " << filename << endl;
 
   dPoly poly;
-  if (! poly.read_poly(filename, isPointCloud) ) exit(1);
+  if (! poly.readPoly(filename, isPointCloud) ) exit(1);
 
   const double * xv       = poly.get_xv();
   const double * yv       = poly.get_yv();

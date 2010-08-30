@@ -221,11 +221,13 @@ void utils::searchForColor(std::string lineStr, // input, not a reference on pur
   return;
 }
 
-bool utils::searchForAnnotation(char * line, anno & annotation){
+bool utils::searchForAnnotation(std::string lineStr, anno & annotation){
 
   // Search for annotations, which have the form:
   // anno xval yval label
   // Return true on success.
+
+  char * line = (char*)lineStr.c_str();
   
   char * an = "anno";
   char * start = strstr(line, an);
@@ -301,7 +303,7 @@ void utils::searchForLayer(std::string   lineStr, // input
   ostringstream strout;
   strout << l1 << ':' << l2;
   layer = strout.str();
-  
+
   return;
 }
 

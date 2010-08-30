@@ -20,17 +20,8 @@ public:
   void set_isPointCloud(bool isPointCloud){ m_isPointCloud = isPointCloud; }
   bool isPointCloud() { return m_isPointCloud;}
   
-  bool readPoly(const char * filename);
+  bool readPoly(const char * filename, bool isPointCloud);
   
-  bool read_poly(const char * filename, bool isPointCloud){
-    m_isPointCloud = isPointCloud;
-    bool success = utils::read_xg(filename, isPointCloud,
-                                  m_xv, m_yv, m_numVerts, m_numPolys,
-                                  m_totalNumVerts, m_colors, m_layers,
-                                  m_annotations);
-    return success;
-  }
-
   void write_poly(const char *filename,
                   char *color = "yellow", double scale = 1.0
                   ){
@@ -80,12 +71,12 @@ public:
   void setColor(std::string color);
   
   // Annotations
-  void get_annotations   (std::vector<anno> & annotations) const;
-  void get_layerAnno     (std::vector<anno> & annotations) const;
-  void get_vertIndexAnno (std::vector<anno> & annotations) const;
-  void set_annotations   (const std::vector<anno> & A);
-  void set_layerAnno     (const std::vector<anno> & annotations);
-  void set_vertIndexAnno (const std::vector<anno> & annotations);
+  void get_annotations (std::vector<anno> & annotations) const;
+  void get_layerAnno(std::vector<anno> & annotations) const;
+  void get_vertIndexAnno(std::vector<anno> & annotations) const;
+  void set_annotations(const std::vector<anno> & A);
+  void set_layerAnno(const std::vector<anno> & annotations);
+  void set_vertIndexAnno(const std::vector<anno> & annotations);
 
   void addAnno(const anno & A){m_annotations.push_back(A); }
   void compVertIndexAnno();
