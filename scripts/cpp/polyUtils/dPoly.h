@@ -20,7 +20,11 @@ public:
   void set_isPointCloud(bool isPointCloud){ m_isPointCloud = isPointCloud; }
   bool isPointCloud() { return m_isPointCloud;}
   
-  bool readPoly(const char * filename, bool isPointCloud);
+  bool readPoly(const char * filename,
+                // If isPointCloud is true, treat each point as a
+                // singleton polygon
+                bool isPointCloud 
+                );
   
   void write_poly(const char *filename,
                   char *color = "yellow", double scale = 1.0

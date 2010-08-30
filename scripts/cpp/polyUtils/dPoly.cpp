@@ -372,7 +372,7 @@ void dPoly::erasePoly(int polyIndex){
 }
 
 bool dPoly::readPoly(const char * filename,
-                     // If isPointCloudis true, treat each point as a
+                     // If isPointCloud is true, treat each point as a
                      // singleton polygon
                      bool isPointCloud 
                      ){
