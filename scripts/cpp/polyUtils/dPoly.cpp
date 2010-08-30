@@ -440,6 +440,7 @@ bool dPoly::readPoly(const char * filename,
          ){
 
       if (beg < end){
+
         // The current polygon is non-empty
 
         if (beg < end - 1              &&
@@ -462,6 +463,7 @@ bool dPoly::readPoly(const char * filename,
         
         // Start a new polygon
         beg = end;
+        
       }
       
     } // End processing the current polygon in the list of polygons
