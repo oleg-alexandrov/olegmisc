@@ -430,7 +430,7 @@ bool dPoly::readPoly(const char * filename,
     
     // If this is the last line in the file, or if we encountered a
     // "next" statement, or if we treat a polygon as just a set of
-    // points (point cloud)then close the current polygon and start a
+    // points (point cloud) then close the current polygon and start a
     // new one.
     istringstream iss_next(line);
     string val;
