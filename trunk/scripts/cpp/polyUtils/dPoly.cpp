@@ -371,11 +371,15 @@ void dPoly::erasePoly(int polyIndex){
   return;
 }
 
-bool dPoly::readPoly(const char * filename){
+bool dPoly::readPoly(const char * filename,
+                     // If isPointCloudis true, treat each point as a
+                     // singleton polygon
+                     bool isPointCloud 
+                     ){
 
-  // To do: Deal with annotations
-  
   reset();
+  
+  m_isPointCloud = isPointCloud;
   
   ifstream fh(filename);
   if( !fh ){
@@ -389,6 +393,9 @@ bool dPoly::readPoly(const char * filename){
   // The current polygon has vertices in the range [beg, end)
   int beg = 0, end = 0;
   
+  anno annotation;
+  string layer;
+  
   while( getline(fh, line) ) {
     
     bool isLastLine = ( fh.peek() == EOF );
@@ -400,10 +407,13 @@ bool dPoly::readPoly(const char * filename){
     // Else keep 'color' unchanged.
     searchForColor(line, color);
     
+    if ( searchForAnnotation(line, annotation) ){
+      m_annotations.push_back(annotation);
+    }
+    
     // Extract the coordinates and the layer
     istringstream iss_xy (line);
     double x, y;
-    string layer = "";
     if ( iss_xy >> x >> y ){
 
       // This line has valid coordinates, which we read in x and y.
@@ -411,25 +421,31 @@ bool dPoly::readPoly(const char * filename){
       m_yv.push_back(y);
       end++;
       
-      // Find the layer for the current point.
-      searchForLayer(line, layer);
-      cout << "Extracted: " << x << ' ' << y << ' ' << layer << endl;
+      if (end == beg + 1){
+        // Find the layer for the current point only if this point
+        // is the first point in the polygon
+        searchForLayer(line, layer);
+      }
+      
     }
-
+    
     // If this is the last line in the file, or if we encountered a
-    // "next" statement, then close the current polygon and start a
+    // "next" statement, or if we treat a polygon as just a set of
+    // points (point cloud)then close the current polygon and start a
     // new one.
     istringstream iss_next(line);
     string val;
-    if ( isLastLine ||
-         ( (iss_next >> val) && (val == "next") )
+    if ( isLastLine                               ||
+         ( (iss_next >> val) && (val == "next") ) ||
+         isPointCloud
          ){
-      cout << "Found a next/last statement in: '" << line << "'" << endl;
 
       if (beg < end){
         // The current polygon is non-empty
 
-        if (beg < end - 1 && m_xv[beg] == m_xv[end - 1] && m_yv[beg] == m_yv[end - 1]){
+        if (beg < end - 1              &&
+            m_xv[beg] == m_xv[end - 1] &&
+            m_yv[beg] == m_yv[end - 1]){
           // The first vertex equals to the last vertex in the current
           // polygon. Then don't store the last vertex.
           assert( end == (int)m_xv.size() && end == (int)m_yv.size() );
@@ -449,9 +465,10 @@ bool dPoly::readPoly(const char * filename){
         beg = end;
       }
       
-    } // End processing the current polygon
+    } // End processing the current polygon in the list of polygons
 
-  } // End reading the file
+  } // End reading the file and processing all polygons
   
-  return true;
+  return true; // success
+  
 }

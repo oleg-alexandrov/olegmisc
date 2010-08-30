@@ -4,19 +4,19 @@
 #include <algorithm>
 using namespace std;
 
-struct strList {
+struct list {
  int intVal;
- strList * ptrToNext;
+ list * ptrToNext;
 };
 
-void formList(strList*& head, int maxVal){
+void formList(list*& head, int maxVal){
 
   int val = 0;
   head = NULL;
-  strList *ptrToPrev = NULL;
+  list *ptrToPrev = NULL;
   while (val <= maxVal){
 
-    strList * ptrToCurr = new strList;
+    list * ptrToCurr = new list;
     ptrToCurr->intVal    = val;
     ptrToCurr->ptrToNext = NULL;
 
@@ -35,10 +35,10 @@ void formList(strList*& head, int maxVal){
   
 }
 
-void traverseList(strList * head){
+void printList(list * head){
   
   // Traverse the list and print the results
-  strList *currElem = head;
+  list *currElem = head;
   while (currElem != NULL){
 
     cout << "Element is "
@@ -49,17 +49,17 @@ void traverseList(strList * head){
   cout << endl;
 }
 
-void reverseList(strList*& head){
+void reverseList(list*& head){
 
   if (head == NULL){
     return;
   }
 
-  strList * currElem = head, *newNext = NULL;
+  list * currElem = head, *newNext = NULL;
 
   while(currElem != NULL){
 
-    strList * oldNext   = currElem->ptrToNext;
+    list * oldNext   = currElem->ptrToNext;
     currElem->ptrToNext = newNext;
     newNext             = currElem;
     currElem            = oldNext;
@@ -68,18 +68,117 @@ void reverseList(strList*& head){
   head = newNext;
 }
 
+int insert(list*& head, int val){
+
+  list * elem     = new list;
+  elem->ptrToNext = head;
+  elem->intVal    = val;
+  head            = elem;
+  return 0;
+}
+
+int deleteAtBeg(list*& head){
+
+  assert(head != NULL);
+  list * nHead = head->ptrToNext;
+  delete head;
+  head = nHead;
+
+  return 0;
+}
+
+int deleteOneElem(list*& head, int val){
+
+  // Return 1 on failure, 0 on success
+  if (head == NULL) return 1;
+
+  list * currPtr = head, *prevPtr = NULL;
+   while(currPtr != NULL){
+    if (currPtr->intVal == val){
+
+      if (prevPtr == NULL){ // we are at the beg of the list
+
+        assert(currPtr == head);
+        list *ptr = currPtr->ptrToNext;
+        delete head;
+        head = ptr;
+        
+      }else{
+        prevPtr->ptrToNext = currPtr->ptrToNext;
+        delete currPtr;
+      }
+
+       return 0; // success
+    }
+    
+    prevPtr = currPtr;
+    currPtr = currPtr->ptrToNext;
+  }
+  
+  return 1;
+}
+
 int main(){
 
-  strList * head;
+  cout << "Now in main" << endl;
+  list * head = NULL;
 
   int maxVal = -1;
   formList(head, maxVal);
   
-  traverseList(head);
+  printList(head);
   
   reverseList(head);
 
-  traverseList(head);
+  cout << "Original list:" << endl;
+  printList(head);
+
+  insert(head, 7);
+  cout << "One element inserted:" << endl;
+  printList(head);
   
+  insert(head, -4);
+  cout << "One element inserted:" << endl;
+  printList(head);
+
+  deleteAtBeg(head);
+  cout << "One element deleted:" << endl;
+  printList(head);
+
+  insert(head, 99);
+  insert(head, 12);
+  insert(head, 9);
+  insert(head, 18);
+  cout << "Three elements inserted:" << endl;
+  printList(head);
+
+  deleteOneElem(head, 9);
+  cout << "One element deleted:" << endl;
+  printList(head);
+  
+  deleteOneElem(head, 33);
+  cout << "One element deleted:" << endl;
+  printList(head);
+
+  deleteOneElem(head, 12);
+  cout << "One element deleted:" << endl;
+  printList(head);
+
+  deleteOneElem(head, 7);
+  cout << "One element deleted:" << endl;
+  printList(head);
+
+  deleteOneElem(head, 18);
+  cout << "One element deleted:" << endl;
+  printList(head);
+
+  deleteOneElem(head, 99);
+  cout << "One element deleted:" << endl;
+  printList(head);
+
+  deleteOneElem(head, 99);
+  cout << "One element deleted:" << endl;
+  printList(head);
+
   return 0;
 }
