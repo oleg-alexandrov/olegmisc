@@ -227,52 +227,20 @@ bool utils::searchForAnnotation(std::string lineStr, anno & annotation){
   // anno xval yval label
   // Return true on success.
 
-  char * line = (char*)lineStr.c_str();
-  
-  char * an = "anno";
-  char * start = strstr(line, an);
-
-  if (start == NULL) return false;
-  if (strlen(start) <= strlen(an)) return false;
-  start += strlen(an);
-  
-  const char * delimiter = " \t";
-  char * pch;
-
-  pch = strtok (start, delimiter);
-  if (pch == NULL) return false;
-  string xstr = string(pch);
-  
-  pch = strtok (NULL, delimiter);
-  if (pch == NULL) return false;
-  string ystr = string(pch);
-  
-  pch = strtok (NULL, delimiter);
-  if (pch == NULL) return false;
-  string zstr = string(pch);
-
-  float val; 
+  istringstream iss (lineStr);
+  string an, label;
   double x, y;
-  
-  // Scan the first number
-  if (sscanf(xstr.c_str(), "%f", &val) == 1){
-    x = atof(xstr.c_str());
-  }else{
-    return false; // the first number is not valid
-  }
-  
-  // Scan the second number
-  if (sscanf(ystr.c_str(), "%f", &val) == 1){
-    y = atof(ystr.c_str());
-  }else{
-    return false; // the second number is not valid
+
+  if ( ( !(iss >> an >> x >> y) ) || an != "anno" ){
+    return false;
   }
 
+  getline(iss, label); // Everything else goes to the label
+  
   annotation.x     = x;
   annotation.y     = y;
-  annotation.label = zstr;
+  annotation.label = label;
 
-  //  cout << "found annotation " << x << ' ' << y << ' ' << zstr << endl;
   return true;
 }
 
