@@ -10,7 +10,7 @@ XTRA_OBJ=
 OBJ1  =  $(XTRA_OBJ)
 
 
-binary_search: binary_search.o $(OBJ1) $(HDR) 
+first_nondup: first_nondup.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 linked_ints: linked_ints.o $(OBJ1) $(HDR) 
@@ -22,7 +22,13 @@ map_example: map_example.o $(OBJ1) $(HDR)
 reverse_linked: reverse_linked.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
+rv_words: rv_words.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 stack_as_linked_list: stack_as_linked_list.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
+strip_white: strip_white.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 vec_equal: vec_equal.o $(OBJ1) $(HDR) 
