@@ -80,23 +80,11 @@ function a {
   if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi;
 
   if [ "$*" ]; then  
-
-    alias "$*"; # Create the given alias
-
+    alias "$*";
     alias > ~/.bash_aliases; 
-    perl -pi -e "s#^([^\s]+=)#alias \$1#g" ~/.bash_aliases;
-    
-    # Echo the defined alias  
-    eqv=$( echo "$*" | perl -pi -e "s#[^=]##g" )
-    if [ "$eqv" != "" ]; then  
-        val=$( echo "$*" | perl -pi -e "s#=.*?\$##g" )
-        alias $val
-    fi;
-
+    perl -pi -e "s#^([^\s]+=)#alias \$1#" ~/.bash_aliases;
   else
-
     alias;  # Just list the aliases
-
   fi;
  
 }
