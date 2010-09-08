@@ -49,6 +49,18 @@ void printList(list * head){
   cout << endl;
 }
 
+void printList2(list * head){
+  
+  // Traverse the list and print the results
+  list *currElem = head;
+  cout << "list: [ ";
+  while (currElem != NULL){
+    cout << currElem->intVal << " ";
+    currElem = currElem->ptrToNext;
+  }
+  cout << "]" << endl;
+}
+
 void reverseList(list*& head){
 
   if (head == NULL){
@@ -118,9 +130,8 @@ int deleteOneElem(list*& head, int val){
   return 1;
 }
 
-int main(){
 
-  cout << "Now in main" << endl;
+void test1(){
   list * head = NULL;
 
   int maxVal = -1;
@@ -180,5 +191,62 @@ int main(){
   cout << "One element deleted:" << endl;
   printList(head);
 
-  return 0;
+  return;
+}
+
+void splitAtPivot(list * head, int pivot, list*& list1, list*& list2){
+
+  list1 = NULL;
+  list2 = NULL;
+
+  bool addToFirstList = true;
+  list * prevOutPtr   = NULL;
+  list * currPtr      = head;
+
+  while (currPtr != NULL){
+
+    if (currPtr->intVal == pivot){
+      addToFirstList = false;
+      currPtr        = currPtr->ptrToNext;
+      prevOutPtr     = NULL;
+      continue;
+    }
+
+    list * ptr = new list;
+    ptr->ptrToNext = NULL;
+    ptr->intVal    = currPtr->intVal;
+
+    if (prevOutPtr != NULL){
+      prevOutPtr->ptrToNext = ptr;
+    }else if (addToFirstList){
+      assert(list1 == NULL);
+      list1 = ptr;
+    }else{
+      assert(list2 == NULL);
+      list2 = ptr;
+    }
+
+    prevOutPtr = ptr;
+    currPtr    = currPtr->ptrToNext;
+  }
+  
+}
+
+int main(){
+
+  list * head = NULL;
+
+  int maxVal = 10, pivot = 11;
+  formList(head, maxVal);
+
+  printList2(head);
+
+  list * list1, * list2;
+  splitAtPivot(head, pivot, list1, list2);
+
+  cout << "Pivot is: " << pivot << ". Printing the split lists below:"<< endl;
+  printList2(list1);
+  printList2(list2);
+  
+  
 }
