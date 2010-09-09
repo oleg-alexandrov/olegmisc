@@ -31,6 +31,9 @@ stack_as_linked_list: stack_as_linked_list.o $(OBJ1) $(HDR)
 strip_white: strip_white.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
+trees: trees.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 vec_equal: vec_equal.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
