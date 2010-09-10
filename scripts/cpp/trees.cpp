@@ -25,7 +25,7 @@ void printTree(node * root){
 
   while(1){
 
-    int rootPos     = 70;
+    int rootPos     = 64;
     int numEl       = currLevel.size();
     int numGood     = 0;
     int numPrinted  = 0;
@@ -107,6 +107,66 @@ void insertToBST(node* & root, int val){
   return;
 }
 
+node * getPtrToParentOfLargestElem(node * root){
+
+  assert(root        != NULL);
+  assert(root->right != NULL);
+
+  if (root->right->right == NULL) return root;
+  return getPtrToParentOfLargestElem(root->right);
+
+}
+
+void deleteFromToBST(node* & root, int val){
+
+  if (root == NULL) return;
+  if (val < root->val){ deleteFromToBST(root->left, val);  return; }
+  if (val > root->val){ deleteFromToBST(root->right, val); return; }
+
+  if (root->left == NULL){
+    node * child = root->right;
+    delete root;
+    root = child;
+    return;
+  }
+    
+  if (root->right == NULL){
+    node * child = root->left;
+    delete root;
+    root = child;
+    return;
+  }
+  
+  if (root->left->right == NULL){
+    node * right = root->right;
+    node * left  = root->left;
+    delete root;
+    root = left;
+    root->right = right;
+    return;
+  }
+
+  if (root->right->left == NULL){
+    node * right = root->right;
+    node * left  = root->left;
+    delete root;
+    root = right;
+    root->left = left;
+    return;
+  }
+
+  
+  node * parent = getPtrToParentOfLargestElem(root->left);
+  assert(parent->right != NULL);
+  assert(parent->right->right == NULL);
+  root->val = parent->right->val;
+  node * child = parent->right->left;
+  delete(parent->right);
+  parent->right = child;
+
+  return;
+}
+
 int main(){
 
   int A[] = { -2, 0, 4, 2, -3, 13, -17};
@@ -134,8 +194,25 @@ int main(){
   insertToBST(root, val);
   cout << "Inserting " << val << " into the BST." << endl;
 
+  val = -1;
+  insertToBST(root, val);
+  cout << "Inserting " << val << " into the BST." << endl;
+
+  val = -2;
+  insertToBST(root, val);
+  cout << "Inserting " << val << " into the BST." << endl;
+
+  val = -2;
+  insertToBST(root, val);
+  cout << "Inserting " << val << " into the BST." << endl;
+
   printTree(root);
 
+  val = 0;
+  cout << "Deleting " << val << " from BST." << endl;
+  deleteFromToBST(root, val);
+  printTree(root);
+  
   return 0;
   
 }
