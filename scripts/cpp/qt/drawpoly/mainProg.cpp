@@ -20,20 +20,22 @@ int main(int argc, char** argv){
   bool            useCmdLineColors;
   vector<string>  cmdLineColors, polyFilesVec;
   vector<bool>    plotPointsOnlyVec;
+  bool            plotAsLines;
   
   parseCmdOptions(// inputs
                   argc, argv, exeName,
                   // outputs
                   windowWidX, windowWidY,
                   useCmdLineColors, cmdLineColors,
-                  polyFilesVec, plotPointsOnlyVec
+                  polyFilesVec, plotPointsOnlyVec,
+                  plotAsLines
                   );
 
   QApplication app(argc, argv);
   char * progName = "drawPoly";
   
   appWindow m(NULL, progName, useCmdLineColors, cmdLineColors,
-              polyFilesVec, plotPointsOnlyVec,
+              polyFilesVec, plotPointsOnlyVec, plotAsLines,
               windowWidX, windowWidY);
   m.setCaption(progName);
   m.show();

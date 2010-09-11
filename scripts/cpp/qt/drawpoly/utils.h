@@ -37,7 +37,8 @@ namespace utils{
                        bool                       & useCmdLineColors, 
                        std::vector<std::string>   & cmdLineColors, 
                        std::vector<std::string>   & polyFilesVec, 
-                       std::vector<bool>          & plotPointsOnlyVec
+                       std::vector<bool>          & plotPointsOnlyVec,
+                       bool                       & plotAsLines
                        );
 
   std::string inFileToOutFile(const std::string & inFile);

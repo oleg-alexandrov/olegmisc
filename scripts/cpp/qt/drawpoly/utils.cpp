@@ -56,10 +56,12 @@ void utils::parseCmdOptions(//inputs
                             bool                       & useCmdLineColors, 
                             std::vector<std::string>   & cmdLineColors, 
                             std::vector<std::string>   & polyFilesVec, 
-                            std::vector<bool>          & plotPointsOnlyVec
+                            std::vector<bool>          & plotPointsOnlyVec,
+                            bool                       & plotAsLines
                             ){
 
   useCmdLineColors = false;
+  plotAsLines      = false;
   cmdLineColors.clear();
   polyFilesVec.clear();
   plotPointsOnlyVec.clear();
@@ -84,6 +86,11 @@ void utils::parseCmdOptions(//inputs
 
     if ( strncmp (filename, "-p",  2) == 0 ){
       plotPointsOnly = !plotPointsOnly;
+      continue;
+    }
+
+    if ( strncmp (filename, "-l",  2) == 0 ){
+      plotAsLines = true;
       continue;
     }
 

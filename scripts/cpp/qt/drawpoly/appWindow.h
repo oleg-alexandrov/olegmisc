@@ -24,7 +24,9 @@ public:
             const std::vector<std::string> & cmdLineColors,
             const std::vector<std::string> & polyFilesVec,
             const std::vector<bool>        & plotPointsOnlyVec,
-            int windowWidX, int windowWidY);
+            bool                             plotAsLines,
+            int windowWidX, int windowWidY
+            );
   ~appWindow();
   
 public slots:
