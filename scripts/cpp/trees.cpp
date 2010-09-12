@@ -167,6 +167,55 @@ void deleteFromToBST(node* & root, int val){
   return;
 }
 
+void printInOrder(node *root){
+
+  if (root == NULL) return;
+  if (root->left != NULL) printInOrder(root->left);
+  cout << root->val << " ";
+  if (root->right != NULL) printInOrder(root->right);
+
+}
+
+void printInOrderNonRec(node* root){
+
+  vector<node*> elems; elems.clear();
+  vector<bool>  lwv;   lwv.clear();
+  if (root == NULL) return;
+
+  elems.push_back(root);
+  lwv.push_back(false);
+  
+  while (!elems.empty()){
+
+    assert(elems.size() == lwv.size());
+    node * curr = elems[elems.size()   - 1];
+    bool   stat = lwv[lwv.size()       - 1];
+    
+    assert(curr != NULL);
+    
+    if (curr->left != NULL && stat == false){
+      elems.push_back(curr->left);
+      lwv.push_back(false);
+      continue;
+    }
+
+    cout << curr->val << " ";
+    elems.pop_back();
+    lwv.pop_back();
+
+    if (!lwv.empty()) lwv[lwv.size() - 1] = true; // left was visited
+
+    if (curr->right != NULL){
+      elems.push_back(curr->right);
+      lwv.push_back(false);
+      continue;
+    }
+    
+    
+  }
+  
+}
+
 int main(){
 
   int A[] = { -2, 0, 4, 2, -3, 13, -17};
@@ -212,6 +261,14 @@ int main(){
   cout << "Deleting " << val << " from BST." << endl;
   deleteFromToBST(root, val);
   printTree(root);
+
+  cout << "Printing tree in-order" << endl;
+  printInOrder(root);
+  cout << endl;
+  
+  cout << "Printing tree in-order non-recursively" << endl;
+  printInOrderNonRec(root);
+  cout << endl;
   
   return 0;
   
