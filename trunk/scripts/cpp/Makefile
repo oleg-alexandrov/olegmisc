@@ -19,10 +19,16 @@ linked_ints: linked_ints.o $(OBJ1) $(HDR)
 map_example: map_example.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
+queue: queue.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 reverse_linked: reverse_linked.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 rv_words: rv_words.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
+shuffle: shuffle.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 stack_as_linked_list: stack_as_linked_list.o $(OBJ1) $(HDR) 
