@@ -4,6 +4,7 @@ int deleteOneElem(list*&, int);
 int insert(list*&, int);
 int pop(int &);
 int push(int);
+int randn(int);
 void formList(list*&, int);
 void printInOrderNonRec(node*);
 void printList(list *);
