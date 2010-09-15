@@ -10,6 +10,8 @@ void printInOrderNonRec(node*);
 void printList(list *);
 void printList2(list *);
 void printTree(node *);
+void push_back(int);
+void push_front(int);
 void reverseList(list*&);
 void rv_str(char *, int);
 void splitAtPivot(list *, int, list*&, list*&);
