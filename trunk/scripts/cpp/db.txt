@@ -1,0 +1,20 @@
+mysql
+create database s2;
+use s2;
+create table d2(id int unsigned not null auto_increment primary key, name varchar(10));
+
+describe d2;
+insert into d2 (id, name) values (7, "fox");
+
+select * from d2 where id >= 6;
+
+select * from d2 where not name="ape";
+
+insert into d2 (id, name) values (19, "ape");
+
+delete from d2 where id=7;
+
+drop table d2;
+
+drop database s5;
+
