@@ -92,6 +92,6 @@ using namespace std;
 (define-auto-insert "\\.sh\\'" "header.sh")
 (define-auto-insert "\\.py\\'" "header.py")
 ;;(define-auto-insert "\\.f\\'" "header.f")
-;;(define-auto-insert "\\.cpp\\'" "header.cpp")
+(define-auto-insert "\\.cpp\\'" "header.cpp")
 ;(define-auto-insert "\\.el\\'" "header.el")
 
