@@ -88,6 +88,7 @@
 ;(flyspell-prog-mode)
 
 ;;auto-insert stuff
+(require 'autoinsert)
 (add-hook 'find-file-hooks 'auto-insert)
 (setq auto-insert-directory "~/.xemacs/")
 (setq auto-insert-query nil)

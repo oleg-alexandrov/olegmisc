@@ -371,3 +371,4 @@ exist, try replacing 'src' with 'include' and vice-versa"
 (local-set-key [(control meta a)] 'beginning-of-defun)
 (local-set-key [(control meta e)] 'end-of-defun)
 (local-set-key [(delete)] 'c-hungry-delete-forward)
+(local-set-key [(meta \')] 'smart-forward)
