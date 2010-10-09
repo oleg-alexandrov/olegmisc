@@ -10,6 +10,9 @@ XTRA_OBJ=
 OBJ1  =  $(XTRA_OBJ)
 
 
+endian: endian.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 first_nondup: first_nondup.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
