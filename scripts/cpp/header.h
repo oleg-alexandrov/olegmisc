@@ -2,7 +2,7 @@ bool isDigit(const char);
 int deleteAtBeg(list*&);
 int deleteOneElem(list*&, int);
 int insert(list*&, int);
-int myfun1(int);
+int myfun1(int, int);
 int pop(int &);
 int push(int);
 int randn(int);
