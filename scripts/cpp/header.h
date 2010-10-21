@@ -1,4 +1,5 @@
 bool isDigit(const char);
+int addOne(int);
 int deleteAtBeg(list*&);
 int deleteOneElem(list*&, int);
 int insert(list*&, int);
@@ -7,6 +8,7 @@ int pop(int &);
 int push(int);
 int randn(int);
 int rmLargestFromHeap(heap &);
+void foo(int);
 void formList(list*&, int);
 void insertToHeap(heap &, int);
 void myfun1(int);
