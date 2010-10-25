@@ -114,6 +114,7 @@
 		("\\.bash"                . shell-script-mode)
 		("\\.sh"                  . shell-script-mode)
 		("\\.aliases"             . shell-script-mode)
+		("\\.param"               . shell-script-mode)
 		("\\.C$"                  . c++-mode)
 		("\\.cc$"                 . c++-mode)
 		("\\.hh$"                 . c++-mode)
