@@ -1,3 +1,5 @@
+(setq auto-insert-alist nil)
+
 (defvar auto-insert-alist
   '((("\\.\\([Hh]\\|hh\\|hpp\\)\\'" . "C / C++ header")
      (upcase (concat (file-name-nondirectory
@@ -91,7 +93,7 @@ using namespace std;
 (define-auto-insert "\\.pl\\'" "header.pl")
 (define-auto-insert "\\.sh\\'" "header.sh")
 (define-auto-insert "\\.py\\'" "header.py")
-;;(define-auto-insert "\\.f\\'" "header.f")
+(define-auto-insert "\\.f\\'" "header.f")
 (define-auto-insert "\\.cpp\\'" "header.cpp")
-;(define-auto-insert "\\.el\\'" "header.el")
+(define-auto-insert "\\.el\\'" "header.el")
 
