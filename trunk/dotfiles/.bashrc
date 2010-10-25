@@ -47,11 +47,17 @@ fi
 
 function cdls {
   if [ "$*" ]; then 
-     builtin cd "$*"; ls -a --color;
+     builtin cd "$*"; 
+     ls -a --color;
+     echo $(pwd) > ~/.lastDir 
   else
       builtin cd; ls -a --color;
   fi
   proml;
+}
+
+function lcd {
+    cd $(cat ~/.lastDir);
 }
 
 function rwd {
@@ -98,6 +104,10 @@ function ald {
 function ag {
     # grep through all aliases for given pattern
     alias | grep -i --colour=auto "$*"
+}
+
+function eg {
+    env | grep -i --colour=auto "$*"
 }
 
 function un {
