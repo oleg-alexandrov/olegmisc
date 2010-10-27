@@ -206,6 +206,12 @@
 	     ))
 (add-hook 'c++-mode-hook 'turn-on-auto-revert-mode)
 
+(add-hook 'java-mode-hook 
+	  '(lambda()
+	     (load-library "java-my")
+	     ))
+(add-hook 'c++-mode-hook 'turn-on-auto-revert-mode)
+
 ;;Perl
 (add-hook 'cperl-mode-hook 
 	  '(lambda()
