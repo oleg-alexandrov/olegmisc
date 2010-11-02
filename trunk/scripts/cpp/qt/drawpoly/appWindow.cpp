@@ -118,7 +118,9 @@ QMenuBar* appWindow::createMenus(){
   file->insertItem("Save as one polygon", m_poly, SLOT(saveOnePoly()),
                    Qt::CTRL+Key_S);
   file->insertItem("Save as multiple polygons", m_poly,
-                   SLOT(saveMultiplePoly()), Qt::ALT+Key_S);
+                   SLOT(saveAsMultiplePoly()), Qt::ALT+Key_S);
+  file->insertItem("Overwrite current polygons", m_poly,
+                   SLOT(overwriteMultiplePolys()), Qt::ALT+Key_W);
   file->insertItem("Exit", qApp, SLOT(quit()), Key_Q);
 
   QPopupMenu* edit = new QPopupMenu( menu );
