@@ -26,7 +26,9 @@ public slots:
   // File menu
   void openPoly();
   void saveOnePoly();
-  void saveMultiplePoly();
+  void overwriteMultiplePolys();
+  void saveAsMultiplePolys();
+  void saveMultiplePoly(bool overwrite);
 
   // Edit menu
   void undoLast();

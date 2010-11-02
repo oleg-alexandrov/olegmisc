@@ -1354,7 +1354,17 @@ void drawPoly::saveOnePoly(){
   return;
 }
 
-void drawPoly::saveMultiplePoly(){
+void drawPoly::overwriteMultiplePolys(){
+  bool overwrite = true;
+  saveMultiplePoly(overwrite);
+}
+
+void drawPoly::saveAsMultiplePolys(){
+  bool overwrite = false;
+  saveMultiplePoly(overwrite);
+}
+
+void drawPoly::saveMultiplePoly(bool overwrite){
 
   string allFiles = "";
   for (int polyIter = 0; polyIter < (int)m_polyVec.size(); polyIter++){
@@ -1376,7 +1386,13 @@ void drawPoly::saveMultiplePoly(){
     }
     poly.set_annotations(annotations);
     
-    string fileName = inFileToOutFile(m_polyFilesVec[polyIter]);
+    string fileName;
+    if (overwrite){
+      fileName = m_polyFilesVec[polyIter];
+    }else{
+      fileName = inFileToOutFile(m_polyFilesVec[polyIter]);
+    }
+    
     poly.write_poly(fileName.c_str());
     allFiles += " " + fileName;
   }
