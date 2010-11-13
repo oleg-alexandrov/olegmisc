@@ -22,6 +22,8 @@ stty start undef # control q
 
 xv -quit -root ~/diverse/wallpapers/NASA-Apollo8-Dec24-Earthrise_optimal.jpg
 
+xclock -geo -0+0 -brief -d -bg white >/dev/null 2>&1&
+
 ~/bin/unclutter -idle 1&
 
 if [ -e ~/diverse/fvwm/bin/fvwm ]; then 
