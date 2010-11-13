@@ -115,6 +115,7 @@
 		("\\.sh"                  . shell-script-mode)
 		("\\.aliases"             . shell-script-mode)
 		("\\.param"               . shell-script-mode)
+		("\\.java$"               . java-mode)
 		("\\.C$"                  . c++-mode)
 		("\\.cc$"                 . c++-mode)
 		("\\.hh$"                 . c++-mode)
@@ -208,9 +209,10 @@
 
 (add-hook 'java-mode-hook 
 	  '(lambda()
+	     (load-library "c++-my")
 	     (load-library "java-my")
 	     ))
-(add-hook 'c++-mode-hook 'turn-on-auto-revert-mode)
+(add-hook 'java-mode-hook 'turn-on-auto-revert-mode)
 
 ;;Perl
 (add-hook 'cperl-mode-hook 
