@@ -134,7 +134,7 @@ DesktopName 3 Desk 3
 #Key F1    A   N   Exec /usr/bin/konsole& 
 #Key F1    A   C   Exec /usr/bin/gnome-terminal  --geometry 110x45+0+0& 
 Key F1   A   C   Exec /usr/bin/gnome-terminal --geometry 110x44 -e "$HOME/bin/zsh"& 
-#Key F1    A   C   Exec $HOME/bin/mrxvt -bg black -fg white -geometry 110x45+0+0& 
+Key F1    A   M   Exec /usr/bin/xterm  -geo 108x46+0+0  -hc blue  -bdc -fn 8x16 -e zsh&
 #Key F1    A   N   Exec  /m1/aoleg/bin/rxvt & # -geo 140x61+10+10  -hc blue  -bdc -fn 8x16 &
 #Key F2    A   N   Exec  /m1/aoleg/bin/rxvt -fn 8x16 -e mutt &
 Key F3    A   C   Exec  ~/bin/xe &
@@ -161,8 +161,8 @@ Key Up    A   C   Scroll +0   -100
 Key Down  A   C   Scroll +0   +100
 
 # Pop-up the pager temorarily
-Key Home  A   3   Module FvwmPager -transient 0 3
-Key End   A   3   Module FvwmPager -transient 0 3
+#Key Home  A   3   Module FvwmPager -transient *
+#Key End   A   3   Module FvwmPager -transient *
 
 # Use the left windows key for moving the cursor  
 # Put this in .bashrc: xmodmap -e  "add mod3 = Super_L"
