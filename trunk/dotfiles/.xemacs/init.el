@@ -10,12 +10,6 @@
 ;;start gnuserv.
 (gnuserv-start)
 
-;; The very nifty ido package, that allows one to switch to a buffer by typing
-;; only a few consecutive characters of its name.
-;; It does not work well with multiple windows though.
-;(load-library "ido")
-;(ido-mode t)
-
 ;; history menu
 ;(load-library "mas-file-history")
 ;(setq mas-file-history-menu-title "History")
@@ -73,16 +67,6 @@
           ("<up>"    . ignore             )
           ("<down>"  . ignore             ))))
 (add-hook 'iswitchb-define-mode-map-hook 'iswitchb-local-keys)
-
-; (require 'ido)
-; (ido-mode t)
-; (setq ido-confirm-unique-completion t)
-; (setq ido-default-buffer-method 'samewindow)
-; (setq ido-use-filename-at-point t)
-; (ido-mode t)
-; (set-face-background 'ido-first-match "white")
-; (set-face-foreground 'ido-subdir "blue3")
-; (icomplete-mode 1)
 
 ; turn on spelling for source code 
 ;(flyspell-prog-mode)
