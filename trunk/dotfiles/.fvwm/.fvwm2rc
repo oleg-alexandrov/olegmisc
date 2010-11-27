@@ -139,6 +139,7 @@ Key F1    A   M   Exec /usr/bin/xterm  -geo 108x46+0+0  -hc blue  -bdc -fn 8x16 
 #Key F2    A   N   Exec  /m1/aoleg/bin/rxvt -fn 8x16 -e mutt &
 Key F3    A   C   Exec  ~/bin/xe &
 Key F4    A   N   Exec  /usr/bin/firefox&
+Key F4    A   M   Exec  /usr/bin/firefox&
 Key F6    A   N   Exec  mozilla& 
 Key F7    A   N   Exec  /usr/local/bin/mathematica&
 Key F9    A   N   Exec  gnumeric --geometry 1120x993+0+0&
