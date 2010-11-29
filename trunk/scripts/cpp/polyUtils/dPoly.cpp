@@ -402,6 +402,12 @@ bool dPoly::readPoly(const char * filename,
     
     bool isLastLine = ( fh.peek() == EOF );
 
+    if (line.length() > 0 &&
+        ( line[0] == '!' || line[0] == '#' )
+        ){
+      continue; // line starts with a comment, skip it
+    }
+    
     // Convert to lowercase
     transform(line.begin(), line.end(), line.begin(), ::tolower);
 
