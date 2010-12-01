@@ -402,15 +402,25 @@ bool dPoly::readPoly(const char * filename,
     
     bool isLastLine = ( fh.peek() == EOF );
 
-    if (line.length() > 0 &&
-        ( line[0] == '!' || line[0] == '#' )
-        ){
-      continue; // line starts with a comment, skip it
-    }
-    
     // Convert to lowercase
     transform(line.begin(), line.end(), line.begin(), ::tolower);
 
+    char * linePtr = (char*)line.c_str();
+
+    // Replace comma with space, to be able to use comma as separator
+    for (int s = 0; s < (int)strlen(linePtr); s++){
+      if (linePtr[s] == ',') linePtr[s] = ' ';
+    }
+
+    // Ignore any text after the comment character, which is '#' or '!'
+    for (int s = 0; s < (int)strlen(linePtr); s++){
+      if (linePtr[s] == '#' || linePtr[s] == '!'){
+        for (int t = s; t < (int)strlen(linePtr); t++){
+          linePtr[t] = '\0';
+        }
+      }
+    }
+    
     // If the current line has a color, store it in 'color'.
     // Else keep 'color' unchanged.
     searchForColor(line, color);
