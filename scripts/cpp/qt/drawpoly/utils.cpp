@@ -75,6 +75,10 @@ void utils::parseCmdOptions(//inputs
   for (int argIter = 1; argIter < argc; argIter++){
 
     char * filename = argv[argIter];
+
+    // Lowercase
+    transform(filename, filename + strlen(filename), filename, ::tolower);
+
     if (filename == NULL || strlen(filename) == 0) continue;
 
     if (strncmp (filename, "-?",  2) == 0 ||
