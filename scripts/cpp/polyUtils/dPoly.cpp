@@ -377,10 +377,6 @@ bool dPoly::readPoly(const char * filename,
                      bool isPointCloud 
                      ){
 
-  // Note: Need to skip any characters after the comment characters, which
-  // are "#" and "!". Otherwise the string "! color = x" would read "x" as
-  // a color.
-  
   reset();
   
   m_isPointCloud = isPointCloud;
@@ -418,6 +414,7 @@ bool dPoly::readPoly(const char * filename,
         for (int t = s; t < (int)strlen(linePtr); t++){
           linePtr[t] = '\0';
         }
+        break;
       }
     }
     
