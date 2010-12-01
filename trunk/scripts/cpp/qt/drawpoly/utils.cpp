@@ -74,31 +74,33 @@ void utils::parseCmdOptions(//inputs
   
   for (int argIter = 1; argIter < argc; argIter++){
 
-    char * filename = argv[argIter];
+    char * currArg = argv[argIter];
 
-    // Lowercase
-    transform(filename, filename + strlen(filename), filename, ::tolower);
+    if (currArg == NULL || strlen(currArg) == 0) continue;
 
-    if (filename == NULL || strlen(filename) == 0) continue;
+    if (currArg[0] == '-'){
+      // Transform -P into -p, etc.
+      transform(currArg, currArg + strlen(currArg), currArg, ::tolower);
+    }
 
-    if (strncmp (filename, "-?",  2) == 0 ||
-        strncmp (filename, "-h",  2) == 0 ||
-        strncmp (filename, "--h", 3) == 0){
+    if (strncmp (currArg, "-?",  2) == 0 ||
+        strncmp (currArg, "-h",  2) == 0 ||
+        strncmp (currArg, "--h", 3) == 0){
       printUsage(exeName);
       exit(0);
     }
 
-    if ( strncmp (filename, "-p",  2) == 0 ){
+    if ( strncmp (currArg, "-p",  2) == 0 ){
       plotPointsOnly = !plotPointsOnly;
       continue;
     }
 
-    if ( strncmp (filename, "-l",  2) == 0 ){
+    if ( strncmp (currArg, "-l",  2) == 0 ){
       plotAsLines = true;
       continue;
     }
 
-    if ( strncmp (filename, "-c",  2) == 0 && argIter < argc - 1){
+    if ( strncmp (currArg, "-c",  2) == 0 && argIter < argc - 1){
       useCmdLineColors = true;
       color = argv[argIter + 1];
       argIter++;
@@ -106,10 +108,10 @@ void utils::parseCmdOptions(//inputs
     }
 
     // Other command line options are ignored
-    if (filename[0] == '-') continue;
+    if (currArg[0] == '-') continue;
     
     cmdLineColors.push_back(color);
-    polyFilesVec.push_back(filename);
+    polyFilesVec.push_back(currArg);
     plotPointsOnlyVec.push_back(plotPointsOnly);
   }
   
