@@ -4,7 +4,6 @@
 #include <vector>
 #include <algorithm>
 #include <cfloat> // defines DBL_MAX
-#include "read_write_xg.h"
 #include <vector>
 #include "cutPoly.h"
 
@@ -21,19 +20,12 @@ public:
   bool isPointCloud() { return m_isPointCloud;}
   
   bool readPoly(const char * filename,
-                // If isPointCloud is true, treat each point as a
-                // singleton polygon
                 bool isPointCloud 
                 );
   
-  void write_poly(const char *filename,
-                  char *color = "yellow", double scale = 1.0
-                  ){
-    utils::write_xg(filename, m_isPointCloud,
-                    m_xv, m_yv, m_numVerts, m_numPolys,
-                    m_totalNumVerts,
-                    m_colors, color, scale, m_layers, m_annotations);
-  }
+  void writePoly(const char *filename,
+                 char *defaultColor = "yellow", double scale = 1.0
+                 );
   
   void reset(){
     m_isPointCloud  = false;
@@ -104,7 +96,7 @@ public:
   void erasePoly(int polyIndex);
   
 private:
-  // m_isPointCloud tells if the poly is an unstructured set of points
+  // If isPointCloud is true, treat each point as a set of unconnected points
   bool                     m_isPointCloud; 
 
   std::vector<double>      m_xv;

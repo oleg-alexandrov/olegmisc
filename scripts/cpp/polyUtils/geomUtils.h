@@ -11,7 +11,7 @@ struct anno {
   double y;
   std::string label;
   
-  void saveTo(std::ofstream & outfile) const{
+  void appendTo(std::ofstream & outfile) const{
     outfile << "anno " << x << ' ' << y << ' ' << label << std::endl;
   }
 

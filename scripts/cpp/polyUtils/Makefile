@@ -3,8 +3,8 @@
 CPP = g++ -O3 -Wall
 CC = gcc -O3
 FC = g77 -O3
-XTRA_OBJ=cutPoly.cpp  read_write_xg.cpp dPoly.cpp geomUtils.cpp 
-HDR= cutPoly.h read_write_xg.h dPoly.h geomUtils.h
+XTRA_OBJ=cutPoly.cpp dPoly.cpp geomUtils.cpp 
+HDR= cutPoly.h dPoly.h geomUtils.h
 
 all: test_dPoly testCutPoly 
 
@@ -23,11 +23,8 @@ testCutPoly: testCutPoly.o $(OBJ1) $(HDR)
 cutPoly.o: cutPoly.cpp cutPoly.h
 	$(CPP)  -c  cutPoly.cpp
 
-dPoly.o: dPoly.cpp read_write_xg.h dPoly.h
+dPoly.o: dPoly.cpp dPoly.h
 	$(CPP)  -c  dPoly.cpp
-
-read_write_xg.o: read_write_xg.cpp read_write_xg.h
-	$(CPP)  -c  read_write_xg.cpp
 
 test_dPoly.o: test_dPoly.cpp dPoly.h
 	$(CPP)  -c  test_dPoly.cpp

@@ -45,12 +45,12 @@ int main(int argc, char** argv){
   
   char * outFile = "clipped.xg";
   cout << "Writing to " << outFile << endl;
-  double scale = 1.0;
+  //double scale = 1.0;
   vector<string> colorsOut, layersOut; 
   std::vector<anno>  annotations;
-  write_xg(outFile, isPointCloud,
-           cutX, cutY, cutNumPolys, cutNumPolys.size(), cutX.size(),
-           colorsOut, "yellow", scale, layersOut, annotations);
+  // writePoly(outFile, isPointCloud,
+  // cutX, cutY, cutNumPolys, cutNumPolys.size(), cutX.size(),
+  // colorsOut, "yellow", scale, layersOut, annotations);
 
   ofstream win("window.xg");
   cout << "Writing to window.xg" << endl;
