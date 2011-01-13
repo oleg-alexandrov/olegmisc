@@ -6,7 +6,6 @@
 #include <cassert>
 #include <cstring>
 #include <string>
-#include "read_write_xg.h"
 #include "dPoly.h"
 using namespace std;
 using namespace utils;
@@ -489,4 +488,65 @@ bool dPoly::readPoly(const char * filename,
   
   return true; // success
   
+}
+
+void dPoly::writePoly(const char *filename, char *defaultColor, double scale
+                      ){
+
+  ofstream outfile(filename);
+  outfile.precision(16);
+
+  int vertCount = 0, annoCount = 0, numAnno = m_annotations.size();
+    
+  for (int j = 0; j < m_numPolys; j++){ // Iterate over polygons
+
+    if ( m_numVerts[j] <= 0 ) continue; // skip empty polygons
+
+    string prevColor = defaultColor, currColor = "";
+    if ( (int)m_colors.size() <= j ) currColor = defaultColor;
+    else                             currColor = m_colors[j];
+    
+    if (j == 0 || prevColor != currColor){
+      outfile << "color = " << currColor << endl; 
+    }
+    prevColor = currColor;
+
+    string layer = "";
+    if ((int)m_layers.size() <= j ) layer = "";
+    else layer = m_layers[j];
+
+    for (int i = 0; i < m_numVerts[j]; i++){ // Iterate over vertices of current poly
+      
+      outfile <<  m_xv[vertCount]*scale << " " << m_yv[vertCount]*scale;
+      if (layer != "") outfile << " ; " << layer;
+      outfile << endl;
+      vertCount++;
+
+      // Put one annotation for each vertex, if possible
+      if (annoCount < numAnno){
+        m_annotations[annoCount].appendTo(outfile);
+        annoCount++;
+      }
+      
+    }
+    
+    // Print the first element again at the end (so that polygons are
+    // closed).
+    assert(m_numVerts[j] > 0);
+    if ( !m_isPointCloud ){
+      int firstVert = vertCount - m_numVerts[j];
+      outfile << m_xv[firstVert]*scale << " " << m_yv[firstVert]*scale;
+      if (layer != "") outfile << " ; " << layer;
+      outfile << endl;
+    }
+    
+    if ( !m_isPointCloud ) outfile << "NEXT" << endl;
+  }
+
+  // Write the remaining annotations
+  for (int a = annoCount; a < numAnno; a++){
+    m_annotations[a].appendTo(outfile);
+  }
+
+  outfile.close();
 }

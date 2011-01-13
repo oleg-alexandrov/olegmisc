@@ -26,7 +26,7 @@ int main(int argc, char** argv){
 
   char * outFile = "out.xg";
   cout << "Writing to " << outFile << endl;
-  poly.write_poly(outFile);
+  poly.writePoly(outFile);
 
   
   return 0;
