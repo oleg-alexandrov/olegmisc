@@ -1348,7 +1348,7 @@ void drawPoly::saveOnePoly(){
   }
   poly.set_annotations(annotations);
 
-  poly.write_poly(fileName);
+  poly.writePoly(fileName);
   cout << "Polygon saved to " << fileName << endl;
 
   return;
@@ -1393,7 +1393,7 @@ void drawPoly::saveMultiplePoly(bool overwrite){
       fileName = inFileToOutFile(m_polyFilesVec[polyIter]);
     }
     
-    poly.write_poly(fileName.c_str());
+    poly.writePoly(fileName.c_str());
     allFiles += " " + fileName;
   }
 
