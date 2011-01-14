@@ -22,7 +22,7 @@ MAIN:{
     my $text = <FILE>;
     close(FILE);
 
-    if ($text !~ /color/i){
+    if ($text !~ /(^|\n)\s*color/i){
       $text = "color = $col\n" . $text;
     }else{
       $text =~ s/color.*?\w+\s*\n/color = $col\n/ig;

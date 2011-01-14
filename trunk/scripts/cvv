@@ -6,7 +6,7 @@ undef $/;          # read one whole file in one scalar
 MAIN:{
   
   if (scalar(@ARGV) < 3){
-    print "Usage: $0 param val file\n";
+    print "Usage: $0 param val file(s)\n";
     exit(0);
   }
 
@@ -19,8 +19,15 @@ MAIN:{
     open(FILE, "<$file");
     my $text = <FILE>;
     close(FILE);
+
+    my $trail = "";
+    if ($text =~ /^(.*?)(\s*)$/s){
+      $text  = $1;
+      $trail = $2;
+    }
+    $trail = "\n\n" if ($trail !~ /\n\s*\n/); # force empty line at the end of file
     
-    my @lines   = split("\n", $text);
+    my @lines   = split(/\n/, $text);
     my $success = 0;
     foreach my $line (@lines){
       next unless ($line =~ /^(\s*\#?\s*set\s+[^\s]*?$param[^\s]*?\s+)(.*?)$/i);
@@ -39,7 +46,7 @@ MAIN:{
     
     $text = join("\n", @lines);
     open(FILE, ">$file");
-    print FILE $text . "\n";
+    print FILE "$text$trail";
     close(FILE);
 
   }
