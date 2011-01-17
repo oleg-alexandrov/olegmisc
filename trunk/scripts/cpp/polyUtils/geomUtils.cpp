@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cmath>
 #include <cfloat>
+#include <cstring>
 #include "geomUtils.h"
 using namespace std;
 using namespace utils;
@@ -186,9 +187,9 @@ void utils::searchForColor(std::string lineStr, // input, not a reference on pur
      "#6C7B8B", "#FF00FF", "#00CDCD", "navy", "gold"     // 11, ..., 15
     };
 
-  char * line  = (char*)lineStr.c_str();
-  char * col   = "color";
-  char * start = strstr(line, col);
+  char       * line  = (char*)lineStr.c_str();
+  const char * col   = "color";
+  char       * start = strstr(line, col);
 
   if (start == NULL) return;
   if (strlen(start) <= strlen(col)) return;

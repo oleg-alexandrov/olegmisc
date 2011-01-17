@@ -24,7 +24,7 @@ int main(int argc, char** argv){
 
   if (! poly.readPoly(filename, isPointCloud) ) exit(1);
 
-  char * outFile = "out.xg";
+  const char * outFile = "out.xg";
   cout << "Writing to " << outFile << endl;
   poly.writePoly(outFile);
 

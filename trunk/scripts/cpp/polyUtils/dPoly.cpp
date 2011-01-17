@@ -490,7 +490,7 @@ bool dPoly::readPoly(const char * filename,
   
 }
 
-void dPoly::writePoly(const char *filename, char *defaultColor, double scale
+void dPoly::writePoly(const char *filename, const char *defaultColor, double scale
                       ){
 
   ofstream outfile(filename);

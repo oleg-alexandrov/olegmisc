@@ -43,7 +43,7 @@ int main(int argc, char** argv){
           cutX, cutY, cutNumPolys                             // outputs
           );
   
-  char * outFile = "clipped.xg";
+  const char * outFile = "clipped.xg";
   cout << "Writing to " << outFile << endl;
   //double scale = 1.0;
   vector<string> colorsOut, layersOut; 
