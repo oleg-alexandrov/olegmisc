@@ -14,6 +14,7 @@ void foo(int);
 void formList(list*&, int);
 void insertToHeap(heap &, int);
 void mergeLists(int *, int, int *, int, int *);
+void mergeSort(int *, int, int *);
 void myfun1(int);
 void printHeap(heap &);
 void printInOrderNonRec(node*);
