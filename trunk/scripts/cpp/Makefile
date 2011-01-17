@@ -40,7 +40,13 @@ maxSum: maxSum.o $(OBJ1) $(HDR)
 mclass: mclass.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
+mergeSort: mergeSort.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 nameHiding: nameHiding.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
+qsort: qsort.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 queue: queue.o $(OBJ1) $(HDR) 
