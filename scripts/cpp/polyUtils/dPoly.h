@@ -24,7 +24,7 @@ public:
                 );
   
   void writePoly(const char *filename,
-                 char *defaultColor = "yellow", double scale = 1.0
+                 const char *defaultColor = "yellow", double scale = 1.0
                  );
   
   void reset(){
