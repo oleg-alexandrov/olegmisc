@@ -1,5 +1,6 @@
 bool isDigit(const char);
 endif for(int q = 0; q < n;);
+endif for(int s = 0; s < n;);
 int addOne(int);
 int deleteAtBeg(list*&);
 int deleteOneElem(list*&, int);
@@ -15,6 +16,7 @@ void formList(list*&, int);
 void insertToHeap(heap &, int);
 void mergeLists(int *, int, int *, int, int *);
 void mergeSort(int *, int, int *);
+void mqsort(int *, int);
 void myfun1(int);
 void printHeap(heap &);
 void printInOrderNonRec(node*);
