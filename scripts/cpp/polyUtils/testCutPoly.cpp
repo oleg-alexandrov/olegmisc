@@ -42,7 +42,8 @@ int main(int argc, char** argv){
   cutPoly(numPolys, numVerts, xv, yv, w[0], w[1], w[2], w[3], // inputs
           cutX, cutY, cutNumPolys                             // outputs
           );
-  
+
+
   const char * outFile = "clipped.xg";
   cout << "Writing to " << outFile << endl;
   //double scale = 1.0;
