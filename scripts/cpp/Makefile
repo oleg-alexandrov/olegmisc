@@ -19,6 +19,9 @@ first_nondup: first_nondup.o $(OBJ1) $(HDR)
 heap: heap.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
+heap2: heap2.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 inswap: inswap.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
@@ -44,6 +47,9 @@ mergeSort: mergeSort.o $(OBJ1) $(HDR)
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 nameHiding: nameHiding.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
+openHash: openHash.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 qsort: qsort.o $(OBJ1) $(HDR) 
