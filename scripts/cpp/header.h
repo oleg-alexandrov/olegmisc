@@ -1,5 +1,6 @@
 bool isDigit(const char);
 bool isHeap(const int *, int);
+bool isInList(node *, int);
 endif for(int q = 0; q < n;);
 endif for(int s = 0; s < n;);
 int addOne(int);
@@ -28,8 +29,10 @@ void printHeap(const int *, int);
 void printHeap(heap &);
 void printInOrderNonRec(node*);
 void printList(list *);
+void printList(node *);
 void printList2(list *);
 void printTree(node *);
+void pushToListFront(node*&, int);
 void push_back(int);
 void push_front(int);
 void qsort2(int *, int);

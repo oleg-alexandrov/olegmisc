@@ -10,6 +10,9 @@ XTRA_OBJ=
 OBJ1  =  $(XTRA_OBJ)
 
 
+closedHash: closedHash.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 endian: endian.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
