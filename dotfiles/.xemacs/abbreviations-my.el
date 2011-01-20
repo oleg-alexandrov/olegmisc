@@ -741,7 +741,7 @@
     ("co2" "cout.precision(20);" nil 1)
     ("teh" "the " nil 62)
     ("\\wst" "watch.Stop();" nil 1)
-    ("while" "while" c-electric-continued-statement 0)
+    ("while" "while (){\n\n}" c++-indent-block 0)
     ("uns" "using namespace std;" nil 28)
     ("\\sz" "sizeof()" (lambda nil (interactive) (search-backward ")")) 2)
     ("\\ws" "watch.Start();" nil 3)

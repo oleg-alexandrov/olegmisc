@@ -6,6 +6,17 @@
 (imenu-add-menubar-index) ; make a menu listing all functions in the given file
 (setq imenu-max-items 50)
 
+(defun c++-indent-block ()
+  (interactive)
+  (search-backward "{")
+  (c-indent-line-or-region)
+  (next-line 1)
+  (c-indent-line-or-region)
+  (next-line 1)
+  (c-indent-line-or-region)
+  (search-backward ")")
+  )
+
 (defun c++-if ()
   (interactive)
   (save-excursion
