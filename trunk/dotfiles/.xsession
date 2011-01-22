@@ -1,9 +1,5 @@
 #!/bin/bash -login
 
-xterm
-
-# ulimit -f 2000000000   # max file size (200MB)
-
 # Make the backspace behave
 stty erase '^?'
 
