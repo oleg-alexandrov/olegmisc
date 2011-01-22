@@ -38,10 +38,6 @@ eval `dircolors -b`
 
 zstyle ':completion:*' menu select
 
-autoload -U colors
-localColors=$w/local/share/zsh/4.3.10/functions/colors; # local zsh installation
-if [[ -f $localColors ]]; then source $localColors > /dev/null 2>&1; fi;
-
 function expand-command-smartly () {
 
   # When some text is typed in the command line, expand it
@@ -112,4 +108,10 @@ function reread_aliases {
 add-zsh-hook preexec reread_aliases
 
 # Init the prompt
+autoload -U colors
+for cFile in $w/local/share/zsh/4.3.10/functions/colors \
+             /usr/share/zsh/functions/Misc/colors; do
+ if [[ -f $cFile ]]; then source $cFile > /dev/null 2>&1; fi;
+done
 proml;
+
