@@ -16,6 +16,9 @@ MAIN:{
   my @files = @ARGV;
 
   foreach my $file (@files){
+
+    next if ( -d $file );
+    
     print "$file: color = $col\n";
 
     open(FILE, "<$file");
