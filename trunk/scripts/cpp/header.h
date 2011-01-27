@@ -37,5 +37,7 @@ void push_back(int);
 void push_front(int);
 void qsort2(int *, int);
 void reverseList(list*&);
+void rvStr(char *, int, int);
+void rvWords(char *, int);
 void rv_str(char *, int);
 void splitAtPivot(list *, int, list*&, list*&);
