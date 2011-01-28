@@ -9,8 +9,8 @@
 
 // Compare two polygons point-by-point. We assume there can be points
 // on edges of polygons. If one polygon has a point repeated twice,
-// but the second one has it repeated just once, that will be flagged
-// as a difference.
+// but the second polygon has it repeated just once, that will be
+// flagged as a difference.
 
 using namespace std;
 
