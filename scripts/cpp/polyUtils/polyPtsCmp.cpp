@@ -58,7 +58,7 @@ int main (int argc, char ** argv){
     iq = mQ.find(*ip);
     if ( iq != mQ.end() ){
       shared.push_back(*ip);
-      mQ.erase(iq);
+      mQ.erase(iq); // Erase just the current instance of the given value, not all instances
     }
   }
   
@@ -66,7 +66,7 @@ int main (int argc, char ** argv){
   for (int s = 0; s < (int)shared.size(); s++){
     ip = mP.find(shared[s]);
     if ( ip != mP.end() ){
-      mP.erase(ip);
+      mP.erase(ip); // Erase just the current instance of the given value, not all instances
     }
   }
   
