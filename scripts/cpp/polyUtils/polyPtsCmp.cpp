@@ -61,20 +61,23 @@ int main (int argc, char ** argv){
   for (int s = 0; s < (int)shared.size(); s++) mP.erase(shared[s]);
   for (int s = 0; s < (int)shared.size(); s++) mQ.erase(shared[s]);
 
-  char *outFile = "diff.xg", *color1 = "red", *color2 = "green";
+  char *outFile1 = "diff1.xg", *outFile2 = "diff2.xg", *color1 = "red", *color2 = "green";
 
-  cout << "Writing the differences to " << outFile << endl;
-  cout << "Points in " << argv[1] << ' ' << " not in " << argv[2] << " are in "
-       << color1  << endl;
-  cout << "Points in " << argv[2] << ' ' << " not in " << argv[1] << " are in "
-       << color2  << endl;
+  cout << "Writing points in " << argv[1] << ' ' << " not in " << argv[2] << " to "
+       << outFile1 << endl;
+
+    cout << "Writing points in " << argv[2] << ' ' << " not in " << argv[1] << " to "
+       << outFile2 << endl;
+
+  ofstream of1(outFile1);
+  of1 << "color = " << color1 << endl;
+  for (it = mP.begin(); it != mP.end(); it++) of1 << it->x << ' ' << it->y << endl;
+  of1.close();
   
-  ofstream of(outFile);
-  of << "color = " << color1 << endl;
-  for (it = mP.begin(); it != mP.end(); it++) of << it->x << ' ' << it->y << endl;
-  of << "color = " << color2 << endl;
-  for (it = mQ.begin(); it != mQ.end(); it++) of << it->x << ' ' << it->y << endl;
-  of.close();
+  ofstream of2(outFile2);
+  of2 << "color = " << color2 << endl;
+  for (it = mP.begin(); it != mP.end(); it++) of2 << it->x << ' ' << it->y << endl;
+  of2.close();
 
   return 0;
 
