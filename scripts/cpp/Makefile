@@ -70,6 +70,9 @@ reverse_linked: reverse_linked.o $(OBJ1) $(HDR)
 rv_words: rv_words.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
+rv_words2: rv_words2.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 shuffle: shuffle.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
@@ -80,6 +83,9 @@ sizeOfPtr: sizeOfPtr.o $(OBJ1) $(HDR)
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 stack_as_linked_list: stack_as_linked_list.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
+stock: stock.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 strip_white: strip_white.o $(OBJ1) $(HDR) 
