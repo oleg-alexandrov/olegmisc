@@ -13,6 +13,9 @@ all: test_dPoly testCutPoly
 OBJ1  =  $(XTRA_OBJ)
 
 
+polyPtsCmp: polyPtsCmp.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 test_dPoly: test_dPoly.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
@@ -25,6 +28,9 @@ cutPoly.o: cutPoly.cpp cutPoly.h
 
 dPoly.o: dPoly.cpp dPoly.h
 	$(CPP)  -c  dPoly.cpp
+
+geomUtils.o: geomUtils.cpp geomUtils.h
+	$(CPP)  -c  geomUtils.cpp
 
 test_dPoly.o: test_dPoly.cpp dPoly.h
 	$(CPP)  -c  test_dPoly.cpp
