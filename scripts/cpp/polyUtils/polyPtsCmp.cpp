@@ -49,26 +49,32 @@ int main (int argc, char ** argv){
   dPoly P; P.readPoly(argv[1]); multiset<dPoint> mP; putPolyInMultiSet(P, mP);
   dPoly Q; Q.readPoly(argv[2]); multiset<dPoint> mQ; putPolyInMultiSet(Q, mQ);
 
-  // Put here points in both multi-sets
+  // If a point is in mP, and also in mQ, mark it as being in mP and wipe it from mQ
   vector<dPoint> shared;
   shared.clear();
-
-  multiset<dPoint>::iterator it;
-  for (it = mP.begin(); it != mP.end(); it++){
-    if ( mQ.find(*it) != mQ.end() ) shared.push_back(*it);
+  multiset<dPoint>::iterator it, ip, iq;
+  for (ip = mP.begin(); ip != mP.end(); ip++){
+    iq = mQ.find(*ip);
+    if ( iq != mQ.end() ){
+      shared.push_back(*ip);
+      mQ.erase(iq);
+    }
   }
-
-  for (int s = 0; s < (int)shared.size(); s++) mP.erase(shared[s]);
-  for (int s = 0; s < (int)shared.size(); s++) mQ.erase(shared[s]);
-
+  
+  // Wipe it from mP as well
+  for (int s = 0; s < (int)shared.size(); s++){
+    ip = mP.find(shared[s]);
+    if ( ip != mP.end() ){
+      mP.erase(ip);
+    }
+  }
+  
   char *outFile1 = "diff1.xg", *outFile2 = "diff2.xg", *color1 = "red", *color2 = "green";
-
-  cout << "Writing points in " << argv[1] << ' ' << " not in " << argv[2] << " to "
+  cout << "Writing points in " << argv[1] << ' ' << "not in " << argv[2] << " to "
        << outFile1 << endl;
-
-    cout << "Writing points in " << argv[2] << ' ' << " not in " << argv[1] << " to "
+  cout << "Writing points in " << argv[2] << ' ' << "not in " << argv[1] << " to "
        << outFile2 << endl;
-
+  
   ofstream of1(outFile1);
   of1 << "color = " << color1 << endl;
   for (it = mP.begin(); it != mP.end(); it++) of1 << it->x << ' ' << it->y << endl;
@@ -76,7 +82,7 @@ int main (int argc, char ** argv){
   
   ofstream of2(outFile2);
   of2 << "color = " << color2 << endl;
-  for (it = mP.begin(); it != mP.end(); it++) of2 << it->x << ' ' << it->y << endl;
+  for (it = mQ.begin(); it != mQ.end(); it++) of2 << it->x << ' ' << it->y << endl;
   of2.close();
 
   return 0;
