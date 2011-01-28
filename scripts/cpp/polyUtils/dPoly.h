@@ -20,7 +20,7 @@ public:
   bool isPointCloud() { return m_isPointCloud;}
   
   bool readPoly(const char * filename,
-                bool isPointCloud 
+                bool isPointCloud = false
                 );
   
   void writePoly(const char *filename,
