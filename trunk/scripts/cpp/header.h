@@ -17,6 +17,7 @@ int randn(int);
 int rightChild(int);
 int rmLargestFromHeap(heap &);
 void addToHeap(int *, int &, int);
+void allocAndReturn(int, smartPtr &);
 void doSort(int *, int, int);
 void foo(int);
 void formList(list*&, int);

@@ -79,7 +79,13 @@ shuffle: shuffle.o $(OBJ1) $(HDR)
 singleton: singleton.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
+singleton2: singleton2.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 sizeOfPtr: sizeOfPtr.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
+smartPtr: smartPtr.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 stack_as_linked_list: stack_as_linked_list.o $(OBJ1) $(HDR) 
