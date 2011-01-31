@@ -125,7 +125,6 @@
  	     (load-library "mail-my")
  	     ))
 
-
 (add-hook 'fundamental-mode-user-hook
 	  '(lambda()
 	     (local-set-key [(control j)] 'fill-paragraph)
@@ -209,14 +208,12 @@
 (add-hook 'emacs-lisp-mode-hook 
 	  '(lambda()
 	     (load-library "emacs-lisp-my")
-	     
 	     ))
 
 ;; Shell
-(add-hook 'shell-script-mode-hook 
+(add-hook 'sh-mode-hook
 	  '(lambda()
 	     (load-library "shell-script-my")
-	     
 	     ))
 
 ;Html
