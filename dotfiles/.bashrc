@@ -18,8 +18,10 @@ if [ "$SSH_TTY" != "" ]; then # If we have a tty
   stty stop  undef # control s
   stty start undef # control q
 
-  # Bind the windows key for use in fvwm
-  xmodmap -e  "add mod3 = Super_L"
+  # Bind the windows key for use in fvwm, if we have a display 
+  if [ "$DISPLAY" != "" ]; then 
+    xmodmap -e  "add mod3 = Super_L"
+  fi  
 fi
 
 ## Pager macros
