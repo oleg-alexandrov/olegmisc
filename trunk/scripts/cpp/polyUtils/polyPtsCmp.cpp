@@ -54,7 +54,7 @@ int main (int argc, char ** argv){
   // If a point is in mP, and also in mQ, mark it as being in mP and wipe it from mQ
   vector<dPoint> shared;
   shared.clear();
-  multiset<dPoint>::iterator it, ip, iq;
+  multiset<dPoint>::iterator ip, iq;
   for (ip = mP.begin(); ip != mP.end(); ip++){
     iq = mQ.find(*ip);
     if ( iq != mQ.end() ){
@@ -79,12 +79,12 @@ int main (int argc, char ** argv){
   
   ofstream of1(outFile1);
   of1 << "color = " << color1 << endl;
-  for (it = mP.begin(); it != mP.end(); it++) of1 << it->x << ' ' << it->y << endl;
+  for (ip = mP.begin(); ip != mP.end(); ip++) of1 << ip->x << ' ' << ip->y << endl;
   of1.close();
   
   ofstream of2(outFile2);
   of2 << "color = " << color2 << endl;
-  for (it = mQ.begin(); it != mQ.end(); it++) of2 << it->x << ' ' << it->y << endl;
+  for (iq = mQ.begin(); iq != mQ.end(); iq++) of2 << iq->x << ' ' << iq->y << endl;
   of2.close();
 
   return 0;
