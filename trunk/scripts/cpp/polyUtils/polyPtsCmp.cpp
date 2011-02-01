@@ -74,18 +74,27 @@ int main (int argc, char ** argv){
   char *outFile1 = "diff1.xg", *outFile2 = "diff2.xg", *color1 = "red", *color2 = "green";
   cout << "Writing points in " << inFile1 << ' ' << "not in " << inFile2 << " to "
        << outFile1 << endl;
-  cout << "Writing points in " << inFile2 << ' ' << "not in " << inFile1 << " to "
-       << outFile2 << endl;
-  
   ofstream of1(outFile1);
   of1 << "color = " << color1 << endl;
-  for (ip = mP.begin(); ip != mP.end(); ip++) of1 << ip->x << ' ' << ip->y << endl;
+  int count1 = 0;
+  for (ip = mP.begin(); ip != mP.end(); ip++){
+    of1 << ip->x << ' ' << ip->y << endl;
+    count1++;
+  }
   of1.close();
+  cout << "Wrote " << count1 << " points" << endl;
   
+  cout << "Writing points in " << inFile2 << ' ' << "not in " << inFile1 << " to "
+       << outFile2 << endl;
+  int count2 = 0;
   ofstream of2(outFile2);
   of2 << "color = " << color2 << endl;
-  for (iq = mQ.begin(); iq != mQ.end(); iq++) of2 << iq->x << ' ' << iq->y << endl;
+  for (iq = mQ.begin(); iq != mQ.end(); iq++){
+    of2 << iq->x << ' ' << iq->y << endl;
+    count2++;
+  }
   of2.close();
+  cout << "Wrote " << count2 << " points" << endl;
 
   return 0;
 
