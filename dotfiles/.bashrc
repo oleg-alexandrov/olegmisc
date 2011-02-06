@@ -8,7 +8,7 @@ set history=10000
 set filec
 set show-all-if-ambiguous on
 
-if [ "$SSH_TTY" != "" ]; then # If we have a tty
+if [ "$SSH_TTY" != "" ] || [ "$DISPLAY" != "" ]; then 
 
   # Make the backspace behave
   stty erase '^?'
@@ -20,7 +20,7 @@ if [ "$SSH_TTY" != "" ]; then # If we have a tty
 
   # Bind the windows key for use in fvwm, if we have a display 
   if [ "$DISPLAY" != "" ]; then 
-    xmodmap -e  "add mod3 = Super_L"
+    xmodmap -e  "add mod4 = Super_L"
   fi  
 fi
 
