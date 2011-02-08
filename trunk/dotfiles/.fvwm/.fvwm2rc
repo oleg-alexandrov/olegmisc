@@ -162,19 +162,19 @@ Key Up    A   C   Scroll +0   -100
 Key Down  A   C   Scroll +0   +100
 
 # Pop-up the pager temorarily
-#Key Home  A   3   Module FvwmPager -transient *
-#Key End   A   3   Module FvwmPager -transient *
+#Key Home  A   4   Module FvwmPager -transient *
+#Key End   A   4   Module FvwmPager -transient *
 
 # Use the left windows key for moving the cursor  
-# Put this in .bashrc: xmodmap -e  "add mod3 = Super_L"
-Key Left   A   3   CursorMove -50 +0
-Key Right  A   3   CursorMove +50 +0
-Key Up     A   3   CursorMove +0 -50
-Key Down   A   3   CursorMove +0 +50
+# Put this in .bashrc: xmodmap -e  "add mod4 = Super_L"
+Key Left   A   4   CursorMove -50 +0
+Key Right  A   4   CursorMove +50 +0
+Key Up     A   4   CursorMove +0 -50
+Key Down   A   4   CursorMove +0 +50
 
 # Win-PageUp and Win-PageDown to move between desks
-Key Next  A  3    GotoDesk +1 0 3
-Key Prior A  3    GotoDesk -1 0 3
+Key Next  A  4    GotoDesk +1 0 3
+Key Prior A  4    GotoDesk -1 0 3
 
 # arrow + shift + meta => move pointer by 1/10 of a page
 Key Left   A   SM   CursorMove -50 +0

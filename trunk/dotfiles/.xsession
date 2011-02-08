@@ -4,7 +4,7 @@
 stty erase '^?'
 
 # Bind the windows key for use in fvwm
-xmodmap -e  "add mod3 = Super_L"
+xmodmap -e  "add mod4 = Super_L"
 
 # Disable control s and control q, so that I can use them in vim.
 #stty -a # see what is enabled
