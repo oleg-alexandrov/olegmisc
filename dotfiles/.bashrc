@@ -261,7 +261,6 @@ if [ -f ~/.unaliases ]; then
         source ~/.unaliases
 fi
 
-# More aliases
-if [ -f ~/.bash_aliases ]; then
-        source ~/.bash_aliases
-fi
+# Aliases
+if [ -f ~/.base_aliases ]; then source ~/.base_aliases; fi 
+if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi  
