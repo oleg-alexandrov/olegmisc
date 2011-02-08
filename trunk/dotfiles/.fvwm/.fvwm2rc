@@ -2,7 +2,7 @@
 EdgeResistance 550 200
 WindowFont   -*-fixed-bold-*-*-*-15-*-*-*-*-*-*-* 
 IconFont   -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
-EdgeScroll 500 500
+EdgeScroll 0 0
 ClickTime 750
 ColormapFocus FollowsMouse
 
