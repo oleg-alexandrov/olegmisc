@@ -8,6 +8,14 @@
 
 using namespace std;
 
+void utils::printUsage(char * progName){
+  
+  std::cout << "Usage: " << progName
+            << " [ -geo[metry] 1000x800 ] [ -c[olor] yellow ] file_1.xg ... "
+            << "[ -p[oints] ] [ -nc | -noClosedPolys ] file_N.xg " << std::endl;
+  
+}
+
 void utils::extractWindowDims(// inputs
                               int numArgs, char ** args,
                               // outputs
@@ -57,11 +65,13 @@ void utils::parseCmdOptions(//inputs
                             std::vector<std::string>   & cmdLineColors, 
                             std::vector<std::string>   & polyFilesVec, 
                             std::vector<bool>          & plotPointsOnlyVec,
-                            bool                       & plotAsLines
+                            bool                       & plotAsLines,
+                            bool                       & noClosedPolys
                             ){
 
   useCmdLineColors = false;
   plotAsLines      = false;
+  noClosedPolys    = false;
   cmdLineColors.clear();
   polyFilesVec.clear();
   plotPointsOnlyVec.clear();
@@ -90,13 +100,20 @@ void utils::parseCmdOptions(//inputs
       exit(0);
     }
 
-    if ( strncmp (currArg, "-p",  2) == 0 ){
+    if ( strncmp (currArg, "-p",  strlen("-p")) == 0 ){
       plotPointsOnly = !plotPointsOnly;
       continue;
     }
 
-    if ( strncmp (currArg, "-l",  2) == 0 ){
+    if ( strncmp (currArg, "-l",  strlen("-l")) == 0 ){
       plotAsLines = true;
+      continue;
+    }
+
+    if ( strncmp (currArg, "-nc",             strlen("-nc"))            == 0 || 
+         strncmp (currArg, "-noclosedpolys",  strlen("-noclosedpolys")) == 0
+         ){
+      noClosedPolys = true;
       continue;
     }
 

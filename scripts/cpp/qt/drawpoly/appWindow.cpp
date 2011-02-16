@@ -22,6 +22,7 @@ appWindow::appWindow(QWidget* parent, const char* progName,
                      const std::vector<std::string> & polyFilesVec,
                      const std::vector<bool>        & plotPointsOnlyVec,
                      bool                             plotAsLines,
+                     bool                             noClosedPolys,
                      int windowWidX, int windowWidY
                      ):
   QMainWindow(parent, progName){
@@ -31,7 +32,7 @@ appWindow::appWindow(QWidget* parent, const char* progName,
 
   // Central widget
   m_poly = new drawPoly (this, useCmdLineColors, cmdLineColors,
-                         polyFilesVec, plotPointsOnlyVec, plotAsLines);
+                         polyFilesVec, plotPointsOnlyVec, plotAsLines, noClosedPolys);
   m_poly->setBackgroundColor (QColor("black"));
   m_poly->setFocusPolicy(QWidget::StrongFocus);
   m_poly->setFocus();

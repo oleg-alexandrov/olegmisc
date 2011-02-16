@@ -25,6 +25,7 @@ public:
             const std::vector<std::string> & polyFilesVec,
             const std::vector<bool>        & plotPointsOnlyVec,
             bool                             plotAsLines,
+            bool                             noClosedPolys,
             int windowWidX, int windowWidY
             );
   ~appWindow();
@@ -35,8 +36,8 @@ public slots:
 private slots:
   QMenuBar* createMenus();
   void procCmdLine();
-  void shiftUp();
-  void shiftDown();
+  void shiftUp ();
+  void shiftDown ();
   
 private:
   void insertCmdFromHist();

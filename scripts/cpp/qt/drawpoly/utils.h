@@ -38,19 +38,14 @@ namespace utils{
                        std::vector<std::string>   & cmdLineColors, 
                        std::vector<std::string>   & polyFilesVec, 
                        std::vector<bool>          & plotPointsOnlyVec,
-                       bool                       & plotAsLines
+                       bool                       & plotAsLines,
+                       bool                       & noClosedPolys
                        );
 
   std::string inFileToOutFile(const std::string & inFile);
 
-  inline void printUsage(char * progName){
-    
-    std::cout << "Usage: " << progName
-              << " [ -geo[metry] 1000x800 ] [ -c[olor] ] file_1.xg ... "
-              << "[ -p[oints] ] file_N.xg " << std::endl;
+  void printUsage(char * progName);
 
-  }
-  
 }
 
 #endif
