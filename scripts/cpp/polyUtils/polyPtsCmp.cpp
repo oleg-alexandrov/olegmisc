@@ -6,6 +6,7 @@
 #include <cassert>
 #include <set>
 #include "dPoly.h"
+#include "dPoint.h"
 
 // Compare two polygons point-by-point. We assume there can be points
 // on edges of polygons. If one polygon has a point repeated twice,
@@ -13,14 +14,6 @@
 // flagged as a difference.
 
 using namespace std;
-
-struct dPoint{
-  double x, y;
-};
-
-bool operator< (dPoint P, dPoint Q){
-  return ( P.x < Q.x ) || (P.x == Q.x && P.y < Q.y);
-}
 
 void putPolyInMultiSet(const dPoly & P, multiset<dPoint> & mP){
 

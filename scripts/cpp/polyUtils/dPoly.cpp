@@ -14,16 +14,49 @@ void dPoly::bdBox(double & xll, double & yll, double & xur, double & yur)
   const{
 
   if (m_totalNumVerts <= 0){
-    xll = DBL_MAX, xur = -DBL_MAX;
-    yll = DBL_MAX, yur = -DBL_MAX;
+    xll = DBL_MAX/4.0, xur = -DBL_MAX/4.0; // Use 1/4.0 to avoid overflow when ...
+    yll = DBL_MAX/4.0, yur = -DBL_MAX/4.0; // ... finding width and height
     return;
   }
     
-  xll = *std::min_element( vecPtr(m_xv), vecPtr(m_xv) + m_totalNumVerts );
-  yll = *std::min_element( vecPtr(m_yv), vecPtr(m_yv) + m_totalNumVerts );
-  xur = *std::max_element( vecPtr(m_xv), vecPtr(m_xv) + m_totalNumVerts );
-  yur = *std::max_element( vecPtr(m_yv), vecPtr(m_yv) + m_totalNumVerts );
+  xll = *min_element( vecPtr(m_xv), vecPtr(m_xv) + m_totalNumVerts );
+  yll = *min_element( vecPtr(m_yv), vecPtr(m_yv) + m_totalNumVerts );
+  xur = *max_element( vecPtr(m_xv), vecPtr(m_xv) + m_totalNumVerts );
+  yur = *max_element( vecPtr(m_yv), vecPtr(m_yv) + m_totalNumVerts );
 
+  return;
+};
+
+void dPoly::bdBoxes(std::vector<double> & xll, std::vector<double> & yll,
+                    std::vector<double> & xur, std::vector<double> & yur) const{
+
+  xll.clear();
+  yll.clear();
+  xur.clear();
+  yur.clear();
+  
+  int start = 0;
+  for (int pIter = 0; pIter < m_numPolys; pIter++){
+      
+    if (pIter > 0) start += m_numVerts[pIter - 1];
+
+    int numV = m_numVerts[pIter];
+
+    double x0, y0, x1, y1;
+    if (numV <= 0){
+      x0 = DBL_MAX/4.0, x1 = -DBL_MAX/4.0; // Use 1/4.0 to avoid overflow when ...
+      y0 = DBL_MAX/4.0, y1 = -DBL_MAX/4.0; // ... finding width and height
+    }else{
+      const double * px = vecPtr(m_xv) + start;
+      const double * py = vecPtr(m_yv) + start;
+      x0 = *min_element( px, px + numV ); x1 = *max_element( px, px + numV );
+      y0 = *min_element( py, py + numV ); y1 = *max_element( py, py + numV );
+    }
+    xll.push_back(x0); xur.push_back(x1);
+    yll.push_back(y0); yur.push_back(y1);
+    
+  }
+  
   return;
 };
 
