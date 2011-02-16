@@ -6,6 +6,7 @@
 #include <cassert>
 #include <cstring>
 #include <string>
+#include "dPoint.h"
 #include "dPoly.h"
 using namespace std;
 using namespace utils;
@@ -401,6 +402,87 @@ void dPoly::erasePoly(int polyIndex){
   m_layerAnno.clear();
 
   return;
+}
+
+namespace dPoly_local_functions{
+  struct ptAndIndex{
+    dPoint point;
+    double area;
+    int    index;
+  };
+  bool greaterThanPtIndex (ptAndIndex P, ptAndIndex Q){
+
+    if (greaterThan(P.point, Q.point) ) return true;
+    if (greaterThan(Q.point, P.point) ) return false;
+
+    return (P.area > Q.area);
+    
+  }
+}
+
+void dPoly::sortFromLargestToSmallest(){
+
+  // Sort the polygons so that if polygon A is inside of polygon B, then
+  // polygon B shows up before polygon A after sorting.
+
+  // Use the fact that if A is inside of B, then the dimensions/area of A
+  // are no more than those of B.
+
+  using namespace dPoly_local_functions;
+
+  // Find the bounding boxes of polygons
+  vector<double> xll, yll, xur, yur;
+  bdBoxes(xll, yll, xur, yur);
+
+  int numPolys = xll.size();
+
+  vector<ptAndIndex> boxDims;
+  int start = 0;
+  boxDims.resize(numPolys);
+  for (int s = 0; s < numPolys; s++){
+    
+    if (s > 0) start += m_numVerts[s - 1];
+    int numV = m_numVerts[s];
+    
+    boxDims[s].point = dPoint( xur[s] - xll[s], yur[s] - yll[s] );
+    boxDims[s].area  = abs(signedPolyArea(numV,
+                                          vecPtr(m_xv) + start, vecPtr(m_yv) + start)
+                           );
+    boxDims[s].index = s;
+  }
+
+  // Sort the bounding boxes, this will tell us how to sort the polygons
+  sort(boxDims.begin(), boxDims.end(), greaterThanPtIndex );
+
+  // Sort the polygons using auxiliary storage
+
+  vector<double> l_xv     = m_xv, l_yv = m_yv;
+  vector<int> l_numVerts  = m_numVerts;
+  vector<string> l_colors = m_colors, l_layers = m_layers;
+
+  for (int s = 0; s < numPolys; s++){
+    int index      = boxDims[s].index;
+    m_numVerts [s] = l_numVerts [index];
+    m_colors   [s] = l_colors   [index];
+    m_layers   [s] = l_layers   [index];
+  }
+  
+  start = 0;
+  for (int s = 0; s < numPolys; s++){
+
+    if (s > 0) start += m_numVerts[s - 1];
+
+    int index = boxDims[s].index;
+    int start2 = 0;
+    for (int t = 0; t < index; t++) start2 += l_numVerts[t];
+
+    for (int t = 0; t < m_numVerts[s]; t++){
+      m_xv[start + t] = l_xv[start2 + t];
+      m_yv[start + t] = l_yv[start2 + t];
+    }
+    
+  }
+  
 }
 
 bool dPoly::readPoly(const char * filename,

@@ -276,3 +276,22 @@ void utils::searchForLayer(std::string   lineStr, // input
   return;
 }
 
+double utils::signedPolyArea(int numV, const double* xv, const double* yv){
+
+  // Subtract the first vertex when computing the area to handle more
+  // accurately polygons very far from the origin.
+  
+  double area = 0.0;
+  
+  for (int vIter = 0; vIter < numV; vIter++){
+
+    int vNext = (vIter + 1)%numV;
+    area += (xv[vIter] - xv[0])*(yv[vNext] - yv[0]) -
+      (xv[vNext] - xv[0])*(yv[vIter] - yv[0]);
+    
+  }
+
+  area /= 2.0;
+
+  return area;
+}
