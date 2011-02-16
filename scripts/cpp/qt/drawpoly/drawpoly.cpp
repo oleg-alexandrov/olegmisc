@@ -207,7 +207,7 @@ void drawPoly::showPoly( QPainter *paint ){
   for (int vi  = 0; vi < (int)m_polyVec.size(); vi++){
 
     int vecIter = m_polyVecOrder[vi];
-    
+
     bool plotPointsOnly = m_plotPointsOnlyVec[vecIter];
     if (plotPointsOnly                               ||
         m_toggleShowPointsEdges == m_showPoints      ||
@@ -224,15 +224,20 @@ void drawPoly::showPoly( QPainter *paint ){
       m_polyVec[vecIter].compLayerAnno();
     }
     
-    dPoly clipPoly;
-    m_polyVec[vecIter].clipPoly(//inuts
-                                m_viewXll,  m_viewYll,
-                                m_viewXll + m_viewWidX,
-                                m_viewYll + m_viewWidY,
-                                // output
-                                clipPoly
-                                );
+    dPoly currPoly = m_polyVec[vecIter]; // local copy which we can modify
     
+    // When polys are filled, plot largest polys first
+    if (m_showFilledPolys) currPoly.sortFromLargestToSmallest();
+    
+    dPoly clipPoly;
+    currPoly.clipPoly(//inuts
+                      m_viewXll,  m_viewYll,
+                      m_viewXll + m_viewWidX,
+                      m_viewYll + m_viewWidY,
+                      // output
+                      clipPoly
+                      );
+
     const double * xv           = clipPoly.get_xv();
     const double * yv           = clipPoly.get_yv();
     const int    * numVerts     = clipPoly.get_numVerts();
@@ -266,6 +271,16 @@ void drawPoly::showPoly( QPainter *paint ){
       if (pIter > 0) start += numVerts[pIter - 1];
 
       int pSize = numVerts[pIter];
+
+      // Determine the orientation of polygons
+      double area = 0.0;
+
+      // We need to correct the signed area for the fact that our polygons
+      // are flipped internally. 
+      if (m_showFilledPolys){
+        area = m_yFactor*signedPolyArea(pSize, xv + start, yv + start);
+      }
+      
       QPointArray pa(pSize);
       for (int vIter = 0; vIter < pSize; vIter++){
 
@@ -290,8 +305,10 @@ void drawPoly::showPoly( QPainter *paint ){
       }
       
       if (!plotPointsOnly && m_toggleShowPointsEdges != m_showPoints){
+
         if (m_showFilledPolys){
-          paint->setBrush( color );
+          if (area >= 0.0) paint->setBrush( color );
+          else             paint->setBrush( backgroundColor() ); 
           paint->setPen( NoPen );
         }else {
           paint->setBrush( NoBrush );
