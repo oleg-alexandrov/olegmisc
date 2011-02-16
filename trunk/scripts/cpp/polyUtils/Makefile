@@ -6,7 +6,7 @@ FC = g77 -O3
 XTRA_OBJ=cutPoly.cpp dPoly.cpp geomUtils.cpp 
 HDR= cutPoly.h dPoly.h geomUtils.h
 
-all: test_dPoly testCutPoly 
+all: test_dPoly testCutPoly polyPtsCmp
 
 #start: the lines between start and end will be updated every time hdr is run.
 
@@ -31,6 +31,9 @@ dPoly.o: dPoly.cpp dPoly.h
 
 geomUtils.o: geomUtils.cpp geomUtils.h
 	$(CPP)  -c  geomUtils.cpp
+
+polyPtsCmp.o: polyPtsCmp.cpp dPoly.h dPoint.h
+	$(CPP)  -c  polyPtsCmp.cpp
 
 test_dPoly.o: test_dPoly.cpp dPoly.h
 	$(CPP)  -c  test_dPoly.cpp

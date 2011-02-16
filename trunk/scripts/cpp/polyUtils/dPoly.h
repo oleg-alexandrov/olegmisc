@@ -1,5 +1,5 @@
-#ifndef XG_POLY_H
-#define XG_POLY_H
+#ifndef DPOLY_H
+#define DPOLY_H
 
 #include <vector>
 #include <algorithm>
@@ -79,6 +79,9 @@ public:
   void compLayerAnno();
 
   void bdBox(double & xll, double & yll, double & xur, double & yur) const;
+
+  void bdBoxes(std::vector<double> & xll, std::vector<double> & yll,
+               std::vector<double> & xur, std::vector<double> & yur) const;
   
   void findClosestPointAndDist(// inputs
                                double x0, double y0,
