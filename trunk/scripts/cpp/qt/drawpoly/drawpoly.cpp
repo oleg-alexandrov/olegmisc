@@ -27,7 +27,8 @@ drawPoly::drawPoly( QWidget *parent,
                     const std::vector<std::string> & cmdLineColors,
                     const std::vector<std::string> & polyFilesVec,
                     const std::vector<bool>        & plotPointsOnlyVec,
-                    bool                             plotAsLines 
+                    bool                             plotAsLines,
+                    bool                             noClosedPolys
                     ): QWidget(parent){
 
   setStandardCursor();
@@ -37,6 +38,7 @@ drawPoly::drawPoly( QWidget *parent,
   m_polyFilesVec      = polyFilesVec;
   m_plotPointsOnlyVec = plotPointsOnlyVec;
   m_plotAsLines       = plotAsLines;
+  m_noClosedPolys     = noClosedPolys;
   
   m_yFactor = -1; // To compensate for Qt's origin in the upper-left corner
   
@@ -300,8 +302,10 @@ void drawPoly::showPoly( QPainter *paint ){
           // Treat the case of polygons which are made up of just one point 
           drawOneVertex(pa[0].x(), pa[0].y(), color, lineWidth, drawVertIndex,
                         paint);
-        }else{
+        }else if (!m_noClosedPolys){
           paint->drawPolygon( pa );
+        }else{
+          paint->drawPolyline( pa ); // don't join the last vertex to the first
         }
         
       }

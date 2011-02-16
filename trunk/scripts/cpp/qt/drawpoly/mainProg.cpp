@@ -21,6 +21,7 @@ int main(int argc, char** argv){
   vector<string>  cmdLineColors, polyFilesVec;
   vector<bool>    plotPointsOnlyVec;
   bool            plotAsLines;
+  bool            noClosedPolys; // Don't join the last vertex to the first one
   
   parseCmdOptions(// inputs
                   argc, argv, exeName,
@@ -28,14 +29,14 @@ int main(int argc, char** argv){
                   windowWidX, windowWidY,
                   useCmdLineColors, cmdLineColors,
                   polyFilesVec, plotPointsOnlyVec,
-                  plotAsLines
+                  plotAsLines, noClosedPolys
                   );
 
   QApplication app(argc, argv);
   char * progName = "drawPoly";
   
   appWindow m(NULL, progName, useCmdLineColors, cmdLineColors,
-              polyFilesVec, plotPointsOnlyVec, plotAsLines,
+              polyFilesVec, plotPointsOnlyVec, plotAsLines, noClosedPolys,
               windowWidX, windowWidY);
   m.setCaption(progName);
   m.show();

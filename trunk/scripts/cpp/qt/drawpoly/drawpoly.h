@@ -16,7 +16,8 @@ public:
               const std::vector<std::string> & cmdLineColors,
               const std::vector<std::string> & polyFilesVec,
               const std::vector<bool>        & plotPointsOnlyVec,
-              bool                             plotAsLines 
+              bool                             plotAsLines,
+              bool                             noClosedPolys
               );
   
   void runCmd(std::string cmd);
@@ -142,6 +143,7 @@ private:
   std::vector<std::string> m_polyFilesVec;
   std::vector<bool>        m_plotPointsOnlyVec;
   bool                     m_plotAsLines;
+  bool                     m_noClosedPolys;
   
   int m_yFactor; // To compensate for Qt's origin in the upper-left corner
 
