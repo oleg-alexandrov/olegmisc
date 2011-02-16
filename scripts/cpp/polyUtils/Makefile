@@ -3,7 +3,7 @@
 CPP = g++ -O3 -Wall
 CC = gcc -O3
 FC = g77 -O3
-XTRA_OBJ=cutPoly.cpp dPoly.cpp geomUtils.cpp 
+XTRA_OBJ=cutPoly.cpp dPoint.cpp dPoly.cpp geomUtils.cpp 
 HDR= cutPoly.h dPoly.h geomUtils.h
 
 all: test_dPoly testCutPoly polyPtsCmp
@@ -26,7 +26,10 @@ testCutPoly: testCutPoly.o $(OBJ1) $(HDR)
 cutPoly.o: cutPoly.cpp cutPoly.h
 	$(CPP)  -c  cutPoly.cpp
 
-dPoly.o: dPoly.cpp dPoly.h
+dPoint.o: dPoint.cpp dPoint.h
+	$(CPP)  -c  dPoint.cpp
+
+dPoly.o: dPoly.cpp dPoint.h dPoly.h
 	$(CPP)  -c  dPoly.cpp
 
 geomUtils.o: geomUtils.cpp geomUtils.h

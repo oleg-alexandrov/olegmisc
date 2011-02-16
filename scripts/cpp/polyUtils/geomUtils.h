@@ -71,6 +71,8 @@ namespace utils{
                       std::string & layer    // output
                       );
   
+  double signedPolyArea(int numV, const double* xv, const double* yv);
+  
   void searchForColor(std::string lineStr, // input, not a reference on purpose
                       std::string & color  // output
                       );

@@ -97,6 +97,7 @@ public:
                             );
   
   void erasePoly(int polyIndex);
+  void sortFromLargestToSmallest();
   
 private:
   // If isPointCloud is true, treat each point as a set of unconnected points
