@@ -645,79 +645,97 @@ void drawPoly::paintEvent( QPaintEvent*){
 
 void drawPoly::addPolyVert(int px, int py){
 
-  // Add a point to the polygn being drawn
+  // Add a point to the polygon being drawn or stop drawing.
+
   double wx, wy;
   pixelToWorldCoords(px, py, wx, wy);
 
-  // See if we arrived back at the first point
-  double wtol = pixelToWorldDist(m_pixelTol);
-  int pSize = m_currPolyX.size();
+  double wtol           = pixelToWorldDist(m_pixelTol);
+  int pSize             = m_currPolyX.size();
   bool isClosedPolyLine = false;
-  if (pSize >= 1 &&
-      distance(m_currPolyX[0], m_currPolyY[0], wx, wy)  <= wtol
+  
+  if (pSize <= 0 ||
+      distance(m_currPolyX[0], m_currPolyY[0], wx, wy) > wtol
       ){
 
-    isClosedPolyLine = true;
+    // We did not arrive at the starting point of the polygon being
+    // drawn. Add the current point.
+    
+    m_currPolyX.push_back(wx);
+    m_currPolyY.push_back(wy);
+    pSize = m_currPolyX.size();
+    isClosedPolyLine = false;
     snapPolyLineTo45DegAngles(isClosedPolyLine, pSize,
                               vecPtr(m_currPolyX), vecPtr(m_currPolyY));
+    
+    QPainter paint(this);
+    drawCurrPolyLine(&paint);
 
-    // Get the layer and color from the closest existing polygon
-    double minDist   = DBL_MAX;
-    int minVecIndex  = -1;
-    int minPolyIndex = -1;
-    findClosestPolyAndDist(// inputs
-                           m_currPolyX[0], m_currPolyY[0],
-                           m_polyVec,  
-                           // outputs
-                           minVecIndex, minPolyIndex,  
-                           minDist
-                           );
-    string color, layer;
-    if (minVecIndex >= 0 && minPolyIndex >= 0){
-      vector<string> layers = m_polyVec[minVecIndex].get_layers();
-      vector<string> colors = m_polyVec[minVecIndex].get_colors();
-      color = colors.at(minPolyIndex);
-      layer = layers.at(minPolyIndex);
-    }else{
-      color = "green";
-      layer = "1:0";
-    }
+    return;
+  }
 
-    // Form the new polygon
-    dPoly P;
-    P.reset();
-    P.appendPolygon(pSize, vecPtr(m_currPolyX), vecPtr(m_currPolyY), color, layer);
+  // We arrived at the starting point of the polygon being drawn. Stop
+  // adding points and append the current polygon.
+  
+  isClosedPolyLine = true;
+  snapPolyLineTo45DegAngles(isClosedPolyLine, pSize,
+                            vecPtr(m_currPolyX), vecPtr(m_currPolyY));
+
+  // Get the layer and color from the closest existing polygon
+  double minDist   = DBL_MAX;
+  int minVecIndex  = -1;
+  int minPolyIndex = -1;
+  findClosestPolyAndDist(// inputs
+                         m_currPolyX[0], m_currPolyY[0],
+                         m_polyVec,  
+                         // outputs
+                         minVecIndex, minPolyIndex,  
+                         minDist
+                         );
+  string color, layer;
+  if (minVecIndex >= 0 && minPolyIndex >= 0){
+    const vector<string> & layers = m_polyVec[minVecIndex].get_layers();
+    const vector<string> & colors = m_polyVec[minVecIndex].get_colors();
+    color = colors.at(minPolyIndex);
+    layer = layers.at(minPolyIndex);
+  }else{
+    // No other polygons to borrow layer and color info from. Just use
+    // some defaults then.
+    color = "green";
+    layer = "1:0";
+  }
+
+  // Form the new polygon
+  dPoly P;
+  P.reset();
+  P.appendPolygon(pSize, vecPtr(m_currPolyX), vecPtr(m_currPolyY), color, layer);
       
-    // So that we can undo later
-    m_polyVecStack.push_back(m_polyVec); 
-    m_actions.push_back(m_polyChanged);
+  // So that we can undo later
+  m_polyVecStack.push_back(m_polyVec); 
+  m_actions.push_back(m_polyChanged);
 
-    // Append the new polygon
+  // Append the new polygon to the list of polygons. If we have several
+  // clips already, append it to the last clip. If we have no clips,
+  // create a new clip.
+  if (m_polyVec.size() == 0){
+      
     m_polyVec.push_back(P);
     m_plotPointsOnlyVec.push_back(false);
     string fileName = "poly" + num2str(m_polyFilesVec.size()) + ".xg";
     m_polyFilesVec.push_back(fileName);
-
-    // Reset
-    m_createPoly = false;
-    m_currPolyX.clear();
-    m_currPolyY.clear();
-    setStandardCursor();
-    update();
-    
-    return;
+      
+  }else{
+    m_polyVec[m_polyVec.size() - 1].appendPolygons(P);
   }
-
-  m_currPolyX.push_back(wx);
-  m_currPolyY.push_back(wy);
-  pSize = m_currPolyX.size();
-  isClosedPolyLine = false;
-  snapPolyLineTo45DegAngles(isClosedPolyLine, pSize,
-                            vecPtr(m_currPolyX), vecPtr(m_currPolyY));
-
-  QPainter paint(this);
-  drawCurrPolyLine(&paint);
-  
+    
+  // Reset
+  m_createPoly = false;
+  m_currPolyX.clear();
+  m_currPolyY.clear();
+  setStandardCursor();
+  update();
+    
+  return;
 }
 
 void drawPoly::drawCurrPolyLine(QPainter * paint){
