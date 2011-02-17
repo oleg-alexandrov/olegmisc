@@ -116,11 +116,11 @@ QMenuBar* appWindow::createMenus(){
   QPopupMenu* file = new QPopupMenu( menu );
   menu->insertItem("&File", file);
   file->insertItem("Open", m_poly, SLOT(openPoly()), Qt::CTRL+Key_O);
-  file->insertItem("Save as one polygon", m_poly, SLOT(saveOnePoly()),
+  file->insertItem("Save as one clip", m_poly, SLOT(saveOnePoly()),
                    Qt::CTRL+Key_S);
-  file->insertItem("Save as multiple polygons", m_poly,
+  file->insertItem("Save as multiple clips", m_poly,
                    SLOT(saveAsMultiplePolys()), Qt::ALT+Key_S);
-  file->insertItem("Overwrite current polygons", m_poly,
+  file->insertItem("Overwrite current clips", m_poly,
                    SLOT(overwriteMultiplePolys()), Qt::CTRL+Key_W);
   file->insertItem("Exit", qApp, SLOT(quit()), Key_Q);
 
