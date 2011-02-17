@@ -15,10 +15,18 @@
 using namespace std;
 using namespace utils;
 
+// To do: The number m_yFactor is very confusing. Internally all
+// polygons are flipped by m_yFactor when reading from disk. This has
+// caused unexpected surprises and bugs in the past. Get rid of this
+// factor. The right way of doing things is to keep the polygons
+// exactly as read from disk, and do the flipping only when converting
+// to and from pixel coordinates.
+
 // To do: handle colors correctly (convert dark-gray to darkGray, etc.).
 
-// To do: Make these members or put them in a namespace.
-// Do the same with other constatns.
+// To do: Make the two numbers below into members or put them in a
+// namespace.
+// To do: Do the same with other constants.
 const int drawPoly::m_polyChanged;
 const int drawPoly::m_createHlt;
 
@@ -97,7 +105,7 @@ drawPoly::drawPoly( QWidget *parent,
 void drawPoly::showPoly( QPainter *paint ){
 
   // To do: this function needs modularization
-  //cout << "now in showPoly!" << endl;
+
   // Dimensions of the plotting window in pixels exluding any window
   // frame/menu bar/status bar
   QRect v       = this->rect();
@@ -113,7 +121,6 @@ void drawPoly::showPoly( QPainter *paint ){
   m_padX = 0.0; m_padY = m_screenRatio*m_padX; // Units are pixels
 
   if (m_resetView){
-
     setUpViewBox(// inputs
                  m_polyVec,
                  // outputs
@@ -173,7 +180,7 @@ void drawPoly::showPoly( QPainter *paint ){
     printViewCommand(m_viewXll, m_viewYll, m_viewWidX, m_viewWidY);
     m_zoomToMouseSelection = false;
     m_viewChanged          = false;
-    
+
   }
   
   m_pixelSize = (m_screenWidX - 2*m_padX)/m_viewWidX;
@@ -191,7 +198,7 @@ void drawPoly::showPoly( QPainter *paint ){
   F.setPointSize(fontSize);
   //F.setStyleStrategy(QFont::ForceOutline);
   //F.setStyleStrategy(QFont::PreferBitmap);
-  // F.setStyleStrategy(QFont::NoAntialias);
+  //F.setStyleStrategy(QFont::NoAntialias);
   paint->setFont(F);
 
   // Will draw a vertex with a shape dependent on this index
@@ -227,32 +234,39 @@ void drawPoly::showPoly( QPainter *paint ){
     dPoly currPoly = m_polyVec[vecIter]; // local copy which we can modify
     
     // When polys are filled, plot largest polys first
-    if (m_showFilledPolys) currPoly.sortFromLargestToSmallest();
+    if (m_showFilledPolys) sortBySizeAndMaybeAddBigFgPoly(//inputs
+                                                          m_yFactor,
+                                                          m_viewXll,  m_viewYll,
+                                                          m_viewXll + m_viewWidX,
+                                                          m_viewYll + m_viewWidY,
+                                                          // input-output
+                                                          currPoly 
+                                                          );
     
-    dPoly clipPoly;
-    currPoly.clipPoly(//inuts
+    dPoly clippedPoly;
+    currPoly.clipPoly(//inputs
                       m_viewXll,  m_viewYll,
                       m_viewXll + m_viewWidX,
                       m_viewYll + m_viewWidY,
                       // output
-                      clipPoly
+                      clippedPoly
                       );
 
-    const double * xv           = clipPoly.get_xv();
-    const double * yv           = clipPoly.get_yv();
-    const int    * numVerts     = clipPoly.get_numVerts();
-    int numPolys                = clipPoly.get_numPolys();
-    const vector<string> colors = clipPoly.get_colors();
-    //int numVerts              = clipPoly.get_totalNumVerts();
+    const double * xv           = clippedPoly.get_xv();
+    const double * yv           = clippedPoly.get_yv();
+    const int    * numVerts     = clippedPoly.get_numVerts();
+    int numPolys                = clippedPoly.get_numPolys();
+    const vector<string> colors = clippedPoly.get_colors();
+    //int numVerts              = clippedPoly.get_totalNumVerts();
     
     vector<anno> annotations;
     annotations.clear();
     if (m_showVertIndexAnno){
-      clipPoly.get_vertIndexAnno(annotations);
+      clippedPoly.get_vertIndexAnno(annotations);
     }else if (m_showLayerAnno){
-      clipPoly.get_layerAnno(annotations);
+      clippedPoly.get_layerAnno(annotations);
     }else if (m_showAnnotations){
-      clipPoly.get_annotations(annotations);
+      clippedPoly.get_annotations(annotations);
     }
     
     int start = 0;
@@ -273,12 +287,12 @@ void drawPoly::showPoly( QPainter *paint ){
       int pSize = numVerts[pIter];
 
       // Determine the orientation of polygons
-      double area = 0.0;
+      double signedArea = 0.0;
 
       // We need to correct the signed area for the fact that our polygons
       // are flipped internally. 
       if (m_showFilledPolys){
-        area = m_yFactor*signedPolyArea(pSize, xv + start, yv + start);
+        signedArea = m_yFactor*signedPolyArea(pSize, xv + start, yv + start);
       }
       
       QPointArray pa(pSize);
@@ -307,8 +321,8 @@ void drawPoly::showPoly( QPainter *paint ){
       if (!plotPointsOnly && m_toggleShowPointsEdges != m_showPoints){
 
         if (m_showFilledPolys){
-          if (area >= 0.0) paint->setBrush( color );
-          else             paint->setBrush( backgroundColor() ); 
+          if (signedArea >= 0.0) paint->setBrush( color );
+          else                   paint->setBrush( backgroundColor() ); 
           paint->setPen( NoPen );
         }else {
           paint->setBrush( NoBrush );
@@ -1192,17 +1206,17 @@ void drawPoly::cutToHlt(){
   
   dRect H = m_highlights[numH - 1];
 
-  dPoly clipedPoly;
+  dPoly clippedPoly;
   for (int vecIter = 0; vecIter < (int)m_polyVec.size(); vecIter++){
 
     m_polyVec[vecIter].clipPoly(//inuts
                                 H.left(), H.top(),
                                 H.right(), H.bottom(),
                                 // output
-                                clipedPoly
+                                clippedPoly
                                 );
 
-    m_polyVec[vecIter] = clipedPoly;    
+    m_polyVec[vecIter] = clippedPoly;    
   }
 
   m_highlights.resize(numH - 1);
@@ -1607,3 +1621,59 @@ void drawPoly::runCmd(std::string cmd){
   return;
 }
 
+void drawPoly::sortBySizeAndMaybeAddBigFgPoly(// inputs
+                                              double flipFactor,
+                                              double viewXll, double viewYll,
+                                              double viewXur, double viewYur,
+                                              // input-output
+                                              dPoly& poly
+                                              ){
+
+  // Sort the polygons from largest to smallest by size. If the
+  // largest one is going clockwise, it is a hole. In that case, add a
+  // large box going counter-clockwise so that we see the hole as a
+  // hole in this box. This is important only when polygons are filled
+  // (and holes are of background color).
+
+  // We use the view box (what we currently see on the screen) as
+  // reference to the size of the box to add.
+  
+  poly.sortFromLargestToSmallest();
+
+  if (poly.get_numPolys() <= 0) return;
+
+  const double         * xv       = poly.get_xv();
+  const double         * yv       = poly.get_yv();
+  const int            * numVerts = poly.get_numVerts();
+  const vector<string> & colors   = poly.get_colors();
+  const vector<string> & layers   = poly.get_layers();
+
+  // Correct by flip factor since internally polygons are flipped
+  double signedArea = flipFactor*signedPolyArea(numVerts[0], xv, yv);
+
+  if (signedArea >= 0) return; // Outer poly is correctly oriented
+
+  double xll, yll, xur, yur;
+  poly.bdBox(xll, yll, xur, yur);
+  xll = min(xll, viewXll); xur = max(xur, viewXur);
+  yll = min(yll, viewYll); yur = max(yur, viewYur);
+
+  // Add the extra term to ensure we get a box strictly bigger than
+  // the polygons and the view (this will help with sorting below).
+  double extra = max(abs(xur - xll), abs(yur - yll)) + 10.0;
+  xll -= extra; xur += extra;
+  yll -= extra; yur += extra;
+
+  // This polygon needs to be counter-clockwise. Make it clockwise
+  // however, since, again, internally all polygons are flipped,
+  // so clockwise becomes counterclockwise.
+  double boxX[4], boxY[4];
+  boxX[0] = xll; boxX[1] = xll; boxX[2] = xur; boxX[3] = xur;
+  boxY[0] = yll; boxY[1] = yur; boxY[2] = yur; boxY[3] = yll;
+  poly.appendPolygon(4, boxX, boxY, colors[0], layers[0]);
+
+  // Reorder the updated set of polygons
+  poly.sortFromLargestToSmallest();
+
+  return;
+}
