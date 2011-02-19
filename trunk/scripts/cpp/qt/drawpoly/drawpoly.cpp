@@ -105,11 +105,6 @@ void drawPoly::showPoly( QPainter *paint ){
   m_screenWidY  = v.height();
   m_screenRatio = double(m_screenWidY)/double(m_screenWidX);
 
-  // To have the polygon show up a bit inside the screen use some padding.
-  // This must be set early as converting from screen to world coordinates
-  // depends on this.
-  m_padX = 0.0; m_padY = m_screenRatio*m_padX; // Units are pixels
-
   if (m_resetView){
     setUpViewBox(// inputs
                  m_polyVec,
@@ -172,10 +167,12 @@ void drawPoly::showPoly( QPainter *paint ){
     m_viewChanged          = false;
 
   }
-  
-  m_pixelSize = (m_screenWidX - 2*m_padX)/m_viewWidX;
-  assert( abs(m_pixelSize - (m_screenWidY - 2*m_padY)/m_viewWidY)
-          < 1.0e-5*m_pixelSize );
+
+  // The two ratios below will always be the same. Take the maximum
+  // for robustness to floating point errors.
+  m_pixelSize = max(m_screenWidX/m_viewWidX, m_screenWidY/m_viewWidY);
+  //assert( abs(m_pixelSize - m_screenWidX/m_viewWidX) < 1.0e-5*m_pixelSize );
+  //assert( abs(m_pixelSize - m_screenWidY/m_viewWidY) < 1.0e-5*m_pixelSize );
   
   // Use a grid to not draw text too densely as that's slow
   vector< vector<int> > Grid; 
@@ -888,16 +885,16 @@ void drawPoly::pixelToWorldCoords(int px, int py,
   // instead of the lower-left corner.
   py = m_screenWidY - py;
 
-  wx = (px - m_padX)/m_pixelSize + m_viewXll;
-  wy = (py - m_padY)/m_pixelSize + m_viewYll;
+  wx = px/m_pixelSize + m_viewXll;
+  wy = py/m_pixelSize + m_viewYll;
 
 }
 
 void drawPoly::worldToPixelCoords(double wx, double wy,
                                   int & px,  int & py){
 
-  px = iround((wx - m_viewXll)*m_pixelSize + m_padX);
-  py = iround((wy - m_viewYll)*m_pixelSize + m_padY);
+  px = iround((wx - m_viewXll)*m_pixelSize);
+  py = iround((wy - m_viewYll)*m_pixelSize);
   
   // Compensate for the Qt's origin being in the upper-left corner
   // instead of the lower-left corner.
