@@ -110,12 +110,6 @@ private:
   void worldToPixelCoords(double wx, double wy,
                           int & px,  int & py);
   
-  static void expandBoxToGivenRatio(// inputs
-                                    double screenRatio, 
-                                    // inputs/outputs
-                                    double & xll,  double & yll,
-                                    double & widx, double & widy);
-  
   static void setUpViewBox(// inputs
                            const std::vector<dPoly> & polyVec,
                            // outputs
