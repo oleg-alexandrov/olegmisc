@@ -295,3 +295,40 @@ double utils::signedPolyArea(int numV, const double* xv, const double* yv){
 
   return area;
 }
+
+void utils::expandBoxToGivenRatio(// inputs
+                                  double aspectRatio, 
+                                  // inputs/outputs
+                                  double & xll,  double & yll,
+                                  double & widx, double & widy){
+
+  // Expand the given box to have the aspect ratio equal to the number aspectRatio.
+  assert(widx > 0.0 && widy > 0.0 && aspectRatio > 0.0);
+  double nwidx = widx, nwidy = widy;
+  if (widy/widx <= aspectRatio) nwidy = widx*aspectRatio;
+  else                          nwidx = widy/aspectRatio;
+
+  // Sanity checks
+  double tol = 1.0e-3;
+  bool check = ( nwidx >= widx*(1 - tol) && nwidy >= widy*(1 - tol)
+                 && abs(nwidy/nwidx - aspectRatio) < tol*aspectRatio );
+  if (!check){
+    cout << "ERROR!" << endl;
+    cout << "widx widy are "   << widx  << ' ' << widy  << endl;
+    cout << "nwidx nwidy are " << nwidx << ' ' << nwidy << endl;
+    cout << "Aspect ratio is " << aspectRatio << endl;
+    cout << "|nwidy/nwidx - aspectRatio| = " << abs(nwidy/nwidx - aspectRatio) << endl;
+    cout << "Max allowed error is " << tol*aspectRatio << endl;
+  }
+  assert(check);
+
+  // Make the new bounding box have the same center as the old one
+  xll += widx/2.0 - nwidx/2.0;
+  yll += widy/2.0 - nwidy/2.0;
+
+  // Overwrite the previous box
+  widx = nwidx; 
+  widy = nwidy;
+
+  return;
+}
