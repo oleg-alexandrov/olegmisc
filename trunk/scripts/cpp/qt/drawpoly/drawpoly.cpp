@@ -15,15 +15,7 @@
 using namespace std;
 using namespace utils;
 
-// To do: The number m_yFactor is very confusing. Internally all
-// polygons are flipped by m_yFactor when reading from disk. This has
-// caused unexpected surprises and bugs in the past. Get rid of this
-// factor. The right way of doing things is to keep the polygons
-// exactly as read from disk, and do the flipping only when converting
-// to and from pixel coordinates.
-
 // To do: handle colors correctly (convert dark-gray to darkGray, etc.).
-
 // To do: Make the two numbers below into members or put them in a
 // namespace.
 // To do: Do the same with other constants.
@@ -47,8 +39,6 @@ drawPoly::drawPoly( QWidget *parent,
   m_plotPointsOnlyVec = plotPointsOnlyVec;
   m_plotAsLines       = plotAsLines;
   m_noClosedPolys     = noClosedPolys;
-  
-  m_yFactor = -1; // To compensate for Qt's origin in the upper-left corner
   
   // int
   m_screenXll  = 0; m_screenYll  = 0;
@@ -235,7 +225,6 @@ void drawPoly::showPoly( QPainter *paint ){
     
     // When polys are filled, plot largest polys first
     if (m_showFilledPolys) sortBySizeAndMaybeAddBigFgPoly(//inputs
-                                                          m_yFactor,
                                                           m_viewXll,  m_viewYll,
                                                           m_viewXll + m_viewWidX,
                                                           m_viewYll + m_viewWidY,
@@ -288,11 +277,8 @@ void drawPoly::showPoly( QPainter *paint ){
 
       // Determine the orientation of polygons
       double signedArea = 0.0;
-
-      // We need to correct the signed area for the fact that our polygons
-      // are flipped internally. 
       if (m_showFilledPolys){
-        signedArea = m_yFactor*signedPolyArea(pSize, xv + start, yv + start);
+        signedArea = signedPolyArea(pSize, xv + start, yv + start);
       }
       
       QPointArray pa(pSize);
@@ -849,11 +835,11 @@ void drawPoly::printCurrCoords(const ButtonState & state, // input
   
   cout << "Point" << unit << " ("
        << setw(wid) << s*wx << ", "
-       << setw(wid) << s*wy*m_yFactor << ")";
+       << setw(wid) << s*wy << ")";
   if (m_prevClickExists){
     cout  << " dist from prev: ("
           << setw(wid) << s*(wx - m_prevClickedX) << ", "
-          << setw(wid) << s*(wy - m_prevClickedY)*m_yFactor
+          << setw(wid) << s*(wy - m_prevClickedY)
           << ") Euclidean: "
           << setw(wid) << s*sqrt( (wx - m_prevClickedX)*(wx - m_prevClickedX)
                                   + 
@@ -898,9 +884,13 @@ void drawPoly::wipeRubberBand(QRect & R){
 void drawPoly::pixelToWorldCoords(int px, int py,
                                   double & wx, double & wy){
 
+  // Compensate for the Qt's origin being in the upper-left corner
+  // instead of the lower-left corner.
+  py = m_screenWidY - py;
+
   wx = (px - m_padX)/m_pixelSize + m_viewXll;
   wy = (py - m_padY)/m_pixelSize + m_viewYll;
-  
+
 }
 
 void drawPoly::worldToPixelCoords(double wx, double wy,
@@ -908,6 +898,10 @@ void drawPoly::worldToPixelCoords(double wx, double wy,
 
   px = iround((wx - m_viewXll)*m_pixelSize + m_padX);
   py = iround((wy - m_viewYll)*m_pixelSize + m_padY);
+  
+  // Compensate for the Qt's origin being in the upper-left corner
+  // instead of the lower-left corner.
+  py = m_screenWidY - py;
   
 }
 
@@ -1143,7 +1137,7 @@ void drawPoly::saveMark(){
   cout << "Saving the mark to " << markFile << endl;
   ofstream mark(markFile.c_str());
   mark << "color = white" << endl;
-  mark << m_menuX << ' ' << m_yFactor*m_menuY << endl;
+  mark << m_menuX << ' ' << m_menuY << endl;
   mark << "NEXT" << endl;
   mark.close();
 
@@ -1349,27 +1343,6 @@ void drawPoly::readOnePoly(// inputs
     exit(1);
   }
   
-  // Flip the polygons to compensate for Qt's origin
-  // being in the upper-right corner
-  // To do: This operation which is repeated a lot must be in the
-  // dPoly class. Search everywhere for m_yFactor.
-  double * xv = (double*)poly.get_xv();
-  double * yv = (double*)poly.get_yv();
-  int numV    = poly.get_totalNumVerts();
-  for (int s = 0; s < numV; s++){
-    xv[s] = xv[s];
-    yv[s] = m_yFactor*yv[s];
-  }
-  
-  // Flip the annotations as well
-  // To do: Put this code in one place
-  vector<anno> annotations;
-  poly.get_annotations(annotations);
-  for (int s = 0; s < (int)annotations.size(); s++){
-    annotations[s].y *= m_yFactor;
-  }
-  poly.set_annotations(annotations);
-  
   return;
 }
 
@@ -1387,19 +1360,6 @@ void drawPoly::saveOnePoly(){
   for (int polyIter = 0; polyIter < (int)m_polyVec.size(); polyIter++){
     poly.appendPolygons(m_polyVec[polyIter]); 
   }
-
-  // To do: the operation below should be done inside of the dPoly class
-  double * yv  = (double*)poly.get_yv(); 
-  int numVerts = poly.get_totalNumVerts();
-  for (int s = 0; s < numVerts; s++){
-    yv[s] *= m_yFactor; // To compensate for Qt's origin in the ul corner
-  }
-  
-  vector<anno> annotations; poly.get_annotations(annotations);
-  for (int s = 0; s < (int)annotations.size(); s++){
-    annotations[s].y *= m_yFactor;
-  }
-  poly.set_annotations(annotations);
 
   poly.writePoly(fileName);
   cout << "Polygon saved to " << fileName << endl;
@@ -1423,21 +1383,6 @@ void drawPoly::saveMultiplePoly(bool overwrite){
   for (int polyIter = 0; polyIter < (int)m_polyVec.size(); polyIter++){
 
     dPoly poly = m_polyVec[polyIter];
-    
-    // To do: the operation below should be done inside of the dPoly class
-    double * yv  = (double*)poly.get_yv(); 
-    int numVerts = poly.get_totalNumVerts();
-    for (int s = 0; s < numVerts; s++){
-      yv[s] *= m_yFactor; // To compensate for Qt's origin in the ul corner
-    }
-
-    // To do: Make this a member of the class (flip anno and verts)
-    vector<anno> annotations;
-    poly.get_annotations(annotations);
-    for (int s = 0; s < (int)annotations.size(); s++){
-      annotations[s].y *= m_yFactor;
-    }
-    poly.set_annotations(annotations);
     
     string fileName;
     if (overwrite){
@@ -1601,7 +1546,7 @@ void drawPoly::setupDisplayOrder(int                 numPolys,
 void drawPoly::printViewCommand(double viewXll, double viewYll,
                                 double viewWidX, double viewWidY){
   
-  cout << "view " << viewXll << ' ' << m_yFactor*viewYll << ' '
+  cout << "view " << viewXll << ' ' << viewYll << ' '
        << viewWidX << ' ' << viewWidY << endl;
 }
                                                
@@ -1622,8 +1567,8 @@ void drawPoly::runCmd(std::string cmd){
         yll + widy > yll 
         ){
 
-      m_viewXll = xll;           m_viewWidX = widx;
-      m_viewYll = m_yFactor*yll; m_viewWidY = widy;
+      m_viewXll = xll; m_viewWidX = widx;
+      m_viewYll = yll; m_viewWidY = widy;
       
       m_viewChanged = true;
       update();
@@ -1640,7 +1585,6 @@ void drawPoly::runCmd(std::string cmd){
 }
 
 void drawPoly::sortBySizeAndMaybeAddBigFgPoly(// inputs
-                                              double flipFactor,
                                               double viewXll, double viewYll,
                                               double viewXur, double viewYur,
                                               // input-output
@@ -1666,8 +1610,7 @@ void drawPoly::sortBySizeAndMaybeAddBigFgPoly(// inputs
   const vector<string> & colors   = poly.get_colors();
   const vector<string> & layers   = poly.get_layers();
 
-  // Correct by flip factor since internally polygons are flipped
-  double signedArea = flipFactor*signedPolyArea(numVerts[0], xv, yv);
+  double signedArea = signedPolyArea(numVerts[0], xv, yv);
 
   if (signedArea >= 0) return; // Outer poly is correctly oriented
 
@@ -1682,12 +1625,9 @@ void drawPoly::sortBySizeAndMaybeAddBigFgPoly(// inputs
   xll -= extra; xur += extra;
   yll -= extra; yur += extra;
 
-  // This polygon needs to be counter-clockwise. Make it clockwise
-  // however, since, again, internally all polygons are flipped,
-  // so clockwise becomes counterclockwise.
   double boxX[4], boxY[4];
-  boxX[0] = xll; boxX[1] = xll; boxX[2] = xur; boxX[3] = xur;
-  boxY[0] = yll; boxY[1] = yur; boxY[2] = yur; boxY[3] = yll;
+  boxX[0] = xll; boxX[1] = xur; boxX[2] = xur; boxX[3] = xll;
+  boxY[0] = yll; boxY[1] = yll; boxY[2] = yur; boxY[3] = yur;
   poly.appendPolygon(4, boxX, boxY, colors[0], layers[0]);
 
   // Reorder the updated set of polygons
