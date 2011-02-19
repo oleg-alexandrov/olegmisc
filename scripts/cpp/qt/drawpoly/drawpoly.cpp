@@ -70,8 +70,8 @@ drawPoly::drawPoly( QWidget *parent,
   m_zoomToMouseSelection = false;
   m_viewChanged          = false;
   
-  m_mousePrsX  = 0;   m_mousePrsY = 0;
-  m_mouseRelX  = 0;   m_mouseRelY = 0;
+  m_mousePrsX = 0; m_mousePrsY = 0;
+  m_mouseRelX = 0; m_mouseRelY = 0;
   
   // Points closer than this are in some situations considered equal
   m_pixelTol = 5;
