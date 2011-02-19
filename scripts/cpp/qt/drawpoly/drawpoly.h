@@ -137,10 +137,7 @@ private:
   int m_screenXll,  m_screenYll, m_screenWidX, m_screenWidY;
   double m_viewXll, m_viewYll,   m_viewWidX,   m_viewWidY;
   double m_prevClickedX, m_prevClickedY;
-  double m_screenRatio;
-  
-  // Transform the polygons to the device coordinate system
-  double m_pixelSize, m_padX, m_padY;
+  double m_screenRatio, m_pixelSize;
   
   std::vector<dPoly> m_polyVec;
   std::vector< std::vector<dPoly> > m_polyVecStack; // Used for undo
