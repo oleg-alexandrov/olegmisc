@@ -126,7 +126,6 @@ private:
   void setPolyDrawCursor();
   
   void sortBySizeAndMaybeAddBigFgPoly(// inputs
-                                      double flipFactor,
                                       double viewXll, double viewYll,
                                       double viewXur, double viewYur,
                                       // input-output
@@ -153,8 +152,6 @@ private:
   bool                     m_plotAsLines;
   bool                     m_noClosedPolys;
   
-  int m_yFactor; // To compensate for Qt's origin in the upper-left corner
-
   QRect m_rubberBandRect;
   bool m_resetView;
   bool m_prevClickExists;
