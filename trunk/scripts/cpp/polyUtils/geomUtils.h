@@ -79,6 +79,12 @@ namespace utils{
 
   bool searchForAnnotation(std::string lineStr, anno & annotation);
 
+  void expandBoxToGivenRatio(// inputs
+                             double screenRatio, 
+                             // inputs/outputs
+                             double & xll,  double & yll,
+                             double & widx, double & widy);
+  
   class dRect{
     
   public:
