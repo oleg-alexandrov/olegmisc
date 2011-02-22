@@ -347,11 +347,6 @@ void drawPoly::showPoly( QPainter *paint ){
     drawRect(m_highlights[h], lineWidth, paint);
   }
   
-//   // Plot the view box
-//   dRect R(m_viewXll, m_viewYll,
-//           m_viewXll + m_viewWidX, m_viewYll + m_viewWidY);
-//   drawRect(R, lineWidth, paint);
-
   // This draws the polygon being created if in that mode
   drawCurrPolyLine(paint);
 
