@@ -125,11 +125,9 @@ void drawPoly::showPoly( QPainter *paint ){
   if (m_zoomToMouseSelection){
     
     // Form a new view based on the rectangle selected with the mouse.
-    // Enlarge this rectangle if necessary to keep the aspect ratio.
-
-    // The call to pixelToWorldCoords uses the existing view internally
-    pixelToWorldCoords(m_mousePrsX, m_mousePrsY, xll, yll);
-    pixelToWorldCoords(m_mouseRelX, m_mouseRelY, xur, yur);
+    // The call to pixelToWorldCoords uses the existing view internally.
+    pixelToWorldCoords(m_mousePrsX, m_mousePrsY, xll, yur); // upper-left  rect corner
+    pixelToWorldCoords(m_mouseRelX, m_mouseRelY, xur, yll); // lower-right rect corner
     widx = xur - xll;
     widy = yur - yll;
 
@@ -151,6 +149,7 @@ void drawPoly::showPoly( QPainter *paint ){
     if (xll + widx <= xll || yll + widy <= yll){
       cerr << "Cannot zoom to requested view."  << endl;
     }else{
+      // Enlarge this rectangle if necessary to keep the aspect ratio.
       expandBoxToGivenRatio(//inputs
                             m_screenRatio,  
                             // input/outputs
@@ -440,7 +439,6 @@ void drawPoly::mouseMoveEvent( QMouseEvent *E){
   const QPoint Q = E->pos();
   int x = Q.x();
   int y = Q.y();
-  //cout << "Mouse moved to " << x << ' ' << y << endl;
   
   QPainter painter(this);
   painter.setPen(Qt::white);
@@ -482,9 +480,10 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
     return;
   }
 
-  // Any selection smaller than this will be ignored as perhaps the
-  // user moved the mouse unintentionally between press and release.
   int tol = 5; 
+  // Any selection smaller than 'tol' number of pixels will be ignored
+  // as perhaps the user moved the mouse unintentionally between press
+  // and release.
   if       (m_mouseRelX > m_mousePrsX + tol &&
             m_mouseRelY > m_mousePrsY + tol){
     
