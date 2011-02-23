@@ -64,7 +64,8 @@ drawPoly::drawPoly( QWidget *parent,
   m_showPoints            = 3;
   m_toggleShowPointsEdges = m_showEdges;
 
-  m_createPoly = false;
+  m_createPoly                = false;
+  m_snapPolyTo45DegreeIntGrid = false;
   m_currPolyX.clear(); m_currPolyY.clear();
 
   m_zoomToMouseSelection = false;
@@ -593,7 +594,10 @@ void drawPoly::contextMenuEvent(QContextMenuEvent *E){
   int id = 1;
   menu.insertItem("Use nm scale", this, SLOT(toggleNmScale()), 0, id);
   menu.setItemChecked(id, m_useNmScale);
-  menu.insertItem("Create polygon", this, SLOT(createPoly()));
+  menu.insertItem("Create 45-degree integer polygon", this,
+                  SLOT(create45DegreeIntPoly()));
+  menu.insertItem("Create arbitrary polygon", this,
+                  SLOT(createArbitraryPoly()));
   menu.insertItem("Delete polygon", this, SLOT(deletePoly()));
   menu.exec(E->globalPos());
 }
@@ -629,7 +633,6 @@ void drawPoly::addPolyVert(int px, int py){
 
   double wtol           = pixelToWorldDist(m_pixelTol);
   int pSize             = m_currPolyX.size();
-  bool isClosedPolyLine = false;
   
   if (pSize <= 0 ||
       distance(m_currPolyX[0], m_currPolyY[0], wx, wy) > wtol
@@ -641,9 +644,11 @@ void drawPoly::addPolyVert(int px, int py){
     m_currPolyX.push_back(wx);
     m_currPolyY.push_back(wy);
     pSize = m_currPolyX.size();
-    isClosedPolyLine = false;
-    snapPolyLineTo45DegAngles(isClosedPolyLine, pSize,
-                              vecPtr(m_currPolyX), vecPtr(m_currPolyY));
+    if (m_snapPolyTo45DegreeIntGrid){
+      bool isClosedPolyLine = false;
+      snapPolyLineTo45DegAngles(isClosedPolyLine, pSize,
+                                vecPtr(m_currPolyX), vecPtr(m_currPolyY));
+    }
     
     QPainter paint(this);
     drawCurrPolyLine(&paint);
@@ -654,10 +659,12 @@ void drawPoly::addPolyVert(int px, int py){
   // We arrived at the starting point of the polygon being drawn. Stop
   // adding points and append the current polygon.
   
-  isClosedPolyLine = true;
-  snapPolyLineTo45DegAngles(isClosedPolyLine, pSize,
-                            vecPtr(m_currPolyX), vecPtr(m_currPolyY));
-
+  if (m_snapPolyTo45DegreeIntGrid){
+    bool isClosedPolyLine = true;
+    snapPolyLineTo45DegAngles(isClosedPolyLine, pSize,
+                              vecPtr(m_currPolyX), vecPtr(m_currPolyY));
+  }
+  
   // Get the layer and color from the closest existing polygon
   double minDist   = DBL_MAX;
   int minVecIndex  = -1;
@@ -1037,12 +1044,25 @@ void drawPoly::toggleFilled(){
   update();
 }
 
-void drawPoly::createPoly(){
+void drawPoly::create45DegreeIntPoly(){
 
   // This flag will change the behavior of mouseReleaseEvent() so that
   // we can start adding points to the polygon with the mouse.
-  m_createPoly = true;
+  m_createPoly                = true;
 
+  m_snapPolyTo45DegreeIntGrid = true;
+  
+  setPolyDrawCursor();
+}
+
+void drawPoly::createArbitraryPoly(){
+
+  // This flag will change the behavior of mouseReleaseEvent() so that
+  // we can start adding points to the polygon with the mouse.
+  m_createPoly                = true;
+  
+  m_snapPolyTo45DegreeIntGrid = false;
+  
   setPolyDrawCursor();
 }
 
