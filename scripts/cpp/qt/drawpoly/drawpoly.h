@@ -34,7 +34,8 @@ public slots:
   // Edit menu
   void undoLast();
   void cutToHlt();
-  void createPoly();
+  void create45DegreeIntPoly();
+  void createArbitraryPoly();
 
   // View menu
   void zoomOut();
@@ -165,7 +166,7 @@ private:
   int m_showEdges, m_showPoints, m_showPointsEdges, m_toggleShowPointsEdges;
   bool m_changeDisplayOrder, m_showVertIndexAnno, m_showLayerAnno;
 
-  bool m_createPoly;
+  bool m_createPoly, m_snapPolyTo45DegreeIntGrid;
   std::vector<double> m_currPolyX, m_currPolyY;
   std::vector<double> m_markX, m_markY;
 

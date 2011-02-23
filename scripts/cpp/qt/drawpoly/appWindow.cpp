@@ -128,7 +128,10 @@ QMenuBar* appWindow::createMenus(){
   menu->insertItem("&Edit", edit);
   edit->insertItem("Undo",             m_poly, SLOT(undoLast()), Key_Z);
   edit->insertItem("Cut to highlight", m_poly, SLOT(cutToHlt()), Key_C);
-  edit->insertItem("Create polygon",   m_poly, SLOT(createPoly()), Key_N);
+  edit->insertItem("Create 45-degree integer polygon",
+                   m_poly, SLOT(create45DegreeIntPoly()), Key_N);
+  edit->insertItem("Create arbitrary polygon",
+                   m_poly, SLOT(createArbitraryPoly()), Qt::CTRL+Key_N);
 
   QPopupMenu* view = new QPopupMenu( menu );
   menu->insertItem("&View", view);
