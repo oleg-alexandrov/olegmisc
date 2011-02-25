@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cfloat>
 #include <cstring>
+#include <cassert>
 #include "geomUtils.h"
 using namespace std;
 using namespace utils;
