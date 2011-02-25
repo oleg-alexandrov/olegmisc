@@ -471,7 +471,7 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
   if (E->state() == (Qt::LeftButton | Qt::ControlButton) ){
     // Draw a  highlight with control + left mouse button
     // ending at the current point
-    createHighlight(m_mousePrsX, m_mousePrsY, m_mouseRelX, m_mouseRelY);
+    createHighlightWithPixelInputs(m_mousePrsX, m_mousePrsY, m_mouseRelX, m_mouseRelY);
     update();
     return;
   }
@@ -757,10 +757,9 @@ void drawPoly::drawCurrPolyLine(QPainter * paint){
   return;
 }
 
-void drawPoly::createHighlight(// inputs are in pixels
-                               int pxll, int pyll, int pxur, int pyur
-                               ){
-    
+void drawPoly::createHighlightWithPixelInputs(int pxll, int pyll, int pxur, int pyur
+                                              ){
+  
   double xll, yll, xur, yur;
   pixelToWorldCoords(pxll, pyll, // inputs
                      xll, yll    // outputs
@@ -769,6 +768,15 @@ void drawPoly::createHighlight(// inputs are in pixels
                      xur, yur    // outputs
                      );
 
+  createHighlightWithRealInputs(xll, yll, xur, yur);
+
+  return;
+}
+
+void drawPoly::createHighlightWithRealInputs(double xll, double yll,
+                                             double xur, double yur
+                                             ){
+  
   // To do: Use dPoly instead of dRect so that we can plot
   // highlights exactly in the same way as we plot polygons.
   dRect R( min(xll, xur), min(yll, yur), max(xll, xur), max(yll, yur) );
@@ -1193,6 +1201,9 @@ void drawPoly::cutToHlt(){
   dPoly clippedPoly;
   for (int vecIter = 0; vecIter < (int)m_polyVec.size(); vecIter++){
 
+    cout << "clip " << H.left() << ' ' << H.top() << ' '
+         << H.right() - H.left() << ' ' << H.bottom() - H.top() << endl;
+    
     m_polyVec[vecIter].clipPoly(//inuts
                                 H.left(), H.top(),
                                 H.right(), H.bottom(),
@@ -1529,24 +1540,35 @@ void drawPoly::runCmd(std::string cmd){
 
   // Process a "view" command
   double xll, yll, widx, widy;
-  if (
-      (in >> cmdName >> xll >> yll >> widx >> widy)
-      &&
-      cmdName == "view"
-      ){
-    
-    if (xll + widx > xll &&
-        yll + widy > yll 
-        ){
-
-      m_viewXll = xll; m_viewWidX = widx;
-      m_viewYll = yll; m_viewWidY = widy;
+  if ( in >> cmdName >> xll >> yll >> widx >> widy){
       
-      m_viewChanged = true;
-      update();
+    if (cmdName == "view"){
       
-    }else{
-      cerr << "Invalid view request" << endl;
+      if (xll + widx > xll &&
+          yll + widy > yll 
+          ){
+        
+        m_viewXll = xll; m_viewWidX = widx;
+        m_viewYll = yll; m_viewWidY = widy;
+        
+        m_viewChanged = true;
+        update();
+      }else{
+        cerr << "Invalid view request" << endl;
+      }
+      
+    }else if (cmdName == "clip"){
+      
+      if (xll + widx > xll &&
+          yll + widy > yll 
+          ){
+        createHighlightWithRealInputs(xll, yll, xll + widx, yll + widy);
+        cutToHlt();
+        
+      }else{
+        cerr << "Invalid clip request" << endl;
+      }
+      
     }
     
   }else{

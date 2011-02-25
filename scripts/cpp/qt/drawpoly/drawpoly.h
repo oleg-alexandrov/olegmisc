@@ -81,9 +81,12 @@ private:
   void drawPolyLine();
   void addPolyVert(int px, int py);
   double pixelToWorldDist(int pd);
-  void createHighlight(// inputs are in pixels
-                       int pxll, int pyll, int pxur, int pyur
-                       );
+  void createHighlightWithPixelInputs(int pxll, int pyll, int pxur, int pyur
+                                      );
+  
+  void createHighlightWithRealInputs(double xll, double yll, double xur, double yur
+                                     );
+
   void printCurrCoords(const ButtonState & state, // input
                        int & currX, int  & currY  // in-out
                        );
