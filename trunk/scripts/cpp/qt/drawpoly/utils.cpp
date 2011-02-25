@@ -12,7 +12,8 @@ void utils::printUsage(char * progName){
   
   std::cout << "Usage: " << progName
             << " [ -geo[metry] 1000x800 ] [ -c[olor] yellow ] file_1.xg ... "
-            << "[ -p[oints] ] [ -nc | -noClosedPolys ] file_N.xg " << std::endl;
+            << "[ -p[oints] ] [ -nc | -noClosedPolys ] [ -l | -linesOnly ] file_N.xg "
+            << std::endl;
   
 }
 
@@ -105,7 +106,8 @@ void utils::parseCmdOptions(//inputs
       continue;
     }
 
-    if ( strncmp (currArg, "-l",  strlen("-l")) == 0 ){
+    if ( strncmp (currArg, "-l",          strlen("-l")) == 0 ||
+         strncmp (currArg, "-linesonly",  strlen("-linesonly")) == 0 ){
       plotAsLines = true;
       continue;
     }
