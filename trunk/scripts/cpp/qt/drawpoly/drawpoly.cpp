@@ -1198,12 +1198,14 @@ void drawPoly::cutToHlt(){
   
   dRect H = m_highlights[numH - 1];
 
+  // To do: This command and the view command must dump to a string
+  // in full 16 digit precision and then print that string.
+  cout << "clip " << H.left() << ' ' << H.top() << ' '
+       << H.right() - H.left() << ' ' << H.bottom() - H.top() << endl;
+    
   dPoly clippedPoly;
   for (int vecIter = 0; vecIter < (int)m_polyVec.size(); vecIter++){
 
-    cout << "clip " << H.left() << ' ' << H.top() << ' '
-         << H.right() - H.left() << ' ' << H.bottom() - H.top() << endl;
-    
     m_polyVec[vecIter].clipPoly(//inuts
                                 H.left(), H.top(),
                                 H.right(), H.bottom(),
