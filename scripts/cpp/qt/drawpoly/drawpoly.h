@@ -69,8 +69,7 @@ protected:
 
 private:
   void readAllPolys();
-  void printViewCommand(double viewXll, double viewYll,
-                        double viewWidX, double viewWidY);
+  void printCmd(std::string cmd, double xll, double yll, double widX, double widY);
   void drawMark(int x0, int y0, QColor color, int lineWidth,
                 QPainter * paint);
   void setupDisplayOrder(int                 numPolys, 
