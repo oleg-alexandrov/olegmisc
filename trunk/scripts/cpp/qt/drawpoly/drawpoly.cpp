@@ -162,7 +162,7 @@ void drawPoly::showPoly( QPainter *paint ){
       m_viewYll = yll; m_viewWidY = widy;
     }
 
-    printViewCommand(m_viewXll, m_viewYll, m_viewWidX, m_viewWidY);
+    printCmd("view", m_viewXll, m_viewYll, m_viewWidX, m_viewWidY);
     m_zoomToMouseSelection = false;
     m_viewChanged          = false;
 
@@ -1198,10 +1198,7 @@ void drawPoly::cutToHlt(){
   
   dRect H = m_highlights[numH - 1];
 
-  // To do: This command and the view command must dump to a string
-  // in full 16 digit precision and then print that string.
-  cout << "clip " << H.left() << ' ' << H.top() << ' '
-       << H.right() - H.left() << ' ' << H.bottom() - H.top() << endl;
+  printCmd( "clip", H.left(), H.top(), H.right() - H.left(), H.bottom() - H.top() );
     
   dPoly clippedPoly;
   for (int vecIter = 0; vecIter < (int)m_polyVec.size(); vecIter++){
@@ -1528,11 +1525,20 @@ void drawPoly::setupDisplayOrder(int                 numPolys,
   return;
 }
 
-void drawPoly::printViewCommand(double viewXll, double viewYll,
-                                double viewWidX, double viewWidY){
+void drawPoly::printCmd(std::string cmd, double xll, double yll,
+                        double widX, double widY){
+
+  // To do: For some reason it does not print with required precision
   
-  cout << "view " << viewXll << ' ' << viewYll << ' '
-       << viewWidX << ' ' << viewWidY << endl;
+  ostringstream S;
+  
+  int prec = 16;
+  S << cmd << ' ' << setw(prec) << xll << ' ' << yll << ' '
+    << widX << ' ' << widY << endl;
+  
+  cout << S.str();
+
+  return;
 }
                                                
 void drawPoly::runCmd(std::string cmd){
