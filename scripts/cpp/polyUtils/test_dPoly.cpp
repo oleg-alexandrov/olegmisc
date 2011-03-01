@@ -24,12 +24,17 @@ int main(int argc, char** argv){
 
   if (! poly.readPoly(filename, isPointCloud) ) exit(1);
 
-  poly.sortFromLargestToSmallest();
-  
+  //poly.sortFromLargestToSmallest();
+  double * xv   = (double*)poly.get_xv(); // to do: fix this hack
+  double * yv   = (double*)poly.get_yv();
+  int      numV = poly.get_totalNumVerts();
+
+  bool isClosedPolyLine = true;
+  utils::snapPolyLineTo45DegAngles(isClosedPolyLine, numV, xv, yv);
+
   const char * outFile = "out.xg";
   cout << "Writing to " << outFile << endl;
   poly.writePoly(outFile);
-
   
   return 0;
   
