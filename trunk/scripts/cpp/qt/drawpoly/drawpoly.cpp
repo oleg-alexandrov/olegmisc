@@ -388,13 +388,13 @@ void drawPoly::shiftLeft(){
 }
 
 void drawPoly::shiftUp(){
-  m_shiftY      = -0.25;
+  m_shiftY      = 0.25;
   m_viewChanged = true;
   update();
 }
 
 void drawPoly::shiftDown(){
-  m_shiftY      = 0.25;
+  m_shiftY      = -0.25;
   m_viewChanged = true;
   update();
 }
