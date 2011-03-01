@@ -25,9 +25,9 @@ void utils::snapPolyLineTo45DegAngles(bool isClosedPolyLine,
     ys[a] = sin(theta);
   }
 
-  double factor = 2;
-  xv[0] = factor*round(xv[0]/factor);
-  yv[0] = factor*round(yv[0]/factor);
+  // Snap first vertex to int grid
+  xv[0] = round(xv[0]);
+  yv[0] = round(yv[0]);
 
   for (int v = 0; v < numVerts - 1; v++){
 
@@ -55,17 +55,17 @@ void utils::snapPolyLineTo45DegAngles(bool isClosedPolyLine,
 
     double x3 = xv[numVerts - 1], y3 = yv[numVerts - 1];
     
+    // To do: better  variable names above, more comments, and move
+     // the code below to a subroutine.
     // Find the intersection of the lines
-    // (x0, y0) --> (x3, y3) and
-    // (x1, y1) --> (x2, y2).
-    
+    // (x0, y0) --> (x3, y3) and (x1, y1) --> (x2, y2).
     double det = ( (x3-x0)*(y2-y1) - (y3-y0)*(x2-x1) );
     double top = ( (x1-x0)*(y2-y1) - (y1-y0)*(x2-x1) );
     bool success = (det != 0 || top == 0);
     if (det != 0){
       double t = top/det;
-      xv[numVerts - 1] = round( t*(x3-x0) + x0 );
-      yv[numVerts - 1] = round( t*(y3-y0) + y0 );
+      xv[numVerts - 1] = round( 2*( t*(x3-x0) + x0 ) )/2.0; // round to half-int grid
+      yv[numVerts - 1] = round( 2*( t*(y3-y0) + y0 ) )/2.0;
     }else{
       xv[numVerts - 1] = x2;
       yv[numVerts - 1] = y2;
@@ -75,13 +75,56 @@ void utils::snapPolyLineTo45DegAngles(bool isClosedPolyLine,
     
   }
   
+  // It is possible that the last edge and the edge before it 
+  // are 45-degree edges and intersect off-grid. If that's the case,
+  // go backwards from last edge to first and fix all the intersections
+  // to be on grid.
+  assert(numVerts >= 3);
+  double shiftx = 0.0, shifty = 0.0;
+  for (int v = numVerts - 1; v >= 0; v--){
+    double x0 = xv[v], x3 = xv[v-1], x1 = xv[v - 1], x2 = xv[v-2];
+    double y0 = yv[v], y3 = yv[v-1], y1 = yv[v - 1], y2 = yv[v-2];
+    
+    // Apply the shift from the previous snap operation
+    x0 += shiftx; x3 += shiftx;
+    y0 += shifty; y3 += shifty;
+    xv[v] = x0;
+    yv[v] = y0;
+
+    bool snap2ndClosest = false;
+    snapOneEdgeTo45(numAngles, xs, ys, snap2ndClosest,          // inputs
+                   x0, y0, x3, y3  // in-out
+                   );
+
+    // Find the intersection of the lines
+    // (x0, y0) --> (x3, y3) and (x1, y1) --> (x2, y2).
+    double det = ( (x3-x0)*(y2-y1) - (y3-y0)*(x2-x1) );
+    double top = ( (x1-x0)*(y2-y1) - (y1-y0)*(x2-x1) );
+    double t = top/det;
+    double xi = round( 2*( t*(x3-x0) + x0 ) )/2.0;
+    double yi = round( 2*( t*(y3-y0) + y0 ) )/2.0;
+    if (det != 0 &&  xi == round(xi) && yi == round(yi) ){
+      // Finally arrived at a point at which all vertices
+      // are on grid
+      xv[v-1] = xi;
+      yv[v-1] = yi;
+      break;
+    }
+
+    shiftx = x3 - x1;
+    shifty = y3 - y1;
+  }
+
   // Validate
   for (int v = 0; v < numVerts; v++){
     double dx = xv[(v+1)%numVerts] - xv[v];
     double dy = yv[(v+1)%numVerts] - yv[v];
-    if ( !( dx == 0 || dy == 0 || abs(dx) == abs(dy) ) ){
-      cerr << "Error: Expecting vectors with angles of 45 degrees."  << endl;
-      cerr << "Instead, got the vector (" << dx << ", " << dy << ")" << endl;
+    if ( xv[v] != round(xv[v]) ||
+         yv[v] != round(yv[v]) ||
+         !( dx == 0 || dy == 0 || abs(dx) == abs(dy) ) ){
+      cerr << "Error: Expecting integer vertices with 45 degree angles."  << endl;
+      cerr << "Instead, got the vector (" << dx << ", " << dy << ") " 
+           << "with starting point " << xv[v] << ' ' << yv[v] << endl;
       //assert(false);
     }
   }
@@ -94,7 +137,6 @@ void utils::snapOneEdgeTo45(int numAngles, double* xs, double* ys,
                             double & x0, double & y0,
                             double & x1, double & y1){
 
-  // cout << "in:  " << x0 << ' ' << y0 << ' ' << x1 << ' ' << y1 << endl;
   
   double dx = x1 - x0, dy = y1 - y0;
   double len = distance(0, 0, dx, dy);
@@ -130,14 +172,12 @@ void utils::snapOneEdgeTo45(int numAngles, double* xs, double* ys,
     minAngle = minAngle2;
   }
   
-  // Snap. This is a bit hard to explain.
-  double factor = 2 * ( abs(xs[minAngle]) + abs(ys[minAngle]) );
-  len = factor*round(len/factor);
+  // Snap to integer coordinates in the direction of minAngle 
+  double factor =  abs(xs[minAngle]) + abs(ys[minAngle]); // 1 or sqrt(2)
+  len = round(len/factor);
   x1 = x0 + round( len*xs[minAngle] );
   y1 = y0 + round( len*ys[minAngle] );
 
-  // cout << "out: " << x0 << ' ' << y0 << ' ' << x1 << ' ' << y1 << endl;
-  
   return;
 }
 
