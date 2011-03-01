@@ -1528,14 +1528,10 @@ void drawPoly::setupDisplayOrder(int                 numPolys,
 void drawPoly::printCmd(std::string cmd, double xll, double yll,
                         double widX, double widY){
 
-  // To do: For some reason it does not print with required precision
-  
   ostringstream S;
-  
   int prec = 16;
-  S << cmd << ' ' << setw(prec) << xll << ' ' << yll << ' '
-    << widX << ' ' << widY << endl;
-  
+  S.precision(prec);
+  S << cmd << ' ' << xll << ' ' << yll << ' ' << widX << ' ' << widY << endl;
   cout << S.str();
 
   return;
