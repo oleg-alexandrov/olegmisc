@@ -81,19 +81,20 @@ void utils::snapPolyLineTo45DegAngles(bool isClosedPolyLine,
   // to be on grid.
   assert(numVerts >= 3);
   double shiftx = 0.0, shifty = 0.0;
-  for (int v = numVerts - 1; v >= 0; v--){
-    double x0 = xv[v], x3 = xv[v-1], x1 = xv[v - 1], x2 = xv[v-2];
-    double y0 = yv[v], y3 = yv[v-1], y1 = yv[v - 1], y2 = yv[v-2];
+  for (int v = numVerts; v >= 0; v--){
+    int v0 = v%numVerts;
+    double x0 = xv[v0], x3 = xv[v-1], x1 = xv[v - 1], x2 = xv[v-2];
+    double y0 = yv[v0], y3 = yv[v-1], y1 = yv[v - 1], y2 = yv[v-2];
     
     // Apply the shift from the previous snap operation
     x0 += shiftx; x3 += shiftx;
     y0 += shifty; y3 += shifty;
-    xv[v] = x0;
-    yv[v] = y0;
+    xv[v0] = x0;
+    yv[v0] = y0;
 
     bool snap2ndClosest = false;
-    snapOneEdgeTo45(numAngles, xs, ys, snap2ndClosest,          // inputs
-                   x0, y0, x3, y3  // in-out
+    snapOneEdgeTo45(numAngles, xs, ys, snap2ndClosest,  // inputs
+                   x0, y0, x3, y3                       // in-out
                    );
 
     // Find the intersection of the lines
@@ -116,6 +117,8 @@ void utils::snapPolyLineTo45DegAngles(bool isClosedPolyLine,
   }
 
   // Validate
+//  for (int v = 0; v < numVerts; v++) cout << xv[v] << ' ' << yv[v] << endl;
+
   for (int v = 0; v < numVerts; v++){
     double dx = xv[(v+1)%numVerts] - xv[v];
     double dy = yv[(v+1)%numVerts] - yv[v];
@@ -174,7 +177,7 @@ void utils::snapOneEdgeTo45(int numAngles, double* xs, double* ys,
   
   // Snap to integer coordinates in the direction of minAngle 
   double factor =  abs(xs[minAngle]) + abs(ys[minAngle]); // 1 or sqrt(2)
-  len = round(len/factor);
+  len = factor*round(len/factor);
   x1 = x0 + round( len*xs[minAngle] );
   y1 = y0 + round( len*ys[minAngle] );
 
