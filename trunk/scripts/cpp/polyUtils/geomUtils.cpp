@@ -40,7 +40,7 @@ void utils::snapPolyLineTo45DegAngles(bool isClosedPolyLine,
 
   if (!isClosedPolyLine || numVerts < 3) return;
 
-  // The poly line is closed. The vertex after the n-th vertex is the 0-th one.
+  // The poly line is closed. After vertex n - 1 we have vertex 0.
 
   for (int attempt = 0; attempt < 2; attempt++){
     
