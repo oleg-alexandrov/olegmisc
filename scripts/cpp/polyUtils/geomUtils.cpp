@@ -11,8 +11,9 @@ using namespace utils;
 void utils::snapPolyLineTo45DegAngles(bool isClosedPolyLine,
                                       int numVerts, double * xv, double * yv){
 
-  // Given a polygonal line, transform it such that all edges
-  // in it make an angle multiple of 45 degrees with the x axis.
+  // Given a polygonal line, transform it such that all vertices are
+  // integers and all edges make an angle multiple of 45 degrees
+  // with the x axis.
 
   if (numVerts <= 0) return;
   
@@ -41,7 +42,8 @@ void utils::snapPolyLineTo45DegAngles(bool isClosedPolyLine,
   if (!isClosedPolyLine || numVerts < 3) return;
 
   // The poly line is closed. After vertex n - 1 we have vertex 0.
-
+  // Form a closed polygon satisfying the requirements.
+  
   for (int attempt = 0; attempt < 2; attempt++){
     
     double x0 = xv[0],            y0 = yv[0];
