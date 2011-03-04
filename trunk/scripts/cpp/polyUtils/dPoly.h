@@ -19,12 +19,12 @@ public:
   void set_isPointCloud(bool isPointCloud){ m_isPointCloud = isPointCloud; }
   bool isPointCloud() { return m_isPointCloud;}
   
-  bool readPoly(const char * filename,
+  bool readPoly(std::string filename,
                 bool isPointCloud = false
                 );
   
-  void writePoly(const char *filename,
-                 const char *defaultColor = "yellow", double scale = 1.0
+  void writePoly(std::string filename,
+                 std::string defaultColor = "yellow", double scale = 1.0
                  );
   
   void reset(){

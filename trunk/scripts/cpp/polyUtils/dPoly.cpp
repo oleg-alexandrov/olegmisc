@@ -485,7 +485,7 @@ void dPoly::sortFromLargestToSmallest(){
   
 }
 
-bool dPoly::readPoly(const char * filename,
+bool dPoly::readPoly(std::string filename,
                      // If isPointCloud is true, treat each point as a
                      // singleton polygon
                      bool isPointCloud 
@@ -495,7 +495,7 @@ bool dPoly::readPoly(const char * filename,
   
   m_isPointCloud = isPointCloud;
   
-  ifstream fh(filename);
+  ifstream fh(filename.c_str());
   if( !fh ){
     cerr << "Could not open " << filename << endl;
     return false;
@@ -605,10 +605,10 @@ bool dPoly::readPoly(const char * filename,
   
 }
 
-void dPoly::writePoly(const char *filename, const char *defaultColor, double scale
+void dPoly::writePoly(std::string filename, std::string defaultColor, double scale
                       ){
 
-  ofstream outfile(filename);
+  ofstream outfile(filename.c_str());
   outfile.precision(16);
 
   int vertCount = 0, annoCount = 0, numAnno = m_annotations.size();
