@@ -665,3 +665,49 @@ void dPoly::writePoly(std::string filename, std::string defaultColor, double sca
 
   outfile.close();
 }
+
+bool dPoly::read_polFormat(std::string filename,
+            		  bool isPointCloud 
+                          ){
+
+  string color = "yellow";
+  string layer = "1:0";
+
+  reset();
+
+  m_isPointCloud = isPointCloud;
+
+  ifstream fh(filename.c_str());
+  if( !fh ){
+    cerr << "Could not open " << filename << endl;
+    return false;
+  }
+
+  double tmp;
+  if (! (fh >> tmp >> tmp >> tmp >> tmp) ) return false;
+
+  while (1){
+   
+    int numVerts;
+    
+    if (! (fh >> tmp >> numVerts) ) return true; // finished reading
+   
+    if (! (fh >> tmp >> tmp) ) return false;     // invalid format
+
+    m_numPolys++;
+    m_numVerts.push_back(numVerts);
+    m_totalNumVerts += numVerts;
+    m_colors.push_back(color);
+    m_layers.push_back(layer);
+  
+    for (int s = 0; s < numVerts; s++){
+      double x, y;
+      if (! (fh >> x >> y) ) return false;
+      m_xv.push_back(x);
+      m_yv.push_back(y); 
+    }
+  }
+
+   return true;
+}
+

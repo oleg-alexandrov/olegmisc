@@ -35,7 +35,15 @@ int main(int argc, char** argv){
   const char * outFile = "out.xg";
   cout << "Writing to " << outFile << endl;
   poly.writePoly(outFile);
-  
+ 
+  if (! poly.read_polFormat("asic.pol", isPointCloud) ){
+     cout  << "Error reading file!" << endl;
+  }
+
+   const char * outFile2 = "out.xg";
+   cout << "Writing to " << outFile2 << endl;
+   poly.writePoly(outFile2);
+
   return 0;
   
 }
