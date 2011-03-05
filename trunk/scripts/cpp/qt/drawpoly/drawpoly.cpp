@@ -1285,7 +1285,7 @@ void drawPoly::openPoly(){
 
   QString s = QFileDialog::getOpenFileName(
                                            QDir::currentDirPath(),
-                                           "(*.xg *.ly*)",
+                                           "(*.xg *.ly* *.pol)",
                                            this,
                                            "open file dialog"
                                            "Choose a file" );
@@ -1321,7 +1321,14 @@ void drawPoly::readOnePoly(// inputs
                            dPoly & poly           
                            ){
   
-  if ( ! poly.readPoly(filename.c_str(), plotPointsOnly) ){
+  string type = getFilenameExtension(filename);
+  
+  if (type == "pol" || type == "cnt"){
+     if ( poly.read_pol_or_cnt_format(filename, type, plotPointsOnly) ) return;
+     cerr << "Invalid ." << type << " format for " << filename << ". Trying to read it in .xg format." << endl;
+  }
+  
+  if ( ! poly.readPoly(filename, plotPointsOnly) ){
     exit(1);
   }
   
