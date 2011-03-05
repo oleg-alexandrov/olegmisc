@@ -671,14 +671,14 @@ bool dPoly::read_pol_or_cnt_format(std::string filename,
                       		   bool isPointCloud 
                                    ){
 
-  // Read in two very simple and related formats.
+  // Read in two very simple and related polygon formats.
+  
   assert(type == "pol" || type == "cnt");
 
   string color = "yellow";
   string layer = "1:0";
 
   reset();
-
   m_isPointCloud = isPointCloud;
 
   ifstream fh(filename.c_str());
@@ -703,10 +703,10 @@ bool dPoly::read_pol_or_cnt_format(std::string filename,
     int numVerts = 0;
    
     if (type == "pol"){
-     if (! (fh >> tmp >> numVerts) ) return true;  // finished reading
+     if (! (fh >> tmp >> numVerts) ) return true;  // no more vertices
      if (! (fh >> tmp >> tmp) )      return false; // invalid format
     }else{
-     if (! (fh >> numVerts) ) return true;  // finished reading
+     if (! (fh >> numVerts) ) return true;         // no more vertices
     }
     
     m_numPolys++;
