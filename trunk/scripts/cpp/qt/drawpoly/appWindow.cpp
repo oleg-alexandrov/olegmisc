@@ -124,15 +124,6 @@ QMenuBar* appWindow::createMenus(){
                    SLOT(overwriteMultiplePolys()), Qt::CTRL+Key_W);
   file->insertItem("Exit", qApp, SLOT(quit()), Key_Q);
 
-  QPopupMenu* edit = new QPopupMenu( menu );
-  menu->insertItem("&Edit", edit);
-  edit->insertItem("Undo",             m_poly, SLOT(undoLast()), Key_Z);
-  edit->insertItem("Cut to highlight", m_poly, SLOT(cutToHlt()), Key_C);
-  edit->insertItem("Create 45-degree integer polygon",
-                   m_poly, SLOT(create45DegreeIntPoly()), Key_N);
-  edit->insertItem("Create arbitrary polygon",
-                   m_poly, SLOT(createArbitraryPoly()), Qt::CTRL+Key_N);
-
   QPopupMenu* view = new QPopupMenu( menu );
   menu->insertItem("&View", view);
   //view->insertSeparator();
@@ -146,13 +137,25 @@ QMenuBar* appWindow::createMenus(){
   view->insertItem("Change display order", m_poly, SLOT(changeOrder()),  Key_O);
   view->insertItem("Toggle annotations",   m_poly, SLOT(toggleAnno()),   Key_A);
   view->insertItem("Toggle filled",        m_poly, SLOT(toggleFilled()), Key_F);
-  
   view->insertItem("Toggle points display",
                    m_poly, SLOT(togglePE()),          Key_P);
   view->insertItem("Toggle show vertex indices",
                    m_poly, SLOT(toggleVertIndexAnno()), Key_V);
-
   view->insertItem("Toggle show layers", m_poly, SLOT(toggleLayerAnno()), Key_L);
+
+  QPopupMenu* edit = new QPopupMenu( menu );
+  menu->insertItem("&Edit", edit);
+  edit->insertItem("Undo",             m_poly, SLOT(undoLast()), Key_Z);
+  edit->insertItem("Cut to highlight", m_poly, SLOT(cutToHlt()), Key_C);
+  edit->insertItem("Create 45-degree integer polygon",
+                   m_poly, SLOT(create45DegreeIntPoly()), Key_N);
+  edit->insertItem("Create arbitrary polygon",
+                   m_poly, SLOT(createArbitraryPoly()), Qt::CTRL+Key_N);
+
+  QPopupMenu* transform = new QPopupMenu( menu );
+  menu->insertItem("&Transform", transform);
+  transform->insertItem("Enforce int vertices and 45x angles", m_poly, SLOT(enforce45()),
+                        Qt::CTRL+Key_4);
 
   QPopupMenu* help = new QPopupMenu( menu );
   menu->insertItem("&Help", help);

@@ -31,12 +31,6 @@ public slots:
   void saveAsMultiplePolys();
   void saveMultiplePoly(bool overwrite);
 
-  // Edit menu
-  void undoLast();
-  void cutToHlt();
-  void create45DegreeIntPoly();
-  void createArbitraryPoly();
-
   // View menu
   void zoomOut();
   void zoomIn();
@@ -52,6 +46,15 @@ public slots:
   void toggleVertIndexAnno();
   void toggleLayerAnno();
 
+  // Edit menu
+  void undoLast();
+  void cutToHlt();
+  void create45DegreeIntPoly();
+  void createArbitraryPoly();
+
+  // Transform menu
+  void enforce45();
+  
   // Right-click menu
   void saveMark();
   void toggleNmScale();
@@ -69,7 +72,9 @@ protected:
 
 private:
   void readAllPolys();
-  void printCmd(std::string cmd, double xll, double yll, double widX, double widY);
+  void printCmd(std::string cmd, double xll, double yll,
+                double widX, double widY);
+  void printCmd(std::string cmd);
   void drawMark(int x0, int y0, QColor color, int lineWidth,
                 QPainter * paint);
   void setupDisplayOrder(int                 numPolys, 
@@ -83,7 +88,8 @@ private:
   void createHighlightWithPixelInputs(int pxll, int pyll, int pxur, int pyur
                                       );
   
-  void createHighlightWithRealInputs(double xll, double yll, double xur, double yur
+  void createHighlightWithRealInputs(double xll, double yll,
+                                     double xur, double yur
                                      );
 
   void printCurrCoords(const ButtonState & state, // input

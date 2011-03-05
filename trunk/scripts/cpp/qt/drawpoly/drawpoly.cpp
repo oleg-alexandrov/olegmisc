@@ -631,8 +631,8 @@ void drawPoly::addPolyVert(int px, int py){
   double wx, wy;
   pixelToWorldCoords(px, py, wx, wy);
 
-  double wtol           = pixelToWorldDist(m_pixelTol);
-  int pSize             = m_currPolyX.size();
+  double wtol = pixelToWorldDist(m_pixelTol);
+  int pSize   = m_currPolyX.size();
   
   if (pSize <= 0 ||
       distance(m_currPolyX[0], m_currPolyY[0], wx, wy) > wtol
@@ -686,7 +686,7 @@ void drawPoly::addPolyVert(int px, int py){
     // No other polygons to borrow layer and color info from. Just use
     // some defaults then.
     color = "green";
-    layer = "1:0";
+    layer = "";
   }
 
   // Form the new polygon
@@ -1194,7 +1194,9 @@ void drawPoly::cutToHlt(){
     return;
   }
   
-  m_polyVecStack.push_back(m_polyVec); // So that we can undo later
+  // So that we can undo later
+  m_polyVecStack.push_back(m_polyVec);
+  m_actions.push_back(m_polyChanged);
   
   dRect H = m_highlights[numH - 1];
 
@@ -1214,10 +1216,27 @@ void drawPoly::cutToHlt(){
   }
 
   m_highlights.resize(numH - 1);
-  m_actions.push_back(m_polyChanged);
   
   update();
   
+}
+
+void drawPoly::enforce45(){
+  
+  // Enforce that polygon vertices are integers and the angles are 45x. 
+
+  // So that we can undo later
+  m_polyVecStack.push_back(m_polyVec);
+  m_actions.push_back(m_polyChanged);
+  
+  printCmd("enforce45");
+    
+  for (int vecIter = 0; vecIter < (int)m_polyVec.size(); vecIter++){
+    m_polyVec[vecIter].enforce45();
+  }
+
+  update();
+  return;
 }
 
 void drawPoly::undoLast(){
@@ -1544,24 +1563,38 @@ void drawPoly::printCmd(std::string cmd, double xll, double yll,
   return;
 }
                                                
+void drawPoly::printCmd(std::string cmd){
+
+  ostringstream S;
+  int prec = 16;
+  S.precision(prec);
+  S << cmd << endl;
+  cout << S.str();
+
+  return;
+}
+
 void drawPoly::runCmd(std::string cmd){
 
-  istringstream in(cmd);
   string cmdName;
 
-  // Process a "view" command
+  // Process a command with no input arguments
+  istringstream in0(cmd);
+  if ( in0 >> cmdName && cmdName == "enforce45"){
+    enforce45();
+    return;
+  }
+
+  // Process a command with four numbers are input arguments
+  istringstream in(cmd);
   double xll, yll, widx, widy;
   if ( in >> cmdName >> xll >> yll >> widx >> widy){
       
     if (cmdName == "view"){
       
-      if (xll + widx > xll &&
-          yll + widy > yll 
-          ){
-        
+      if (xll + widx > xll && yll + widy > yll){
         m_viewXll = xll; m_viewWidX = widx;
         m_viewYll = yll; m_viewWidY = widy;
-        
         m_viewChanged = true;
         update();
       }else{
@@ -1570,12 +1603,9 @@ void drawPoly::runCmd(std::string cmd){
       
     }else if (cmdName == "clip"){
       
-      if (xll + widx > xll &&
-          yll + widy > yll 
-          ){
+      if (xll + widx > xll && yll + widy > yll){
         createHighlightWithRealInputs(xll, yll, xll + widx, yll + widy);
         cutToHlt();
-        
       }else{
         cerr << "Invalid clip request" << endl;
       }
