@@ -61,13 +61,13 @@ public:
                 dPoly & clippedPoly // output
                 );
 
-  const int    * get_numVerts          () const { return utils::vecPtr(m_numVerts); }
-  const double * get_xv                () const { return utils::vecPtr(m_xv);       }
-  const double * get_yv                () const { return utils::vecPtr(m_yv);       }
-  int get_numPolys                     () const { return m_numPolys;                }
-  int get_totalNumVerts                () const { return m_totalNumVerts;           }
-  std::vector<std::string> get_colors  () const { return m_colors;                  }
-  std::vector<std::string> get_layers  () const { return m_layers;                  }
+  const int    * get_numVerts         () const { return utils::vecPtr(m_numVerts); }
+  const double * get_xv               () const { return utils::vecPtr(m_xv);       }
+  const double * get_yv               () const { return utils::vecPtr(m_yv);       }
+  int get_numPolys                    () const { return m_numPolys;                }
+  int get_totalNumVerts               () const { return m_totalNumVerts;           }
+  std::vector<std::string> get_colors () const { return m_colors;                  }
+  std::vector<std::string> get_layers () const { return m_layers;                  }
 
   void setColor(std::string color);
   
@@ -103,6 +103,7 @@ public:
   
   void erasePoly(int polyIndex);
   void sortFromLargestToSmallest();
+  void enforce45();
   
 private:
   // If isPointCloud is true, treat each point as a set of unconnected points

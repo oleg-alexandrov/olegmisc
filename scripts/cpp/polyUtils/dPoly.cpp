@@ -14,6 +14,8 @@ using namespace utils;
 void dPoly::bdBox(double & xll, double & yll, double & xur, double & yur)
   const{
 
+  // The bounding box of all polygons
+  
   if (m_totalNumVerts <= 0){
     xll = DBL_MAX/4.0, xur = -DBL_MAX/4.0; // Use 1/4.0 to avoid overflow when ...
     yll = DBL_MAX/4.0, yur = -DBL_MAX/4.0; // ... finding width and height
@@ -31,10 +33,9 @@ void dPoly::bdBox(double & xll, double & yll, double & xur, double & yur)
 void dPoly::bdBoxes(std::vector<double> & xll, std::vector<double> & yll,
                     std::vector<double> & xur, std::vector<double> & yur) const{
 
-  xll.clear();
-  yll.clear();
-  xur.clear();
-  yur.clear();
+  // Bounding boxes of individual polygons
+  
+  xll.clear(); yll.clear(); xur.clear(); yur.clear();
   
   int start = 0;
   for (int pIter = 0; pIter < m_numPolys; pIter++){
@@ -485,6 +486,26 @@ void dPoly::sortFromLargestToSmallest(){
   
 }
 
+void dPoly::enforce45(){
+
+  // Enforce that polygon vertices are integers and the angles are 45x. 
+  
+  int start = 0;
+  for (int pIter = 0; pIter < m_numPolys; pIter++){
+      
+    if (pIter > 0) start += m_numVerts[pIter - 1];
+    
+    bool isClosedPolyLine = true;
+    int numV    = m_numVerts[pIter];
+    double * px = vecPtr(m_xv) + start;
+    double * py = vecPtr(m_yv) + start;
+    snapPolyLineTo45DegAngles(isClosedPolyLine, numV, px, py);
+    
+  }
+  
+  return;
+};
+
 bool dPoly::readPoly(std::string filename,
                      // If isPointCloud is true, treat each point as a
                      // singleton polygon
@@ -612,15 +633,15 @@ void dPoly::writePoly(std::string filename, std::string defaultColor, double sca
   outfile.precision(16);
 
   int vertCount = 0, annoCount = 0, numAnno = m_annotations.size();
+  string prevColor = defaultColor, currColor = "";
     
   for (int j = 0; j < m_numPolys; j++){ // Iterate over polygons
 
     if ( m_numVerts[j] <= 0 ) continue; // skip empty polygons
 
-    string prevColor = defaultColor, currColor = "";
     if ( (int)m_colors.size() <= j ) currColor = defaultColor;
     else                             currColor = m_colors[j];
-    
+
     if (j == 0 || prevColor != currColor){
       outfile << "color = " << currColor << endl; 
     }
@@ -676,7 +697,7 @@ bool dPoly::read_pol_or_cnt_format(std::string filename,
   assert(type == "pol" || type == "cnt");
 
   string color = "yellow";
-  string layer = "1:0";
+  string layer = "";
 
   reset();
   m_isPointCloud = isPointCloud;
