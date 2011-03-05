@@ -46,6 +46,8 @@ namespace utils{
 
   void printUsage(char * progName);
 
+  std::string getFilenameExtension(std::string filename);
+
 }
 
 #endif

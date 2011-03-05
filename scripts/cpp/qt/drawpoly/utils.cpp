@@ -224,4 +224,13 @@ std::string utils::inFileToOutFile(const std::string & inFile){
   
 }
 
+std::string utils::getFilenameExtension(std::string filename){
+
+  std::string::size_type idx;
+  idx = filename.rfind('.');
+
+  if(idx != std::string::npos) return filename.substr(idx+1);
+  else                         return "";
+}
+
 
