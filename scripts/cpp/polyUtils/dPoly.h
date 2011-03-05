@@ -19,9 +19,10 @@ public:
   void set_isPointCloud(bool isPointCloud){ m_isPointCloud = isPointCloud; }
   bool isPointCloud() { return m_isPointCloud;}
 
-  bool read_polFormat(std::string filename,
-                     bool isPointCloud = false
-                     );
+  bool read_pol_or_cnt_format(std::string filename,
+                              std::string type,
+                              bool isPointCloud = false
+                              );
 
   bool readPoly(std::string filename,
                 bool isPointCloud = false

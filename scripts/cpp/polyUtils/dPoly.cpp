@@ -666,9 +666,13 @@ void dPoly::writePoly(std::string filename, std::string defaultColor, double sca
   outfile.close();
 }
 
-bool dPoly::read_polFormat(std::string filename,
-            		  bool isPointCloud 
-                          ){
+bool dPoly::read_pol_or_cnt_format(std::string filename,
+                                   std::string type, 
+                      		   bool isPointCloud 
+                                   ){
+
+  // Read in two very simple and related formats.
+  assert(type == "pol" || type == "cnt");
 
   string color = "yellow";
   string layer = "1:0";
@@ -682,18 +686,29 @@ bool dPoly::read_polFormat(std::string filename,
     cerr << "Could not open " << filename << endl;
     return false;
   }
+ 
+  // Bypass lines starting with comments
+  while (1){
+    char c = fh.peek();
+    if (c != '#' && c != '!') break;
+    string line;
+    getline(fh, line);
+  }  
 
   double tmp;
-  if (! (fh >> tmp >> tmp >> tmp >> tmp) ) return false;
+  if (type == "pol" && !(fh >> tmp >> tmp >> tmp >> tmp) ) return false;
 
   while (1){
    
-    int numVerts;
-    
-    if (! (fh >> tmp >> numVerts) ) return true; // finished reading
+    int numVerts = 0;
    
-    if (! (fh >> tmp >> tmp) ) return false;     // invalid format
-
+    if (type == "pol"){
+     if (! (fh >> tmp >> numVerts) ) return true;  // finished reading
+     if (! (fh >> tmp >> tmp) )      return false; // invalid format
+    }else{
+     if (! (fh >> numVerts) ) return true;  // finished reading
+    }
+    
     m_numPolys++;
     m_numVerts.push_back(numVerts);
     m_totalNumVerts += numVerts;
@@ -706,6 +721,18 @@ bool dPoly::read_polFormat(std::string filename,
       m_xv.push_back(x);
       m_yv.push_back(y); 
     }
+
+    int l = m_totalNumVerts;
+    if (l > 0 && numVerts >= 2             && 
+        m_xv[l - 1] == m_xv[l - numVerts ] && 
+        m_yv[l - 1] == m_yv[l - numVerts ]
+	){
+	// Remove last repeated vertex
+	m_xv.pop_back();
+	m_yv.pop_back();
+	m_totalNumVerts--;
+        m_numVerts[m_numVerts.size() - 1]--;
+     }
   }
 
    return true;
