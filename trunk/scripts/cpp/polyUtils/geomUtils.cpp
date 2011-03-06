@@ -43,79 +43,38 @@ void utils::snapPolyLineTo45DegAngles(bool isClosedPolyLine,
 
   // The poly line is closed. After vertex n - 1 we have vertex 0.
   // Form a closed polygon satisfying the requirements.
-  
-  for (int attempt = 0; attempt < 2; attempt++){
-    
-    double x0 = xv[0],            y0 = yv[0];
-    double x1 = xv[numVerts - 2], y1 = yv[numVerts - 2];
-    double x2 = xv[numVerts - 1], y2 = yv[numVerts - 1];
-    
-    bool snap2ndClosest = (attempt != 0); 
-    snapOneEdgeTo45(numAngles, xs, ys, snap2ndClosest,          // inputs
-                    x0, y0, xv[numVerts - 1], yv[numVerts - 1]  // in-out
-                    );
-
-    double x3 = xv[numVerts - 1], y3 = yv[numVerts - 1];
-    
-    // To do: better  variable names above, more comments, and move
-     // the code below to a subroutine.
-    // Find the intersection of the lines
-    // (x0, y0) --> (x3, y3) and (x1, y1) --> (x2, y2).
-    double det = ( (x3-x0)*(y2-y1) - (y3-y0)*(x2-x1) );
-    double top = ( (x1-x0)*(y2-y1) - (y1-y0)*(x2-x1) );
-    bool success = (det != 0 || top == 0);
-    if (det != 0){
-      double t = top/det;
-      xv[numVerts - 1] = round( 2*( t*(x3-x0) + x0 ) )/2.0; // round to half-int grid
-      yv[numVerts - 1] = round( 2*( t*(y3-y0) + y0 ) )/2.0;
-    }else{
-      xv[numVerts - 1] = x2;
-      yv[numVerts - 1] = y2;
-    }
-
-    if (success) break;
-    
-  }
-  
-  // It is possible that the last edge and the edge before it 
-  // are 45-degree edges and intersect off-grid. If that's the case,
-  // go backwards from last edge to first and fix all the intersections
-  // to be on grid.
-  assert(numVerts >= 3);
-  double shiftx = 0.0, shifty = 0.0;
+  // To do that, walk backwards from vertex 0 and adjust edges until
+  // all edges intersect on integer grid and make 45 degree angles.
   for (int v = numVerts; v >= 0; v--){
-    int v0 = v%numVerts;
-    double x0 = xv[v0], x3 = xv[v-1], x1 = xv[v - 1], x2 = xv[v-2];
-    double y0 = yv[v0], y3 = yv[v-1], y1 = yv[v - 1], y2 = yv[v-2];
+    int vp = (v + 1)            % numVerts;
+    int vc = v                  % numVerts;
+    int vn = (v + numVerts - 1) % numVerts;
+    double xp = xv[vp], xc = xv[vc], xc2 = xv[vc], xn = xv[vn];
+    double yp = yv[vp], yc = yv[vc], yc2 = yv[vc], yn = yv[vn];
     
-    // Apply the shift from the previous snap operation
-    x0 += shiftx; x3 += shiftx;
-    y0 += shifty; y3 += shifty;
-    xv[v0] = x0;
-    yv[v0] = y0;
-
     bool snap2ndClosest = false;
     snapOneEdgeTo45(numAngles, xs, ys, snap2ndClosest,  // inputs
-                   x0, y0, x3, y3                       // in-out
+                   xn, yn, xc2, yc2                     // in-out
                    );
 
-    // Find the intersection of the lines
-    // (x0, y0) --> (x3, y3) and (x1, y1) --> (x2, y2).
-    double det = ( (x3-x0)*(y2-y1) - (y3-y0)*(x2-x1) );
-    double top = ( (x1-x0)*(y2-y1) - (y1-y0)*(x2-x1) );
+    // Find the intersection of the edges
+    // (xp, yp) --> (xc, yc) and (xc2, yc2) --> (xn, yn).
+    double det = ( (xc-xp)*(yn-yc2)  - (yc-yp)*(xn-xc2) );
+    double top = ( (xc2-xp)*(yn-yc2) - (yc2-yp)*(xn-xc2) );
     double t = top/det;
-    double xi = round( 2*( t*(x3-x0) + x0 ) )/2.0;
-    double yi = round( 2*( t*(y3-y0) + y0 ) )/2.0;
+    double xi = round( 2*( t*(xc-xp) + xp ) )/2.0;
+    double yi = round( 2*( t*(yc-yp) + yp ) )/2.0;
     if (det != 0 &&  xi == round(xi) && yi == round(yi) ){
       // Finally arrived at a point at which all vertices
       // are on grid
-      xv[v-1] = xi;
-      yv[v-1] = yi;
+      xv[vc] = xi;
+      yv[vc] = yi;
       break;
     }
-
-    shiftx = x3 - x1;
-    shifty = y3 - y1;
+    // Adjust the edge going from vc to vn, and hope that at the next iteration
+    // that edge intersects properly with the edge after it.
+    xv[vn] += xc - xc2;
+    yv[vn] += yc - yc2;
   }
 
   // Validate
