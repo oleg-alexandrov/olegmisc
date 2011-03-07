@@ -78,8 +78,6 @@ void utils::snapPolyLineTo45DegAngles(bool isClosedPolyLine,
   }
 
   // Validate
-//  for (int v = 0; v < numVerts; v++) cout << xv[v] << ' ' << yv[v] << endl;
-
   for (int v = 0; v < numVerts; v++){
     double dx = xv[(v+1)%numVerts] - xv[v];
     double dy = yv[(v+1)%numVerts] - yv[v];
