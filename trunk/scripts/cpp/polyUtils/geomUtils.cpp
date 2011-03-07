@@ -42,9 +42,9 @@ void utils::snapPolyLineTo45DegAngles(bool isClosedPolyLine,
   if (!isClosedPolyLine || numVerts < 3) return;
 
   // The poly line is closed. After vertex n - 1 we have vertex 0.
-  // Form a closed polygon satisfying the requirements.
-  // To do that, walk backwards from vertex 0 and adjust edges until
-  // all edges intersect on integer grid and make 45 degree angles.
+  // Form a closed polygon satisfying the requirements. To do that,
+  // walk backwards from vertex 0 and adjust edges until all edges
+  // intersect on the integer grid and make 45 degree angles.
   for (int v = numVerts; v >= 0; v--){
     int vp = (v + 1)            % numVerts;
     int vc = v                  % numVerts;
@@ -59,7 +59,7 @@ void utils::snapPolyLineTo45DegAngles(bool isClosedPolyLine,
 
     // Find the intersection of the edges
     // (xp, yp) --> (xc, yc) and (xc2, yc2) --> (xn, yn).
-    double det = ( (xc-xp)*(yn-yc2)  - (yc-yp)*(xn-xc2) );
+    double det = ( (xc-xp)*(yn-yc2)  - (yc-yp)*(xn-xc2)  );
     double top = ( (xc2-xp)*(yn-yc2) - (yc2-yp)*(xn-xc2) );
     double t = top/det;
     double xi = round( 2*( t*(xc-xp) + xp ) )/2.0;
