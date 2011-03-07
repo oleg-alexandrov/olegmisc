@@ -28,9 +28,7 @@ public:
                 bool isPointCloud = false
                 );
   
-  void writePoly(std::string filename,
-                 std::string defaultColor = "yellow", double scale = 1.0
-                 );
+  void writePoly(std::string filename, std::string defaultColor = "yellow");
   
   void reset(){
     m_isPointCloud  = false;
