@@ -626,8 +626,7 @@ bool dPoly::readPoly(std::string filename,
   
 }
 
-void dPoly::writePoly(std::string filename, std::string defaultColor, double scale
-                      ){
+void dPoly::writePoly(std::string filename, std::string defaultColor){
 
   ofstream outfile(filename.c_str());
   outfile.precision(16);
@@ -653,7 +652,7 @@ void dPoly::writePoly(std::string filename, std::string defaultColor, double sca
 
     for (int i = 0; i < m_numVerts[j]; i++){ // Iterate over vertices of current poly
       
-      outfile <<  m_xv[vertCount]*scale << " " << m_yv[vertCount]*scale;
+      outfile <<  m_xv[vertCount] << " " << m_yv[vertCount];
       if (layer != "") outfile << " ; " << layer;
       outfile << endl;
       vertCount++;
@@ -671,7 +670,7 @@ void dPoly::writePoly(std::string filename, std::string defaultColor, double sca
     assert(m_numVerts[j] > 0);
     if ( !m_isPointCloud ){
       int firstVert = vertCount - m_numVerts[j];
-      outfile << m_xv[firstVert]*scale << " " << m_yv[firstVert]*scale;
+      outfile << m_xv[firstVert] << " " << m_yv[firstVert];
       if (layer != "") outfile << " ; " << layer;
       outfile << endl;
     }
