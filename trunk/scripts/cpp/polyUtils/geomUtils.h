@@ -4,6 +4,10 @@
 #include <vector>
 #include <fstream>
 #include <cmath>
+#include <set>
+#include "dPoint.h"
+
+class dPoly;
 
 struct anno {
   
@@ -80,11 +84,16 @@ namespace utils{
   bool searchForAnnotation(std::string lineStr, anno & annotation);
 
   void expandBoxToGivenRatio(// inputs
-                             double screenRatio, 
+                             double aspectRatio, 
                              // inputs/outputs
                              double & xll,  double & yll,
                              double & widx, double & widy);
   
+  void putPolyInMultiSet(const dPoly & P, std::multiset<dPoint> & mP);
+  void findPolyDiff(const dPoly & P, const dPoly & Q, // inputs
+                    std::vector<dPoint> & vP, std::vector<dPoint> & vQ // outputs
+                    );
+
   class dRect{
     
   public:
