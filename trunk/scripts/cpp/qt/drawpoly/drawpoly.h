@@ -42,6 +42,7 @@ public slots:
   void changeOrder();
   void toggleAnno();
   void toggleFilled();
+  void toggleShowPolyDiff();
   void togglePE();
   void toggleVertIndexAnno();
   void toggleLayerAnno();
@@ -195,6 +196,9 @@ private:
   bool m_useNmScale;
   double m_nmScale;
   std::string m_nmScaleFile;
+
+  std::vector<dPoly> m_polyVecBk;
+  bool m_polyDiffMode;
   
 };
 
