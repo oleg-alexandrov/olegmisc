@@ -87,6 +87,9 @@ drawPoly::drawPoly( QWidget *parent,
   
   resetTransformSettings();
 
+  m_polyVecBk    = vector<dPoly>();
+  m_polyDiffMode = false;
+  
   // This statement must be the last
   readAllPolys(); // To do: avoid global variables here
 
@@ -1052,6 +1055,37 @@ void drawPoly::toggleFilled(){
   update();
 }
 
+void drawPoly::toggleShowPolyDiff(){
+
+  // Show the differences of two polygons as points
+  
+  if (m_polyDiffMode){
+    m_polyDiffMode = false;
+    m_polyVec      = m_polyVecBk;
+    update();
+    return;
+  }
+
+  if (m_polyVec.size() < 2){
+    cerr << "Error: Must have at least two polygons to compare" << endl;
+    return;
+  }
+  
+  m_polyDiffMode = true;
+  m_polyVecBk    = m_polyVec;
+  m_polyVec.resize(2);
+
+  dPoly & P = m_polyVec[0]; // alias
+  dPoly & Q = m_polyVec[1]; // alias
+  vector<dPoint>  vP, vQ;
+
+  findPolyDiff(P, Q,  // inputs
+               vP, vQ // outputs
+               );
+
+  update();
+}
+
 void drawPoly::create45DegreeIntPoly(){
 
   // This flag will change the behavior of mouseReleaseEvent() so that
@@ -1670,3 +1704,4 @@ void drawPoly::sortBySizeAndMaybeAddBigFgPoly(// inputs
 
   return;
 }
+
