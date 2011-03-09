@@ -251,8 +251,9 @@ void dPoly::get_layerAnno(std::vector<anno> & annotations) const{
   annotations = m_layerAnno;
 }
 
-void dPoly::setColor(std::string color){
+void dPoly::set_color(std::string color){
 
+  m_colors.resize(m_numPolys);
   for (int s = 0; s < (int)m_colors.size(); s++){
     m_colors[s] = color;
   }
@@ -744,8 +745,8 @@ bool dPoly::read_pol_or_cnt_format(std::string filename,
 
     int l = m_totalNumVerts;
     if (l > 0 && numVerts >= 2             && 
-        m_xv[l - 1] == m_xv[l - numVerts ] && 
-        m_yv[l - 1] == m_yv[l - numVerts ]
+        m_xv[l - 1] == m_xv[l - numVerts] && 
+        m_yv[l - 1] == m_yv[l - numVerts]
 	){
 	// Remove last repeated vertex
 	m_xv.pop_back();
@@ -758,3 +759,21 @@ bool dPoly::read_pol_or_cnt_format(std::string filename,
    return true;
 }
 
+void dPoly::set_pointCloud(const std::vector<dPoint> & P, std::string color,
+                           std::string layer){
+
+  // Form a dPoly structure from a set of points
+  reset();
+  m_isPointCloud = true;
+  for (int s = 0; s < (int)P.size(); s++){
+    m_totalNumVerts++;
+    m_numPolys++;
+    m_numVerts.push_back(1);
+    m_layers.push_back(layer);
+    m_colors.push_back(color);
+    m_xv.push_back(P[s].x);
+    m_yv.push_back(P[s].y);
+  }
+
+  return;
+}
