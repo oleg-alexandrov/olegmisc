@@ -142,6 +142,7 @@ QMenuBar* appWindow::createMenus(){
   view->insertItem("Toggle show vertex indices",
                    m_poly, SLOT(toggleVertIndexAnno()), Key_V);
   view->insertItem("Toggle show layers", m_poly, SLOT(toggleLayerAnno()), Key_L);
+  view->insertItem("Toggle mark poly diff", m_poly, SLOT(toggleShowPolyDiff()), Key_D);
 
   QPopupMenu* edit = new QPopupMenu( menu );
   menu->insertItem("&Edit", edit);

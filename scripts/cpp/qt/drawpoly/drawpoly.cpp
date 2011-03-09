@@ -1073,8 +1073,10 @@ void drawPoly::toggleShowPolyDiff(){
   
   m_polyDiffMode = true;
   m_polyVecBk    = m_polyVec;
-  m_polyVec.resize(2);
+  m_polyVec.resize(4);
 
+  string color1 = "red", color2 = "blue", layer1 = "", layer2 = "";
+  
   dPoly & P = m_polyVec[0]; // alias
   dPoly & Q = m_polyVec[1]; // alias
   vector<dPoint>  vP, vQ;
@@ -1083,6 +1085,13 @@ void drawPoly::toggleShowPolyDiff(){
                vP, vQ // outputs
                );
 
+  cout << "Changing the polygons colors to " << color1 << " and " << color2 << endl;
+  P.set_color(color1);
+  Q.set_color(color2);
+  
+  m_polyVec[2].set_pointCloud(vP, color1, layer1);
+  m_polyVec[3].set_pointCloud(vQ, color2, layer2);
+  
   update();
 }
 
@@ -1326,7 +1335,7 @@ void drawPoly::readAllPolys(){
                 );
 
     if (m_useCmdLineColors){
-      m_polyVec[fileIter].setColor(m_cmdLineColors[fileIter]);
+      m_polyVec[fileIter].set_color(m_cmdLineColors[fileIter]);
     }
     
   }
