@@ -1081,6 +1081,11 @@ void drawPoly::toggleShowPolyDiff(){
     cerr << "Error: Must have at least two polygons to compare" << endl;
     return;
   }
+
+  if (m_polyVec.size() > 2){
+    cout << "Showing the differences of first two polygon files and ignoring the rest"
+         << endl;
+  }
   
   m_polyDiffMode        = true;
   m_polyVecBk           = m_polyVec;
