@@ -23,6 +23,8 @@ public:
                               std::string type,
                               bool isPointCloud = false
                               );
+  void set_pointCloud(const std::vector<dPoint> & P, std::string color,
+                      std::string layer);
 
   bool readPoly(std::string filename,
                 bool isPointCloud = false
@@ -67,7 +69,7 @@ public:
   std::vector<std::string> get_colors () const { return m_colors;                  }
   std::vector<std::string> get_layers () const { return m_layers;                  }
 
-  void setColor(std::string color);
+  void set_color(std::string color);
   
   // Annotations
   void get_annotations (std::vector<anno> & annotations) const;
