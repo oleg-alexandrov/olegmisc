@@ -84,12 +84,14 @@ drawPoly::drawPoly( QWidget *parent,
 #else
   m_nmScaleFile = "scale.txt";
 #endif
+
+  // Show poly diff mode
+  m_polyVecBk           = vector<dPoly>();
+  m_plotPointsOnlyVecBk = vector<bool>();
+  m_polyDiffMode        = false;
   
   resetTransformSettings();
 
-  m_polyVecBk    = vector<dPoly>();
-  m_polyDiffMode = false;
-  
   // This statement must be the last
   readAllPolys(); // To do: avoid global variables here
 
@@ -1059,21 +1061,32 @@ void drawPoly::toggleShowPolyDiff(){
 
   // Show the differences of two polygons as points
   
+  printCmd("poly_diff");
+
   if (m_polyDiffMode){
-    m_polyDiffMode = false;
-    m_polyVec      = m_polyVecBk;
+    m_polyDiffMode      = false;
+    m_polyVec           = m_polyVecBk;
+    m_plotPointsOnlyVec = m_plotPointsOnlyVecBk;
+
     update();
     return;
   }
 
+  // To do: The vector m_plotPointsOnlyVec should be unnecessary, as
+  // each polygon already knows if it is a point cloud (that is, to be
+  // plotted as points only).
+  assert(m_polyVec.size() == m_plotPointsOnlyVec.size());
+  
   if (m_polyVec.size() < 2){
     cerr << "Error: Must have at least two polygons to compare" << endl;
     return;
   }
   
-  m_polyDiffMode = true;
-  m_polyVecBk    = m_polyVec;
+  m_polyDiffMode        = true;
+  m_polyVecBk           = m_polyVec;
+  m_plotPointsOnlyVecBk = m_plotPointsOnlyVec;
   m_polyVec.resize(4);
+  m_plotPointsOnlyVec.resize(4);
 
   string color1 = "red", color2 = "blue", layer1 = "", layer2 = "";
   
@@ -1085,12 +1098,14 @@ void drawPoly::toggleShowPolyDiff(){
                vP, vQ // outputs
                );
 
-  cout << "Changing the polygons colors to " << color1 << " and " << color2 << endl;
+  cout << "Changing the polygons colors to " << color1 << " and "
+       << color2 << " in show poly diff mode"<< endl;
+  
   P.set_color(color1);
   Q.set_color(color2);
   
-  m_polyVec[2].set_pointCloud(vP, color1, layer1);
-  m_polyVec[3].set_pointCloud(vQ, color2, layer2);
+  m_polyVec[2].set_pointCloud(vP, color1, layer1); m_plotPointsOnlyVec[2] = true;
+  m_polyVec[3].set_pointCloud(vQ, color2, layer2); m_plotPointsOnlyVec[3] = true;
   
   update();
 }
@@ -1268,12 +1283,12 @@ void drawPoly::enforce45(){
   
   // Enforce that polygon vertices are integers and the angles are 45x. 
 
+  printCmd("enforce45");
+    
   // So that we can undo later
   m_polyVecStack.push_back(m_polyVec);
   m_actions.push_back(m_polyChanged);
   
-  printCmd("enforce45");
-    
   for (int vecIter = 0; vecIter < (int)m_polyVec.size(); vecIter++){
     m_polyVec[vecIter].enforce45();
   }
@@ -1576,6 +1591,7 @@ void drawPoly::setupDisplayOrder(int                 numPolys,
     while (
            // We want the last polygon (the one displayed on top)
            // to not be made up of points only.
+           // To do: Why on earth this restriction?
            firstCycle || plotPointsOnlyVec[polyVecOrder[numPolys - 1]]
            ){
       
@@ -1623,11 +1639,11 @@ void drawPoly::runCmd(std::string cmd){
 
   // Process a command with no input arguments
   istringstream in0(cmd);
-  if ( in0 >> cmdName && cmdName == "enforce45"){
-    enforce45();
-    return;
+  if ( in0 >> cmdName ){
+    if (cmdName == "enforce45"){ enforce45();          return; }
+    if (cmdName == "poly_diff"){ toggleShowPolyDiff(); return; }
   }
-
+  
   // Process a command with four numbers are input arguments
   istringstream in(cmd);
   double xll, yll, widx, widy;

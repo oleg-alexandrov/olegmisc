@@ -198,6 +198,7 @@ private:
   std::string m_nmScaleFile;
 
   std::vector<dPoly> m_polyVecBk;
+  std::vector<bool>        m_plotPointsOnlyVecBk;
   bool m_polyDiffMode;
   
 };
