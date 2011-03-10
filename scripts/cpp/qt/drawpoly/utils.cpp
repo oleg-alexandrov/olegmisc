@@ -233,4 +233,15 @@ std::string utils::getFilenameExtension(std::string filename){
   else                         return "";
 }
 
+std::string utils::replaceAll(std::string result, 
+                              const std::string & replaceWhat, 
+                              const std::string & replaceWithWhat){
+  
+  while(1){
+    const int pos = result.find(replaceWhat);
+    if (pos == -1) break;
+    result.replace(pos,replaceWhat.size(),replaceWithWhat);
+  }
+  return result;
+}
 

@@ -66,7 +66,7 @@ public slots:
 protected:
 
   void paintEvent( QPaintEvent*);
-  void getValuesFromGui(std::string title, std::string description,
+  bool getValuesFromGui(std::string title, std::string description,
                         std::vector<double> & values);
   void mousePressEvent( QMouseEvent *E);
   void mouseMoveEvent( QMouseEvent *E);
