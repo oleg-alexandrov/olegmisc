@@ -32,7 +32,10 @@ public:
   
 public slots:
   void help();
-  
+
+protected:
+  bool eventFilter(QObject *obj, QEvent *ev);
+
 private slots:
   QMenuBar* createMenus();
   void procCmdLine();

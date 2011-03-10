@@ -70,6 +70,7 @@ protected:
   void mouseReleaseEvent ( QMouseEvent * E );
   void wheelEvent(QWheelEvent *E);
   void contextMenuEvent(QContextMenuEvent *E);
+  bool eventFilter(QObject *obj, QEvent *ev);
 
 private:
   void readAllPolys();
