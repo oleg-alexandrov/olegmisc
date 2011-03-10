@@ -98,6 +98,11 @@ drawPoly::drawPoly( QWidget *parent,
   return;
 }
 
+bool drawPoly::eventFilter(QObject*, QEvent*){
+  cout << "--Now in drawpoly event filter" << endl;
+  return false;
+}
+
 void drawPoly::showPoly( QPainter *paint ){
 
   // To do: this function needs modularization

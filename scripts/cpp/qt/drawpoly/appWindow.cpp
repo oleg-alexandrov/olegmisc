@@ -27,6 +27,8 @@ appWindow::appWindow(QWidget* parent, const char* progName,
                      ):
   QMainWindow(parent, progName){
 
+  installEventFilter(this);
+
   m_progName = progName;
   resize(windowWidX, windowWidY);
 
@@ -55,6 +57,23 @@ appWindow::appWindow(QWidget* parent, const char* progName,
   // Menus (must be created after the other widgets were initialized)
   createMenus();
 
+}
+
+bool appWindow::eventFilter(QObject *obj, QEvent *event){
+
+  if (obj == m_poly) {
+    // Avoid repainting on these events
+    if (event->type() == QEvent::FocusIn          ||
+        event->type() == QEvent::FocusOut         ||
+        event->type() == QEvent::WindowDeactivate ||
+        event->type() == QEvent::Leave
+        ){
+      return true;
+    }
+  }
+
+  //cout << "Other event: " << (int)event->type() << endl;
+  return QWidget::eventFilter(obj, event);
 }
 
 appWindow::~appWindow(){
