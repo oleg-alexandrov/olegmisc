@@ -630,30 +630,33 @@ void drawPoly::paintEvent( QPaintEvent*){
   return;
 }
 
-void drawPoly::getValuesFromGui(std::string title, std::string description,
+bool drawPoly::getValuesFromGui(std::string title, std::string description,
                                 std::vector<double> & values){
 
   values.clear();
-  bool ok;
+  bool ok = false;
   QString text = QInputDialog::getText(title.c_str(), description.c_str(),
                                        QLineEdit::Normal, QString::null, &ok, this );
   if ( ok && !text.isEmpty() ) {
     // user entered something and pressed OK
-    istringstream ts(text.data());
+    string data = text.data();
+    data = replaceAll(data, ",", " ");
+    istringstream ts(data);
     double val;
     while (ts >> val) values.push_back(val);
   } else {
     // user entered nothing or pressed Cancel
   }
 
-  return;
+  return ok;
 }
 
 void drawPoly::shiftPolys(){
 
   vector<double> shifts;
-  getValuesFromGui("Translate polygons", "Enter shift_x and shift_y", shifts);
-  shiftPolys(shifts);
+  if ( getValuesFromGui("Translate polygons", "Enter shift_x and shift_y", shifts) ){
+    shiftPolys(shifts);
+  }
   return;
 }
 

@@ -47,6 +47,9 @@ namespace utils{
   void printUsage(char * progName);
 
   std::string getFilenameExtension(std::string filename);
+  std::string replaceAll(std::string result, 
+                         const std::string & replaceWhat, 
+                         const std::string & replaceWithWhat);
 
 }
 
