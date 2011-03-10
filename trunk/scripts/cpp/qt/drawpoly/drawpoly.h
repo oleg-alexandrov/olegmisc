@@ -30,6 +30,8 @@ public slots:
   void overwriteMultiplePolys();
   void saveAsMultiplePolys();
   void saveMultiplePoly(bool overwrite);
+  void shiftPolys();
+  void shiftPolys(std::vector<double> & shifts);
 
   // View menu
   void zoomOut();
@@ -64,16 +66,18 @@ public slots:
 protected:
 
   void paintEvent( QPaintEvent*);
+  void getValuesFromGui(std::string title, std::string description,
+                        std::vector<double> & values);
   void mousePressEvent( QMouseEvent *E);
   void mouseMoveEvent( QMouseEvent *E);
   void keyPressEvent( QKeyEvent *K );
   void mouseReleaseEvent ( QMouseEvent * E );
   void wheelEvent(QWheelEvent *E);
   void contextMenuEvent(QContextMenuEvent *E);
-  bool eventFilter(QObject *obj, QEvent *ev);
 
 private:
   void readAllPolys();
+  void printCmd(std::string cmd, const std::vector<double> & vals);
   void printCmd(std::string cmd, double xll, double yll,
                 double widX, double widY);
   void printCmd(std::string cmd);
