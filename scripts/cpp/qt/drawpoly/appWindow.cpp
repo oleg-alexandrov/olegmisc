@@ -177,6 +177,9 @@ QMenuBar* appWindow::createMenus(){
   transform->insertItem("Enforce int vertices and 45x angles", m_poly, SLOT(enforce45()),
                         Qt::CTRL+Key_4);
 
+  transform->insertItem("Translate polygons", m_poly, SLOT(shiftPolys()),
+                        Qt::CTRL+Key_T);
+
   QPopupMenu* help = new QPopupMenu( menu );
   menu->insertItem("&Help", help);
   help->insertItem("About", this, SLOT(help()));

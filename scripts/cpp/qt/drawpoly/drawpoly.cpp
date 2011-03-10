@@ -10,6 +10,7 @@
 #include <qcursor.h>
 #include <qpopupmenu.h>
 #include <qdir.h>
+#include <qinputdialog.h>
 #include <qpainter.h>
 #include "drawpoly.h"
 using namespace std;
@@ -32,7 +33,7 @@ drawPoly::drawPoly( QWidget *parent,
                     ): QWidget(parent){
 
   setStandardCursor();
-
+  
   m_useCmdLineColors  = useCmdLineColors;
   m_cmdLineColors     = cmdLineColors;
   m_polyFilesVec      = polyFilesVec;
@@ -96,11 +97,6 @@ drawPoly::drawPoly( QWidget *parent,
   readAllPolys(); // To do: avoid global variables here
 
   return;
-}
-
-bool drawPoly::eventFilter(QObject*, QEvent*){
-  cout << "--Now in drawpoly event filter" << endl;
-  return false;
 }
 
 void drawPoly::showPoly( QPainter *paint ){
@@ -631,6 +627,47 @@ void drawPoly::paintEvent( QPaintEvent*){
   // Copy the buffer to the screen
   bitBlt( this, R.x(), R.y(), &m_cache, 0, 0, R.width(), R.height() );
 
+  return;
+}
+
+void drawPoly::getValuesFromGui(std::string title, std::string description,
+                                std::vector<double> & values){
+
+  values.clear();
+  bool ok;
+  QString text = QInputDialog::getText(title.c_str(), description.c_str(),
+                                       QLineEdit::Normal, QString::null, &ok, this );
+  if ( ok && !text.isEmpty() ) {
+    // user entered something and pressed OK
+    istringstream ts(text.data());
+    double val;
+    while (ts >> val) values.push_back(val);
+  } else {
+    // user entered nothing or pressed Cancel
+  }
+
+  return;
+}
+
+void drawPoly::shiftPolys(){
+
+  vector<double> shifts;
+  getValuesFromGui("Translate polygons", "Enter shift_x and shift_y", shifts);
+  shiftPolys(shifts);
+  return;
+}
+
+void drawPoly::shiftPolys(std::vector<double> & shifts){
+
+  if (shifts.size() < 2){
+    cerr << "Invalid shift_x and shift_y values" << endl;
+    return;
+  }
+    
+  printCmd("shift", shifts);
+
+  // Put here the code to do the shifting
+  
   return;
 }
 
@@ -1620,6 +1657,22 @@ void drawPoly::setupDisplayOrder(int                 numPolys,
   return;
 }
 
+void drawPoly::printCmd(std::string cmd, const std::vector<double> & vals){
+
+  ostringstream S;
+  int prec = 16;
+  S.precision(prec);
+  S << cmd;
+  for (int p = 0; p < (int)vals.size(); p++){
+    S << ' ' << vals[p];
+  }
+  S << endl;
+  
+  cout << S.str();
+
+  return;
+}
+
 void drawPoly::printCmd(std::string cmd, double xll, double yll,
                         double widX, double widY){
 
@@ -1645,45 +1698,60 @@ void drawPoly::printCmd(std::string cmd){
 
 void drawPoly::runCmd(std::string cmd){
 
-  string cmdName;
+  string cmdName = "";
+  vector<double> vals; vals.clear();
+  double val;
+  
+  istringstream in(cmd);
+  if (in >> cmdName){
 
-  // Process a command with no input arguments
-  istringstream in0(cmd);
-  if ( in0 >> cmdName ){
+    while (in >> val) vals.push_back(val);
+
+    // Commands with no arguments
     if (cmdName == "enforce45"){ enforce45();          return; }
     if (cmdName == "poly_diff"){ toggleShowPolyDiff(); return; }
-  }
   
-  // Process a command with four numbers are input arguments
-  istringstream in(cmd);
-  double xll, yll, widx, widy;
-  if ( in >> cmdName >> xll >> yll >> widx >> widy){
-      
+    // Process a command with four numbers are input arguments
     if (cmdName == "view"){
-      
-      if (xll + widx > xll && yll + widy > yll){
-        m_viewXll = xll; m_viewWidX = widx;
-        m_viewYll = yll; m_viewWidY = widy;
-        m_viewChanged = true;
-        update();
-      }else{
-        cerr << "Invalid view request" << endl;
+
+      if (vals.size() >= 4){
+        double xll = vals[0], yll = vals[1], widx = vals[2], widy = vals[3];
+        if (xll + widx > xll && yll + widy > yll){
+          m_viewXll = xll; m_viewWidX = widx;
+          m_viewYll = yll; m_viewWidY = widy;
+          m_viewChanged = true;
+          update();
+          return;
+        }
       }
+      cerr << "Invalid view command: " << cmd << endl;
+      return;
       
     }else if (cmdName == "clip"){
       
-      if (xll + widx > xll && yll + widy > yll){
-        createHighlightWithRealInputs(xll, yll, xll + widx, yll + widy);
-        cutToHlt();
-      }else{
-        cerr << "Invalid clip request" << endl;
+      if (vals.size() >= 4){
+        double xll = vals[0], yll = vals[1], widx = vals[2], widy = vals[3];
+        if (xll + widx > xll && yll + widy > yll){
+          createHighlightWithRealInputs(xll, yll, xll + widx, yll + widy);
+          cutToHlt();
+          return;
+        }
       }
+      cerr << "Invalid clip command: " << cmd << endl;
+      return;
       
+    }else if (cmdName == "shift"){
+      if (vals.size() >= 2){
+        shiftPolys(vals);
+        return;
+      }
+      cerr << "Invalid shift command: " << cmd << endl;
+      return;
     }
     
-  }else{
-    cerr << "Invalid command: " << cmd << endl;
   }
+  
+  cerr << "Invalid command: " << cmd << endl;
   
   return;
 }
