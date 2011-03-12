@@ -61,6 +61,9 @@ public:
                 dPoly & clippedPoly // output
                 );
 
+  void shift(double shift_x, double shift_y);
+  void rotate(double angle);
+
   const int    * get_numVerts         () const { return utils::vecPtr(m_numVerts); }
   const double * get_xv               () const { return utils::vecPtr(m_xv);       }
   const double * get_yv               () const { return utils::vecPtr(m_yv);       }
