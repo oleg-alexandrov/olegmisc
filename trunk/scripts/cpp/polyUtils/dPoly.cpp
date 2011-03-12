@@ -197,6 +197,49 @@ void dPoly::clipPoly(// inputs
   return;
 } 
 
+void dPoly::shift(double shift_x, double shift_y){
+
+  for (int i = 0; i < (int)m_xv.size(); i++){
+    m_xv[i] += shift_x;
+    m_yv[i] += shift_y;
+  }
+  
+  for (int i = 0; i < (int)m_annotations.size(); i++){
+    anno & A = m_annotations[i]; // alias
+    A.x += shift_x;
+    A.y += shift_y;
+  }
+  
+  return;
+}
+
+void dPoly::rotate(double angle){ // The angle is given in degrees
+
+  double a = angle*M_PI/180.0, c = cos(a), s= sin(a);
+
+  if (angle == round(angle) && int(angle)%90 == 0 ){
+    // The special case of angle multiple of 90 degrees
+    c = round(c), s = round(s);
+  }
+  
+  for (int i = 0; i < (int)m_xv.size(); i++){
+    double tmpx = c*m_xv[i] - s*m_yv[i];
+    double tmpy = s*m_xv[i] + c*m_yv[i];
+    m_xv[i] = tmpx;
+    m_yv[i] = tmpy;
+  }
+
+  for (int i = 0; i < (int)m_annotations.size(); i++){
+    anno & A = m_annotations[i]; // alias
+    double tmpx = c*A.x - s*A.y;
+    double tmpy = s*A.x + c*A.y;
+    A.x = tmpx;
+    A.y = tmpy;
+  }
+
+  return;
+}
+
 void dPoly::appendPolygons(const dPoly & poly){
 
   const double * xv        = poly.get_xv();
