@@ -17,11 +17,6 @@ using namespace std;
 using namespace utils;
 
 // To do: handle colors correctly (convert dark-gray to darkGray, etc.).
-// To do: Make the two numbers below into members or put them in a
-// namespace.
-// To do: Do the same with other constants.
-const int drawPoly::m_polyChanged;
-const int drawPoly::m_createHlt;
 
 drawPoly::drawPoly( QWidget *parent,
                     bool useCmdLineColors,
@@ -65,6 +60,9 @@ drawPoly::drawPoly( QWidget *parent,
   m_showPoints            = 3;
   m_toggleShowPointsEdges = m_showEdges;
 
+  m_polyChanged  = 1;
+  m_createHlt    = 2;
+  
   m_createPoly                = false;
   m_snapPolyTo45DegreeIntGrid = false;
   m_currPolyX.clear(); m_currPolyY.clear();
@@ -92,10 +90,11 @@ drawPoly::drawPoly( QWidget *parent,
   m_resetViewOnUndo.clear();
   
   // Show poly diff mode
+  m_polyDiffMode = false;
   m_polyVecBk.clear();
   m_plotPointsOnlyVecBk.clear();
-  m_polyDiffMode        = false;
-  
+  m_polyFilesVecBk.clear();
+
   resetTransformSettings();
 
   // This statement must be the last
@@ -1157,7 +1156,7 @@ void drawPoly::toggleShowPolyDiff(){
     m_polyDiffMode      = false;
     m_polyVec           = m_polyVecBk;
     m_plotPointsOnlyVec = m_plotPointsOnlyVecBk;
-
+    m_polyFilesVec      = m_polyFilesVecBk;
     update();
     return;
   }
@@ -1180,8 +1179,11 @@ void drawPoly::toggleShowPolyDiff(){
   m_polyDiffMode        = true;
   m_polyVecBk           = m_polyVec;
   m_plotPointsOnlyVecBk = m_plotPointsOnlyVec;
+  m_polyFilesVecBk      = m_polyFilesVec;
+
   m_polyVec.resize(4);
   m_plotPointsOnlyVec.resize(4);
+  m_polyFilesVec.resize(4);
 
   string color1 = "red", color2 = "blue", layer1 = "", layer2 = "";
   
@@ -1201,6 +1203,9 @@ void drawPoly::toggleShowPolyDiff(){
   
   m_polyVec[2].set_pointCloud(vP, color1, layer1); m_plotPointsOnlyVec[2] = true;
   m_polyVec[3].set_pointCloud(vQ, color2, layer2); m_plotPointsOnlyVec[3] = true;
+
+  m_polyFilesVec[2] = "diff1.xg";
+  m_polyFilesVec[3] = "diff2.xg";
   
   update();
 }
