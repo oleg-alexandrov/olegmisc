@@ -85,6 +85,32 @@ void dPoly::appendPolygon(int numVerts,
   return;
 }
 
+void dPoly::get_annoByType(std::vector<anno> & annotations, int annoType){
+  
+  if (annoType == 0){
+    get_annotations(annotations);
+  }else if (annoType == 1){
+    get_vertIndexAnno(annotations);
+  }else{
+    get_layerAnno(annotations);
+  }
+
+  return;
+}
+
+void dPoly::set_annoByType(const std::vector<anno> & annotations, int annoType){
+
+  if (annoType == 0){
+    set_annotations(annotations);
+  }else if (annoType == 1){
+    set_vertIndexAnno(annotations);
+  }else{
+    set_layerAnno(annotations);
+  }
+
+  return;
+}
+
 void dPoly::clipPoly(// inputs
                      double clip_xll, double clip_yll,
                      double clip_xur, double clip_yur,
@@ -96,23 +122,23 @@ void dPoly::clipPoly(// inputs
   clippedPoly.reset();
   clippedPoly.set_isPointCloud(m_isPointCloud);
   
-  const double * xv                     = get_xv();
-  const double * yv                     = get_yv();
-  const int    * numVerts               = get_numVerts();
-  int numPolys                          = get_numPolys();
-  const std::vector<std::string> colors = get_colors();
-  const std::vector<std::string> layers = get_layers();
+  const double * xv           = get_xv();
+  const double * yv           = get_yv();
+  const int    * numVerts     = get_numVerts();
+  int numPolys                = get_numPolys();
+  const vector<string> colors = get_colors();
+  const vector<string> layers = get_layers();
   
   int start = 0;
   for (int pIter = 0; pIter < numPolys; pIter++){
       
     if (pIter > 0) start += numVerts[pIter - 1];
       
-    std::string color = colors[pIter];
-    std::string layer = layers[pIter];
+    string color = colors[pIter];
+    string layer = layers[pIter];
       
-    std::vector<double> cxv, cyv;
-    std::vector<int> cpoly;
+    vector<double> cxv, cyv;
+    vector<int> cpoly;
     cxv.clear(); cyv.clear(); cpoly.clear();
     
     if (m_isPointCloud){
@@ -164,33 +190,17 @@ void dPoly::clipPoly(// inputs
 
   for (int annoType = 0; annoType < 3; annoType++){
     
-    if (annoType == 0){
-      get_annotations(annotations);
-    }else if (annoType == 1){
-      get_vertIndexAnno(annotations);
-    }else{
-      get_layerAnno(annotations);
-    }
-    
+    get_annoByType(annotations, annoType);
+
     annoInBox.clear();
     for (int s = 0; s < (int)annotations.size(); s++){
       const anno & A = annotations[s];
-      
-      if (clip_xll <= A.x && A.x <= clip_xur &&
-          clip_yll <= A.y && A.y <= clip_yur
-          ){
+      if (clip_xll <= A.x && A.x <= clip_xur && clip_yll <= A.y && A.y <= clip_yur){
         annoInBox.push_back(A);
       }
-      
     }
-
-    if (annoType == 0){
-      clippedPoly.set_annotations(annoInBox);
-    }else if (annoType == 1){
-      clippedPoly.set_vertIndexAnno(annoInBox);
-    }else{
-      clippedPoly.set_layerAnno(annoInBox);
-    }
+    
+    clippedPoly.set_annoByType(annoInBox, annoType);
 
   }
   
@@ -203,11 +213,16 @@ void dPoly::shift(double shift_x, double shift_y){
     m_xv[i] += shift_x;
     m_yv[i] += shift_y;
   }
-  
-  for (int i = 0; i < (int)m_annotations.size(); i++){
-    anno & A = m_annotations[i]; // alias
-    A.x += shift_x;
-    A.y += shift_y;
+
+  vector<anno> annotations;
+  for (int annoType = 0; annoType < 3; annoType++){
+    get_annoByType(annotations, annoType);
+    for (int i = 0; i < (int)annotations.size(); i++){
+      anno & A = annotations[i]; // alias
+      A.x += shift_x;
+      A.y += shift_y;
+    }
+    set_annoByType(annotations, annoType);
   }
   
   return;
@@ -229,12 +244,17 @@ void dPoly::rotate(double angle){ // The angle is given in degrees
     m_yv[i] = tmpy;
   }
 
-  for (int i = 0; i < (int)m_annotations.size(); i++){
-    anno & A = m_annotations[i]; // alias
-    double tmpx = c*A.x - s*A.y;
-    double tmpy = s*A.x + c*A.y;
-    A.x = tmpx;
-    A.y = tmpy;
+  vector<anno> annotations;
+  for (int annoType = 0; annoType < 3; annoType++){
+    get_annoByType(annotations, annoType);
+    for (int i = 0; i < (int)annotations.size(); i++){
+      anno & A = annotations[i]; // alias
+      double tmpx = c*A.x - s*A.y;
+      double tmpy = s*A.x + c*A.y;
+      A.x = tmpx;
+      A.y = tmpy;
+      set_annoByType(annotations, annoType);
+    }
   }
 
   return;

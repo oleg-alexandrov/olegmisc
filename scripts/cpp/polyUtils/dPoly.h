@@ -52,7 +52,7 @@ public:
                      const std::string & color = "yellow",
                      const std::string & layer = ""
                      );
-
+  
   void appendPolygons(const dPoly & poly);
   
   void clipPoly(// inputs
@@ -109,6 +109,10 @@ public:
   void enforce45();
   
 private:
+
+  void get_annoByType(std::vector<anno> & annotations, int annoType);
+  void set_annoByType(const std::vector<anno> & annotations, int annoType);
+
   // If isPointCloud is true, treat each point as a set of unconnected points
   bool                     m_isPointCloud; 
 
