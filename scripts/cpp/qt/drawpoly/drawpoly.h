@@ -31,7 +31,9 @@ public slots:
   void saveAsMultiplePolys();
   void saveMultiplePoly(bool overwrite);
   void shiftPolys();
+  void rotatePolys();
   void shiftPolys(std::vector<double> & shifts);
+  void rotatePolys(std::vector<double> & angle);
 
   // View menu
   void zoomOut();
@@ -149,8 +151,12 @@ private:
   double m_screenRatio, m_pixelSize;
   
   std::vector<dPoly> m_polyVec;
-  std::vector< std::vector<dPoly> > m_polyVecStack; // Used for undo
 
+  // Used for undo
+  std::vector< std::vector<dPoly> > m_polyVecStack;
+  std::vector<int> m_actions;
+  bool m_resetViewOnUndo;
+  
   bool m_useCmdLineColors;
   std::vector<std::string> m_cmdLineColors;
   std::vector<std::string> m_polyFilesVec;
@@ -171,8 +177,6 @@ private:
   bool m_showFilledPolys;
   
   std::vector<utils::dRect> m_highlights;
-
-  std::vector<int> m_actions;
 
   static const int m_polyChanged  = 1;
   static const int m_createHlt    = 2;

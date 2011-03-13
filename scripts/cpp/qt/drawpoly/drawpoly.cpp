@@ -86,9 +86,14 @@ drawPoly::drawPoly( QWidget *parent,
   m_nmScaleFile = "scale.txt";
 #endif
 
+  // Used for undo
+  m_polyVecStack.clear();
+  m_actions.clear();
+  m_resetViewOnUndo = false;
+  
   // Show poly diff mode
-  m_polyVecBk           = vector<dPoly>();
-  m_plotPointsOnlyVecBk = vector<bool>();
+  m_polyVecBk.clear();
+  m_plotPointsOnlyVecBk.clear();
   m_polyDiffMode        = false;
   
   resetTransformSettings();
@@ -660,16 +665,55 @@ void drawPoly::shiftPolys(){
   return;
 }
 
+void drawPoly::rotatePolys(){
+
+  vector<double> angle;
+  if ( getValuesFromGui("Rotate polygons", "Enter rotation angle in degrees", angle) ){
+    rotatePolys(angle);
+  }
+  return;
+}
+
 void drawPoly::shiftPolys(std::vector<double> & shifts){
 
   if (shifts.size() < 2){
     cerr << "Invalid shift_x and shift_y values" << endl;
     return;
   }
-    
+  shifts.resize(2);
+  
+  // So that we can undo later
+  m_polyVecStack.push_back(m_polyVec); 
+  m_actions.push_back(m_polyChanged);
+  m_resetViewOnUndo = true;
+  
   printCmd("shift", shifts);
+  for (int vi  = 0; vi < (int)m_polyVec.size(); vi++){
+    m_polyVec[vi].shift(shifts[0], shifts[1]);
+  }
+  resetView();
+  
+  return;
+}
 
-  // Put here the code to do the shifting
+void drawPoly::rotatePolys(std::vector<double> & angle){
+
+  if (angle.size() < 1){
+    cerr << "Invalid rotation angle" << endl;
+    return;
+  }
+  angle.resize(1);
+  
+  // So that we can undo later
+  m_polyVecStack.push_back(m_polyVec); 
+  m_actions.push_back(m_polyChanged);
+  m_resetViewOnUndo = true;
+
+  printCmd("rotate", angle);
+  for (int vi  = 0; vi < (int)m_polyVec.size(); vi++){
+    m_polyVec[vi].rotate(angle[0]);
+  }
+  resetView();
   
   return;
 }
@@ -1373,12 +1417,16 @@ void drawPoly::undoLast(){
   
     int numCopies = m_polyVecStack.size();
     if (numCopies == 0){
-      cout << "No cutting to undo" << endl;
+      cout << "No poly operations to undo" << endl;
       return;
     }
 
     m_polyVec = m_polyVecStack[numCopies - 1];
     m_polyVecStack.resize(numCopies - 1);
+    if (m_resetViewOnUndo){
+      resetView();
+      m_resetViewOnUndo = false;
+    }
     update();
 
   }
@@ -1749,6 +1797,14 @@ void drawPoly::runCmd(std::string cmd){
         return;
       }
       cerr << "Invalid shift command: " << cmd << endl;
+      return;
+      
+    }else if (cmdName == "rotate"){
+      if (vals.size() >= 1){
+        rotatePolys(vals);
+        return;
+      }
+      cerr << "Invalid rotate command: " << cmd << endl;
       return;
     }
     

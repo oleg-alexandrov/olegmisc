@@ -180,6 +180,9 @@ QMenuBar* appWindow::createMenus(){
   transform->insertItem("Translate polygons", m_poly, SLOT(shiftPolys()),
                         Qt::CTRL+Key_T);
 
+  transform->insertItem("Rotate polygons", m_poly, SLOT(rotatePolys()),
+                        Qt::CTRL+Key_R);
+
   QPopupMenu* help = new QPopupMenu( menu );
   menu->insertItem("&Help", help);
   help->insertItem("About", this, SLOT(help()));
