@@ -89,7 +89,7 @@ drawPoly::drawPoly( QWidget *parent,
   // Used for undo
   m_polyVecStack.clear();
   m_actions.clear();
-  m_resetViewOnUndo = false;
+  m_resetViewOnUndo.clear();
   
   // Show poly diff mode
   m_polyVecBk.clear();
@@ -685,7 +685,7 @@ void drawPoly::shiftPolys(std::vector<double> & shifts){
   // So that we can undo later
   m_polyVecStack.push_back(m_polyVec); 
   m_actions.push_back(m_polyChanged);
-  m_resetViewOnUndo = true;
+  m_resetViewOnUndo.push_back(true);
   
   printCmd("shift", shifts);
   for (int vi  = 0; vi < (int)m_polyVec.size(); vi++){
@@ -707,7 +707,7 @@ void drawPoly::rotatePolys(std::vector<double> & angle){
   // So that we can undo later
   m_polyVecStack.push_back(m_polyVec); 
   m_actions.push_back(m_polyChanged);
-  m_resetViewOnUndo = true;
+  m_resetViewOnUndo.push_back(true);
 
   printCmd("rotate", angle);
   for (int vi  = 0; vi < (int)m_polyVec.size(); vi++){
@@ -791,6 +791,7 @@ void drawPoly::addPolyVert(int px, int py){
   // So that we can undo later
   m_polyVecStack.push_back(m_polyVec); 
   m_actions.push_back(m_polyChanged);
+  m_resetViewOnUndo.push_back(false);
 
   // Append the new polygon to the list of polygons. If we have several
   // clips already, append it to the last clip. If we have no clips,
@@ -1233,6 +1234,7 @@ void drawPoly::deletePoly(){
   // So that we can undo later
   m_polyVecStack.push_back(m_polyVec); 
   m_actions.push_back(m_polyChanged);
+  m_resetViewOnUndo.push_back(false);
 
   double minDist   = DBL_MAX;
   int minVecIndex  = -1;
@@ -1349,7 +1351,8 @@ void drawPoly::cutToHlt(){
   // So that we can undo later
   m_polyVecStack.push_back(m_polyVec);
   m_actions.push_back(m_polyChanged);
-  
+  m_resetViewOnUndo.push_back(false);
+
   dRect H = m_highlights[numH - 1];
 
   printCmd( "clip", H.left(), H.top(), H.right() - H.left(), H.bottom() - H.top() );
@@ -1382,7 +1385,8 @@ void drawPoly::enforce45(){
   // So that we can undo later
   m_polyVecStack.push_back(m_polyVec);
   m_actions.push_back(m_polyChanged);
-  
+  m_resetViewOnUndo.push_back(false);
+
   for (int vecIter = 0; vecIter < (int)m_polyVec.size(); vecIter++){
     m_polyVec[vecIter].enforce45();
   }
@@ -1408,7 +1412,6 @@ void drawPoly::undoLast(){
     if (numH == 0){
       cout << "No highlights to undo" << endl;
       return;
-      
     }
     m_highlights.resize(numH - 1);
     update();
@@ -1423,12 +1426,12 @@ void drawPoly::undoLast(){
 
     m_polyVec = m_polyVecStack[numCopies - 1];
     m_polyVecStack.resize(numCopies - 1);
-    if (m_resetViewOnUndo){
-      resetView();
-      m_resetViewOnUndo = false;
-    }
-    update();
 
+    bool resetViewOnUndo = m_resetViewOnUndo[numCopies - 1];
+    m_resetViewOnUndo.resize(numCopies - 1);
+    if (resetViewOnUndo) resetView();
+
+    update();
   }
 
   return;
