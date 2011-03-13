@@ -150,7 +150,11 @@ private:
   double m_prevClickedX, m_prevClickedY;
   double m_screenRatio, m_pixelSize;
   
-  std::vector<dPoly> m_polyVec;
+  // Polygons, plot as points or not, and file names.
+  // These three vectors must always have the same size.
+  std::vector<dPoly>       m_polyVec;
+  std::vector<bool>        m_plotPointsOnlyVec;
+  std::vector<std::string> m_polyFilesVec;
 
   // Used for undo
   std::vector< std::vector<dPoly> > m_polyVecStack;
@@ -159,8 +163,6 @@ private:
   
   bool m_useCmdLineColors;
   std::vector<std::string> m_cmdLineColors;
-  std::vector<std::string> m_polyFilesVec;
-  std::vector<bool>        m_plotPointsOnlyVec;
   bool                     m_plotAsLines;
   bool                     m_noClosedPolys;
   
@@ -178,8 +180,7 @@ private:
   
   std::vector<utils::dRect> m_highlights;
 
-  static const int m_polyChanged  = 1;
-  static const int m_createHlt    = 2;
+  int m_polyChanged, m_createHlt;
 
   int m_showEdges, m_showPoints, m_showPointsEdges, m_toggleShowPointsEdges;
   bool m_changeDisplayOrder, m_showVertIndexAnno, m_showLayerAnno;
@@ -206,9 +207,11 @@ private:
   double m_nmScale;
   std::string m_nmScaleFile;
 
-  std::vector<dPoly> m_polyVecBk;
-  std::vector<bool>        m_plotPointsOnlyVecBk;
+  // For plotting in diff mode
   bool m_polyDiffMode;
+  std::vector<dPoly> m_polyVecBk;
+  std::vector<bool>  m_plotPointsOnlyVecBk;
+  std::vector<std::string> m_polyFilesVecBk;
   
 };
 
