@@ -155,7 +155,7 @@ private:
   // Used for undo
   std::vector< std::vector<dPoly> > m_polyVecStack;
   std::vector<int> m_actions;
-  bool m_resetViewOnUndo;
+  std::vector<bool> m_resetViewOnUndo;
   
   bool m_useCmdLineColors;
   std::vector<std::string> m_cmdLineColors;
