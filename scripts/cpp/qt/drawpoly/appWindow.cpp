@@ -183,6 +183,9 @@ QMenuBar* appWindow::createMenus(){
   transform->insertItem("Rotate polygons", m_poly, SLOT(rotatePolys()),
                         Qt::CTRL+Key_R);
 
+  transform->insertItem("Scale polygons", m_poly, SLOT(scalePolys()),
+                        Qt::CTRL+Key_X);
+
   QPopupMenu* help = new QPopupMenu( menu );
   menu->insertItem("&Help", help);
   help->insertItem("About", this, SLOT(help()));
