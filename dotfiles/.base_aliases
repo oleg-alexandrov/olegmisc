@@ -10,6 +10,7 @@ alias cel='perl -pi -e "s#\s*\n#\n#g"'
 alias cl=ccol.pl
 alias cmx='chmod a-x'
 alias cp='\cp -iv'
+alias cpdb='\cp -fv ~/bin/cpp/qt/drawpoly/drawpoly ~/bin'
 alias cpu='cat /proc/cpuinfo'
 alias crl='crontab -l'
 alias crs='file=~/bin/crontab_$(hostname); echo "Saving crontab to $file"; crontab -l > $file'
@@ -110,4 +111,5 @@ alias which-command=whence
 alias x=exit
 alias xg='~/bin/cpp/qt/drawpoly/drawpoly -geo 1000x800'
 alias xg2='~/bin/drawpoly -geo 1000x800'
+alias xg5='xg -geo 500x500'
 alias xgg='xgraph -ng -geometry 1000x800+0+0'

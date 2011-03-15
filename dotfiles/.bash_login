@@ -1,10 +1,14 @@
 #  .bash_login
 
-#LZSH=$HOME/bin/zsh
-#if [ $SHELL != "$LZSH" ] && [ -f "$LZSH" ]; then 
-#    export SHELL="$LZSH"
-#    exec "$LZSH" 
-#fi
+LZSH=$HOME/bin/zsh
+if [ ! -f "$LZSH" ]; then
+  LZSH=/bin/zsh
+fi
+
+if [ $SHELL != "$LZSH" ] && [ -f "$LZSH" ]; then 
+    export SHELL="$LZSH"
+    exec "$LZSH" 
+fi
 
 echo "                                                                   "
 echo "    What makes the quality of a researcher's inventiveness and     "
