@@ -20,6 +20,7 @@ if [ "$SSH_TTY" != "" ] || [ "$DISPLAY" != "" ]; then
 
   # Bind the windows key for use in fvwm, if we have a display 
   if [ "$DISPLAY" != "" ]; then 
+    xmodmap -e "clear mod3"
     xmodmap -e  "add mod4 = Super_L"
   fi  
 fi

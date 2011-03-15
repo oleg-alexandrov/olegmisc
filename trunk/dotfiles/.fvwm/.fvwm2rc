@@ -189,8 +189,8 @@ Key Up     A   MC   CursorMove +0 -50
 Key Down   A   MC   CursorMove +0 +50
 
 # 3 is the Win key
-Key q   A   3   Close
-Key w   A   3   Lower
+Key q   A   4   Close
+Key w   A   4   Lower
 
 # 1.2 Buttons
 # ------------
