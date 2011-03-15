@@ -32,8 +32,7 @@ public slots:
   void saveMultiplePoly(bool overwrite);
   void shiftPolys();
   void rotatePolys();
-  void shiftPolys(std::vector<double> & shifts);
-  void rotatePolys(std::vector<double> & angle);
+  void scalePolys();
 
   // View menu
   void zoomOut();
@@ -83,6 +82,9 @@ private:
   void printCmd(std::string cmd, double xll, double yll,
                 double widX, double widY);
   void printCmd(std::string cmd);
+  void shiftPolys(std::vector<double>  & shifts);
+  void rotatePolys(std::vector<double> & angle);
+  void scalePolys(std::vector<double>  & scale);
   void drawMark(int x0, int y0, QColor color, int lineWidth,
                 QPainter * paint);
   void setupDisplayOrder(int                 numPolys, 
