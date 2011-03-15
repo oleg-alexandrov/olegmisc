@@ -673,6 +673,15 @@ void drawPoly::rotatePolys(){
   return;
 }
 
+void drawPoly::scalePolys(){
+
+  vector<double> scale;
+  if ( getValuesFromGui("Scale polygons", "Enter scale factor", scale) ){
+    scalePolys(scale);
+  }
+  return;
+}
+
 void drawPoly::shiftPolys(std::vector<double> & shifts){
 
   if (shifts.size() < 2){
@@ -711,6 +720,28 @@ void drawPoly::rotatePolys(std::vector<double> & angle){
   printCmd("rotate", angle);
   for (int vi  = 0; vi < (int)m_polyVec.size(); vi++){
     m_polyVec[vi].rotate(angle[0]);
+  }
+  resetView();
+  
+  return;
+}
+
+void drawPoly::scalePolys(std::vector<double> & scale){
+
+  if (scale.size() < 1){
+    cerr << "Invalid scale factor" << endl;
+    return;
+  }
+  scale.resize(1);
+  
+  // So that we can undo later
+  m_polyVecStack.push_back(m_polyVec); 
+  m_actions.push_back(m_polyChanged);
+  m_resetViewOnUndo.push_back(true);
+
+  printCmd("scale", scale);
+  for (int vi  = 0; vi < (int)m_polyVec.size(); vi++){
+    m_polyVec[vi].scale(scale[0]);
   }
   resetView();
   
@@ -1813,6 +1844,13 @@ void drawPoly::runCmd(std::string cmd){
         return;
       }
       cerr << "Invalid rotate command: " << cmd << endl;
+      return;
+    }else if (cmdName == "scale"){
+      if (vals.size() >= 1){
+        scalePolys(vals);
+        return;
+      }
+      cerr << "Invalid scale command: " << cmd << endl;
       return;
     }
     
