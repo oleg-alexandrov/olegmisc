@@ -253,8 +253,29 @@ void dPoly::rotate(double angle){ // The angle is given in degrees
       double tmpy = s*A.x + c*A.y;
       A.x = tmpx;
       A.y = tmpy;
-      set_annoByType(annotations, annoType);
     }
+    set_annoByType(annotations, annoType);
+  }
+
+  return;
+}
+
+void dPoly::scale(double scale){ // The angle is given in degrees
+
+  for (int i = 0; i < (int)m_xv.size(); i++){
+    m_xv[i] *= scale;
+    m_yv[i] *= scale;
+  }
+
+  vector<anno> annotations;
+  for (int annoType = 0; annoType < 3; annoType++){
+    get_annoByType(annotations, annoType);
+    for (int i = 0; i < (int)annotations.size(); i++){
+      anno & A = annotations[i]; // alias
+      A.x *= scale;
+      A.y *= scale;
+    }
+    set_annoByType(annotations, annoType);
   }
 
   return;
