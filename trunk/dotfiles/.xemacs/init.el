@@ -232,7 +232,13 @@
 ; Bookmarks
 (setq bookmark-save-flag 1)
 (setq bookmark-default-file "~/.xemacs/bookmarks.bmk")
-(bookmark-load bookmark-default-file)
+(if (file-readable-p bookmark-default-file)
+    (bookmark-load bookmark-default-file)
+  )
+
 (setq tags-case-fold-search t)
 (setq case-fold-search t)
-(visit-tags-table "~/opc/dev/TAGS")
+(setq tags-file "~/opc/dev/TAGS")
+(if (file-readable-p tags-file)
+    (visit-tags-table tags-file)
+  )
