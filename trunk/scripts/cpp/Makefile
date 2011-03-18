@@ -10,6 +10,9 @@ XTRA_OBJ=
 OBJ1  =  $(XTRA_OBJ)
 
 
+bsearch: bsearch.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 closedHash: closedHash.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 

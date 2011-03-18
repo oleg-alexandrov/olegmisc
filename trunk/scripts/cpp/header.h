@@ -10,6 +10,7 @@ int deleteOneElem(list*&, int);
 int insert(list*&, int);
 int leftChild(int);
 int myfun1(int, int);
+int naive_search(int *, int, int);
 int parent(int);
 int pop(int &);
 int push(int);
