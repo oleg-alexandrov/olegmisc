@@ -1,5 +1,5 @@
-#ifndef GEOMUTILS_H
-#define GEOMUTILS_H
+#ifndef POLY_UTILS_H
+#define POLY_UTILS_H
 #include <sstream>
 #include <vector>
 #include <fstream>
@@ -8,7 +8,6 @@
 #include "dPoint.h"
 #include "dPoly.h"
 #include "geomUtils.h"
-
 
 namespace utils{
 
@@ -24,6 +23,8 @@ namespace utils{
                                double & min_x, double & min_y,
                                double & min_dist
                                );
+  
+  void putPolyInMultiSet(const dPoly & P, std::multiset<dPoint> & mP);
 
   void findClosestPolyAndDist(// inputs
                               double x0, double y0,
