@@ -6,6 +6,7 @@
 #include <cstring>
 #include <cassert>
 #include "geomUtils.h"
+#include "polyUtils.h"
 #include "dPoly.h"
 
 using namespace std;
@@ -71,6 +72,24 @@ void utils::findClosestPointAndDist(// inputs
   return;
 }
 
+void utils::putPolyInMultiSet(const dPoly & P, std::multiset<dPoint> & mP){
+
+  const double * x = P.get_xv();
+  const double * y = P.get_yv();
+
+  mP.clear();
+  
+  int numVerts = P.get_totalNumVerts();
+  for (int v = 0; v < numVerts; v++){
+    dPoint P;
+    P.x = x[v];
+    P.y = y[v];
+    mP.insert(P);
+  }
+
+  return;
+}
+
 void utils::findPolyDiff(const dPoly & P, const dPoly & Q, // inputs
                          std::vector<dPoint> & vP, std::vector<dPoint> & vQ // outputs
                          ){
@@ -119,3 +138,4 @@ void utils::findPolyDiff(const dPoly & P, const dPoly & Q, // inputs
   
   return;
 }
+

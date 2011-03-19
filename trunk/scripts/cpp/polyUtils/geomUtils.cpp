@@ -6,7 +6,6 @@
 #include <cstring>
 #include <cassert>
 #include "geomUtils.h"
-#include "dPoly.h"
 
 using namespace std;
 using namespace utils;
@@ -338,69 +337,3 @@ void utils::expandBoxToGivenRatio(// inputs
   return;
 }
 
-void utils::putPolyInMultiSet(const dPoly & P, std::multiset<dPoint> & mP){
-
-  const double * x = P.get_xv();
-  const double * y = P.get_yv();
-
-  mP.clear();
-  
-  int numVerts = P.get_totalNumVerts();
-  for (int v = 0; v < numVerts; v++){
-    dPoint P;
-    P.x = x[v];
-    P.y = y[v];
-    mP.insert(P);
-  }
-
-  return;
-}
-
-void utils::findPolyDiff(const dPoly & P, const dPoly & Q, // inputs
-                         std::vector<dPoint> & vP, std::vector<dPoint> & vQ // outputs
-                         ){
-    
-  // Compare two polygons point-by-point. We assume that the polygons
-  // may have collinear points.  If one polygon has a point repeated
-  // twice, but the second polygon has it repeated just once, this
-  // will be flagged as a difference as well.
-  
-  multiset<dPoint> mP; putPolyInMultiSet(P, mP);
-  multiset<dPoint> mQ; putPolyInMultiSet(Q, mQ);
-
-  // If a point is in mP, and also in mQ, mark it as being in mP and wipe it from mQ
-  vector<dPoint> shared;
-  shared.clear();
-  multiset<dPoint>::iterator ip, iq;
-  for (ip = mP.begin(); ip != mP.end(); ip++){
-    iq = mQ.find(*ip);
-    if ( iq != mQ.end() ){
-      shared.push_back(*ip);
-      mQ.erase(iq); // Erase just the current instance of the given value
-    }
-  }
-  
-  // Wipe it from mP as well
-  for (int s = 0; s < (int)shared.size(); s++){
-    ip = mP.find(shared[s]);
-    if ( ip != mP.end() ){
-      mP.erase(ip); // Erase just the current instance of the given value
-    }
-  }
-
-  vP.clear(); vQ.clear();
-  for (ip = mP.begin(); ip != mP.end(); ip++){
-    dPoint p;
-    p.x = ip->x;
-    p.y = ip->y;
-    vP.push_back(p);
-  }
-  for (iq = mQ.begin(); iq != mQ.end(); iq++){
-    dPoint q;
-    q.x = iq->x;
-    q.y = iq->y;
-    vQ.push_back(q);
-  }
-  
-  return;
-}
