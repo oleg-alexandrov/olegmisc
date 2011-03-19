@@ -97,13 +97,13 @@ public:
                                // outputs
                                double & min_x, double & min_y,
                                double & min_dist
-                               );
+                               ) const;
   
-  void findClosestPolyIndex(//inputs
+  void findClosestPolyEdge(//inputs
                             double x0, double y0,
                             // outputs
                             int & minIndex, double & minDist
-                            );
+                            ) const;
   
   void erasePoly(int polyIndex);
   void sortFromLargestToSmallest();

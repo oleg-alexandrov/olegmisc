@@ -7,6 +7,7 @@
 #include "dPoly.h"
 #include "dPoint.h"
 #include "geomUtils.h"
+#include "polyUtils.h"
 
 // Compare two polygons point-by-point. We assume there can be points
 // on edges of polygons. If one polygon has a point repeated twice,

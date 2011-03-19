@@ -117,6 +117,16 @@ namespace utils{
     R            = dRect(left, top, right, bot);
   }
 
+  struct segDist{
+    double begx, begy, endx, endy, dist;
+    segDist(double begx_in, double begy_in, double endx_in, double endy_in, double dist_in):
+      begx(begx_in), begy(begy_in), endx(endx_in), endy(endy_in), dist(dist_in){}
+  };
+
+  inline bool segDistGreaterThan(segDist s, segDist t){
+    return (s.dist > t.dist);
+  }
+  
 }
   
 
