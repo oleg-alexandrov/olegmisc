@@ -403,8 +403,10 @@ void dPoly::findClosestPointAndDist(// inputs
                                     // outputs
                                     double & min_x, double & min_y,
                                     double & min_dist
-                                    ){
+                                    ) const {
 
+  // Return DBL_MAX if the polygon is empty.
+  
   min_x = x0; min_y = y0; min_dist = DBL_MAX;
   
   for (int s = 0; s < m_totalNumVerts; s++){
@@ -421,11 +423,11 @@ void dPoly::findClosestPointAndDist(// inputs
   return;
 }
 
-void dPoly::findClosestPolyIndex(//inputs
+void dPoly::findClosestPolyEdge(//inputs
                                  double x0, double y0,
                                  // outputs
                                  int & minIndex, double & minDist
-                                 ){
+                                 ) const{
 
   // Given a set of polygons and a point, find the index of the polygon
   // closest to the point. Return that closest distance as well.
