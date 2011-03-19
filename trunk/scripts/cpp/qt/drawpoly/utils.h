@@ -8,22 +8,6 @@
 
 namespace utils{
 
-  void findClosestPointAndDist(// inputs
-                               double x0, double y0,
-                               std::vector<dPoly> & polyVec,
-                               // outputs
-                               double & min_x, double & min_y,
-                               double & min_dist
-                               );
-  
-  void findClosestPolyAndDist(// inputs
-                              double x0, double y0,
-                              std::vector<dPoly> & polyVec,
-                              // outputs
-                              int & minVecIndex, int & minPolyIndex,
-                              double & min_dist
-                              );
-
   void extractWindowDims(// inputs
                          int numArgs, char ** args,
                          // outputs
