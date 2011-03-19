@@ -795,7 +795,7 @@ void drawPoly::addPolyVert(int px, int py){
   double minDist   = DBL_MAX;
   int minVecIndex  = -1;
   int minPolyIndex = -1;
-  findClosestPolyAndDist(// inputs
+  findClosestPolyEdge(// inputs
                          m_currPolyX[0], m_currPolyY[0],
                          m_polyVec,  
                          // outputs
@@ -1277,7 +1277,7 @@ void drawPoly::deletePoly(){
   double minDist   = DBL_MAX;
   int minVecIndex  = -1;
   int minPolyIndex = -1;
-  findClosestPolyAndDist(// inputs
+  findClosestPolyEdge(// inputs
                          m_menuX, m_menuY,
                          m_polyVec,  
                          // outputs
