@@ -29,18 +29,18 @@ void utils::findClosestPolyEdge(// inputs
   
   for (int vecIter = 0; vecIter < (int)polyVec.size(); vecIter++){
 
-    double xl = DBL_MAX, yl = DBL_MAX, dist = DBL_MAX;
+    double lx = DBL_MAX, ly = DBL_MAX, ldist = DBL_MAX;
     int polyIndex = -1;
     polyVec[vecIter].findClosestPolyEdge(x0, y0,                   // in
-                                         polyIndex, xl, yl, dist   // out
+                                         polyIndex, lx, ly, ldist  // out
                                          );
 
-    if (dist <= minDist){
+    if (ldist <= minDist){
       minVecIndex  = vecIter;
       minPolyIndex = polyIndex;
-      minX         = xl;
-      minY         = yl;
-      minDist      = dist;
+      minX         = lx;
+      minY         = ly;
+      minDist      = ldist;
     }
     
   }
