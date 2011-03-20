@@ -4,6 +4,7 @@ bool isInList(node *, int);
 endif for(int q = 0; q < n;);
 endif for(int s = 0; s < n;);
 int addOne(int);
+int bsearch(int *, int, int);
 int delFromHeap(int *, int &);
 int deleteAtBeg(list*&);
 int deleteOneElem(list*&, int);
