@@ -792,16 +792,16 @@ void drawPoly::addPolyVert(int px, int py){
   }
   
   // Get the layer and color from the closest existing polygon
-  double minDist   = DBL_MAX;
+  double minX = DBL_MAX, minY = DBL_MAX, minDist = DBL_MAX;
   int minVecIndex  = -1;
   int minPolyIndex = -1;
   findClosestPolyEdge(// inputs
-                         m_currPolyX[0], m_currPolyY[0],
-                         m_polyVec,  
-                         // outputs
-                         minVecIndex, minPolyIndex,  
-                         minDist
-                         );
+                      m_currPolyX[0], m_currPolyY[0],
+                      m_polyVec,  
+                      // outputs
+                      minVecIndex, minPolyIndex,  
+                      minX, minY, minDist
+                      );
   string color, layer;
   if (minVecIndex >= 0 && minPolyIndex >= 0){
     const vector<string> & layers = m_polyVec[minVecIndex].get_layers();
