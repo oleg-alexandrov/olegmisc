@@ -100,8 +100,6 @@ void utils::findAndSortDistsBwPolys(// inputs
   const double * y = poly1.get_yv();
   int numVerts     = poly1.get_totalNumVerts();
 
-  cout << "num verts is " << numVerts << endl;
-  
   for (int t  = 0; t < numVerts; t++){
     
     int minPolyIndex;
@@ -110,9 +108,6 @@ void utils::findAndSortDistsBwPolys(// inputs
                               minPolyIndex, minX, minY,  minDist // outputs
                               );
 
-
-    cout << "dist is " << minDist << endl;
-    
     
     if (minDist != DBL_MAX)
       distVec.push_back(segDist(x[t], y[t], minX, minY, minDist));
