@@ -162,6 +162,8 @@ QMenuBar* appWindow::createMenus(){
                    m_poly, SLOT(toggleVertIndexAnno()), Key_V);
   view->insertItem("Toggle show layers", m_poly, SLOT(toggleLayerAnno()), Key_L);
   view->insertItem("Toggle show poly diff", m_poly, SLOT(toggleShowPolyDiff()), Key_D);
+  view->insertItem("Show next diff", m_poly, SLOT(plotNextDiff()), Key_K);
+  view->insertItem("Show prev diff", m_poly, SLOT(plotPrevDiff()), Key_J);
 
   QPopupMenu* edit = new QPopupMenu( menu );
   menu->insertItem("&Edit", edit);
