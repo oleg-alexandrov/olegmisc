@@ -946,7 +946,7 @@ void drawPoly::printCurrCoords(const ButtonState & state, // input
   if (state == Qt::LeftButton){
       
     double min_x, min_y, min_dist;
-    findClosestPointAndDist(wx, wy, m_polyVec,     // inputs
+    findClosestPolyVertex(wx, wy, m_polyVec,     // inputs
                             min_x, min_y, min_dist // outputs
                             );
     wx = min_x; wy = min_y;
