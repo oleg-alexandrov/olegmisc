@@ -1259,8 +1259,6 @@ void drawPoly::plotNextDiff(){
   
   if ( !m_polyDiffMode ) return;
 
-  cout << "Now plot next diff!" << endl;
-  
   if (m_distVec.size() == 0 ){
     assert( m_polyVec.size() >= 2);
     findAndSortDistsBwPolys(// inputs
@@ -1271,7 +1269,6 @@ void drawPoly::plotNextDiff(){
   }
 
   int len = m_distVec.size();
-  cout << "len is " << len << endl;
   
   if (m_distToPlot < 0) m_distToPlot = 0;
   else{
@@ -1288,8 +1285,6 @@ void drawPoly::plotPrevDiff(){
   
   if ( !m_polyDiffMode ) return;
 
-  cout << "Now plot prev diff!" << endl;
-
   if (m_distVec.size() == 0 ){
     assert( m_polyVec.size() >= 2);
     findAndSortDistsBwPolys(// inputs
@@ -1300,8 +1295,6 @@ void drawPoly::plotPrevDiff(){
   }
 
   int len = m_distVec.size();
-
-  cout << "len is " << len << endl;
 
   if (m_distToPlot < 0) m_distToPlot = 0;
 
