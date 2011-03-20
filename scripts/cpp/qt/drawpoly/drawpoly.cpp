@@ -13,7 +13,6 @@
 #include <qinputdialog.h>
 #include <qpainter.h>
 #include "drawpoly.h"
-#include "../../polyUtils/polyUtils.h"
 
 using namespace std;
 using namespace utils;
