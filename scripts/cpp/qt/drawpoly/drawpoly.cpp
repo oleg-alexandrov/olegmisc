@@ -373,7 +373,10 @@ void drawPoly::showPoly( QPainter *paint ){
                        );
     drawMark(x0, y0, "white", lineWidth, paint);
   }
-  
+
+  // If in diff mode
+  plotDistBwPolyClips(paint);
+
   return;
 }
 
