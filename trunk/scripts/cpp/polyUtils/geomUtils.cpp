@@ -149,12 +149,12 @@ void utils::minDistFromPtToSeg(//inputs
                                double x0, double y0,
                                double x1, double y1,
                                // outputs
-                               double & xout, double & yout,
+                               double & minX, double & minY,
                                double & minDist
                                ){
 
   // Given the point (xin, yin) and the segment going from (x0, y0) to
-  // (x1, y1), find the point (xout, yout) on this segment (not on its
+  // (x1, y1), find the point (minX, minY) on this segment (not on its
   // continuation) closest to (xin, yin).
   
   double a = (x1  - x0)*(x1 - x0) + (y1  - y0)*(y1 - y0);
@@ -166,10 +166,10 @@ void utils::minDistFromPtToSeg(//inputs
   t = max(t, 0.0);
   t = min(t, 1.0);
 
-  xout = x0 + t*(x1 - x0);
-  yout = y0 + t*(y1 - y0);
+  minX = x0 + t*(x1 - x0);
+  minY = y0 + t*(y1 - y0);
 
-  minDist = sqrt ( (xin  - xout)*(xin - xout) + (yin  - yout)*(yin - yout) );
+  minDist = sqrt ( (xin  - minX)*(xin - minX) + (yin  - minY)*(yin - minY) );
 
   return;
 }
