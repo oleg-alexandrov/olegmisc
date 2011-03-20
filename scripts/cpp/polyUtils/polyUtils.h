@@ -16,13 +16,13 @@ namespace utils{
                     );
   
 
-  void findClosestPointAndDist(// inputs
-                               double x0, double y0,
-                               const std::vector<dPoly> & polyVec,
-                               // outputs
-                               double & minX, double & minY,
-                               double & minDist
-                               );
+  void findClosestPolyVertex(// inputs
+                             double x0, double y0,
+                             const std::vector<dPoly> & polyVec,
+                             // outputs
+                             double & minX, double & minY,
+                             double & minDist
+                             );
 
   void findAndSortDistsBwPolys(// inputs
                                const std::vector<dPoly> & polyVec1,
@@ -35,7 +35,7 @@ namespace utils{
 
   void findClosestPolyEdge(// inputs
                            double x0, double y0,
-                           std::vector<dPoly> & polyVec,
+                           const std::vector<dPoly> & polyVec,
                            // outputs
                            int & minVecIndex, int & minPolyIndex,
                            double & minX, double & minY, double & minDist
