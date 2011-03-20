@@ -100,10 +100,11 @@ public:
                                ) const;
   
   void findClosestPolyEdge(//inputs
-                            double x0, double y0,
-                            // outputs
-                            int & minIndex, double & minDist
-                            ) const;
+                           double x0, double y0,
+                           // outputs
+                           int & minIndex,
+                           double & minX, double & minY, double & minDist
+                           ) const;
   
   void erasePoly(int polyIndex);
   void sortFromLargestToSmallest();

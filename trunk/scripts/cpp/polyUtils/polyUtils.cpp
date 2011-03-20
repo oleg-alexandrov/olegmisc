@@ -18,25 +18,29 @@ void utils::findClosestPolyEdge(// inputs
                                 std::vector<dPoly> & polyVec,
                                 // outputs
                                 int & minVecIndex, int & minPolyIndex,
-                                double & min_dist
+                                double & minX, double & minY, double & minDist
                                 ){
 
-  min_dist     = DBL_MAX;
   minVecIndex  = -1;
   minPolyIndex = -1;
+  minX         = DBL_MAX;
+  minY         = DBL_MAX;
+  minDist      = DBL_MAX;
   
   for (int vecIter = 0; vecIter < (int)polyVec.size(); vecIter++){
 
-    double dist   = DBL_MAX;
+    double xl = DBL_MAX, yl = DBL_MAX, dist = DBL_MAX;
     int polyIndex = -1;
-    polyVec[vecIter].findClosestPolyEdge(x0, y0,           // in
-                                         polyIndex, dist   // out
+    polyVec[vecIter].findClosestPolyEdge(x0, y0,                   // in
+                                         polyIndex, xl, yl, dist   // out
                                          );
 
-    if (dist <= min_dist){
+    if (dist <= minDist){
       minVecIndex  = vecIter;
       minPolyIndex = polyIndex;
-      min_dist     = dist;
+      minX         = xl;
+      minY         = yl;
+      minDist      = dist;
     }
     
   }
@@ -48,23 +52,23 @@ void utils::findClosestPointAndDist(// inputs
                                     double x0, double y0,
                                     const std::vector<dPoly> & polyVec,
                                     // outputs
-                                    double & min_x, double & min_y,
-                                    double & min_dist
+                                    double & minX, double & minY,
+                                    double & minDist
                                     ){
 
-  min_x = x0; min_y = y0; min_dist = DBL_MAX;
+  minX = x0; minY = y0; minDist = DBL_MAX;
   
   for (int s = 0; s < (int)polyVec.size(); s++){
 
-    double min_x0 = x0, min_y0 = y0, min_dist0 = DBL_MAX;
-    polyVec[s].findClosestPointAndDist(x0, y0,                   // inputs
-                                       min_x0, min_y0, min_dist0 // outputs
+    double minX0 = x0, minY0 = y0, minDist0 = DBL_MAX;
+    polyVec[s].findClosestPointAndDist(x0, y0,                // inputs
+                                       minX0, minY0, minDist0 // outputs
                                        );
 
-    if (min_dist0 <= min_dist){
-      min_dist = min_dist0;
-      min_x    = min_x0;
-      min_y    = min_y0;
+    if (minDist0 <= minDist){
+      minDist = minDist0;
+      minX    = minX0;
+      minY    = minY0;
     }
     
   }
@@ -104,15 +108,15 @@ void utils::findAndSortDistsBwPolys(// inputs
 
     for (int t  = 0; t < numVerts; t++){
       
-      double min_x, min_y, min_dist = DBL_MAX;
+      double minX, minY, minDist = DBL_MAX;
       findClosestPointAndDist(// inputs
                               x[t], y[t], polyVec2,  
                               // outputs
-                              min_x, min_y,  min_dist
+                              minX, minY,  minDist
                               );
 
-      if (min_dist != DBL_MAX)
-        distVec.push_back(segDist(x[t], y[t], min_x, min_y, min_dist));
+      if (minDist != DBL_MAX)
+        distVec.push_back(segDist(x[t], y[t], minX, minY, minDist));
       
     }
     
