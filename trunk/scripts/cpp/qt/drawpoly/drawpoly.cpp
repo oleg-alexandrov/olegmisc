@@ -1274,15 +1274,15 @@ void drawPoly::deletePoly(){
   m_actions.push_back(m_polyChanged);
   m_resetViewOnUndo.push_back(false);
 
-  double minDist   = DBL_MAX;
   int minVecIndex  = -1;
   int minPolyIndex = -1;
+  double minX = DBL_MAX, minY = DBL_MAX, minDist = DBL_MAX;
   findClosestPolyEdge(// inputs
                          m_menuX, m_menuY,
                          m_polyVec,  
                          // outputs
                          minVecIndex, minPolyIndex,  
-                         minDist
+                         minX, minY, minDist
                          );
   
   if (minVecIndex >= 0 && minPolyIndex >= 0){
