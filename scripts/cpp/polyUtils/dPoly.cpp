@@ -426,13 +426,18 @@ void dPoly::findClosestPointAndDist(// inputs
 void dPoly::findClosestPolyEdge(//inputs
                                  double x0, double y0,
                                  // outputs
-                                 int & minIndex, double & minDist
+                                 int & minIndex,
+                                 double & minX, double & minY, double & minDist
                                  ) const{
 
-  // Given a set of polygons and a point, find the index of the polygon
-  // closest to the point. Return that closest distance as well.
-
+  // Given a point, and a set of polygons, find the polygon edge
+  // closest to the given point and the location on the edge where the
+  // smallest distance is achieved. Return the index of the polygon
+  // where the closest distance is achieved, as well as the point at
+  // which that distance is achieved and the smallest distance itself.
+  
   minIndex = -1;
+  minX     = DBL_MAX, minY = DBL_MAX;
   minDist  = DBL_MAX;
   
   int start = 0;
@@ -455,6 +460,8 @@ void dPoly::findClosestPolyEdge(//inputs
 
       if (dist <= minDist){
         minIndex = pIter;
+        minX     = xval;
+        minY     = yval;
         minDist  = dist;
       }
 
