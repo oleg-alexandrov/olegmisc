@@ -82,9 +82,9 @@ private:
   void printCmd(std::string cmd, double xll, double yll,
                 double widX, double widY);
   void printCmd(std::string cmd);
-  void shiftPolys(std::vector<double>  & shifts);
+  void shiftPolys(std::vector<double> & shifts);
   void rotatePolys(std::vector<double> & angle);
-  void scalePolys(std::vector<double>  & scale);
+  void scalePolys(std::vector<double> & scale);
   void drawMark(int x0, int y0, QColor color, int lineWidth,
                 QPainter * paint);
   void setupDisplayOrder(int                 numPolys, 
@@ -145,6 +145,8 @@ private:
                                       dPoly& poly
                                       );
 
+  void plotDistBwPolyClips( QPainter *paint );
+  
   double m_zoomFactor, m_shiftX, m_shiftY;
   int m_mousePrsX,  m_mousePrsY, m_mouseRelX,  m_mouseRelY;
   int m_screenXll,  m_screenYll, m_screenWidX, m_screenWidY;
@@ -214,6 +216,8 @@ private:
   std::vector<dPoly> m_polyVecBk;
   std::vector<bool>  m_plotPointsOnlyVecBk;
   std::vector<std::string> m_polyFilesVecBk;
+  std::vector<segDist> m_distVec; // distances b/w polys to diff
+  int m_distToPlot;
   
 };
 
