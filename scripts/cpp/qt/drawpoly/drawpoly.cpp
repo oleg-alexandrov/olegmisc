@@ -1250,6 +1250,40 @@ void drawPoly::toggleShowPolyDiff(){
   update();
 }
 
+void drawPoly::plotNextDiff(){
+
+  // See plotDistBwPolyClips(...) for info.
+  
+  if ( !m_polyDiffMode ) return;
+
+  int len = m_distVec.size();
+
+  if (m_distToPlot < 0) m_distToPlot = 0;
+  else{
+    m_distToPlot++;
+    if (len > 0) m_distToPlot = m_distToPlot % len;
+  }
+    
+  update();
+}
+
+void drawPoly::plotPrevDiff(){
+
+  // See plotDistBwPolyClips(...) for info.
+  
+  if ( !m_polyDiffMode ) return;
+
+  int len = m_distVec.size();
+
+  if (m_distToPlot < 0) m_distToPlot = 0;
+
+  m_distToPlot--;
+  if (len > 0) m_distToPlot = (m_distToPlot + len) % len;
+      
+  update();
+}
+
+
 void drawPoly::plotDistBwPolyClips( QPainter *paint ){
 
   // This is to be called in diff mode only, when we study how
