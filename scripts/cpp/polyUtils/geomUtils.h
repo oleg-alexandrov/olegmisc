@@ -65,7 +65,7 @@ namespace utils{
                           double x0, double y0,
                           double x1, double y1,
                           // outputs
-                          double & xout, double & yout,
+                          double & minX, double & minY,
                           double & minDist
                           );
   
