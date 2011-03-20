@@ -1256,6 +1256,15 @@ void drawPoly::plotNextDiff(){
   
   if ( !m_polyDiffMode ) return;
 
+  if (m_distVec.size() == 0 ){
+    assert( m_polyVec.size() >= 2);
+    findAndSortDistsBwPolys(// inputs
+                            m_polyVec[0], m_polyVec[1], 
+                            // outputs
+                            m_distVec
+                            );
+  }
+
   int len = m_distVec.size();
 
   if (m_distToPlot < 0) m_distToPlot = 0;
@@ -1263,7 +1272,7 @@ void drawPoly::plotNextDiff(){
     m_distToPlot++;
     if (len > 0) m_distToPlot = m_distToPlot % len;
   }
-    
+
   update();
 }
 
@@ -1272,6 +1281,15 @@ void drawPoly::plotPrevDiff(){
   // See plotDistBwPolyClips(...) for info.
   
   if ( !m_polyDiffMode ) return;
+
+  if (m_distVec.size() == 0 ){
+    assert( m_polyVec.size() >= 2);
+    findAndSortDistsBwPolys(// inputs
+                            m_polyVec[0], m_polyVec[1], 
+                            // outputs
+                            m_distVec
+                            );
+  }
 
   int len = m_distVec.size();
 
