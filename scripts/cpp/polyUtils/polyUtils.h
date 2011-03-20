@@ -25,8 +25,8 @@ namespace utils{
                              );
 
   void findAndSortDistsBwPolys(// inputs
-                               const std::vector<dPoly> & polyVec1,
-                               const std::vector<dPoly> & polyVec2,
+                               const dPoly & poly1,
+                               const dPoly & poly2,
                                // outputs
                                std::vector<segDist> & distVec
                                );

@@ -77,47 +77,39 @@ void utils::findClosestPolyVertex(// inputs
 }
 
 void utils::findAndSortDistsBwPolys(// inputs
-                                    const std::vector<dPoly> & polyVec1,
-                                    const std::vector<dPoly> & polyVec2,
+                                    const dPoly & poly1,
+                                    const dPoly & poly2,
                                     // outputs
                                     std::vector<segDist> & distVec
                                     ){
 
-  // Given two vectors of polygons, for each vertex in each polygon in
-  // the first vector find the distance to the closest point (not
-  // necessarily on the edge) in the second vector of polygons, and
-  // the segment with the smallest distance.
+  // Given two sets of polygons, for each vertex in the first polygon
+  // set find the distance to the closest point (not necessarily on
+  // the edge) in the second polygon set, and the segment with the
+  // smallest distance.
 
   // The complexity of this is O(m*n) where m and n are the total
-  // number of vertices in the first and second vector
+  // number of vertices in the first and second polygon sets
   // respectively. This will be slow for large m and n, and can be
   // sped up using kd-trees or some hashing approach.
 
   
   distVec.clear();
 
-  for (int s = 0; s < (int)polyVec1.size(); s++){
-
-    const dPoly  & P = polyVec1[s]; // alias
-    const double * x = P.get_xv();
-    const double * y = P.get_yv();
-    int numVerts     = P.get_totalNumVerts();
-
-    for (int t  = 0; t < numVerts; t++){
-      
-      int minVecIndex, minPolyIndex;
-      double minX, minY, minDist = DBL_MAX;
-      findClosestPolyEdge(// inputs
-                          x[t], y[t], polyVec2,  
-                          // outputs
-                          minVecIndex, minPolyIndex, minX, minY,  minDist
-                          );
-
-      if (minDist != DBL_MAX)
-        distVec.push_back(segDist(x[t], y[t], minX, minY, minDist));
-      
-    }
+  const double * x = poly1.get_xv();
+  const double * y = poly1.get_yv();
+  int numVerts     = poly1.get_totalNumVerts();
+  
+  for (int t  = 0; t < numVerts; t++){
     
+    int minPolyIndex;
+    double minX, minY, minDist = DBL_MAX;
+    poly2.findClosestPolyEdge(x[t], y[t],                        // inputs
+                              minPolyIndex, minX, minY,  minDist // outputs
+                              );
+    
+    if (minDist != DBL_MAX)
+      distVec.push_back(segDist(x[t], y[t], minX, minY, minDist));
   }
 
   sort(distVec.begin(), distVec.end(), segDistGreaterThan);
