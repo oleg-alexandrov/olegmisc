@@ -1275,14 +1275,14 @@ void drawPoly::plotDistBwPolyClips( QPainter *paint ){
   paint->setBrush( NoBrush );
   paint->setPen( QPen(color, lineWidth) );
 
-  int pSize = x.size()
+  int pSize = x.size();
   QPointArray pa(pSize);
   for (int vIter = 0; vIter < pSize; vIter++){
     int px0, py0;
     worldToPixelCoords(x[vIter], y[vIter], // inputs
                        px0, py0            // outputs
                        );
-    pa[vIter] = QPoint(x0, y0);
+    pa[vIter] = QPoint(px0, py0);
   }
   paint->drawPolyline( pa );
   
