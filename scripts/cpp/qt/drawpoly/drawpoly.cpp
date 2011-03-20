@@ -96,6 +96,8 @@ drawPoly::drawPoly( QWidget *parent,
   m_polyVecBk.clear();
   m_plotPointsOnlyVecBk.clear();
   m_polyFilesVecBk.clear();
+  m_distVec.clear(); // distances b/w polys to diff
+  m_distToPlot = -1;
 
   resetTransformSettings();
 
@@ -1190,6 +1192,11 @@ void drawPoly::toggleShowPolyDiff(){
     m_polyVec           = m_polyVecBk;
     m_plotPointsOnlyVec = m_plotPointsOnlyVecBk;
     m_polyFilesVec      = m_polyFilesVecBk;
+
+    // See plotDistBwPolyClips() for explanation.
+    m_distVec.clear();
+    m_distToPlot = -1; 
+
     update();
     return;
   }
@@ -1241,6 +1248,47 @@ void drawPoly::toggleShowPolyDiff(){
   m_polyFilesVec[3] = "diff2.xg";
   
   update();
+}
+
+void drawPoly::plotDistBwPolyClips( QPainter *paint ){
+
+  // This is to be called in diff mode only, when we study how
+  // different m_polyVec[0] is from m_polyVec[1].
+  
+  // For every vertex in m_polyVec[0], the distance to the closest
+  // point on the closest edge of m_polyVec[1], and the segment of
+  // this shortest distance. We sort such distances in decreasing
+  // order and store them in m_distVec. Here we plot the segment
+  //m_distVec[m_distToPlot].
+
+  if ( !m_polyDiffMode ) return;
+  int len = m_distVec.size();
+  if (m_distToPlot < 0 || m_distToPlot >= len) return;
+    
+  segDist S = m_distVec[m_distToPlot];
+  vector<double> x, y;
+  x.clear(); y.clear();
+  x.push_back(S.begx); x.push_back(S.endx);
+  y.push_back(S.begy); y.push_back(S.endy);
+
+  int lineWidth = 1;
+  char * color  = "yellow";
+  paint->setBrush( NoBrush );
+  paint->setPen( QPen(color, lineWidth) );
+
+  int pSize = x.size()
+  QPointArray pa(pSize);
+  for (int vIter = 0; vIter < pSize; vIter++){
+    int px0, py0;
+    worldToPixelCoords(x[vIter], y[vIter], // inputs
+                       px0, py0            // outputs
+                       );
+    pa[vIter] = QPoint(x0, y0);
+  }
+  paint->drawPolyline( pa );
+  
+
+  return;
 }
 
 void drawPoly::create45DegreeIntPoly(){
