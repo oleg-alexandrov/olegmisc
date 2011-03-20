@@ -92,12 +92,12 @@ public:
   void bdBoxes(std::vector<double> & xll, std::vector<double> & yll,
                std::vector<double> & xur, std::vector<double> & yur) const;
   
-  void findClosestPointAndDist(// inputs
-                               double x0, double y0,
-                               // outputs
-                               double & min_x, double & min_y,
-                               double & min_dist
-                               ) const;
+  void findClosestPolyVertex(// inputs
+                             double x0, double y0,
+                             // outputs
+                             double & min_x, double & min_y,
+                             double & min_dist
+                             ) const;
   
   void findClosestPolyEdge(//inputs
                            double x0, double y0,

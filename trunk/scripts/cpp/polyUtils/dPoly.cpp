@@ -398,14 +398,17 @@ void dPoly::compLayerAnno(){
   return;
 }
 
-void dPoly::findClosestPointAndDist(// inputs
-                                    double x0, double y0,
-                                    // outputs
-                                    double & min_x, double & min_y,
-                                    double & min_dist
-                                    ) const {
+void dPoly::findClosestPolyVertex(// inputs
+                                  double x0, double y0,
+                                  // outputs
+                                  double & min_x, double & min_y,
+                                  double & min_dist
+                                  ) const {
 
-  // Return DBL_MAX if the polygon is empty.
+  // Given a point and a set of polygons, find the polygon vertex
+  // closest to the given point. Return the closest vertex and the
+  // distance to it from the given point. Return DBL_MAX if the
+  // polygon is empty.
   
   min_x = x0; min_y = y0; min_dist = DBL_MAX;
   
@@ -430,7 +433,7 @@ void dPoly::findClosestPolyEdge(//inputs
                                  double & minX, double & minY, double & minDist
                                  ) const{
 
-  // Given a point, and a set of polygons, find the polygon edge
+  // Given a point and a set of polygons, find the polygon edge
   // closest to the given point and the location on the edge where the
   // smallest distance is achieved. Return the index of the polygon
   // where the closest distance is achieved, as well as the point at
