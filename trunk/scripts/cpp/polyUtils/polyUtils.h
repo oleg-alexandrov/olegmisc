@@ -20,8 +20,8 @@ namespace utils{
                                double x0, double y0,
                                const std::vector<dPoly> & polyVec,
                                // outputs
-                               double & min_x, double & min_y,
-                               double & min_dist
+                               double & minX, double & minY,
+                               double & minDist
                                );
 
   void findAndSortDistsBwPolys(// inputs
@@ -38,7 +38,7 @@ namespace utils{
                            std::vector<dPoly> & polyVec,
                            // outputs
                            int & minVecIndex, int & minPolyIndex,
-                           double & min_dist
+                           double & minX, double & minY, double & minDist
                            );
 
 
