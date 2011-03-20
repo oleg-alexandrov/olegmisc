@@ -7,6 +7,7 @@
 #include <vector>
 #include "utils.h"
 #include "../../polyUtils/dPoly.h"
+#include "../../polyUtils/polyUtils.h"
 
 class drawPoly : public QWidget{
     Q_OBJECT
