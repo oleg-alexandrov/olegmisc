@@ -217,7 +217,7 @@ private:
   std::vector<dPoly> m_polyVecBk;
   std::vector<bool>  m_plotPointsOnlyVecBk;
   std::vector<std::string> m_polyFilesVecBk;
-  std::vector<segDist> m_distVec; // distances b/w polys to diff
+  std::vector<utils::segDist> m_distVec; // distances b/w polys to diff
   int m_distToPlot;
   
 };
