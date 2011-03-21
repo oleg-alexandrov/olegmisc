@@ -1300,7 +1300,7 @@ void drawPoly::plotDiff(int dir){
   m_segX.push_back(S.begx); m_segX.push_back(S.endx);
   m_segY.push_back(S.begy); m_segY.push_back(S.endy);
 
-  cout << "Diff number and dist: " << m_distToPlot << ' ' << S.dist << endl;
+  cout << "Distance: " << m_distToPlot << ' ' << S.dist << endl;
 
   // Set up the view so that it is centered at the midpoint of this
   // segment.
@@ -1336,6 +1336,8 @@ void drawPoly::plotDistBwPolyClips( QPainter *paint ){
   paint->setPen( QPen( color, lineWidth) );
   paint->setBrush( QColor(color) );
 
+  // To do: This does not behave well on zoom. Need to cut this segment to the viewing
+  // box, as done with polygons.
   QPointArray pa(pSize);
   for (int vIter = 0; vIter < pSize; vIter++){
     int px0, py0;
