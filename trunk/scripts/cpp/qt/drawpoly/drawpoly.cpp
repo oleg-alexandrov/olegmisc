@@ -1106,7 +1106,7 @@ void drawPoly::drawOneVertex(int x0, int y0, QColor color, int lineWidth,
   int numTypes = 4;
   if (drawVertIndex%numTypes == 0){
     
-    // Draw a small filled ellipse
+    // Draw a small empty ellipse
     paint->setBrush( NoBrush );
     paint->drawEllipse(x0 - len, y0 - len, 2*len, 2*len);
     
@@ -1327,9 +1327,10 @@ void drawPoly::plotDistBwPolyClips( QPainter *paint ){
   y.push_back(S.begy); y.push_back(S.endy);
 
   int lineWidth = 1;
+  int radius    = 2;
   char * color  = "yellow";
-  paint->setBrush( NoBrush );
-  paint->setPen( QPen(color, lineWidth) );
+  paint->setPen( QPen( color, lineWidth) );
+  paint->setBrush( QColor(color) );
 
   int pSize = x.size();
   QPointArray pa(pSize);
@@ -1338,10 +1339,13 @@ void drawPoly::plotDistBwPolyClips( QPainter *paint ){
     worldToPixelCoords(x[vIter], y[vIter], // inputs
                        px0, py0            // outputs
                        );
+    paint->drawEllipse(px0 - radius, py0 - radius, 2*radius, 2*radius);
     pa[vIter] = QPoint(px0, py0);
   }
   paint->drawPolyline( pa );
+
   
+
 
   return;
 }
