@@ -1254,37 +1254,21 @@ void drawPoly::toggleShowPolyDiff(){
 }
 
 void drawPoly::plotNextDiff(){
-
-  // See plotDistBwPolyClips(...) for info.
-  
-  if ( !m_polyDiffMode ) return;
-
-  if (m_distVec.size() == 0 ){
-    assert( m_polyVec.size() >= 2);
-    findAndSortDistsBwPolys(// inputs
-                            m_polyVec[0], m_polyVec[1], 
-                            // outputs
-                            m_distVec
-                            );
-  }
-
-  int len = m_distVec.size();
-  
-  if (m_distToPlot < 0) m_distToPlot = 0;
-  else{
-    m_distToPlot++;
-    if (len > 0) m_distToPlot = m_distToPlot % len;
-  }
-
-  update();
+  plotDiff(1);
 }
 
 void drawPoly::plotPrevDiff(){
+  plotDiff(-1);
+}
 
+void drawPoly::plotDiff(int dir){
+  
   // See plotDistBwPolyClips(...) for info.
   
   if ( !m_polyDiffMode ) return;
 
+  assert(dir == 1 || dir == -1);
+  
   if (m_distVec.size() == 0 ){
     assert( m_polyVec.size() >= 2);
     findAndSortDistsBwPolys(// inputs
@@ -1294,14 +1278,20 @@ void drawPoly::plotPrevDiff(){
                             );
   }
 
+  if (m_distToPlot < 0){
+    if (dir > 0) m_distToPlot = -1;
+    else         m_distToPlot = 0;
+  }
+  m_distToPlot += dir;
+
   int len = m_distVec.size();
-
-  if (m_distToPlot < 0) m_distToPlot = 0;
-
-  m_distToPlot--;
-  if (len > 0) m_distToPlot = (m_distToPlot + len) % len;
-      
-  update();
+  if (len > 0){
+    m_distToPlot = (m_distToPlot + len) % len;
+  }else{
+    m_distToPlot = -1; // Nothing to plot
+  }
+    
+  update(); // Will call plotDistBwPolyClips(...)
 }
 
 
@@ -1343,8 +1333,6 @@ void drawPoly::plotDistBwPolyClips( QPainter *paint ){
     pa[vIter] = QPoint(px0, py0);
   }
   paint->drawPolyline( pa );
-
-  
 
 
   return;
