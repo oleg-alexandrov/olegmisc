@@ -221,6 +221,8 @@ private:
   std::vector<bool>  m_plotPointsOnlyVecBk;
   std::vector<std::string> m_polyFilesVecBk;
   std::vector<utils::segDist> m_distVec; // distances b/w polys to diff
+  std::vector<double> m_segX, m_segY;    // segment to plot
+  
   int m_distToPlot;
   
 };

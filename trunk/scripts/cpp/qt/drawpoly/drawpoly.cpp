@@ -1265,6 +1265,8 @@ void drawPoly::plotDiff(int dir){
   
   // See plotDistBwPolyClips(...) for info.
   
+  m_segX.clear(); m_segY.clear(); // First wipe the output
+
   if ( !m_polyDiffMode ) return;
 
   assert(dir == 1 || dir == -1);
@@ -1291,6 +1293,21 @@ void drawPoly::plotDiff(int dir){
     m_distToPlot = -1; // Nothing to plot
   }
     
+  int len = m_distVec.size();
+  if (m_distToPlot < 0 || m_distToPlot >= len) return;
+
+  // The segment to plot
+  segDist S = m_distVec[m_distToPlot];
+  m_segX.push_back(S.begx); m_segX.push_back(S.endx);
+  m_segY.push_back(S.begy); m_segY.push_back(S.endy);
+
+  // Set up the view so that it is centered at the midpoint of this
+  // segment.
+  double midX = (m_segX[0] + m_segX[1])/2.0;
+  double midY = (m_segY[0] + m_segY[1])/2.0;
+  m_viewXll  = midX - m_viewWidX/2.0;
+  m_viewYll  = midY - m_viewWidY/2.0;
+  
   update(); // Will call plotDistBwPolyClips(...)
 }
 
@@ -1304,17 +1321,13 @@ void drawPoly::plotDistBwPolyClips( QPainter *paint ){
   // point on the closest edge of m_polyVec[1], and the segment of
   // this shortest distance. We sort such distances in decreasing
   // order and store them in m_distVec. Here we plot the segment
-  //m_distVec[m_distToPlot].
+  // m_distVec[m_distToPlot]. See (drawPoly::plotDiff) which calls
+  // this function.
 
   if ( !m_polyDiffMode ) return;
-  int len = m_distVec.size();
-  if (m_distToPlot < 0 || m_distToPlot >= len) return;
-    
-  segDist S = m_distVec[m_distToPlot];
-  vector<double> x, y;
-  x.clear(); y.clear();
-  x.push_back(S.begx); x.push_back(S.endx);
-  y.push_back(S.begy); y.push_back(S.endy);
+
+  int pSize = m_segX.size();
+  if (pSize != 2) return;
 
   int lineWidth = 1;
   int radius    = 2;
@@ -1322,12 +1335,11 @@ void drawPoly::plotDistBwPolyClips( QPainter *paint ){
   paint->setPen( QPen( color, lineWidth) );
   paint->setBrush( QColor(color) );
 
-  int pSize = x.size();
   QPointArray pa(pSize);
   for (int vIter = 0; vIter < pSize; vIter++){
     int px0, py0;
-    worldToPixelCoords(x[vIter], y[vIter], // inputs
-                       px0, py0            // outputs
+    worldToPixelCoords(m_segX[vIter], m_segY[vIter], // inputs
+                       px0, py0                      // outputs
                        );
     paint->drawEllipse(px0 - radius, py0 - radius, 2*radius, 2*radius);
     pa[vIter] = QPoint(px0, py0);
