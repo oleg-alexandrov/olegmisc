@@ -49,6 +49,7 @@ public slots:
   void toggleShowPolyDiff();
   void plotNextDiff();
   void plotPrevDiff();
+  void plotDiff(int dir);
   void togglePE();
   void toggleVertIndexAnno();
   void toggleLayerAnno();
