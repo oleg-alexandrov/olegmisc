@@ -1300,7 +1300,7 @@ void drawPoly::plotDiff(int dir){
   m_segX.push_back(S.begx); m_segX.push_back(S.endx);
   m_segY.push_back(S.begy); m_segY.push_back(S.endy);
 
-  cout << "Distance: " << m_distToPlot << ' ' << S.dist << endl;
+  cout << "Distance: " << S.dist << endl;
 
   // Set up the view so that it is centered at the midpoint of this
   // segment.
