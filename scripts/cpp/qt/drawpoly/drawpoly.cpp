@@ -1293,13 +1293,14 @@ void drawPoly::plotDiff(int dir){
     m_distToPlot = -1; // Nothing to plot
   }
     
-  int len = m_distVec.size();
   if (m_distToPlot < 0 || m_distToPlot >= len) return;
 
   // The segment to plot
   segDist S = m_distVec[m_distToPlot];
   m_segX.push_back(S.begx); m_segX.push_back(S.endx);
   m_segY.push_back(S.begy); m_segY.push_back(S.endy);
+
+  cout << "Diff number and dist: " m_distToPlot << ' ' << S.dist << endl;
 
   // Set up the view so that it is centered at the midpoint of this
   // segment.
