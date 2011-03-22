@@ -13,6 +13,7 @@
 #include <qinputdialog.h>
 #include <qpainter.h>
 #include "drawpoly.h"
+#include <qmessagebox.h>
 #include "../../polyUtils/polyUtils.h"
 
 using namespace std;
@@ -641,6 +642,13 @@ void drawPoly::paintEvent( QPaintEvent*){
   return;
 }
 
+void drawPoly::popUp(std::string msg){
+  QMessageBox msgBox;
+  msgBox.setText(msg.c_str());
+  msgBox.exec();
+  return;
+}
+
 bool drawPoly::getValuesFromGui(std::string title, std::string description,
                                 std::vector<double> & values){
 
@@ -1210,7 +1218,9 @@ void drawPoly::toggleShowPolyDiff(){
   assert(m_polyVec.size() == m_plotPointsOnlyVec.size());
   
   if (m_polyVec.size() < 2){
-    cerr << "Error: Must have at least two polygons to compare" << endl;
+    string msg = "Must have two polygon files to diff";
+    popUp(msg);
+    cerr << msg << endl;
     return;
   }
 

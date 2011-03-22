@@ -161,15 +161,12 @@ QMenuBar* appWindow::createMenus(){
   view->insertItem("Toggle show vertex indices",
                    m_poly, SLOT(toggleVertIndexAnno()), Key_V);
   view->insertItem("Toggle show layers", m_poly, SLOT(toggleLayerAnno()), Key_L);
-  view->insertItem("Toggle show poly diff", m_poly, SLOT(toggleShowPolyDiff()), Key_D);
-  view->insertItem("Show next diff", m_poly, SLOT(plotNextDiff()), Key_K);
-  view->insertItem("Show prev diff", m_poly, SLOT(plotPrevDiff()), Key_J);
 
   QPopupMenu* edit = new QPopupMenu( menu );
   menu->insertItem("&Edit", edit);
   edit->insertItem("Undo",             m_poly, SLOT(undoLast()), Key_Z);
   edit->insertItem("Cut to highlight", m_poly, SLOT(cutToHlt()), Key_C);
-  edit->insertItem("Create 45-degree integer polygon",
+  edit->insertItem("Create poly with int vertices and 45x angles",
                    m_poly, SLOT(create45DegreeIntPoly()), Key_N);
   edit->insertItem("Create arbitrary polygon",
                    m_poly, SLOT(createArbitraryPoly()), Qt::CTRL+Key_N);
@@ -178,15 +175,18 @@ QMenuBar* appWindow::createMenus(){
   menu->insertItem("&Transform", transform);
   transform->insertItem("Enforce int vertices and 45x angles", m_poly, SLOT(enforce45()),
                         Qt::CTRL+Key_4);
-
   transform->insertItem("Translate polygons", m_poly, SLOT(shiftPolys()),
                         Qt::CTRL+Key_T);
-
   transform->insertItem("Rotate polygons", m_poly, SLOT(rotatePolys()),
                         Qt::CTRL+Key_R);
-
   transform->insertItem("Scale polygons", m_poly, SLOT(scalePolys()),
                         Qt::CTRL+Key_X);
+
+  QPopupMenu* diff = new QPopupMenu( menu );
+  menu->insertItem("&Diff", diff);
+  diff->insertItem("Toggle show poly diff", m_poly, SLOT(toggleShowPolyDiff()), Key_D);
+  diff->insertItem("Show next diff", m_poly, SLOT(plotNextDiff()), Key_K);
+  diff->insertItem("Show prev diff", m_poly, SLOT(plotPrevDiff()), Key_J);
 
   QPopupMenu* help = new QPopupMenu( menu );
   menu->insertItem("&Help", help);
