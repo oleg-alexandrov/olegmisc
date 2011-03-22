@@ -1,3 +1,4 @@
+bool getLine(ifstream &, std::string &);
 bool isDigit(const char);
 bool isHeap(const int *, int);
 bool isInList(node *, int);
@@ -23,6 +24,7 @@ void allocAndReturn(int, smartPtr &);
 void doSort(int *, int, int);
 void foo(int);
 void formList(list*&, int);
+void getChars(ifstream &, std::string &);
 void insertToHeap(heap &, int);
 void mergeLists(int *, int, int *, int, int *);
 void mergeSort(int *, int, int *);
