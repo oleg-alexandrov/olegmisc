@@ -6,8 +6,8 @@
 #include <qevent.h>
 #include <vector>
 #include "utils.h"
-#include "../../polyUtils/dPoly.h"
-#include "../../polyUtils/geomUtils.h"
+#include "../geom/dPoly.h"
+#include "../geom/geomUtils.h"
 
 class drawPoly : public QWidget{
     Q_OBJECT
