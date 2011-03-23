@@ -1,5 +1,5 @@
-#ifndef DRAWPOLY_H
-#define DRAWPOLY_H
+#ifndef POLYVIEW_H
+#define POLYVIEW_H
 
 #include <qwidget.h>
 #include <qpixmap.h>
@@ -228,5 +228,5 @@ private:
   
 };
 
-#endif // DRAWPOLY_H
+#endif // POLYVIEW_H
 
