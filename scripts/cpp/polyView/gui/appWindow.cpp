@@ -9,7 +9,7 @@
 #include <iostream>
 #include <cmath>
 #include "appWindow.h"
-#include "drawpoly.h"
+#include "polyView.h"
 
 using namespace std;
 

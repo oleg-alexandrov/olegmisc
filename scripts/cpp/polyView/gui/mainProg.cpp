@@ -6,7 +6,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include "appWindow.h"
-#include "drawpoly.h"
+#include "polyView.h"
 #include "utils.h"
 
 using namespace std;

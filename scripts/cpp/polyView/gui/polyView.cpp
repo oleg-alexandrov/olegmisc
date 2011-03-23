@@ -12,7 +12,7 @@
 #include <qdir.h>
 #include <qinputdialog.h>
 #include <qpainter.h>
-#include "drawpoly.h"
+#include "polyView.h"
 #include <qmessagebox.h>
 #include "../geom/polyUtils.h"
 
