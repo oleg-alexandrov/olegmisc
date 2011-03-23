@@ -1,5 +1,5 @@
-    SOURCES = mainProg.cpp drawpoly.cpp appWindow.cpp utils.cpp   ../../polyUtils/dPoint.cpp  ../../polyUtils/dPoly.cpp ../../polyUtils/cutPoly.cpp ../../polyUtils/geomUtils.cpp ../../polyUtils/polyUtils.cpp
-    HEADERS = drawpoly.h appWindow.h utils.h ../../polyUtils/dPoint.h ../../polyUtils/dPoly.h ../../polyUtils/cutPoly.h  ../../polyUtils/geomUtils.h ../../polyUtils/polyUtils.h
+    SOURCES = mainProg.cpp drawpoly.cpp appWindow.cpp utils.cpp   ../geom/dPoint.cpp  ../geom/dPoly.cpp ../geom/cutPoly.cpp ../geom/geomUtils.cpp ../geom/polyUtils.cpp
+    HEADERS = drawpoly.h appWindow.h utils.h ../geom/dPoint.h ../geom/dPoly.h ../geom/cutPoly.h  ../geom/geomUtils.h ../geom/polyUtils.h
     CONFIG += qt warn_on release
     TARGET  = drawpoly
 

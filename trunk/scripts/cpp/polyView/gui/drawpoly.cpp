@@ -14,7 +14,7 @@
 #include <qpainter.h>
 #include "drawpoly.h"
 #include <qmessagebox.h>
-#include "../../polyUtils/polyUtils.h"
+#include "../geom/polyUtils.h"
 
 using namespace std;
 using namespace utils;
