@@ -9,10 +9,10 @@
 #include "../geom/dPoly.h"
 #include "../geom/geomUtils.h"
 
-class drawPoly : public QWidget{
+class polyView : public QWidget{
     Q_OBJECT
 public:
-    drawPoly( QWidget *parent, 
+    polyView( QWidget *parent, 
               bool useCmdLineColors,
               const std::vector<std::string> & cmdLineColors,
               const std::vector<std::string> & polyFilesVec,
