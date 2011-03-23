@@ -33,7 +33,7 @@ int main(int argc, char** argv){
                   );
 
   QApplication app(argc, argv);
-  char * progName = "drawPoly";
+  char * progName = "polyView";
   
   appWindow m(NULL, progName, useCmdLineColors, cmdLineColors,
               polyFilesVec, plotPointsOnlyVec, plotAsLines, noClosedPolys,

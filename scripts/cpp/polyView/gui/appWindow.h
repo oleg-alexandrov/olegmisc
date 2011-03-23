@@ -5,7 +5,7 @@
 #include <qlineedit.h>
 #include <string>
 #include <vector>
-class drawPoly;
+class polyView;
 
 class cmdLine : public QLineEdit {
   Q_OBJECT
@@ -45,7 +45,7 @@ private slots:
 private:
   void insertCmdFromHist();
   
-  drawPoly    * m_poly;
+  polyView    * m_poly;
   cmdLine     * m_cmdLine;
   std::string   m_progName;
   std::vector<std::string> m_cmdHist;

@@ -21,7 +21,7 @@ using namespace utils;
 
 // To do: handle colors correctly (convert dark-gray to darkGray, etc.).
 
-drawPoly::drawPoly( QWidget *parent,
+polyView::polyView( QWidget *parent,
                     bool useCmdLineColors,
                     const std::vector<std::string> & cmdLineColors,
                     const std::vector<std::string> & polyFilesVec,
@@ -108,7 +108,7 @@ drawPoly::drawPoly( QWidget *parent,
   return;
 }
 
-void drawPoly::showPoly( QPainter *paint ){
+void polyView::showPoly( QPainter *paint ){
 
   // To do: this function needs modularization
 
@@ -381,61 +381,61 @@ void drawPoly::showPoly( QPainter *paint ){
   return;
 }
 
-void drawPoly::zoomIn(){
+void polyView::zoomIn(){
   m_zoomFactor  = 0.5;
   m_viewChanged = true;
   update();
 }
 
-void drawPoly::zoomOut(){
+void polyView::zoomOut(){
   m_zoomFactor  = 2.0;
   m_viewChanged = true;
   update();
 }
 
-void drawPoly::shiftRight(){
+void polyView::shiftRight(){
   m_shiftX      = 0.25;
   m_viewChanged = true;
   update();
 }
 
-void drawPoly::shiftLeft(){
+void polyView::shiftLeft(){
   m_shiftX      = -0.25;
   m_viewChanged = true;
   update();
 }
 
-void drawPoly::shiftUp(){
+void polyView::shiftUp(){
   m_shiftY      = 0.25;
   m_viewChanged = true;
   update();
 }
 
-void drawPoly::shiftDown(){
+void polyView::shiftDown(){
   m_shiftY      = -0.25;
   m_viewChanged = true;
   update();
 }
 
-void drawPoly::centerViewAtPoint(double x, double y){
+void polyView::centerViewAtPoint(double x, double y){
   m_viewXll     = x - m_viewWidX/2.0;
   m_viewYll     = y - m_viewWidY/2.0;
   m_viewChanged = true;
 }
 
-void drawPoly::resetView(){
+void polyView::resetView(){
   m_resetView   = true;
   m_viewChanged = true;
   update();
 }
 
 
-void drawPoly::resetTransformSettings(){
+void polyView::resetTransformSettings(){
   m_zoomFactor = 1.0;
   m_shiftX     = 0.0; m_shiftY = 0.0;
 }
 
-void drawPoly::mousePressEvent( QMouseEvent *E){
+void polyView::mousePressEvent( QMouseEvent *E){
   
   const QPoint Q = E->pos();
   m_mousePrsX = Q.x();
@@ -448,7 +448,7 @@ void drawPoly::mousePressEvent( QMouseEvent *E){
   m_rubberBand = QRect(m_mousePrsX, m_mousePrsY, 0, 0); // initial rubberband
 }
 
-void drawPoly::mouseMoveEvent( QMouseEvent *E){
+void polyView::mouseMoveEvent( QMouseEvent *E){
 
   const QPoint Q = E->pos();
   int x = Q.x();
@@ -465,7 +465,7 @@ void drawPoly::mouseMoveEvent( QMouseEvent *E){
   
 }
 
-void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
+void polyView::mouseReleaseEvent ( QMouseEvent * E ){
 
   const QPoint Q = E->pos();
   m_mouseRelX = Q.x();
@@ -530,7 +530,7 @@ void drawPoly::mouseReleaseEvent ( QMouseEvent * E ){
 }
 
 
-void drawPoly::wheelEvent(QWheelEvent *E){
+void polyView::wheelEvent(QWheelEvent *E){
 
   int delta = E->delta();
 
@@ -571,7 +571,7 @@ void drawPoly::wheelEvent(QWheelEvent *E){
   E->accept();
 }
 
-void drawPoly::keyPressEvent( QKeyEvent *K ){
+void polyView::keyPressEvent( QKeyEvent *K ){
 
   switch ( K->key() ) {
   case Qt::Key_Minus:
@@ -602,7 +602,7 @@ void drawPoly::keyPressEvent( QKeyEvent *K ){
   
 }
 
-void drawPoly::contextMenuEvent(QContextMenuEvent *E){
+void polyView::contextMenuEvent(QContextMenuEvent *E){
 
   int x = E->x(), y = E->y();
   pixelToWorldCoords(x, y, m_menuX, m_menuY);
@@ -620,7 +620,7 @@ void drawPoly::contextMenuEvent(QContextMenuEvent *E){
   menu.exec(E->globalPos());
 }
 
-void drawPoly::paintEvent( QPaintEvent*){
+void polyView::paintEvent( QPaintEvent*){
 
   // This function will be called by update()
   
@@ -642,14 +642,14 @@ void drawPoly::paintEvent( QPaintEvent*){
   return;
 }
 
-void drawPoly::popUp(std::string msg){
+void polyView::popUp(std::string msg){
   QMessageBox msgBox;
   msgBox.setText(msg.c_str());
   msgBox.exec();
   return;
 }
 
-bool drawPoly::getValuesFromGui(std::string title, std::string description,
+bool polyView::getValuesFromGui(std::string title, std::string description,
                                 std::vector<double> & values){
 
   values.clear();
@@ -670,7 +670,7 @@ bool drawPoly::getValuesFromGui(std::string title, std::string description,
   return ok;
 }
 
-void drawPoly::shiftPolys(){
+void polyView::shiftPolys(){
 
   vector<double> shifts;
   if ( getValuesFromGui("Translate polygons", "Enter shift_x and shift_y", shifts) ){
@@ -679,7 +679,7 @@ void drawPoly::shiftPolys(){
   return;
 }
 
-void drawPoly::rotatePolys(){
+void polyView::rotatePolys(){
 
   vector<double> angle;
   if ( getValuesFromGui("Rotate polygons", "Enter rotation angle in degrees", angle) ){
@@ -688,7 +688,7 @@ void drawPoly::rotatePolys(){
   return;
 }
 
-void drawPoly::scalePolys(){
+void polyView::scalePolys(){
 
   vector<double> scale;
   if ( getValuesFromGui("Scale polygons", "Enter scale factor", scale) ){
@@ -697,7 +697,7 @@ void drawPoly::scalePolys(){
   return;
 }
 
-void drawPoly::shiftPolys(std::vector<double> & shifts){
+void polyView::shiftPolys(std::vector<double> & shifts){
 
   if (shifts.size() < 2){
     cerr << "Invalid shift_x and shift_y values" << endl;
@@ -719,7 +719,7 @@ void drawPoly::shiftPolys(std::vector<double> & shifts){
   return;
 }
 
-void drawPoly::rotatePolys(std::vector<double> & angle){
+void polyView::rotatePolys(std::vector<double> & angle){
 
   if (angle.size() < 1){
     cerr << "Invalid rotation angle" << endl;
@@ -741,7 +741,7 @@ void drawPoly::rotatePolys(std::vector<double> & angle){
   return;
 }
 
-void drawPoly::scalePolys(std::vector<double> & scale){
+void polyView::scalePolys(std::vector<double> & scale){
 
   if (scale.size() < 1){
     cerr << "Invalid scale factor" << endl;
@@ -763,7 +763,7 @@ void drawPoly::scalePolys(std::vector<double> & scale){
   return;
 }
 
-void drawPoly::addPolyVert(int px, int py){
+void polyView::addPolyVert(int px, int py){
 
   // Add a point to the polygon being drawn or stop drawing.
 
@@ -862,7 +862,7 @@ void drawPoly::addPolyVert(int px, int py){
   return;
 }
 
-void drawPoly::drawCurrPolyLine(QPainter * paint){
+void polyView::drawCurrPolyLine(QPainter * paint){
 
   int pSize = m_currPolyX.size();
   if (pSize == 0){
@@ -897,7 +897,7 @@ void drawPoly::drawCurrPolyLine(QPainter * paint){
   return;
 }
 
-void drawPoly::createHighlightWithPixelInputs(int pxll, int pyll, int pxur, int pyur
+void polyView::createHighlightWithPixelInputs(int pxll, int pyll, int pxur, int pyur
                                               ){
   
   double xll, yll, xur, yur;
@@ -913,7 +913,7 @@ void drawPoly::createHighlightWithPixelInputs(int pxll, int pyll, int pxur, int 
   return;
 }
 
-void drawPoly::createHighlightWithRealInputs(double xll, double yll,
+void polyView::createHighlightWithRealInputs(double xll, double yll,
                                              double xur, double yur
                                              ){
   
@@ -926,7 +926,7 @@ void drawPoly::createHighlightWithRealInputs(double xll, double yll,
   return;
 }
 
-void drawPoly::printCurrCoords(const ButtonState & state, // input
+void polyView::printCurrCoords(const ButtonState & state, // input
                                int & currX, int  & currY  // in-out
                                ){
   
@@ -1002,7 +1002,7 @@ void drawPoly::printCurrCoords(const ButtonState & state, // input
 }
 
 
-void drawPoly::wipeRubberBand(QRect & R){
+void polyView::wipeRubberBand(QRect & R){
   
   // Wipe the current rubberband by overwriting the region it occupies
   // (a set of four segments forming a rectangle) with the cached
@@ -1027,7 +1027,7 @@ void drawPoly::wipeRubberBand(QRect & R){
   return;
 }
 
-void drawPoly::pixelToWorldCoords(int px, int py,
+void polyView::pixelToWorldCoords(int px, int py,
                                   double & wx, double & wy){
 
   // Compensate for the Qt's origin being in the upper-left corner
@@ -1039,7 +1039,7 @@ void drawPoly::pixelToWorldCoords(int px, int py,
 
 }
 
-void drawPoly::worldToPixelCoords(double wx, double wy,
+void polyView::worldToPixelCoords(double wx, double wy,
                                   int & px,  int & py){
 
   px = iround((wx - m_viewXll)*m_pixelSize);
@@ -1051,7 +1051,7 @@ void drawPoly::worldToPixelCoords(double wx, double wy,
   
 }
 
-void drawPoly::setUpViewBox(// inputs
+void polyView::setUpViewBox(// inputs
                             const std::vector<dPoly> & polyVec,
                             // outputs
                             double & xll, double & yll,
@@ -1098,7 +1098,7 @@ void drawPoly::setUpViewBox(// inputs
 }
 
 
-void drawPoly::drawOneVertex(int x0, int y0, QColor color, int lineWidth,
+void polyView::drawOneVertex(int x0, int y0, QColor color, int lineWidth,
                              int drawVertIndex, QPainter * paint){
 
   // Draw a vertex as a small shape (a circle, rectangle, triangle)
@@ -1152,7 +1152,7 @@ void drawPoly::drawOneVertex(int x0, int y0, QColor color, int lineWidth,
   return;
 }
 
-void drawPoly::drawMark(int x0, int y0, QColor color, int lineWidth,
+void polyView::drawMark(int x0, int y0, QColor color, int lineWidth,
                         QPainter * paint){
   
   int len = 6;
@@ -1166,33 +1166,33 @@ void drawPoly::drawMark(int x0, int y0, QColor color, int lineWidth,
   
 }
 
-void drawPoly::toggleAnno(){
+void polyView::toggleAnno(){
   m_showAnnotations   = !m_showAnnotations;
   m_showVertIndexAnno = false;
   m_showLayerAnno     = false;
   update();
 }
 
-void drawPoly::toggleVertIndexAnno(){
+void polyView::toggleVertIndexAnno(){
   m_showVertIndexAnno = !m_showVertIndexAnno;
   m_showAnnotations   = false;
   m_showLayerAnno     = false;
   update();
 }
 
-void drawPoly::toggleLayerAnno(){
+void polyView::toggleLayerAnno(){
   m_showLayerAnno     = !m_showLayerAnno;
   m_showAnnotations   = false;
   m_showVertIndexAnno = false;
   update();
 }
 
-void drawPoly::toggleFilled(){
+void polyView::toggleFilled(){
   m_showFilledPolys = !m_showFilledPolys;
   update();
 }
 
-void drawPoly::toggleShowPolyDiff(){
+void polyView::toggleShowPolyDiff(){
 
   // Show the differences of two polygons as points
   
@@ -1263,15 +1263,15 @@ void drawPoly::toggleShowPolyDiff(){
   update();
 }
 
-void drawPoly::plotNextDiff(){
+void polyView::plotNextDiff(){
   plotDiff(1);
 }
 
-void drawPoly::plotPrevDiff(){
+void polyView::plotPrevDiff(){
   plotDiff(-1);
 }
 
-void drawPoly::plotDiff(int dir){
+void polyView::plotDiff(int dir){
   
   // See plotDistBwPolyClips(...) for info.
   
@@ -1323,7 +1323,7 @@ void drawPoly::plotDiff(int dir){
 }
 
 
-void drawPoly::plotDistBwPolyClips( QPainter *paint ){
+void polyView::plotDistBwPolyClips( QPainter *paint ){
 
   // This is to be called in diff mode only, when we study how
   // different m_polyVec[0] is from m_polyVec[1].
@@ -1332,7 +1332,7 @@ void drawPoly::plotDistBwPolyClips( QPainter *paint ){
   // point on the closest edge of m_polyVec[1], and the segment of
   // this shortest distance. We sort such distances in decreasing
   // order and store them in m_distVec. Here we plot the segment
-  // m_distVec[m_distToPlot]. See (drawPoly::plotDiff) which calls
+  // m_distVec[m_distToPlot]. See (polyView::plotDiff) which calls
   // this function.
 
   if ( !m_polyDiffMode ) return;
@@ -1363,7 +1363,7 @@ void drawPoly::plotDistBwPolyClips( QPainter *paint ){
   return;
 }
 
-void drawPoly::create45DegreeIntPoly(){
+void polyView::create45DegreeIntPoly(){
 
   // This flag will change the behavior of mouseReleaseEvent() so that
   // we can start adding points to the polygon with the mouse.
@@ -1374,7 +1374,7 @@ void drawPoly::create45DegreeIntPoly(){
   setPolyDrawCursor();
 }
 
-void drawPoly::createArbitraryPoly(){
+void polyView::createArbitraryPoly(){
 
   // This flag will change the behavior of mouseReleaseEvent() so that
   // we can start adding points to the polygon with the mouse.
@@ -1385,7 +1385,7 @@ void drawPoly::createArbitraryPoly(){
   setPolyDrawCursor();
 }
 
-void drawPoly::deletePoly(){
+void polyView::deletePoly(){
 
   if (m_polyVec.size() == 0) return;
   
@@ -1414,7 +1414,7 @@ void drawPoly::deletePoly(){
   return;
 }
 
-void drawPoly::saveMark(){
+void polyView::saveMark(){
 
   // When saving the mark don't overwrite existing marks
   int markIndex = 0;
@@ -1439,7 +1439,7 @@ void drawPoly::saveMark(){
   update();
 }
 
-void drawPoly::toggleNmScale(){
+void polyView::toggleNmScale(){
 
   m_useNmScale = !m_useNmScale;
   if (!m_useNmScale){
@@ -1475,7 +1475,7 @@ void drawPoly::toggleNmScale(){
 
 // actions
 
-void drawPoly::drawRect(const utils::dRect & R, int lineWidth,
+void polyView::drawRect(const utils::dRect & R, int lineWidth,
                         QPainter * paint){
 
   int numV = 4;
@@ -1497,7 +1497,7 @@ void drawPoly::drawRect(const utils::dRect & R, int lineWidth,
   return;
 }
 
-void drawPoly::cutToHlt(){
+void polyView::cutToHlt(){
   
   // Cut to the last highlight
   int numH = m_highlights.size();
@@ -1534,7 +1534,7 @@ void drawPoly::cutToHlt(){
   
 }
 
-void drawPoly::enforce45(){
+void polyView::enforce45(){
   
   // Enforce that polygon vertices are integers and the angles are 45x. 
 
@@ -1553,7 +1553,7 @@ void drawPoly::enforce45(){
   return;
 }
 
-void drawPoly::undoLast(){
+void polyView::undoLast(){
 
   int numActions = m_actions.size();
   if (numActions == 0){
@@ -1595,7 +1595,7 @@ void drawPoly::undoLast(){
   return;
 }
 
-void drawPoly::readAllPolys(){
+void polyView::readAllPolys(){
 
   int numFiles = m_polyFilesVec.size();
   m_polyVec.resize(numFiles);
@@ -1617,7 +1617,7 @@ void drawPoly::readAllPolys(){
   return;
 }
 
-void drawPoly::openPoly(){
+void polyView::openPoly(){
 
   QString s = QFileDialog::getOpenFileName(
                                            QDir::currentDirPath(),
@@ -1650,7 +1650,7 @@ void drawPoly::openPoly(){
   return;
 }
 
-void drawPoly::readOnePoly(// inputs
+void polyView::readOnePoly(// inputs
                            std::string & filename,
                            bool plotPointsOnly,
                            // output
@@ -1672,7 +1672,7 @@ void drawPoly::readOnePoly(// inputs
 }
 
   
-void drawPoly::saveOnePoly(){
+void polyView::saveOnePoly(){
 
   if (m_polyVec.size() == 0){
     cerr << "No polygons to save" << endl;
@@ -1692,17 +1692,17 @@ void drawPoly::saveOnePoly(){
   return;
 }
 
-void drawPoly::overwriteMultiplePolys(){
+void polyView::overwriteMultiplePolys(){
   bool overwrite = true;
   saveMultiplePoly(overwrite);
 }
 
-void drawPoly::saveAsMultiplePolys(){
+void polyView::saveAsMultiplePolys(){
   bool overwrite = false;
   saveMultiplePoly(overwrite);
 }
 
-void drawPoly::saveMultiplePoly(bool overwrite){
+void polyView::saveMultiplePoly(bool overwrite){
 
   string allFiles = "";
   for (int polyIter = 0; polyIter < (int)m_polyVec.size(); polyIter++){
@@ -1727,21 +1727,21 @@ void drawPoly::saveMultiplePoly(bool overwrite){
   return;
 }
 
-void drawPoly::togglePE(){
+void polyView::togglePE(){
 
   m_toggleShowPointsEdges = m_toggleShowPointsEdges%3 + 1;
   update();
   
 }
 
-void drawPoly::changeOrder(){
+void polyView::changeOrder(){
 
   m_changeDisplayOrder = true;
   update();
   
 }
 
-bool drawPoly::isPolyZeroDim(const QPointArray & pa){
+bool polyView::isPolyZeroDim(const QPointArray & pa){
 
   int numPts = pa.size();
   for (int s = 1; s < numPts; s++){
@@ -1751,7 +1751,7 @@ bool drawPoly::isPolyZeroDim(const QPointArray & pa){
   return true;
 }
 
-void drawPoly::initScreenGrid(std::vector< std::vector<int> > & Grid){
+void polyView::initScreenGrid(std::vector< std::vector<int> > & Grid){
 
   // Split the screen into numGridPts x numGridPts rectangles.  For
   // performance reasons, will not allow more than one string of text
@@ -1769,7 +1769,7 @@ void drawPoly::initScreenGrid(std::vector< std::vector<int> > & Grid){
   }
 }
 
-bool drawPoly::isClosestGridPtFree(std::vector< std::vector<int> > & Grid,
+bool polyView::isClosestGridPtFree(std::vector< std::vector<int> > & Grid,
                                    int x, int y){
 
   int numGridPts = Grid.size();
@@ -1792,7 +1792,7 @@ bool drawPoly::isClosestGridPtFree(std::vector< std::vector<int> > & Grid,
   return false;
 }
 
-double drawPoly::pixelToWorldDist(int pd){
+double polyView::pixelToWorldDist(int pd){
 
   double x0, x1, y0, y1;
   pixelToWorldCoords(0,  0, x0, y0);
@@ -1802,17 +1802,17 @@ double drawPoly::pixelToWorldDist(int pd){
   
 }
 
-void drawPoly::setStandardCursor(){
+void polyView::setStandardCursor(){
   QCursor C(Qt::ArrowCursor);
   setCursor(C);
 }
 
-void drawPoly::setPolyDrawCursor(){
+void polyView::setPolyDrawCursor(){
   QCursor C(Qt::CrossCursor);
   setCursor(C);
 }
 
-void drawPoly::setupDisplayOrder(int                 numPolys, 
+void polyView::setupDisplayOrder(int                 numPolys, 
                                  std::vector<bool> & plotPointsOnlyVec,
                                  bool              & changeDisplayOrder,
                                  std::vector<int>  & polyVecOrder){
@@ -1869,7 +1869,7 @@ void drawPoly::setupDisplayOrder(int                 numPolys,
   return;
 }
 
-void drawPoly::printCmd(std::string cmd, const std::vector<double> & vals){
+void polyView::printCmd(std::string cmd, const std::vector<double> & vals){
 
   ostringstream S;
   int prec = 16;
@@ -1885,7 +1885,7 @@ void drawPoly::printCmd(std::string cmd, const std::vector<double> & vals){
   return;
 }
 
-void drawPoly::printCmd(std::string cmd, double xll, double yll,
+void polyView::printCmd(std::string cmd, double xll, double yll,
                         double widX, double widY){
 
   ostringstream S;
@@ -1897,7 +1897,7 @@ void drawPoly::printCmd(std::string cmd, double xll, double yll,
   return;
 }
                                                
-void drawPoly::printCmd(std::string cmd){
+void polyView::printCmd(std::string cmd){
 
   ostringstream S;
   int prec = 16;
@@ -1908,7 +1908,7 @@ void drawPoly::printCmd(std::string cmd){
   return;
 }
 
-void drawPoly::runCmd(std::string cmd){
+void polyView::runCmd(std::string cmd){
 
   string cmdName = "";
   vector<double> vals; vals.clear();
@@ -1983,7 +1983,7 @@ void drawPoly::runCmd(std::string cmd){
   return;
 }
 
-void drawPoly::sortBySizeAndMaybeAddBigFgPoly(// inputs
+void polyView::sortBySizeAndMaybeAddBigFgPoly(// inputs
                                               double viewXll, double viewYll,
                                               double viewXur, double viewYur,
                                               // input-output

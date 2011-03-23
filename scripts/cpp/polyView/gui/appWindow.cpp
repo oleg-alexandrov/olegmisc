@@ -33,7 +33,7 @@ appWindow::appWindow(QWidget* parent, const char* progName,
   resize(windowWidX, windowWidY);
 
   // Central widget
-  m_poly = new drawPoly (this, useCmdLineColors, cmdLineColors,
+  m_poly = new polyView (this, useCmdLineColors, cmdLineColors,
                          polyFilesVec, plotPointsOnlyVec, plotAsLines, noClosedPolys);
   m_poly->setBackgroundColor (QColor("black"));
   m_poly->setFocusPolicy(QWidget::StrongFocus);
