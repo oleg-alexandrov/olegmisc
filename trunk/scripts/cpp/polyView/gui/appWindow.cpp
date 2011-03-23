@@ -200,7 +200,7 @@ void appWindow::help(){
   string aboutStr = string("About ") + m_progName;
   static QMessageBox* about
     = new QMessageBox( aboutStr.c_str(),
-                       "© Oleg Alexandrov  ",
+                       "© Oleg Alexandrov        ", // extra space to make window bigger
                        QMessageBox::NoIcon, 1, 0, 0, this, 0, FALSE );
   about->setButtonText( 1, "OK" );
   about->show();
