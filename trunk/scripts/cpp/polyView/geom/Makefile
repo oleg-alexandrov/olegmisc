@@ -3,8 +3,8 @@
 CPP = g++ -O3 -Wall
 CC = gcc -O3
 FC = g77 -O3
-XTRA_OBJ=cutPoly.cpp dPoint.cpp dPoly.cpp geomUtils.cpp polyUtils.cpp
-HDR= cutPoly.h dPoly.h geomUtils.h polyUtils.h
+XTRA_OBJ=cutPoly.cpp dPoint.cpp dPoly.cpp geomUtils.cpp polyUtils.cpp kdTree.cpp
+HDR= cutPoly.h dPoly.h geomUtils.h polyUtils.h kdTree.h
 
 all: test_dPoly testCutPoly polyPtsCmp
 
@@ -17,6 +17,9 @@ polyPtsCmp: polyPtsCmp.o $(OBJ1) $(HDR)
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 test_dPoly: test_dPoly.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
+test_kdTree: test_kdTree.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 testCutPoly: testCutPoly.o $(OBJ1) $(HDR) 
@@ -35,11 +38,17 @@ dPoly.o: dPoly.cpp dPoint.h dPoly.h
 geomUtils.o: geomUtils.cpp geomUtils.h
 	$(CPP)  -c  geomUtils.cpp
 
-polyPtsCmp.o: polyPtsCmp.cpp dPoly.h dPoint.h
+polyPtsCmp.o: polyPtsCmp.cpp dPoly.h dPoint.h geomUtils.h polyUtils.h
 	$(CPP)  -c  polyPtsCmp.cpp
+
+polyUtils.o: polyUtils.cpp geomUtils.h polyUtils.h dPoly.h
+	$(CPP)  -c  polyUtils.cpp
 
 test_dPoly.o: test_dPoly.cpp dPoly.h
 	$(CPP)  -c  test_dPoly.cpp
+
+test_kdTree.o: test_kdTree.cpp kdTree.h dPoly.h
+	$(CPP)  -c  test_kdTree.cpp
 
 testCutPoly.o: testCutPoly.cpp dPoly.h cutPoly.h
 	$(CPP)  -c  testCutPoly.cpp
