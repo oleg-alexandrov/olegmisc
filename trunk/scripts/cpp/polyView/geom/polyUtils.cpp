@@ -141,9 +141,12 @@ void utils::findPolyDiff(const dPoly & P, const dPoly & Q, // inputs
                          ){
     
   // Compare two polygons point-by-point. We assume that the polygons
-  // may have collinear points.  If one polygon has a point repeated
+  // may have collinear points. If one polygon has a point repeated
   // twice, but the second polygon has it repeated just once, this
   // will be flagged as a difference as well.
+
+  // This utility will not be able to detect when two polygons are
+  // different but contain exactly the same points.
   
   multiset<dPoint> mP; putPolyInMultiSet(P, mP);
   multiset<dPoint> mQ; putPolyInMultiSet(Q, mQ);
