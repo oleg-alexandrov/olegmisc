@@ -106,7 +106,7 @@ def parse_cpp(cpp_text, namespace):
 
         p = re.match("^(\w[^\n]*?\s)" # everything up to the namespace
                      + namespace
-                     + "::(\w+)(\s*\(.*?\)).*?\{", # fun name, and up to {
+                     + "::(\w+)(\s*\(.*\)).*?\{", # fun name, and up to {
                      block, re.S)
 
         if not p: continue
@@ -154,7 +154,7 @@ def parse_update_h(h_text, cpp_map, namespace):
         ^(\s*(?:static|virtual)?\s*)  # leading spaces, static, virtual
         (\w[^\n]*?\s)                 # type 
         (\w+)                         # function name 
-        (\s*\(.*?\))                  # list of arguments
+        (\s*\(.*\))                   # list of arguments
         (.*)$                         # newline, const, etc. 
         """, h_block, re.S | re.X)
 
