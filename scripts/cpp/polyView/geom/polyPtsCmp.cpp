@@ -27,8 +27,8 @@ int main (int argc, char ** argv){
   vector<dPoint>  vP, vQ;
   
   char *inFile1 = argv[1], *inFile2 = argv[2];
-  dPoly P; P.readPoly(inFile1);
-  dPoly Q; Q.readPoly(inFile2);
+  dPoly P; if (! P.readPoly(inFile1) ) exit(1);
+  dPoly Q; if (! Q.readPoly(inFile2) ) exit(1);
 
   findPolyDiff(P, Q,  // inputs
                vP, vQ // outputs
