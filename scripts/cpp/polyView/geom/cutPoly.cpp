@@ -19,16 +19,17 @@ void utils::cutPoly(// inputs -- the polygons
                      std::vector< double> & cutY,
                      std::vector< int>    & cutNumPolys){
 
+  // Cut a given polygon with a box.
+
   // Intersect the polygon with each of the the half-planes
   // nx*x + ny*y <= (nx + ny)*H.
   // There are four values for the triplet (nx, ny, H):
   double cutParams[] = {
-    -1,  0, xll, //  -- left cut
-    1,   0, xur, //  -- right cut
-    0,  -1, yll, //  -- bottom cut
-    0,   1, yur  //  -- top cut
+   -1,  0, xll, //  -- left cut
+    1,  0, xur, //  -- right cut
+    0, -1, yll, //  -- bottom cut
+    0,  1, yur  //  -- top cut
   };
-  
 
   int totalNumVerts = 0;
   for (int s = 0; s < numPolys; s++) totalNumVerts += numVerts[s];
