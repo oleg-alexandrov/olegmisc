@@ -12,7 +12,6 @@
 using namespace std;
 using namespace utils;
 
-  
 void utils::findClosestPolyEdge(// inputs
                                 double x0, double y0,
                                 const std::vector<dPoly> & polyVec,
