@@ -105,13 +105,12 @@ void kdTree::getPointsInBoxInternal(//Inputs
   
   if (xl <= P.x && P.x <= xh && yl <= P.y && P.y <= yh) outPts.push_back(P);
   
-  
   if (root->isLeftRightSplit){
-    if (xl <= P.x) getPointsInBoxInternal(xl,  yl, P.x, yh, root->left,  outPts);
-    if (xh >= P.x) getPointsInBoxInternal(P.x, yl, xh,  yh, root->right, outPts);
+    if (xl <= P.x) getPointsInBoxInternal(xl, yl, xh, yh, root->left,  outPts);
+    if (xh >= P.x) getPointsInBoxInternal(xl, yl, xh, yh, root->right, outPts);
   }else{
-    if (yl <= P.y) getPointsInBoxInternal(xl, yl,  xh, P.y, root->left,  outPts);
-    if (yh >= P.y) getPointsInBoxInternal(xl, P.y, xh, yh,  root->right, outPts);
+    if (yl <= P.y) getPointsInBoxInternal(xl, yl, xh, yh, root->left,  outPts);
+    if (yh >= P.y) getPointsInBoxInternal(xl, yl, xh, yh, root->right, outPts);
   }
     
   return;

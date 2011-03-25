@@ -56,10 +56,20 @@ int main(int argc, char** argv){
     if (xl <= P.x && P.x <= xh && yl <= P.y && P.y <= yh) outPts2.push_back(P);
   }
 
-
+  assert(outPts.size() == outPts2.size());
+  sort(outPts.begin(),  outPts.end(),  lexLessThan);
+  sort(outPts2.begin(), outPts2.end(), lexLessThan);
+  
+  for (int s = 0; s < (int)outPts.size(); s++){
+    const Point & P = outPts[s];
+    const Point & P2 = outPts2[s];
+    cout << P.x << ' ' << P.y << ' ' << P2.x << ' ' << P2.y << endl;
+    assert(P.x == P2.x && P.y == P2.y);
+  }
+  
   cout << "Points in outPts" << endl;
-  for (int s = 0; s < (int)outPts.size(); s++)
-    cout << outPts[s].x << ' ' << outPts[s].y << endl;
+//   for (int s = 0; s < (int)outPts.size(); s++)
+//     cout << outPts[s].x << ' ' << outPts[s].y << endl;
 
   string outFile = "ptsInBox.xg";
   cout << "Writing to " << outFile << endl;
@@ -69,9 +79,17 @@ int main(int argc, char** argv){
     of << outPts[s].x << ' ' << outPts[s].y << endl;
   of.close();
   
-  cout << endl << "Points in outPts2" << endl;
-  for (int s = 0; s < (int)outPts2.size(); s++)
-    cout << outPts2[s].x << ' ' << outPts2[s].y << endl;
+//   cout << endl << "Points in outPts2" << endl;
+//   for (int s = 0; s < (int)outPts2.size(); s++)
+//     cout << outPts2[s].x << ' ' << outPts2[s].y << endl;
   
+  string outFile2 = "ptsInBox2.xg";
+  cout << "Writing to " << outFile2 << endl;
+  ofstream of2(outFile2.c_str());
+  of2 << "color = green" << endl;
+  for (int s = 0; s < (int)outPts2.size(); s++)
+    of2 << outPts2[s].x << ' ' << outPts2[s].y << endl;
+  of2.close();
+
   return 0;
 }
