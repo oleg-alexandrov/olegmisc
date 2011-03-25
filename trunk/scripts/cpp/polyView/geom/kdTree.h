@@ -13,6 +13,9 @@ struct Point{
 
 inline bool leftLessThan (Point P, Point Q){ return P.x < Q.x; }
 inline bool botLessThan  (Point P, Point Q){ return P.y < Q.y; }
+inline bool lexLessThan  (Point P, Point Q){
+  return (P.x < Q.x) || ( (P.x == Q.x) && (P.y < Q.y) );
+}
 
 struct Node{
   Node * left;
