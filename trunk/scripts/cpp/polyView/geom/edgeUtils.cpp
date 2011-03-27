@@ -8,6 +8,48 @@
 
 using namespace std;
 
+bool utils::edgeIntersectsHorizontalEdge(// Input: arbitrary edge
+                                         double x0, double y0,
+                                         double x1, double y1,
+                                         // Input: horizontal edge
+                                         double begx, double endx,
+                                         double yval
+                                         ){
+
+  // See if an arbitrary edge intersects a horizontal
+  // edge. Care has be taken to avoid as much
+  // as possible floating point operations which
+  // can be problematic in cases close to
+  // degeneracy.
+
+  if (y0 > yval && y1 > yval) return false;
+  if (y0 < yval && y1 < yval) return false;
+
+  double diff = y1 - y0;
+
+  if (diff == 0.0){ // The two edges are collinear
+    assert(y0 == yval && y1 == yval);
+    return (
+            max(min(x0, x1), min(begx, endx)) <=
+            min(max(x0, x1), max(begx, endx))
+            );
+  }
+  
+
+  // Find the intersection of the two edges.
+  // (1 - t)*(x0, y0) + t*(x1, y1) has yval as y coordinate.
+  double t = (yval - y0)/diff;
+  assert(0.0 <= t && t <= 1.0);
+  double x = (1 - t)*x0 + t*x1;
+  return ( min(x0, x1) <= x && x <= max(x0, x1) );
+
+  // Note: The answer above could be incorrect
+  // if the two edges intersect exactly at one of the
+  // two endpoints (begx, yval) or (endx, yval).
+  // In that case, if all inputs are integer,
+  // a more careful analysis could be done.
+}
+
 void utils::cutEdge(double x0, double y0, double x1, double y1,
                     double nx, double ny, double H,
                     double & cutx, double & cuty){
