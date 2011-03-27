@@ -33,11 +33,6 @@ namespace utils{
   
   void processPointsOnCutline(std::vector<valIndex> & ptsOnCutline);
 
-  void cutEdge(double x0, double y0, double x1, double y1,
-               double nx, double ny, double H,
-               double & cutx, double & cuty);
-  
-  
   void cutToHalfSpace(// inputs 
                       double nx, double ny, double dotH,
                       int numV, 

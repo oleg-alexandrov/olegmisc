@@ -3,8 +3,8 @@
 CPP = g++ -O3 -Wall
 CC = gcc -O3
 FC = g77 -O3
-XTRA_OBJ=cutPoly.cpp dPoint.cpp dPoly.cpp geomUtils.cpp polyUtils.cpp kdTree.cpp
-HDR= cutPoly.h dPoly.h geomUtils.h polyUtils.h kdTree.h
+XTRA_OBJ=cutPoly.cpp dPoint.cpp dPoly.cpp geomUtils.cpp polyUtils.cpp kdTree.cpp edgeUtils.cpp
+HDR= cutPoly.h dPoly.h geomUtils.h polyUtils.h kdTree.h edgeUtils.h
 
 all: test_dPoly testCutPoly polyPtsCmp
 
@@ -26,7 +26,7 @@ testCutPoly: testCutPoly.o $(OBJ1) $(HDR)
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 # object files which contain headers must be recompiled when headers change
-cutPoly.o: cutPoly.cpp cutPoly.h
+cutPoly.o: cutPoly.cpp cutPoly.h edgeUtils.h
 	$(CPP)  -c  cutPoly.cpp
 
 dPoint.o: dPoint.cpp dPoint.h
@@ -37,6 +37,9 @@ dPoly.o: dPoly.cpp dPoint.h dPoly.h
 
 geomUtils.o: geomUtils.cpp geomUtils.h
 	$(CPP)  -c  geomUtils.cpp
+
+kdTree.o: kdTree.cpp kdTree.h geomUtils.h
+	$(CPP)  -c  kdTree.cpp
 
 polyPtsCmp.o: polyPtsCmp.cpp dPoly.h dPoint.h geomUtils.h polyUtils.h
 	$(CPP)  -c  polyPtsCmp.cpp
