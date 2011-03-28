@@ -121,7 +121,6 @@ void boxTree::formTreeInternal(Box * Boxes, int numBoxes,
   return;
 }
 
-#if 0
 
 void boxTree::getBoxesInBox(double xl, double yl, double xh, double yh, // input box
                             std::vector<Box> & outBoxes){
@@ -146,6 +145,7 @@ void boxTree::getBoxesInBoxInternal(//Inputs
 
   const Box & B = root->B; // alias
   
+#if 0
   if (xl <= B.x && B.x <= xh && yl <= B.y && B.y <= yh) outBoxes.push_back(B);
   
   if (root->isLeftRightSplit){
@@ -156,6 +156,6 @@ void boxTree::getBoxesInBoxInternal(//Inputs
     if (yh >= B.y) getBoxesInBoxInternal(xl, yl, xh, yh, root->right, outBoxes);
   }
     
+#endif
   return;
 }
-#endif

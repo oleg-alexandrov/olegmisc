@@ -41,12 +41,10 @@ public:
                 // unchanged inside this function
                 std::vector<Box> & Boxes 
                 );
-#if 0
   
   void getBoxesInBox(double xl, double yl, double xh, double yh, // input box
                      std::vector<Box> & outBoxes);
 
-#endif
   
 private:
 
@@ -55,14 +53,12 @@ private:
                         boxNode *&  root
                         );
 
-#if 0
   
   void getBoxesInBoxInternal(//Inputs
                              double xl, double yl, double xh, double yh,
                              boxNode * root,
                              // Outputs
                              std::vector<Box> & outBoxes);
-#endif
   
   void reset();
   boxNode * getNewboxNode();
