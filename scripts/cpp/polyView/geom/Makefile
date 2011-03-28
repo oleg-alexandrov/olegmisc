@@ -6,7 +6,7 @@ FC = g77 -O3
 XTRA_OBJ=cutPoly.cpp dPoint.cpp dPoly.cpp geomUtils.cpp polyUtils.cpp kdTree.cpp edgeUtils.cpp boxTree.cpp
 HDR= cutPoly.h dPoly.h geomUtils.h polyUtils.h kdTree.h edgeUtils.h boxTree.h
 
-all: test_dPoly testCutPoly polyPtsCmp
+all: test_dPoly testCutPoly polyPtsCmp test_boxTree test_kdTree
 
 #start: the lines between start and end will be updated every time hdr is run.
 
