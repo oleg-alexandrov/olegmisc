@@ -37,8 +37,8 @@ int main(int argc, char** argv){
  // Do not modify this vector afterward.
  T.formTree(Boxes); 
 
- double xl = rand_ab(-L, L), xh = xl + rand_ab(0, L/2);
- double yl = rand_ab(-L, L), yh = yl + rand_ab(0, L/2);
+ double xl = rand_ab(-L, L), xh = xl + rand_ab(0, L);
+ double yl = rand_ab(-L, L), yh = yl + rand_ab(0, L);
 
  vector<Box> outBoxes; // Must be different than Boxes
  T.getBoxesInBox(xl, yl, xh, yh, outBoxes);
