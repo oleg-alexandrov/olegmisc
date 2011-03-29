@@ -3,30 +3,25 @@
 CPP = g++ -O3 -Wall
 CC = gcc -O3
 FC = g77 -O3
-XTRA_OBJ=cutPoly.o dPoint.o dPoly.o geomUtils.o polyUtils.o kdTree.o edgeUtils.o boxTree.o
+OBJ=cutPoly.o dPoint.o dPoly.o geomUtils.o polyUtils.o kdTree.o edgeUtils.o boxTree.o
 HDR= cutPoly.h dPoly.h geomUtils.h polyUtils.h kdTree.h edgeUtils.h boxTree.h
 
 all: test_dPoly testCutPoly polyPtsCmp test_boxTree test_kdTree
 
-#start: the lines between start and end will be updated every time hdr is run.
+test_boxTree: test_boxTree.o $(OBJ) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ)  $(LIBS)
 
-OBJ1  =  $(XTRA_OBJ)
+polyPtsCmp: polyPtsCmp.o $(OBJ) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ)  $(LIBS)
 
+test_dPoly: test_dPoly.o $(OBJ) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ)  $(LIBS)
 
-polyPtsCmp: polyPtsCmp.o $(OBJ1) $(HDR) 
-	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+test_kdTree: test_kdTree.o $(OBJ) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ)  $(LIBS)
 
-test_boxTree: test_boxTree.o $(OBJ1) $(HDR) 
-	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
-
-test_dPoly: test_dPoly.o $(OBJ1) $(HDR) 
-	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
-
-test_kdTree: test_kdTree.o $(OBJ1) $(HDR) 
-	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
-
-testCutPoly: testCutPoly.o $(OBJ1) $(HDR) 
-	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+testCutPoly: testCutPoly.o $(OBJ) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ)  $(LIBS)
 
 # object files which contain headers must be recompiled when headers change
 boxTree.o: boxTree.cpp boxTree.h geomUtils.h
@@ -68,8 +63,6 @@ test_kdTree.o: test_kdTree.cpp kdTree.h dPoly.h
 testCutPoly.o: testCutPoly.cpp dPoly.h cutPoly.h
 	$(CPP)  -c  testCutPoly.cpp
 
-
-#end
 
 .o:    %.cpp
 	$(CPP)  -c $<
