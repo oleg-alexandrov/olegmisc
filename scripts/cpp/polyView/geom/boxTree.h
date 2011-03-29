@@ -22,6 +22,16 @@ inline bool botLessThan (Box P, Box Q){
   return (P.yl + P.yh) < (Q.yl + Q.yh); // y midpoint comparison
 }
 
+inline bool lexLessThan(Box P, Box Q){
+  if (P.xl < Q.xl) return true; if (P.xl > Q.xl) return false;
+  if (P.yl < Q.yl) return true; if (P.yl > Q.yl) return false;
+  if (P.xh < Q.xh) return true; if (P.xh > Q.xh) return false;
+  if (P.yh < Q.yh) return true; if (P.yh > Q.yh) return false;
+  return false;
+}
+
+void saveBoxes(std::vector<Box> & Boxes, std::string file, std::string color); 
+
 struct boxNode{
   boxNode * left;
   boxNode * right;

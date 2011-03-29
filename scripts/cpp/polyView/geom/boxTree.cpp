@@ -10,6 +10,23 @@
 using namespace std;
 using namespace utils;
 
+
+void saveBoxes(std::vector<Box> & Boxes, std::string file, std::string color){
+  cout << "Writing " << file << endl;
+  ofstream of(file.c_str());
+  of << "color = " << color << endl;
+  for (int s = 0; s < (int)Boxes.size(); s++){
+    const Box & B = Boxes[s]; // alias
+    of << B.xl << ' ' << B.yl << endl;
+    of << B.xh << ' ' << B.yl << endl;
+    of << B.xh << ' ' << B.yh << endl;
+    of << B.xl << ' ' << B.yh << endl;
+    of << B.xl << ' ' << B.yl << endl;
+    of << "NEXT" << endl;
+  }
+  return;
+}
+
 boxTree::boxTree(){
   reset();
   return;
@@ -144,18 +161,21 @@ void boxTree::getBoxesInBoxInternal(//Inputs
   if (root == NULL) return;
 
   const Box & B = root->B; // alias
-  
-#if 0
-  if (xl <= B.x && B.x <= xh && yl <= B.y && B.y <= yh) outBoxes.push_back(B);
+
+  if (boxesIntersect(B.xl, B.yl, B.xh, B.yh, xl, yl, xh, yh))
+    outBoxes.push_back(B);
   
   if (root->isLeftRightSplit){
-    if (xl <= B.x) getBoxesInBoxInternal(xl, yl, xh, yh, root->left,  outBoxes);
-    if (xh >= B.x) getBoxesInBoxInternal(xl, yl, xh, yh, root->right, outBoxes);
+    if (xl <= root->maxInLeftChild)
+      getBoxesInBoxInternal(xl, yl, xh, yh, root->left,  outBoxes);
+    if (xh >= root->minInRightChild)
+      getBoxesInBoxInternal(xl, yl, xh, yh, root->right, outBoxes);
   }else{
-    if (yl <= B.y) getBoxesInBoxInternal(xl, yl, xh, yh, root->left,  outBoxes);
-    if (yh >= B.y) getBoxesInBoxInternal(xl, yl, xh, yh, root->right, outBoxes);
+    if (yl <= root->maxInLeftChild)
+      getBoxesInBoxInternal(xl, yl, xh, yh, root->left,  outBoxes);
+    if (yh >= root->minInRightChild)
+      getBoxesInBoxInternal(xl, yl, xh, yh, root->right, outBoxes);
   }
     
-#endif
   return;
 }

@@ -5,6 +5,7 @@
 #include <fstream>
 #include <cmath>
 #include <set>
+#include <cassert>
 #include "dPoint.h"
 
 struct anno {
@@ -127,21 +128,11 @@ namespace utils{
     return (s.dist > t.dist);
   }
 
-  inline bool boxesIntersect(double xl1, double yl1, double xh1, double yh1,
-                             double xl2, double yl2, double xh2, double yh2
-                             ){
-    
-    assert(xl1 <= xh1 && yl1 <= yh1);
-    assert(xl2 <= xh2 && yl2 <= yh2);
+  bool boxesIntersect(double xl1, double yl1, double xh1, double yh1,
+                      double xl2, double yl2, double xh2, double yh2
+                      );
 
-    return
-      (
-      std::max(xl1, xl2) <= std::min(xh1, xh2)
-      &&
-      std::max(yl1, yl2) <= std::min(yh1, yh2)
-      );
-    
-  }
+  bool boxLessThan(dRect P, dRect Q);
   
 }
   
