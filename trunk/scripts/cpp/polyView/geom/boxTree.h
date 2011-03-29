@@ -30,6 +30,14 @@ inline bool lexLessThan(Box P, Box Q){
   return false;
 }
 
+inline bool operator==(Box P, Box Q){
+  return P.xl == Q.xl && P.xh == Q.xh && P.yl == Q.yl && P.yh == Q.yh;
+}
+
+inline bool operator!=(Box P, Box Q){
+  return ! (P == Q);
+}
+
 void saveBoxes(std::vector<Box> & Boxes, std::string file, std::string color); 
 
 struct boxNode{
