@@ -10,9 +10,9 @@
 using namespace std;
 using namespace utils;
 
-int rand_ab(int a, int b){
+double rand_ab(double a, double b){
   assert(a <= b);
-  return a + rand()%max(b - a, 1);
+  return a + rand()%max(int(b - a), 1);
 }
 
 
