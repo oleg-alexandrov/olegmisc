@@ -337,3 +337,35 @@ void utils::expandBoxToGivenRatio(// inputs
   return;
 }
 
+bool utils::boxesIntersect(double xl1, double yl1, double xh1, double yh1,
+                           double xl2, double yl2, double xh2, double yh2
+                           ){
+  
+  assert(xl1 <= xh1 && yl1 <= yh1);
+  assert(xl2 <= xh2 && yl2 <= yh2);
+  
+  return
+    (
+     std::max(xl1, xl2) <= std::min(xh1, xh2)
+     &&
+     std::max(yl1, yl2) <= std::min(yh1, yh2)
+     );
+  
+}
+
+bool utils::boxLessThan(dRect P, dRect Q){
+
+  if (P.left() < Q.left())     return true;
+  if (P.left() > Q.left())     return false;
+  
+  if (P.bottom() < Q.bottom()) return true;
+  if (P.bottom() > Q.bottom()) return false;
+
+  if (P.width() < Q.width())   return true;
+  if (P.width() > Q.width())   return false;
+
+  if (P.height() < Q.height()) return true;
+  if (P.height() > Q.height()) return false;
+
+  return false;
+}
