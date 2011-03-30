@@ -64,8 +64,9 @@ MAIN: {
      $file = "?"; 
     }
     
-    # Make file path relative
-    $file =~ s/^.*?(matlabRD|doc_plan|dev|baseline|dft)\///g;
+    # Make file path relative. Note: A general solution is required,
+    # rather than the hack below made for specific cases.
+    $file =~ s/^.*?(matlabRD|doc_plan|dev|baseline|dft|sde)\///g;
 
     # Strip some other odd markup
     $file =~ s/Attic\///g;
