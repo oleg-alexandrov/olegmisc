@@ -7,17 +7,17 @@
 #include <cfloat> // defines DBL_MAX
 #include "geomUtils.h"
 
-template <class Box>
+template <typename Box>
 inline bool leftLessThan (Box P, Box Q){
   return (P.xl + P.xh) < (Q.xl + Q.xh); // x midpoint comparison
 }
 
-template <class Box>
+template <typename Box>
 inline bool botLessThan (Box P, Box Q){
   return (P.yl + P.yh) < (Q.yl + Q.yh); // y midpoint comparison
 }
 
-template <class Box>
+template <typename Box>
 inline bool lexLessThan(Box P, Box Q){
   if (P.xl < Q.xl) return true; if (P.xl > Q.xl) return false;
   if (P.yl < Q.yl) return true; if (P.yl > Q.yl) return false;
@@ -26,12 +26,12 @@ inline bool lexLessThan(Box P, Box Q){
   return false;
 }
 
-template <class Box>
+template <typename Box>
 inline bool operator==(Box P, Box Q){
   return P.xl == Q.xl && P.xh == Q.xh && P.yl == Q.yl && P.yh == Q.yh;
 }
 
-template <class Box>
+template <typename Box>
 inline bool operator!=(Box P, Box Q){
   return ! (P == Q);
 }
