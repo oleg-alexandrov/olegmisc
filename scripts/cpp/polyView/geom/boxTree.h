@@ -36,7 +36,6 @@ inline bool operator!=(Box P, Box Q){
   return ! (P == Q);
 }
 
-
 template <typename Box>
 struct boxNode{
   boxNode<Box> * left;
@@ -47,7 +46,6 @@ struct boxNode{
   boxNode<Box>(): left(NULL), right(NULL), isLeftRightSplit(false),
                   maxInLeftChild(-DBL_MAX), minInRightChild(DBL_MAX){}
 };
-
 
 template <typename Box>
 class boxTree{
@@ -61,7 +59,6 @@ public:
   
   void getBoxesInBox(double xl, double yl, double xh, double yh, // input box
                      std::vector<Box> & outBoxes);
-
   
 private:
 
@@ -111,7 +108,6 @@ boxNode<Box> * boxTree<Box>::getNewboxNode(){
   return ptr;  
 }
 
-
 template <typename Box>
 void boxTree<Box>::formTree(// Boxes will be reordered but otherwise
                        // unchanged inside this function
@@ -126,7 +122,6 @@ void boxTree<Box>::formTree(// Boxes will be reordered but otherwise
   formTreeInternal(vecPtr(Boxes), numBoxes, isLeftRightSplit, m_root);
   return;
 }
-
 
 template <typename Box>
 void boxTree<Box>::formTreeInternal(Box * Boxes, int numBoxes,
@@ -203,7 +198,6 @@ void boxTree<Box>::formTreeInternal(Box * Boxes, int numBoxes,
 
   return;
 }
-
 
 template <typename Box>
 void boxTree<Box>::getBoxesInBox(// Input box
