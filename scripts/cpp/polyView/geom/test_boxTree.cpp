@@ -16,29 +16,58 @@ double rand_ab(double a, double b){
   return a + rand()%max(int(b - a), 1);
 }
 
+struct Box{
+  double xl, yl, xh, yh;
+  Box(): xl(0.0), yl(0.0), xh(0.0), yh(0.0){}
+  Box(double xl_in, double yl_in, double xh_in, double yh_in):
+    xl(xl_in), yl(yl_in), xh(xh_in), yh(yh_in){}
+};
+
+void saveBoxes(std::vector<Box> & Boxes, std::string file, std::string color){
+  cout << "Writing " << file << endl;
+  ofstream of(file.c_str());
+  of << "color = " << color << endl;
+  for (int s = 0; s < (int)Boxes.size(); s++){
+    const Box & B = Boxes[s]; // alias
+    of << B.xl << ' ' << B.yl << endl;
+    of << B.xh << ' ' << B.yl << endl;
+    of << B.xh << ' ' << B.yh << endl;
+    of << B.xl << ' ' << B.yh << endl;
+    of << B.xl << ' ' << B.yl << endl;
+    of << "NEXT" << endl;
+  }
+  return;
+}
+
 
 int main(int argc, char** argv){
 
  srand(time(NULL));
 
- int Repeat = 1; // How many times to repeat for timing each experiment
- int N      = 1000; // Num boxes
- int L      = 100, w = 10; // Box region params
- int Big    = 10000; // How many experiments
+ int numBoxes   = 1000;
+ int L          = 100, w = 10; // To determine region size and box width 
+ int numRepeats = 1;           // How many times to repeat each experiment
+ int numRuns    = 10000;       // How many experiments
+ bool doTiming  = false; 
 
+ if (doTiming){
+   numRuns = 1;
+   numRepeats = 100000;
+ }
+ 
  vector<Box> Boxes;
 
- for (int q = 0; q < Big; q++){
+ for (int q = 0; q < numRuns; q++){
    
     Boxes.clear();
 
-   for (int s = 0; s < N; s++){
+   for (int s = 0; s < numBoxes; s++){
      double xl = rand_ab(-L, L), xh = xl + rand_ab(0, w);
      double yl = rand_ab(-L, L), yh = yl + rand_ab(0, w);
      Boxes.push_back(Box(xl, yl, xh, yh));
    }
  
-   boxTree T;
+   boxTree<Box> T;
    // Boxes will be reordered but otherwise unchanged inside of this function.
    // Do not modify this vector afterward.
    T.formTree(Boxes); 
@@ -51,21 +80,23 @@ int main(int argc, char** argv){
    int time_task;
    
    vector<Box> outBoxes;
-   Start_t = time(NULL);    //record time that task 1 begins
-   for (int v = 0; v < Repeat; v++){
+   if(doTiming) Start_t = time(NULL);    //record time that task 1 begins
+   for (int v = 0; v < numRepeats; v++){
      T.getBoxesInBox(xl, yl, xh, yh, outBoxes);
    }
-   End_t = time(NULL);  
-   time_task = difftime(End_t, Start_t);
-   if (Big == 1) cout << "Tree search time: " << time_task << endl;
+   if(doTiming){
+     End_t = time(NULL);  
+     time_task = difftime(End_t, Start_t);
+     cout << "Tree search time: " << time_task << endl;
+   }
 
-   sort(outBoxes.begin(), outBoxes.end(), lexLessThan);
+   sort(outBoxes.begin(), outBoxes.end(), lexLessThan<Box>);
  
    vector<Box> outBoxes2; // Must be different than Boxes
-   outBoxes2.resize(N);
+   outBoxes2.resize(numBoxes);
    
-   Start_t = time(NULL);
-   for (int v = 0; v < Repeat; v++){
+   if(doTiming) Start_t = time(NULL);
+   for (int v = 0; v < numRepeats; v++){
      outBoxes2.clear();
      for (int s = 0; s < (int)Boxes.size(); s++){
        const Box & B = Boxes[s];
@@ -74,11 +105,13 @@ int main(int argc, char** argv){
        }
      }
    }
-   End_t = time(NULL);
-   time_task = difftime(End_t, Start_t);
-   if (Big == 1) cout << "Brute force search time: " << time_task << endl;
+   if(doTiming){
+     End_t = time(NULL);
+     time_task = difftime(End_t, Start_t);
+     cout << "Brute force search time: " << time_task << endl;
+   }
 
-   sort(outBoxes2.begin(), outBoxes2.end(), lexLessThan);
+   sort(outBoxes2.begin(), outBoxes2.end(), lexLessThan<Box>);
 
    bool haveProblem = false;
  
