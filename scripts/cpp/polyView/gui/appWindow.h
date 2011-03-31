@@ -19,7 +19,7 @@ class appWindow : public QMainWindow {
   Q_OBJECT
 
 public:
-  appWindow(QWidget* parent, const char* progName,
+  appWindow(QWidget* parent, std::string progName,
             bool useCmdLineColors, 
             const std::vector<std::string> & cmdLineColors,
             const std::vector<std::string> & polyFilesVec,

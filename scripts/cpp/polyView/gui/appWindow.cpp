@@ -16,7 +16,7 @@ using namespace std;
 cmdLine::cmdLine(QWidget* parent): QLineEdit(parent){}
 cmdLine::~cmdLine(){}
 
-appWindow::appWindow(QWidget* parent, const char* progName,
+appWindow::appWindow(QWidget* parent, std::string progName,
                      bool useCmdLineColors, 
                      const std::vector<std::string> & cmdLineColors,
                      const std::vector<std::string> & polyFilesVec,
@@ -25,7 +25,7 @@ appWindow::appWindow(QWidget* parent, const char* progName,
                      bool                             noClosedPolys,
                      int windowWidX, int windowWidY
                      ):
-  QMainWindow(parent, progName){
+  QMainWindow(parent, progName.c_str()){
 
   installEventFilter(this);
 
