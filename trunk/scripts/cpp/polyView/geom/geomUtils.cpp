@@ -353,19 +353,3 @@ bool utils::boxesIntersect(double xl1, double yl1, double xh1, double yh1,
   
 }
 
-bool utils::boxLessThan(dRect P, dRect Q){
-
-  if (P.left() < Q.left())     return true;
-  if (P.left() > Q.left())     return false;
-  
-  if (P.bottom() < Q.bottom()) return true;
-  if (P.bottom() > Q.bottom()) return false;
-
-  if (P.width() < Q.width())   return true;
-  if (P.width() > Q.width())   return false;
-
-  if (P.height() < Q.height()) return true;
-  if (P.height() > Q.height()) return false;
-
-  return false;
-}
