@@ -1513,16 +1513,13 @@ void polyView::cutToHlt(){
 
   dRect H = m_highlights[numH - 1];
 
-  printCmd( "clip", H.xl, H.yh, H.xh - H.xl, H.yl - H.yh );
+  printCmd( "clip", H.xl, H.yl, H.xh - H.xl, H.yh - H.yl );
     
   dPoly clippedPoly;
   for (int vecIter = 0; vecIter < (int)m_polyVec.size(); vecIter++){
 
-    m_polyVec[vecIter].clipPoly(//inuts
-                                H.xl, H.yh,
-                                H.xh, H.yl,
-                                // output
-                                clippedPoly
+    m_polyVec[vecIter].clipPoly(H.xl, H.yl, H.xh, H.yh, //inputs
+                                clippedPoly             // output
                                 );
 
     m_polyVec[vecIter] = clippedPoly;    
