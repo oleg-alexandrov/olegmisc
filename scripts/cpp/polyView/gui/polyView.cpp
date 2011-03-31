@@ -870,9 +870,9 @@ void polyView::drawCurrPolyLine(QPainter * paint){
   }
   
   int lineWidth = 1;
-  char * color  = "white";
+  string color  = "white";
   paint->setBrush( NoBrush );
-  paint->setPen( QPen(color, lineWidth) );
+  paint->setPen( QPen(color.c_str(), lineWidth) );
 
   // To do: The block below better become its own function
   // which can draw points, poly lines, and polygons
@@ -1342,8 +1342,8 @@ void polyView::plotDistBwPolyClips( QPainter *paint ){
 
   int lineWidth = 1;
   int radius    = 2;
-  char * color  = "yellow";
-  paint->setPen( QPen( color, lineWidth) );
+  string color  = "yellow";
+  paint->setPen( QPen( color.c_str(), lineWidth) );
   paint->setBrush( QColor(color) );
 
   // To do: This does not behave well on zoom. Need to cut this segment to the viewing
@@ -1675,7 +1675,7 @@ void polyView::saveOnePoly(){
     cerr << "No polygons to save" << endl;
   }
 
-  char * fileName = "out_poly.xg";
+  string fileName = "out_poly.xg";
 
   dPoly poly;
 

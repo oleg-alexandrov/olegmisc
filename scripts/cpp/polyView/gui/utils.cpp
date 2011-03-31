@@ -8,7 +8,7 @@
 
 using namespace std;
 
-void utils::printUsage(char * progName){
+void utils::printUsage(std::string progName){
   
   std::cout << "Usage: " << progName
             << " [ -geo[metry] 1000x800 ] [ -c[olor] yellow ] file_1.xg ... "
@@ -59,7 +59,7 @@ void utils::extractWindowDims(// inputs
 }
 
 void utils::parseCmdOptions(//inputs
-                            int argc, char** argv, char * exeName,
+                            int argc, char** argv, std::string exeName,
                             // outputs
                             int & windowWidX,      int & windowWidY,
                             bool                       & useCmdLineColors, 
