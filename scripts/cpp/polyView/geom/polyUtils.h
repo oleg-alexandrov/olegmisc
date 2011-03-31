@@ -5,7 +5,6 @@
 #include <fstream>
 #include <cmath>
 #include <set>
-#include "dPoint.h"
 #include "dPoly.h"
 #include "geomUtils.h"
 

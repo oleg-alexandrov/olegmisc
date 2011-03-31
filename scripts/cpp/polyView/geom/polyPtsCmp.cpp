@@ -5,7 +5,6 @@
 #include <vector>
 #include <cassert>
 #include "dPoly.h"
-#include "dPoint.h"
 #include "geomUtils.h"
 #include "polyUtils.h"
 
