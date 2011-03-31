@@ -89,34 +89,18 @@ namespace utils{
                              double & widx, double & widy);
   
 
-  class dRect{
+  struct dRect{
     
-  public:
-    dRect(double xll = 0, double yll = 0, double xur = 0, double yur = 0): 
-      m_xll(xll), m_yll(yll), m_xur(xur), m_yur(yur) {}
-
-    double left()   const { return m_xll; }
-    double top()    const { return m_yll; }
-    double right()  const { return m_xur; }
-    double bottom() const { return m_yur; }
-    double width()  const { return m_xur - m_xll;}
-    double height() const { return m_yur - m_yll;}
-
-  private:
+    dRect(double xl_in = 0, double yl_in = 0,
+          double xh_in = 0, double yh_in = 0): 
+      xl(xl_in), yl(yl_in), xh(xh_in), yh(yh_in) {}
     
-    double m_xll;
-    double m_yll;
-    double m_xur;
-    double m_yur;
+    double xl;
+    double yl;
+    double xh;
+    double yh;
   };
 
-  inline void normalize(dRect & R){
-    double left  = std::min(R.left(), R.right());
-    double right = std::max(R.left(), R.right());
-    double top   = std::min(R.top(), R.bottom());
-    double bot   = std::max(R.top(), R.bottom());
-    R            = dRect(left, top, right, bot);
-  }
 
   struct segDist{
     double begx, begy, endx, endy, dist;
@@ -132,7 +116,6 @@ namespace utils{
                       double xl2, double yl2, double xh2, double yh2
                       );
 
-  bool boxLessThan(dRect P, dRect Q);
   
 }
   
