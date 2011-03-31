@@ -6,7 +6,21 @@
 #include <cmath>
 #include <set>
 #include <cassert>
-#include "dPoint.h"
+
+struct dPoint{
+  double x, y;
+  dPoint(): x(0), y(0){}
+  dPoint(double x_in, double y_in): x(x_in), y(y_in){}
+};
+
+
+inline bool operator< (dPoint P, dPoint Q){
+  return ( P.x < Q.x ) || (P.x == Q.x && P.y < Q.y);
+}
+
+inline bool greaterThan (dPoint P, dPoint Q){
+  return ( P.x > Q.x ) || (P.x == Q.x && P.y > Q.y);
+}
 
 struct anno {
   

@@ -6,7 +6,6 @@
 #include <cassert>
 #include <cstring>
 #include <string>
-#include "dPoint.h"
 #include "dPoly.h"
 using namespace std;
 using namespace utils;
