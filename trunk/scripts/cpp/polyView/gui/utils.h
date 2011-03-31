@@ -15,7 +15,7 @@ namespace utils{
                          );
 
   void parseCmdOptions(//inputs
-                       int argc, char** argv, char * exeName,
+                       int argc, char** argv, std::string exeName,
                        // outputs
                        int & windowWidX,      int & windowWidY,
                        bool                       & useCmdLineColors, 
@@ -28,7 +28,7 @@ namespace utils{
 
   std::string inFileToOutFile(const std::string & inFile);
 
-  void printUsage(char * progName);
+  void printUsage(std::string progName);
 
   std::string getFilenameExtension(std::string filename);
   std::string replaceAll(std::string result, 
