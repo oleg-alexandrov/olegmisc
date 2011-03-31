@@ -1479,8 +1479,8 @@ void polyView::drawRect(const utils::dRect & R, int lineWidth,
                         QPainter * paint){
 
   int numV = 4;
-  double xv[] = { R.left(), R.right(), R.right(),  R.left()   };
-  double yv[] = { R.top(),  R.top(),   R.bottom(), R.bottom() };
+  double xv[] = { R.xl, R.xh, R.xh, R.xl };
+  double yv[] = { R.yl, R.yl, R.yh, R.yh };
   
   QPointArray pa(numV);
   for (int vIter = 0; vIter < numV; vIter++){
@@ -1513,14 +1513,14 @@ void polyView::cutToHlt(){
 
   dRect H = m_highlights[numH - 1];
 
-  printCmd( "clip", H.left(), H.top(), H.right() - H.left(), H.bottom() - H.top() );
+  printCmd( "clip", H.xl, H.yh, H.xh - H.xl, H.yl - H.yh );
     
   dPoly clippedPoly;
   for (int vecIter = 0; vecIter < (int)m_polyVec.size(); vecIter++){
 
     m_polyVec[vecIter].clipPoly(//inuts
-                                H.left(), H.top(),
-                                H.right(), H.bottom(),
+                                H.xl, H.yh,
+                                H.xh, H.yl,
                                 // output
                                 clippedPoly
                                 );
