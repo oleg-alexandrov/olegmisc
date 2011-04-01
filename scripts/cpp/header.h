@@ -1,5 +1,3 @@
-bool findLargestNoMoreThan(int *, int, int, double, int &);
-bool findSmallestNoLessThan(int *, int, int, double, int &);
 bool getLine(ifstream &, std::string &);
 bool isDigit(const char);
 bool isHeap(const int *, int);

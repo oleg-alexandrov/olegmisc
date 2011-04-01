@@ -10,9 +10,6 @@ XTRA_OBJ=
 OBJ1  =  $(XTRA_OBJ)
 
 
-binary_search: binary_search.o $(OBJ1) $(HDR) 
-	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
-
 bsearch: bsearch.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
@@ -74,6 +71,9 @@ queue: queue.o $(OBJ1) $(HDR)
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 quicksort: quicksort.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
+random: random.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 reverse_linked: reverse_linked.o $(OBJ1) $(HDR) 
