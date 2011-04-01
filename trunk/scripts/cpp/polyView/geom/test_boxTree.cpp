@@ -16,19 +16,12 @@ double rand_ab(double a, double b){
   return a + rand()%max(int(b - a), 1);
 }
 
-struct Box{
-  double xl, yl, xh, yh;
-  Box(): xl(0.0), yl(0.0), xh(0.0), yh(0.0){}
-  Box(double xl_in, double yl_in, double xh_in, double yh_in):
-    xl(xl_in), yl(yl_in), xh(xh_in), yh(yh_in){}
-};
-
-void saveBoxes(std::vector<Box> & Boxes, std::string file, std::string color){
+void saveBoxes(std::vector<dRect> & Boxes, std::string file, std::string color){
   cout << "Writing " << file << endl;
   ofstream of(file.c_str());
   of << "color = " << color << endl;
   for (int s = 0; s < (int)Boxes.size(); s++){
-    const Box & B = Boxes[s]; // alias
+    const dRect & B = Boxes[s]; // alias
     of << B.xl << ' ' << B.yl << endl;
     of << B.xh << ' ' << B.yl << endl;
     of << B.xh << ' ' << B.yh << endl;
@@ -55,7 +48,7 @@ int main(int argc, char** argv){
    numRepeats = 100000;
  }
  
- vector<Box> Boxes;
+ vector<dRect> Boxes;
 
  for (int q = 0; q < numRuns; q++){
    
@@ -64,10 +57,10 @@ int main(int argc, char** argv){
    for (int s = 0; s < numBoxes; s++){
      double xl = rand_ab(-L, L), xh = xl + rand_ab(0, w);
      double yl = rand_ab(-L, L), yh = yl + rand_ab(0, w);
-     Boxes.push_back(Box(xl, yl, xh, yh));
+     Boxes.push_back(dRect(xl, yl, xh, yh));
    }
  
-   boxTree<Box> T;
+   boxTree<dRect> T;
    // Boxes will be reordered but otherwise unchanged inside of this function.
    // Do not modify this vector afterward.
    T.formTree(Boxes); 
@@ -76,13 +69,13 @@ int main(int argc, char** argv){
    double xl = rand_ab(-L2, L2), xh = xl + rand_ab(0, L2);
    double yl = rand_ab(-L2, L2), yh = yl + rand_ab(0, L2);
 
-   time_t Start_t, End_t;
-   int time_task;
+   time_t Start_t = 0, End_t = 0;
+   double time_task;
    
-   vector<Box> outBoxes;
+   vector<dRect> outBoxes;
    if(doTiming) Start_t = time(NULL);    //record time that task 1 begins
    for (int v = 0; v < numRepeats; v++){
-     T.getBoxesInBox(xl, yl, xh, yh, outBoxes);
+     T.getBoxesInRegion(xl, yl, xh, yh, outBoxes);
    }
    if(doTiming){
      End_t = time(NULL);  
@@ -90,16 +83,16 @@ int main(int argc, char** argv){
      cout << "Tree search time: " << time_task << endl;
    }
 
-   sort(outBoxes.begin(), outBoxes.end(), lexLessThan<Box>);
+   sort(outBoxes.begin(), outBoxes.end(), lexLessThan<dRect>);
  
-   vector<Box> outBoxes2; // Must be different than Boxes
+   vector<dRect> outBoxes2; // Must be different than Boxes
    outBoxes2.resize(numBoxes);
    
    if(doTiming) Start_t = time(NULL);
    for (int v = 0; v < numRepeats; v++){
      outBoxes2.clear();
      for (int s = 0; s < (int)Boxes.size(); s++){
-       const Box & B = Boxes[s];
+       const dRect & B = Boxes[s];
        if (boxesIntersect(B.xl, B.yl, B.xh, B.yh, xl, yl, xh, yh)){
          outBoxes2.push_back(B);
        }
@@ -111,7 +104,7 @@ int main(int argc, char** argv){
      cout << "Brute force search time: " << time_task << endl;
    }
 
-   sort(outBoxes2.begin(), outBoxes2.end(), lexLessThan<Box>);
+   sort(outBoxes2.begin(), outBoxes2.end(), lexLessThan<dRect>);
 
    bool haveProblem = false;
  
@@ -133,8 +126,8 @@ int main(int argc, char** argv){
      cout << "Out:  " << outBoxes.size()  << endl;
      cout << "Out2: " << outBoxes2.size() << endl;
      
-     vector<Box> W;
-     W.push_back(Box(xl, yl, xh, yh));
+     vector<dRect> W;
+     W.push_back(dRect(xl, yl, xh, yh));
    
      saveBoxes( Boxes,    "all.xg",       "blue"   );
      saveBoxes( W,        "window.xg",    "green"  );
