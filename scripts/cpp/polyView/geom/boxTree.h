@@ -57,8 +57,9 @@ public:
                 std::vector<Box> & Boxes 
                 );
   
-  void getBoxesInBox(double xl, double yl, double xh, double yh, // input box
-                     std::vector<Box> & outBoxes);
+  void getBoxesInRegion(double xl, double yl, double xh, double yh, // Inputs
+                        std::vector<Box> & outBoxes                 // Outputs
+                        );
   
 private:
 
@@ -68,11 +69,11 @@ private:
                         );
 
   
-  void getBoxesInBoxInternal(//Inputs
-                             double xl, double yl, double xh, double yh,
-                             boxNode<Box> * root,
-                             // Outputs
-                             std::vector<Box> & outBoxes);
+  void getBoxesInRegionInternal(//Inputs
+                                double xl, double yl, double xh, double yh,
+                                boxNode<Box> * root,
+                                // Outputs
+                                std::vector<Box> & outBoxes);
   
   void reset();
   boxNode<Box> * getNewboxNode();
@@ -110,9 +111,9 @@ boxNode<Box> * boxTree<Box>::getNewboxNode(){
 
 template <typename Box>
 void boxTree<Box>::formTree(// Boxes will be reordered but otherwise
-                       // unchanged inside this function
-                       std::vector<Box> & Boxes 
-                       ){
+                            // unchanged inside this function
+                            std::vector<Box> & Boxes 
+                            ){
   
   reset();
   int numBoxes = Boxes.size();
@@ -125,9 +126,9 @@ void boxTree<Box>::formTree(// Boxes will be reordered but otherwise
 
 template <typename Box>
 void boxTree<Box>::formTreeInternal(Box * Boxes, int numBoxes,
-                               bool isLeftRightSplit,
-                               boxNode<Box> *&  root
-                               ){
+                                    bool isLeftRightSplit,
+                                    boxNode<Box> *&  root
+                                    ){
   
 
   // To do: Implement this without recursion.
@@ -200,28 +201,28 @@ void boxTree<Box>::formTreeInternal(Box * Boxes, int numBoxes,
 }
 
 template <typename Box>
-void boxTree<Box>::getBoxesInBox(// Input box
-                                 double xl, double yl, double xh, double yh,
-                                 // Output
-                                 std::vector<Box> & outBoxes
-                                 ){
+void boxTree<Box>::getBoxesInRegion(// Inputs
+                                    double xl, double yl, double xh, double yh,
+                                    // Output
+                                    std::vector<Box> & outBoxes
+                                    ){
 
   outBoxes.clear();
   if (xl > xh || yl > yh) return;
-  getBoxesInBoxInternal(xl, yl, xh, yh, m_root, // inputs
-                         outBoxes               // outputs
-                         );
+  getBoxesInRegionInternal(xl, yl, xh, yh, m_root, // Inputs
+                           outBoxes                // Outputs
+                           );
   return;
 }
 
 template <typename Box>
-void boxTree<Box>::getBoxesInBoxInternal(//Inputs
-                                         double xl, double yl,
-                                         double xh, double yh,
-                                         boxNode<Box> * root,
-                                         // Outputs
-                                         std::vector<Box> & outBoxes
-                                         ){
+void boxTree<Box>::getBoxesInRegionInternal(// Inputs
+                                            double xl, double yl,
+                                            double xh, double yh,
+                                            boxNode<Box> * root,
+                                            // Outputs
+                                            std::vector<Box> & outBoxes
+                                            ){
 
   // To do: Can this be done without recursion?
   
@@ -234,14 +235,14 @@ void boxTree<Box>::getBoxesInBoxInternal(//Inputs
   
   if (root->isLeftRightSplit){
     if (xl <= root->maxInLeftChild)
-      getBoxesInBoxInternal(xl, yl, xh, yh, root->left,  outBoxes);
+      getBoxesInRegionInternal(xl, yl, xh, yh, root->left,  outBoxes);
     if (xh >= root->minInRightChild)
-      getBoxesInBoxInternal(xl, yl, xh, yh, root->right, outBoxes);
+      getBoxesInRegionInternal(xl, yl, xh, yh, root->right, outBoxes);
   }else{
     if (yl <= root->maxInLeftChild)
-      getBoxesInBoxInternal(xl, yl, xh, yh, root->left,  outBoxes);
+      getBoxesInRegionInternal(xl, yl, xh, yh, root->left,  outBoxes);
     if (yh >= root->minInRightChild)
-      getBoxesInBoxInternal(xl, yl, xh, yh, root->right, outBoxes);
+      getBoxesInRegionInternal(xl, yl, xh, yh, root->right, outBoxes);
   }
     
   return;

@@ -105,20 +105,18 @@ namespace utils{
 
   struct dRect{
     
-    dRect(double xl_in = 0, double yl_in = 0,
-          double xh_in = 0, double yh_in = 0): 
+    dRect(double xl_in = 0.0, double yl_in = 0.0,
+          double xh_in = 0.0, double yh_in = 0.0): 
       xl(xl_in), yl(yl_in), xh(xh_in), yh(yh_in) {}
     
-    double xl;
-    double yl;
-    double xh;
-    double yh;
+    double xl, yl, xh, yh;
   };
 
 
   struct segDist{
     double begx, begy, endx, endy, dist;
-    segDist(double begx_in, double begy_in, double endx_in, double endy_in, double dist_in):
+    segDist(double begx_in, double begy_in, double endx_in,
+            double endy_in, double dist_in):
       begx(begx_in), begy(begy_in), endx(endx_in), endy(endy_in), dist(dist_in){}
   };
 
