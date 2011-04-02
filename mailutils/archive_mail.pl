@@ -103,8 +103,13 @@ sub send_message_to_gmail_via_procmail {
 
   # To do: open $procmailrc_file and see if there is a valid address there.
   # Otherwise procmail might forward to the original recepient maybe, not good.
-  
-  print "cat $tmp_file \| /usr/bin/procmail $procmailrc_file\n";
-  print `cat $tmp_file \| /usr/bin/procmail $procmailrc_file` . "\n";
+
+  my $procmail = '/usr/bin/procmail';
+  if ( -! -x $procmail ){ $procmail = $ENV{'HOME'} . '/bin/procmail'; }
+  if ( -! -x $procmail ){ print "Could not find procmail\n"; exit(1); }
+
+  my $cmd = "cat $tmp_file \| $procmail $procmailrc_file";
+  print "$cmd\n";
+  print `$cmd` . "\n";
 
 }
