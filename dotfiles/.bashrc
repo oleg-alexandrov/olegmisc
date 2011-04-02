@@ -246,9 +246,6 @@ export LC_COLLATE=C # when using ls, put the dotfiles first.
 export LS_COLORS="di=34;1:ln=36;1:ex=32;1:*~=31;1:*.zip=31;01:*.gz=31;01:*.bz2=31;01:*.tgz=31;1:*.gz=31;1:*.jpg=35;01:*.jpeg=35;01:*.gif=35;01:*.bmp=35;01:*.xpm=35;01:*.png=35;01:*.mov=35;01:*.mpg=35;01:*.mpeg=35;01:*.avi=35;01:*.xcf=35;01"
 export FIGNORE=.o:.elc:~:.dvi:.aux:.toc:.bbl:.blg:.thm:.sty:.lof:.lot:.bib:.mexglx:.cmd:.ly2:.box
 
-# other
-export MAILCHECK=-1800000 # don't notify of new mail
-
 export GDBHISTFILE=$HOME/.gdb_history
 
 export FVWM_USERDIR=$HOME/.fvwm # needed for fvwm
