@@ -18,6 +18,7 @@ unsetopt histignorespace # save to history commands that start with space
 setopt nohistbeep
 setopt histsavenodups
 setopt sharehistory  
+setopt nohup            # don't kill jobs when exiting
 
 setopt CSH_NULL_GLOB    # don't complain if there are no matches
 setopt NULL_GLOB        # don't complain if there are no matches
