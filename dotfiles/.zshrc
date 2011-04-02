@@ -6,7 +6,6 @@ autoload -U compinit promptinit
 compinit; promptinit;
 
 export HISTFILE=~/.zsh_history
-export z=~/.zsh_history
 export HISTSIZE=10000
 export SAVEHIST=10000
 setopt appendhistory
@@ -107,11 +106,17 @@ function reread_aliases {
 }
 add-zsh-hook preexec reread_aliases
 
-# Init the prompt
+# Colors
 autoload -U colors
 for cFile in $w/local/share/zsh/4.3.10/functions/colors \
-             /usr/share/zsh/functions/Misc/colors; do
- if [[ -f $cFile ]]; then source $cFile > /dev/null 2>&1; fi;
+             /usr/share/zsh/functions/Misc/colors       \
+	     $HOME/.zsh_colors; do
+  if [[ -f $cFile ]]; then 
+  	source $cFile > /dev/null 2>&1 
+	break
+   fi
 done
+
+# Init the prompt
 proml;
 
