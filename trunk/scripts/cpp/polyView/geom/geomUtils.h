@@ -104,20 +104,34 @@ namespace utils{
   
 
   struct dRect{
-    
     dRect(double xl_in = 0.0, double yl_in = 0.0,
           double xh_in = 0.0, double yh_in = 0.0): 
       xl(xl_in), yl(yl_in), xh(xh_in), yh(yh_in) {}
-    
     double xl, yl, xh, yh;
   };
 
 
-  struct segDist{
-    double begx, begy, endx, endy, dist;
+  struct dRectWithId: public dRect{
+    int id;
+    dRectWithId(double xl_in = 0.0, double yl_in = 0.0,
+                double xh_in = 0.0, double yh_in = 0.0,
+                int id_in = 0):
+      dRect(xl_in, yl_in, xh_in, yh_in), id(id_in){}
+  };
+
+  struct seg{
+    double begx, begy, endx, endy;
+    seg(double begx_in, double begy_in, double endx_in,
+        double endy_in):
+      begx(begx_in), begy(begy_in), endx(endx_in), endy(endy_in){}
+  };
+  
+    
+  struct segDist: public seg{
+    double dist;
     segDist(double begx_in, double begy_in, double endx_in,
             double endy_in, double dist_in):
-      begx(begx_in), begy(begy_in), endx(endx_in), endy(endy_in), dist(dist_in){}
+      seg(begx, begy, endx, endy), dist(dist_in){}
   };
 
   inline bool segDistGreaterThan(segDist s, segDist t){
