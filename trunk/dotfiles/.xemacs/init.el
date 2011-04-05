@@ -238,7 +238,6 @@
 
 (setq tags-case-fold-search t)
 (setq case-fold-search t)
-(setq tags-file "~/opc/dev/TAGS")
-(if (file-readable-p tags-file)
-    (visit-tags-table tags-file)
-  )
+(setq tags-table-list (list "./" "./../" "./../../" "./../../../" "./../../../../"))
+; (setq tags-file "~/opc/dev/TAGS")
+; (if (file-readable-p tags-file)  (visit-tags-table tags-file)  )
