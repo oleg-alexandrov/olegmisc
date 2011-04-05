@@ -75,6 +75,50 @@ void utils::findClosestPolyVertex(// inputs
   return;
 }
 
+void utils::findEdgesInBox(// inputs
+                           double xl, double yl,
+                           double xh, double yh,
+                           const dPoly & poly,
+                           // outputs
+                           std::vector<seg> & edgesInBox
+                           ){
+
+  const double * xv           = poly.get_xv();
+  const double * yv           = poly.get_yv();
+  const int    * numVerts     = poly.get_numVerts();
+  int numPolys                = poly.get_numPolys();
+  int totalNumVerts           = poly. get_totalNumVerts();
+  
+  vector<dRectWithId> allEdges; 
+  allEdges.resize(totalNumVerts);
+  
+  
+  int start = 0;
+  for (int pIter = 0; pIter < numPolys; pIter++){
+      
+    if (pIter > 0) start += numVerts[pIter - 1];
+
+    for (int vIter = 0; vIter < numVerts[pIter]; vIter++){
+
+      int vIter2 = (vIter + 1) % numVerts[pIter];
+      double bx = xv[start + vIter ], by = yv[start + vIter ];
+      double ex = xv[start + vIter2], ey = yv[start + vIter2];
+
+      // Transform an edge into a box, with the id storing
+      // the information necessary to reverse this later.
+      int id = 0;
+      if (bx > ex){ swap(bx, ex); id |= 1; } // id = id | 01
+      if (by > ey){ swap(by, ey); id |= 2; } // id = id | 10
+      allEdges[start + vIter] = dRectWithId(bx, by, ex, ey, id);
+      
+    }
+  }
+  
+  // To continue...
+  
+  return;
+}
+
 void utils::findAndSortDistsBwPolys(// inputs
                                     const dPoly & poly1,
                                     const dPoly & poly2,

@@ -8,6 +8,40 @@
 
 using namespace std;
 
+bool utils::edgeIntersectsBox(// Input: arbitrary edge
+                              double bx, double by,
+                              double ex, double ey,
+                              // Input: Box
+                              double xl, double yl,
+                              double xh, double yh
+                              ){
+
+  assert(xl <= xl && yl <= yh);
+
+  // See if edge is to the left/right/above/below the box
+  if (bx > xh && ex > xh) return false;
+  if (bx < xl && ex < xl) return false;
+  if (by > yh && ey > yh) return false;
+  if (by < yl && ey < yl) return false;
+  
+
+  // See if any of the two edge endpoints are in the box
+  if (xl <= bx && bx <= xh && yl <= by && by <= yh) return true;
+  if (xl <= ex && ex <= xh && yl <= ey && ey <= yh) return true;
+
+  // See if the edge intersects the four edges of the box
+  if (edgeIntersectsHorizontalEdge(bx, by, ex, ey, xl, xh, yl))
+    return true;
+  if (edgeIntersectsHorizontalEdge(bx, by, ex, ey, xl, xh, yh))
+    return true;
+  if (edgeIntersectsHorizontalEdge(by, bx, ey, ex, yl, yh, xl))
+    return true;
+  if (edgeIntersectsHorizontalEdge(by, bx, ey, ex, yl, yh, xh))
+    return true;
+
+  return false;
+}
+  
 bool utils::edgeIntersectsHorizontalEdge(// Input: arbitrary edge
                                          double x0, double y0,
                                          double x1, double y1,
@@ -16,11 +50,9 @@ bool utils::edgeIntersectsHorizontalEdge(// Input: arbitrary edge
                                          double yval
                                          ){
 
-  // See if an arbitrary edge intersects a horizontal
-  // edge. Care has be taken to avoid as much
-  // as possible floating point operations which
-  // can be problematic in cases close to
-  // degeneracy.
+  // See if an arbitrary edge intersects a horizontal edge. Care has
+  // be taken to avoid as much as possible floating point operations
+  // which can be problematic in cases close to degeneracy.
 
   if (y0 > yval && y1 > yval) return false;
   if (y0 < yval && y1 < yval) return false;

@@ -22,6 +22,13 @@ namespace utils{
                              double & minX, double & minY,
                              double & minDist
                              );
+  void findEdgesInBox(// inputs
+                           double xl, double yl,
+                           double xh, double yh,
+                           const dPoly & poly,
+                           // outputs
+                           std::vector<seg> & edgesInBox
+                           );
 
   void findAndSortDistsBwPolys(// inputs
                                const dPoly & poly1,
