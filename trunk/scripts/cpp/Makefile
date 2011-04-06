@@ -10,6 +10,9 @@ XTRA_OBJ=
 OBJ1  =  $(XTRA_OBJ)
 
 
+binary_search: binary_search.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 bsearch: bsearch.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
@@ -56,6 +59,9 @@ maxSum: maxSum.o $(OBJ1) $(HDR)
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 mclass: mclass.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
+merge: merge.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 mergeSort: mergeSort.o $(OBJ1) $(HDR) 
