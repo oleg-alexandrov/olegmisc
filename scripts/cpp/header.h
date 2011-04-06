@@ -1,3 +1,5 @@
+bool findLargestNoMoreThan(int *, int, int, double, int &);
+bool findSmallestNoLessThan(int *, int, int, double, int &);
 bool getLine(ifstream &, std::string &);
 bool isDigit(const char);
 bool isHeap(const int *, int);
@@ -24,6 +26,7 @@ void allocAndReturn(int, smartPtr &);
 void doSort(int *, int, int);
 void foo(int);
 void formList(list*&, int);
+void genAndPlot(int);
 void getChars(ifstream &, std::string &);
 void incrSubSeq(int *, int, vector<int> &);
 void insertToHeap(heap &, int);

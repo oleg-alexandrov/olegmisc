@@ -131,7 +131,7 @@ namespace utils{
     double dist;
     segDist(double begx_in, double begy_in, double endx_in,
             double endy_in, double dist_in):
-      seg(begx, begy, endx, endy), dist(dist_in){}
+      seg(begx_in, begy_in, endx_in, endy_in), dist(dist_in){}
   };
 
   inline bool segDistGreaterThan(segDist s, segDist t){
