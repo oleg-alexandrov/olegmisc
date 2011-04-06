@@ -6,7 +6,10 @@ FC = g77 -O3
 OBJ=cutPoly.o dPoly.o geomUtils.o polyUtils.o kdTree.o edgeUtils.o 
 HDR= cutPoly.h dPoly.h geomUtils.h polyUtils.h kdTree.h edgeUtils.h boxTree.h
 
-all: test_dPoly testCutPoly polyPtsCmp test_boxTree test_kdTree
+all: test_dPoly testCutPoly polyPtsCmp test_boxTree test_kdTree test_edgesInBox
+
+test_edgesInBox: test_edgesInBox.o $(OBJ) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ)  $(LIBS)
 
 test_boxTree: test_boxTree.o $(OBJ) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ)  $(LIBS)
