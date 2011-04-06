@@ -7,6 +7,7 @@
 #include <set>
 #include "dPoly.h"
 #include "geomUtils.h"
+#include "boxTree.h"
 
 namespace utils{
 
@@ -22,13 +23,6 @@ namespace utils{
                              double & minX, double & minY,
                              double & minDist
                              );
-  void findEdgesInBox(// inputs
-                           double xl, double yl,
-                           double xh, double yh,
-                           const dPoly & poly,
-                           // outputs
-                           std::vector<seg> & edgesInBox
-                           );
 
   void findAndSortDistsBwPolys(// inputs
                                const dPoly & poly1,
@@ -50,6 +44,26 @@ namespace utils{
 
 }
   
+class edgeTree{
+  
+public:
+  
+  void putPolyEdgesInTree(const dPoly & poly);
+  void findPolyEdgesInBox(// inputs
+                          double xl, double yl,
+                          double xh, double yh,
+                          std::vector<utils::seg> & edgesInBox
+                          );
+  
+private:
+
+  // Internal data structures
+  boxTree<utils::dRectWithId>      m_boxesTree;
+  std::vector<utils::dRectWithId>  m_allEdges; 
+  std::vector<utils::dRectWithId>  m_boxesInRegion;
+  
+};
+
 
 #endif
   

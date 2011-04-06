@@ -27,15 +27,16 @@ int main(int argc, char** argv){
 
   dPoly box;
   if (! box.readPoly(boxFile, isPointCloud) ) exit(1);
-
   double xl, yl, xh, yh;
   box.bdBox(xl, yl, xh, yh);
-  cout << "box is " << xl << ' ' << yl << ' ' << xh << ' ' << yh << endl;
+
+  edgeTree T;
+  T.putPolyEdgesInTree(poly);
+
   vector<seg> edgesInBox;
-  
-  utils::findEdgesInBox(xl, yl, xh, yh, poly, // inputs  
-                        edgesInBox            // output
-                        );
+  T.findPolyEdgesInBox(xl, yl, xh, yh, // inputs
+                       edgesInBox      // output
+                       );
   
   const char * outFile = "edgesInBox.xg";
   cout << "Writing to " << outFile << endl;
