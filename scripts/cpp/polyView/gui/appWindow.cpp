@@ -10,6 +10,7 @@
 #include <cmath>
 #include "appWindow.h"
 #include "polyView.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -17,12 +18,7 @@ cmdLine::cmdLine(QWidget* parent): QLineEdit(parent){}
 cmdLine::~cmdLine(){}
 
 appWindow::appWindow(QWidget* parent, std::string progName,
-                     bool useCmdLineColors, 
-                     const std::vector<std::string> & cmdLineColors,
-                     const std::vector<std::string> & polyFilesVec,
-                     const std::vector<bool>        & plotPointsOnlyVec,
-                     bool                             plotAsLines,
-                     bool                             noClosedPolys,
+                     const cmdLineOptions & options, 
                      int windowWidX, int windowWidY
                      ):
   QMainWindow(parent, progName.c_str()){
@@ -33,8 +29,7 @@ appWindow::appWindow(QWidget* parent, std::string progName,
   resize(windowWidX, windowWidY);
 
   // Central widget
-  m_poly = new polyView (this, useCmdLineColors, cmdLineColors,
-                         polyFilesVec, plotPointsOnlyVec, plotAsLines, noClosedPolys);
+  m_poly = new polyView (this, options);
   m_poly->setBackgroundColor (QColor("black"));
   m_poly->setFocusPolicy(QWidget::StrongFocus);
   m_poly->setFocus();
@@ -187,6 +182,10 @@ QMenuBar* appWindow::createMenus(){
   diff->insertItem("Toggle show poly diff", m_poly, SLOT(toggleShowPolyDiff()), Key_D);
   diff->insertItem("Show next diff", m_poly, SLOT(plotNextDiff()), Key_K);
   diff->insertItem("Show prev diff", m_poly, SLOT(plotPrevDiff()), Key_J);
+
+  QPopupMenu* options = new QPopupMenu( menu );
+  menu->insertItem("&Options", options);
+  options->insertItem("Line width", m_poly, SLOT(setLineWidth()));
 
   QPopupMenu* help = new QPopupMenu( menu );
   menu->insertItem("&Help", help);

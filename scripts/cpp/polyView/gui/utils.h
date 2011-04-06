@@ -6,6 +6,16 @@
 #include <vector>
 #include "../geom/dPoly.h"
 
+struct cmdLineOptions{
+  bool                     plotAsLines;
+  bool                     noClosedPolys;
+  bool                     useCmdLineColors; 
+  int                      lineWidth;
+  std::vector<std::string> cmdLineColors; 
+  std::vector<std::string> polyFilesVec; 
+  std::vector<bool>        plotPointsOnlyVec;
+};
+
 namespace utils{
 
   void extractWindowDims(// inputs
@@ -17,13 +27,7 @@ namespace utils{
   void parseCmdOptions(//inputs
                        int argc, char** argv, std::string exeName,
                        // outputs
-                       int & windowWidX,      int & windowWidY,
-                       bool                       & useCmdLineColors, 
-                       std::vector<std::string>   & cmdLineColors, 
-                       std::vector<std::string>   & polyFilesVec, 
-                       std::vector<bool>          & plotPointsOnlyVec,
-                       bool                       & plotAsLines,
-                       bool                       & noClosedPolys
+                       int & windowWidX, int & windowWidY, cmdLineOptions & options
                        );
 
   std::string inFileToOutFile(const std::string & inFile);

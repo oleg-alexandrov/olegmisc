@@ -9,17 +9,12 @@
 #include "../geom/dPoly.h"
 #include "../geom/geomUtils.h"
 
+struct cmdLineOptions;
+
 class polyView : public QWidget{
     Q_OBJECT
 public:
-    polyView( QWidget *parent, 
-              bool useCmdLineColors,
-              const std::vector<std::string> & cmdLineColors,
-              const std::vector<std::string> & polyFilesVec,
-              const std::vector<bool>        & plotPointsOnlyVec,
-              bool                             plotAsLines,
-              bool                             noClosedPolys
-              );
+    polyView(QWidget *parent, const cmdLineOptions & options);
   
   void runCmd(std::string cmd);
   
@@ -62,7 +57,10 @@ public slots:
 
   // Transform menu
   void enforce45();
-  
+
+  // Options menu
+  void setLineWidth();
+
   // Right-click menu
   void saveMark();
   void toggleNmScale();
@@ -169,6 +167,8 @@ private:
   std::vector< std::vector<dPoly> > m_polyVecStack;
   std::vector<int> m_actions;
   std::vector<bool> m_resetViewOnUndo;
+
+  int m_lineWidth;
   
   bool m_useCmdLineColors;
   std::vector<std::string> m_cmdLineColors;
