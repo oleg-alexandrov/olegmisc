@@ -5,8 +5,10 @@
 #include <cfloat>
 #include <cstring>
 #include <cassert>
+#include "edgeUtils.h"
 #include "geomUtils.h"
 #include "polyUtils.h"
+#include "boxTree.h"
 #include "dPoly.h"
 
 using namespace std;
@@ -20,6 +22,8 @@ void utils::findClosestPolyEdge(// inputs
                                 double & minX, double & minY, double & minDist
                                 ){
 
+  // Find the closest edge in a given vector a polygons to a given point.
+  
   minVecIndex  = -1;
   minPolyIndex = -1;
   minX         = DBL_MAX;
@@ -55,6 +59,8 @@ void utils::findClosestPolyVertex(// inputs
                                   double & minDist
                                   ){
 
+  // Find the closest point in a given vector a polygons to a given point.
+  
   minX = x0; minY = y0; minDist = DBL_MAX;
   
   for (int s = 0; s < (int)polyVec.size(); s++){
@@ -92,7 +98,6 @@ void utils::findEdgesInBox(// inputs
   vector<dRectWithId> allEdges; 
   allEdges.resize(totalNumVerts);
   
-  
   int start = 0;
   for (int pIter = 0; pIter < numPolys; pIter++){
       
@@ -114,7 +119,38 @@ void utils::findEdgesInBox(// inputs
     }
   }
   
-  // To continue...
+  boxTree<dRectWithId> T;
+
+  // Form the tree.
+  // Boxes will be reordered but otherwise unchanged inside of this function.
+  // Do not modify this vector afterward.
+  T.formTree(allEdges); 
+
+  // Search the tree
+  vector<dRectWithId> boxesInRegion;
+  T.getBoxesInRegion(xl, yl, xh, yh, boxesInRegion);
+
+  cout << "Num edges to test: " << boxesInRegion.size() << endl;
+  
+  // Save the edges in the box
+  edgesInBox.clear();
+  for (int s = 0; s < (int)boxesInRegion.size(); s++){
+
+    const dRectWithId & R = boxesInRegion[s]; // alias
+    double bx = R.xl, by = R.yl, ex = R.xh, ey = R.yh;
+    int id = R.id;
+
+    // Recover the edge based on the box
+    if (id & 1) swap (bx, ex);
+    if (id & 2) swap (by, ey);
+
+    bool res = edgeIntersectsBox(bx, by, ex, ey,  // arbitrary edge (input)
+                                 xl, yl, xh, yh   // box to intersect (input)
+                                 );
+    if (res) edgesInBox.push_back(seg(bx, by, ex, ey));
+  }
+
+  cout << "Chosen edges: " << edgesInBox.size() << endl;
   
   return;
 }

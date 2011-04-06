@@ -24,20 +24,15 @@ bool utils::edgeIntersectsBox(// Input: arbitrary edge
   if (by > yh && ey > yh) return false;
   if (by < yl && ey < yl) return false;
   
-
   // See if any of the two edge endpoints are in the box
   if (xl <= bx && bx <= xh && yl <= by && by <= yh) return true;
   if (xl <= ex && ex <= xh && yl <= ey && ey <= yh) return true;
 
   // See if the edge intersects the four edges of the box
-  if (edgeIntersectsHorizontalEdge(bx, by, ex, ey, xl, xh, yl))
-    return true;
-  if (edgeIntersectsHorizontalEdge(bx, by, ex, ey, xl, xh, yh))
-    return true;
-  if (edgeIntersectsHorizontalEdge(by, bx, ey, ex, yl, yh, xl))
-    return true;
-  if (edgeIntersectsHorizontalEdge(by, bx, ey, ex, yl, yh, xh))
-    return true;
+  if (edgeIntersectsHorizontalEdge(bx, by, ex, ey, xl, xh, yl)) return true;
+  if (edgeIntersectsHorizontalEdge(bx, by, ex, ey, xl, xh, yh)) return true;
+  if (edgeIntersectsHorizontalEdge(by, bx, ey, ex, yl, yh, xl)) return true;
+  if (edgeIntersectsHorizontalEdge(by, bx, ey, ex, yl, yh, xh)) return true;
 
   return false;
 }
@@ -67,13 +62,13 @@ bool utils::edgeIntersectsHorizontalEdge(// Input: arbitrary edge
             );
   }
   
-
   // Find the intersection of the two edges.
   // (1 - t)*(x0, y0) + t*(x1, y1) has yval as y coordinate.
   double t = (yval - y0)/diff;
   assert(0.0 <= t && t <= 1.0);
   double x = (1 - t)*x0 + t*x1;
-  return ( min(x0, x1) <= x && x <= max(x0, x1) );
+
+  return ( min(begx, endx) <= x && x <= max(begx, endx) );
 
   // Note: The answer above could be incorrect
   // if the two edges intersect exactly at one of the
