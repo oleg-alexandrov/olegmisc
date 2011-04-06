@@ -1,5 +1,3 @@
-#include ../Makefile.arpack
-
 CPP = g++ -O3 -Wall
 CC = gcc -O3
 FC = g77 -O3

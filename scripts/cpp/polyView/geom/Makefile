@@ -26,8 +26,6 @@ test_kdTree: test_kdTree.o $(OBJ) $(HDR)
 testCutPoly: testCutPoly.o $(OBJ) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ)  $(LIBS)
 
-# object files which contain headers must be recompiled when headers change
-
 cutPoly.o: cutPoly.cpp cutPoly.h edgeUtils.h
 	$(CPP)  -c  cutPoly.cpp
 
@@ -60,7 +58,6 @@ test_kdTree.o: test_kdTree.cpp kdTree.h dPoly.h
 
 testCutPoly.o: testCutPoly.cpp dPoly.h cutPoly.h
 	$(CPP)  -c  testCutPoly.cpp
-
 
 .o:    %.cpp
 	$(CPP)  -c $<
