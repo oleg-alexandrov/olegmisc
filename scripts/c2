@@ -1,0 +1,27 @@
+#!/usr/bin/perl
+use strict;	   # insist that all variables be declared
+use diagnostics;   # expand the cryptic warnings
+undef $/;          # read one whole file in one scalar
+
+use lib $ENV{HOME} . '/bin';
+
+# Convert from hours:minutes:seconds format to seconds only.
+# So 02:01:14 becomes 7274.
+
+require 'conv_to_seconds.pl';
+
+MAIN:{
+
+  if (scalar(@ARGV) < 1){
+    print "Usage: $0 hh:mm:ss\n";
+    exit(0);
+  }
+
+  my $out = "";
+  foreach my $item (@ARGV){
+    next unless ($item =~ /\d+:\d+/);
+    $out .= conv_to_seconds($item) . " ";
+  }
+  print $out . "\n";
+     
+}
