@@ -6,10 +6,9 @@
 #include <cstring>
 #include <cassert>
 #include "edgeUtils.h"
-#include "geomUtils.h"
-#include "polyUtils.h"
-#include "boxTree.h"
 #include "dPoly.h"
+#include "polyUtils.h"
+#include "geomUtils.h"
 
 using namespace std;
 using namespace utils;
@@ -81,80 +80,6 @@ void utils::findClosestPolyVertex(// inputs
   return;
 }
 
-void utils::findEdgesInBox(// inputs
-                           double xl, double yl,
-                           double xh, double yh,
-                           const dPoly & poly,
-                           // outputs
-                           std::vector<seg> & edgesInBox
-                           ){
-
-  const double * xv           = poly.get_xv();
-  const double * yv           = poly.get_yv();
-  const int    * numVerts     = poly.get_numVerts();
-  int numPolys                = poly.get_numPolys();
-  int totalNumVerts           = poly. get_totalNumVerts();
-  
-  vector<dRectWithId> allEdges; 
-  allEdges.resize(totalNumVerts);
-  
-  int start = 0;
-  for (int pIter = 0; pIter < numPolys; pIter++){
-      
-    if (pIter > 0) start += numVerts[pIter - 1];
-
-    for (int vIter = 0; vIter < numVerts[pIter]; vIter++){
-
-      int vIter2 = (vIter + 1) % numVerts[pIter];
-      double bx = xv[start + vIter ], by = yv[start + vIter ];
-      double ex = xv[start + vIter2], ey = yv[start + vIter2];
-
-      // Transform an edge into a box, with the id storing
-      // the information necessary to reverse this later.
-      int id = 0;
-      if (bx > ex){ swap(bx, ex); id |= 1; } // id = id | 01
-      if (by > ey){ swap(by, ey); id |= 2; } // id = id | 10
-      allEdges[start + vIter] = dRectWithId(bx, by, ex, ey, id);
-      
-    }
-  }
-  
-  boxTree<dRectWithId> T;
-
-  // Form the tree.
-  // Boxes will be reordered but otherwise unchanged inside of this function.
-  // Do not modify this vector afterward.
-  T.formTree(allEdges); 
-
-  // Search the tree
-  vector<dRectWithId> boxesInRegion;
-  T.getBoxesInRegion(xl, yl, xh, yh, boxesInRegion);
-
-  cout << "Num edges to test: " << boxesInRegion.size() << endl;
-  
-  // Save the edges in the box
-  edgesInBox.clear();
-  for (int s = 0; s < (int)boxesInRegion.size(); s++){
-
-    const dRectWithId & R = boxesInRegion[s]; // alias
-    double bx = R.xl, by = R.yl, ex = R.xh, ey = R.yh;
-    int id = R.id;
-
-    // Recover the edge based on the box
-    if (id & 1) swap (bx, ex);
-    if (id & 2) swap (by, ey);
-
-    bool res = edgeIntersectsBox(bx, by, ex, ey,  // arbitrary edge (input)
-                                 xl, yl, xh, yh   // box to intersect (input)
-                                 );
-    if (res) edgesInBox.push_back(seg(bx, by, ex, ey));
-  }
-
-  cout << "Chosen edges: " << edgesInBox.size() << endl;
-  
-  return;
-}
-
 void utils::findAndSortDistsBwPolys(// inputs
                                     const dPoly & poly1,
                                     const dPoly & poly2,
@@ -199,13 +124,12 @@ void utils::findAndSortDistsBwPolys(// inputs
 
 void utils::putPolyInMultiSet(const dPoly & P, std::multiset<dPoint> & mP){
 
-  const double * x = P.get_xv();
-  const double * y = P.get_yv();
+  const double * x  = P.get_xv();
+  const double * y  = P.get_yv();
+  int totalNumVerts = P.get_totalNumVerts();
 
   mP.clear();
-  
-  int numVerts = P.get_totalNumVerts();
-  for (int v = 0; v < numVerts; v++){
+  for (int v = 0; v < totalNumVerts; v++){
     dPoint P;
     P.x = x[v];
     P.y = y[v];
@@ -264,6 +188,75 @@ void utils::findPolyDiff(const dPoly & P, const dPoly & Q, // inputs
     vQ.push_back(q);
   }
   
+  return;
+}
+
+void edgeTree::putPolyEdgesInTree(const dPoly & poly){
+
+  const double * xv       = poly.get_xv();
+  const double * yv       = poly.get_yv();
+  const int    * numVerts = poly.get_numVerts();
+  int numPolys            = poly.get_numPolys();
+  int totalNumVerts       = poly. get_totalNumVerts();
+  
+  m_allEdges.resize(totalNumVerts);
+  
+  int start = 0;
+  for (int pIter = 0; pIter < numPolys; pIter++){
+      
+    if (pIter > 0) start += numVerts[pIter - 1];
+
+    for (int vIter = 0; vIter < numVerts[pIter]; vIter++){
+
+      int vIter2 = (vIter + 1) % numVerts[pIter];
+      double bx = xv[start + vIter ], by = yv[start + vIter ];
+      double ex = xv[start + vIter2], ey = yv[start + vIter2];
+
+      // Transform an edge into a box, with the id storing
+      // the information necessary to reverse this later.
+      int id = 0;
+      if (bx > ex){ swap(bx, ex); id |= 1; } // id = id | 01
+      if (by > ey){ swap(by, ey); id |= 2; } // id = id | 10
+      m_allEdges[start + vIter] = dRectWithId(bx, by, ex, ey, id);
+      
+    }
+  }
+  
+  // Form the tree. Boxes will be reordered but otherwise unchanged
+  // inside of this function. Do not modify the vector m_allEdges
+  // afterward.
+  m_boxesTree.formTree(m_allEdges);
+
+  return;
+}
+
+void edgeTree::findPolyEdgesInBox(// inputs
+                                  double xl, double yl,
+                                  double xh, double yh,
+                                  std::vector<utils::seg> & edgesInBox
+                                  ){
+  
+  // Search the tree
+  m_boxesTree.getBoxesInRegion(xl, yl, xh, yh, m_boxesInRegion);
+
+  // Save the edges in the box
+  edgesInBox.clear();
+  for (int s = 0; s < (int)m_boxesInRegion.size(); s++){
+
+    const dRectWithId & R = m_boxesInRegion[s]; // alias
+    double bx = R.xl, by = R.yl, ex = R.xh, ey = R.yh;
+    int id = R.id;
+
+    // Recover the edge based on the box
+    if (id & 1) swap (bx, ex);
+    if (id & 2) swap (by, ey);
+
+    bool res = edgeIntersectsBox(bx, by, ex, ey,  // arbitrary edge (input)
+                                 xl, yl, xh, yh   // box to intersect (input)
+                                 );
+    if (res) edgesInBox.push_back(seg(bx, by, ex, ey));
+  }
+
   return;
 }
 
