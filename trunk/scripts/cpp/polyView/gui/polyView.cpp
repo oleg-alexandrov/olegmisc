@@ -15,30 +15,25 @@
 #include "polyView.h"
 #include <qmessagebox.h>
 #include "../geom/polyUtils.h"
+#include "utils.h"
 
 using namespace std;
 using namespace utils;
 
 // To do: handle colors correctly (convert dark-gray to darkGray, etc.).
 
-polyView::polyView( QWidget *parent,
-                    bool useCmdLineColors,
-                    const std::vector<std::string> & cmdLineColors,
-                    const std::vector<std::string> & polyFilesVec,
-                    const std::vector<bool>        & plotPointsOnlyVec,
-                    bool                             plotAsLines,
-                    bool                             noClosedPolys
-                    ): QWidget(parent){
+polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(parent){
 
   setStandardCursor();
   
-  m_useCmdLineColors  = useCmdLineColors;
-  m_cmdLineColors     = cmdLineColors;
-  m_polyFilesVec      = polyFilesVec;
-  m_plotPointsOnlyVec = plotPointsOnlyVec;
-  m_plotAsLines       = plotAsLines;
-  m_noClosedPolys     = noClosedPolys;
-  
+  m_plotAsLines       = options.plotAsLines;
+  m_noClosedPolys     = options.noClosedPolys;
+  m_useCmdLineColors  = options.useCmdLineColors;
+  m_lineWidth         = options.lineWidth;
+  m_cmdLineColors     = options.cmdLineColors;
+  m_polyFilesVec      = options.polyFilesVec;
+  m_plotPointsOnlyVec = options.plotPointsOnlyVec;
+
   // int
   m_screenXll  = 0; m_screenYll  = 0;
   m_screenWidX = 0; m_screenWidY = 0;
@@ -194,7 +189,6 @@ void polyView::showPoly( QPainter *paint ){
   initScreenGrid(Grid);
   
   // Plot the polygons
-  int lineWidth = 1;
   QFont F;
   int fontSize = 12;
   F.setPointSize(fontSize);
@@ -312,7 +306,7 @@ void polyView::showPoly( QPainter *paint ){
              x0 > m_screenXll && x0 < m_screenXll + m_screenWidX && 
              y0 > m_screenYll && y0 < m_screenYll + m_screenWidY
              ){
-          drawOneVertex(x0, y0, color, lineWidth, drawVertIndex, paint);
+          drawOneVertex(x0, y0, color, m_lineWidth, drawVertIndex, paint);
         }
       }
       
@@ -324,12 +318,12 @@ void polyView::showPoly( QPainter *paint ){
           paint->setPen( NoPen );
         }else {
           paint->setBrush( NoBrush );
-          paint->setPen( QPen(color, lineWidth) );
+          paint->setPen( QPen(color, m_lineWidth) );
         }
 
         if ( pa.size() >= 1 && isPolyZeroDim(pa) && !m_plotAsLines){
           // Treat the case of polygons which are made up of just one point 
-          drawOneVertex(pa[0].x(), pa[0].y(), color, lineWidth, drawVertIndex,
+          drawOneVertex(pa[0].x(), pa[0].y(), color, m_lineWidth, drawVertIndex,
                         paint);
         }else if (!m_noClosedPolys){
           paint->drawPolygon( pa );
@@ -349,7 +343,7 @@ void polyView::showPoly( QPainter *paint ){
       worldToPixelCoords(A.x, A.y, // inputs
                          x0, y0    // outputs
                          );
-      paint->setPen( QPen("gold", lineWidth) );
+      paint->setPen( QPen("gold", m_lineWidth) );
       if (isClosestGridPtFree(Grid, x0, y0)){
         paint->drawText(x0, y0, A.label);
       }
@@ -360,7 +354,7 @@ void polyView::showPoly( QPainter *paint ){
 
   // Plot the highlights
   for (int h = 0; h < (int)m_highlights.size(); h++){
-    drawRect(m_highlights[h], lineWidth, paint);
+    drawRect(m_highlights[h], m_lineWidth, paint);
   }
   
   // This draws the polygon being created if in that mode
@@ -372,7 +366,7 @@ void polyView::showPoly( QPainter *paint ){
     worldToPixelCoords(m_markX[0], m_markY[0], // inputs
                        x0, y0                  // outputs
                        );
-    drawMark(x0, y0, "white", lineWidth, paint);
+    drawMark(x0, y0, "white", m_lineWidth, paint);
   }
 
   // If in diff mode
@@ -670,6 +664,21 @@ bool polyView::getValuesFromGui(std::string title, std::string description,
   return ok;
 }
 
+void polyView::setLineWidth(){
+
+  vector<double> linewidth;
+  if ( getValuesFromGui("Line width", "Enter line width", linewidth) &&
+       !linewidth.empty() && linewidth[0] >= 1.0 ){
+    m_lineWidth = (int) linewidth[0];
+    update();
+  }else{
+    string msg = "The line width must be a positive integer";
+    popUp(msg);
+    cerr << msg << endl;
+  }
+  return;
+}
+
 void polyView::shiftPolys(){
 
   vector<double> shifts;
@@ -869,10 +878,9 @@ void polyView::drawCurrPolyLine(QPainter * paint){
     return;
   }
   
-  int lineWidth = 1;
   string color  = "white";
   paint->setBrush( NoBrush );
-  paint->setPen( QPen(color.c_str(), lineWidth) );
+  paint->setPen( QPen(color.c_str(), m_lineWidth) );
 
   // To do: The block below better become its own function
   // which can draw points, poly lines, and polygons
@@ -951,8 +959,8 @@ void polyView::printCurrCoords(const ButtonState & state, // input
   pixelToWorldCoords(currX, currY, wx, wy);
 
   QPainter paint(this);
-  int len = 3, lineWidth = 1;
-  paint.setPen( QPen("white", lineWidth) );
+  int len = 3;
+  paint.setPen( QPen("white", m_lineWidth) );
   paint.setBrush( NoBrush );
 
   // Snap to the closest vertex with the left mouse button
@@ -1340,10 +1348,9 @@ void polyView::plotDistBwPolyClips( QPainter *paint ){
   int pSize = m_segX.size();
   if (pSize != 2) return;
 
-  int lineWidth = 1;
   int radius    = 2;
   string color  = "yellow";
-  paint->setPen( QPen( color.c_str(), lineWidth) );
+  paint->setPen( QPen( color.c_str(), m_lineWidth) );
   paint->setBrush( QColor(color) );
 
   // To do: This does not behave well on zoom. Need to cut this segment to the viewing

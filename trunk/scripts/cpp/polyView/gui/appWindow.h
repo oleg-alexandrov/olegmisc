@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 class polyView;
+struct cmdLineOptions;
 
 class cmdLine : public QLineEdit {
   Q_OBJECT
@@ -20,12 +21,7 @@ class appWindow : public QMainWindow {
 
 public:
   appWindow(QWidget* parent, std::string progName,
-            bool useCmdLineColors, 
-            const std::vector<std::string> & cmdLineColors,
-            const std::vector<std::string> & polyFilesVec,
-            const std::vector<bool>        & plotPointsOnlyVec,
-            bool                             plotAsLines,
-            bool                             noClosedPolys,
+            const cmdLineOptions & options, 
             int windowWidX, int windowWidY
             );
   ~appWindow();

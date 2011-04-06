@@ -9,12 +9,10 @@
 using namespace std;
 
 void utils::printUsage(std::string progName){
-  
-  std::cout << "Usage: " << progName
-            << " [ -geo[metry] 1000x800 ] [ -c[olor] yellow ] file_1.xg ... "
-            << "[ -p[oints] ] [ -nc | -noClosedPolys ] [ -l | -linesOnly ] file_N.xg "
-            << std::endl;
-  
+  std::cout << "Usage: " << progName << " "
+            << "[ -geo[metry] 1000x800 ] [ -c[olor] yellow ] [ -lw | -lineWidth 2 ] "
+            << "[ -p[oints] ] [ -nc | -noClosedPolys ] [ -l | -linesOnly ] "
+            << "file_1.xg ... file_N.xg " << std::endl;
 }
 
 void utils::extractWindowDims(// inputs
@@ -61,21 +59,18 @@ void utils::extractWindowDims(// inputs
 void utils::parseCmdOptions(//inputs
                             int argc, char** argv, std::string exeName,
                             // outputs
-                            int & windowWidX,      int & windowWidY,
-                            bool                       & useCmdLineColors, 
-                            std::vector<std::string>   & cmdLineColors, 
-                            std::vector<std::string>   & polyFilesVec, 
-                            std::vector<bool>          & plotPointsOnlyVec,
-                            bool                       & plotAsLines,
-                            bool                       & noClosedPolys
+                            int & windowWidX, int & windowWidY, cmdLineOptions & options
                             ){
 
-  useCmdLineColors = false;
-  plotAsLines      = false;
-  noClosedPolys    = false;
-  cmdLineColors.clear();
-  polyFilesVec.clear();
-  plotPointsOnlyVec.clear();
+  // To do: Convert everywhere below from strncmp to strcmp.
+  
+  options.useCmdLineColors = false;
+  options.plotAsLines      = false;
+  options.noClosedPolys    = false;
+  options.lineWidth        = 1;
+  options.cmdLineColors.clear();
+  options.polyFilesVec.clear();
+  options.plotPointsOnlyVec.clear();
 
   // Skip argv[0] as that's the program name
   extractWindowDims(argc - 1, argv + 1, windowWidX, windowWidY);
@@ -94,9 +89,9 @@ void utils::parseCmdOptions(//inputs
       transform(currArg, currArg + strlen(currArg), currArg, ::tolower);
     }
 
-    if (strncmp (currArg, "-?",  2) == 0 ||
-        strncmp (currArg, "-h",  2) == 0 ||
-        strncmp (currArg, "--h", 3) == 0){
+    if (strncmp ( currArg, "-?",  strlen("-?")  ) == 0 ||
+        strncmp ( currArg, "-h",  strlen("-h")  ) == 0 ||
+        strncmp ( currArg, "--h", strlen("--h") ) == 0){
       printUsage(exeName);
       exit(0);
     }
@@ -106,21 +101,31 @@ void utils::parseCmdOptions(//inputs
       continue;
     }
 
-    if ( strncmp (currArg, "-l",          strlen("-l")) == 0 ||
-         strncmp (currArg, "-linesonly",  strlen("-linesonly")) == 0 ){
-      plotAsLines = true;
+    if ( strcmp (currArg, "-l"         ) == 0 ||
+         strcmp (currArg, "-linesonly" ) == 0 ){
+      options.plotAsLines = true;
+      continue;
+    }
+
+    if ( (strcmp(currArg, "-lw") == 0 || strcmp(currArg, "-linewidth") == 0 )
+         &&
+         argIter < argc - 1
+         ){
+      int lw = atoi(argv[argIter + 1]);
+      if (lw > 0) options.lineWidth = lw;
+      argIter++;
       continue;
     }
 
     if ( strncmp (currArg, "-nc",             strlen("-nc"))            == 0 || 
          strncmp (currArg, "-noclosedpolys",  strlen("-noclosedpolys")) == 0
          ){
-      noClosedPolys = true;
+      options.noClosedPolys = true;
       continue;
     }
 
     if ( strncmp (currArg, "-c",  2) == 0 && argIter < argc - 1){
-      useCmdLineColors = true;
+      options.useCmdLineColors = true;
       color = argv[argIter + 1];
       argIter++;
       continue;
@@ -129,9 +134,9 @@ void utils::parseCmdOptions(//inputs
     // Other command line options are ignored
     if (currArg[0] == '-') continue;
     
-    cmdLineColors.push_back(color);
-    polyFilesVec.push_back(currArg);
-    plotPointsOnlyVec.push_back(plotPointsOnly);
+    options.cmdLineColors.push_back(color);
+    options.polyFilesVec.push_back(currArg);
+    options.plotPointsOnlyVec.push_back(plotPointsOnly);
   }
   
   return;
