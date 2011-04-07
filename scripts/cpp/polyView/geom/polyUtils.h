@@ -24,6 +24,13 @@ namespace utils{
                              double & minDist
                              );
 
+  void findAndSortDistsBwPolysNew(// inputs
+                                  const dPoly & poly1,
+                                  const dPoly & poly2,
+                                  // outputs
+                                  std::vector<segDist> & distVec
+                                  );
+
   void findAndSortDistsBwPolys(// inputs
                                const dPoly & poly1,
                                const dPoly & poly2,
