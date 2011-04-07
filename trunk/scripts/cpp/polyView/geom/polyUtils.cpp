@@ -80,6 +80,85 @@ void utils::findClosestPolyVertex(// inputs
   return;
 }
 
+void utils::findAndSortDistsBwPolysNew(// inputs
+                                    const dPoly & poly1,
+                                    const dPoly & poly2,
+                                    // outputs
+                                    std::vector<segDist> & distVec
+                                    ){
+
+  // This code is not finished.
+  
+  // Given two sets of polygons, for each vertex in the first polygon
+  // set find the distance to the closest point (not necessarily on
+  // the edge) in the second polygon set, and the segment with the
+  // smallest distance.
+
+  distVec.clear();
+
+  const double * x1 = poly1.get_xv();
+  const double * y1 = poly1.get_yv();
+  int numVerts1     = poly1.get_totalNumVerts();
+
+  const double * x2 = poly2.get_xv();
+  const double * y2 = poly2.get_yv();
+  int numVerts2     = poly2.get_totalNumVerts();
+
+  if (numVerts1 == 0 || numVerts2 == 0) return; // no vertices
+
+  // Put the edges of the second polygon in a tree for fast access
+  edgeTree T;
+  T.putPolyEdgesInTree(poly2);
+
+  vector<seg> edgesInBox;
+  
+  for (int t = 0; t < numVerts1; t++){
+
+    double x = x1[t], y = y1[t];
+    
+    // Need to have a window centered at (x, y) in which
+    // to search for edges in poly2. Since we are looking
+    // for closest edges, that window should not be too big.
+    // Estimate it by finding the distance to several points
+    // in poly2.
+    int num = 5;
+    double winSize = DBL_MAX;
+    for (int p2 = 0; p2 < num; p2++){
+      int j = min( numVerts2 - 1, int((1.0*p2*numVerts2)/num) );
+      winSize = min(winSize, distance(x, y, x2[j], y2[j]));
+    }
+    winSize /= 8.0;
+    if (winSize == 0.0) winSize = 1.0e-3; // Make sure it is positive
+    
+    // Keep on expanding the window until it intersects
+    // poly2.
+    while(1){
+      T.findPolyEdgesInBox(x - winSize, y - winSize,
+                           x + winSize, y + winSize, 
+                           edgesInBox      // output
+                           );
+      if (! edgesInBox.empty()) break;
+      winSize *= 2.0;
+    }
+
+    // Continue here.
+    
+    int minPolyIndex;
+    double minX, minY, minDist = DBL_MAX;
+    poly2.findClosestPolyEdge(x1[t], y1[t],                      // inputs
+                              minPolyIndex, minX, minY,  minDist // outputs
+                              );
+
+    
+    if (minDist != DBL_MAX)
+      distVec.push_back(segDist(x1[t], y1[t], minX, minY, minDist));
+  }
+
+  sort(distVec.begin(), distVec.end(), segDistGreaterThan);
+  
+  return;
+}
+
 void utils::findAndSortDistsBwPolys(// inputs
                                     const dPoly & poly1,
                                     const dPoly & poly2,
