@@ -224,7 +224,7 @@ private:
   std::vector<utils::segDist> m_distVec; // distances b/w polys to diff
   std::vector<double> m_segX, m_segY;    // segment to plot
   
-  int m_distToPlot;
+  int m_indexOfDistToPlot;
   
 };
 

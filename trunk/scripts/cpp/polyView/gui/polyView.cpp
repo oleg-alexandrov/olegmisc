@@ -93,7 +93,7 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   m_plotPointsOnlyVecBk.clear();
   m_polyFilesVecBk.clear();
   m_distVec.clear(); // distances b/w polys to diff
-  m_distToPlot = -1;
+  m_indexOfDistToPlot = -1;
 
   resetTransformSettings();
 
@@ -322,7 +322,9 @@ void polyView::showPoly( QPainter *paint ){
         }
 
         if ( pa.size() >= 1 && isPolyZeroDim(pa) && !m_plotAsLines){
-          // Treat the case of polygons which are made up of just one point 
+          // Treat the case of polygons which are made up of just one point
+          // To do: Plot as a 2x2 filled pixel instead of an empty circle.
+          // That one looks weird and unexpected.
           drawOneVertex(pa[0].x(), pa[0].y(), color, m_lineWidth, drawVertIndex,
                         paint);
         }else if (!m_noClosedPolys){
@@ -1214,7 +1216,7 @@ void polyView::toggleShowPolyDiff(){
 
     // See plotDistBwPolyClips() for explanation.
     m_distVec.clear();
-    m_distToPlot = -1; 
+    m_indexOfDistToPlot = -1; 
 
     update();
     return;
@@ -1298,23 +1300,23 @@ void polyView::plotDiff(int dir){
                             );
   }
 
-  if (m_distToPlot < 0){
-    if (dir > 0) m_distToPlot = -1;
-    else         m_distToPlot = 0;
+  if (m_indexOfDistToPlot < 0){
+    if (dir > 0) m_indexOfDistToPlot = -1;
+    else         m_indexOfDistToPlot = 0;
   }
-  m_distToPlot += dir;
+  m_indexOfDistToPlot += dir;
 
   int len = m_distVec.size();
   if (len > 0){
-    m_distToPlot = (m_distToPlot + len) % len;
+    m_indexOfDistToPlot = (m_indexOfDistToPlot + len) % len;
   }else{
-    m_distToPlot = -1; // Nothing to plot
+    m_indexOfDistToPlot = -1; // Nothing to plot
   }
     
-  if (m_distToPlot < 0 || m_distToPlot >= len) return;
+  if (m_indexOfDistToPlot < 0 || m_indexOfDistToPlot >= len) return;
 
   // The segment to plot
-  segDist S = m_distVec[m_distToPlot];
+  segDist S = m_distVec[m_indexOfDistToPlot];
   m_segX.push_back(S.begx); m_segX.push_back(S.endx);
   m_segY.push_back(S.begy); m_segY.push_back(S.endy);
 
@@ -1340,7 +1342,7 @@ void polyView::plotDistBwPolyClips( QPainter *paint ){
   // point on the closest edge of m_polyVec[1], and the segment of
   // this shortest distance. We sort such distances in decreasing
   // order and store them in m_distVec. Here we plot the segment
-  // m_distVec[m_distToPlot]. See (polyView::plotDiff) which calls
+  // m_distVec[m_indexOfDistToPlot]. See (polyView::plotDiff) which calls
   // this function.
 
   if ( !m_polyDiffMode ) return;

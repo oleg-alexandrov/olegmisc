@@ -1,5 +1,3 @@
-bool findLargestNoMoreThan(int *, int, int, double, int &);
-bool findSmallestNoLessThan(int *, int, int, double, int &);
 bool getLine(ifstream &, std::string &);
 bool isDigit(const char);
 bool isHeap(const int *, int);
@@ -35,6 +33,7 @@ void mergeSort(int *, int, int *);
 void mqsort(int *, int);
 void myfun1(int);
 void naiveIncrSubSeq(int *, int, vector<int> &);
+void printArr(const int *, int);
 void printHeap(const int *, int);
 void printHeap(heap &);
 void printInOrderNonRec(node*);
