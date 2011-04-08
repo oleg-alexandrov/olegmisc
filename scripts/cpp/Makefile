@@ -8,13 +8,13 @@ XTRA_OBJ=
 OBJ1  =  $(XTRA_OBJ)
 
 
-binary_search: binary_search.o $(OBJ1) $(HDR) 
-	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
-
 bsearch: bsearch.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 closedHash: closedHash.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
+closestFriend: closestFriend.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 endian: endian.o $(OBJ1) $(HDR) 
@@ -90,6 +90,9 @@ rv_words: rv_words.o $(OBJ1) $(HDR)
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 rv_words2: rv_words2.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
+rv_words3: rv_words3.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 shuffle: shuffle.o $(OBJ1) $(HDR) 
