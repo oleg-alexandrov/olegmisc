@@ -8,6 +8,9 @@ XTRA_OBJ=
 OBJ1  =  $(XTRA_OBJ)
 
 
+atoi: atoi.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 bsearch: bsearch.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
