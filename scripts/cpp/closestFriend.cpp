@@ -10,7 +10,7 @@ using namespace std;
 int main() {
 
   int a[] = { 1, 2, 3, 4, 6, 7, 8, 9 }, n = sizeof(a)/sizeof(int);
-
+ 
   n = 5;
   
   int max_nf = 3;
