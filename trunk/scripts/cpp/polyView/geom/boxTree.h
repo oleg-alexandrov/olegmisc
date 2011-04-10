@@ -40,7 +40,7 @@ template <typename Box>
 struct boxNode{
   boxNode<Box> * left;
   boxNode<Box> * right;
-  Box       B;
+  Box       Rect;
   bool      isLeftRightSplit;
   double    maxInLeftChild, minInRightChild;
   boxNode<Box>(): left(NULL), right(NULL), isLeftRightSplit(false),
@@ -60,7 +60,11 @@ public:
   void getBoxesInRegion(double xl, double yl, double xh, double yh, // Inputs
                         std::vector<Box> & outBoxes                 // Outputs
                         );
-  
+
+  boxNode<Box> * getTreeRoot(){
+    return m_root;
+  }
+
 private:
 
   void formTreeInternal(Box * Boxes, int numBoxes,
@@ -159,7 +163,7 @@ void boxTree<Box>::formTreeInternal(Box * Boxes, int numBoxes,
   int mid = numBoxes/2;
   assert( 0 <= mid && mid < numBoxes);
   
-  root->B = Boxes[mid]; // Must happen after sorting
+  root->Rect = Boxes[mid]; // Must happen after sorting
 
   // A box is not a point, it has non-zero width. A box whose midpoint
   // is to the left of the root box midpoint, may still overlap with
@@ -228,7 +232,7 @@ void boxTree<Box>::getBoxesInRegionInternal(// Inputs
   
   if (root == NULL) return;
 
-  const Box & B = root->B; // alias
+  const Box & B = root->Rect; // alias
 
   if (boxesIntersect(B.xl, B.yl, B.xh, B.yh, xl, yl, xh, yh))
     outBoxes.push_back(B);
