@@ -11,6 +11,9 @@ OBJ1  =  $(XTRA_OBJ)
 atoi: atoi.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
+binary_search: binary_search.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 bsearch: bsearch.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
@@ -117,6 +120,9 @@ smartPtr: smartPtr.o $(OBJ1) $(HDR)
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 stack_as_linked_list: stack_as_linked_list.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
+stc: stc.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 stock: stock.o $(OBJ1) $(HDR) 
