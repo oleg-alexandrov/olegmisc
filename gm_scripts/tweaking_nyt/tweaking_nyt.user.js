@@ -9,9 +9,9 @@
 	
 (function() {
 
-var adIDAry = ['TopRight', 'memberTools', 'mainTabs', 'adxBigAd', 'lastUpdate', 'switchEditions', 'HPTopNav'],
-		classNameAry = ['timestamp', 'singleAd', 'columnGroup firstColumnGroup fullWidth', 'toolbarPromo runaroundRight', 'navigationHomeEdition', 
-            'switchEditions', 'subNavigation tabContent active'],
+var adIDAry = ['TopRight', 'memberTools', 'mainTabs', 'adxBigAd', 'lastUpdate', 'switchEditions', 'HPTopNav', 'socialMediaModule'],
+		classNameAry = ['meta flushBottom', 'timestamp', 'singleAd', 'columnGroup firstColumnGroup fullWidth', 'toolbarPromo runaroundRight', 'navigationHomeEdition', 
+            'switchEditions', 'subNavigation tabContent active', 'socialMediaModule', 'facebook'],
 		tempEle = null,
 		tempEles = null;
 

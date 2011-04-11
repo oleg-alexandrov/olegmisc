@@ -27,3 +27,10 @@ var divs = document.digg_getElementsByClassName('sponsored');
 for(var i = 0; i< divs.length; i++){
 	divs[i].setAttribute('style', 'display: none;');
 }
+
+var divs = document.digg_getElementsByClassName('diggadsriver');
+for(var i = 0; i< divs.length; i++){
+	divs[i].setAttribute('style', 'display: none;');
+}
+
+

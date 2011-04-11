@@ -16,8 +16,8 @@ from digg.com. It doesn't get them all, but it removes a few.
 // ==/UserScript==
 
 (function(){
-       var adIDAry = ['container', 'h', 'user-announcement', 'ad hdr', 'advertisement','ad','sponsor-banner','div#topads','topads','block_ad_msft'],
-               classNameAry = ['main', 'advertisement','ad','sponsored','ad-list','promo'],
+       var adIDAry = ['container', 'h', 'user-announcement', 'ad hdr', 'advertisement','ad','sponsor-banner','div#topads','topads','block_ad_msft', 'diggad-1293898034-29344-3', 'diggad-1293898408-12418-16'],
+               classNameAry = ['main', 'advertisement','ad','sponsored','ad-list','promo', 'sponsored-by', 'diggadsriver'],
                tempEle = null,
                tempEles = null;
 
