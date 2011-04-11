@@ -1,14 +1,14 @@
 // ==UserScript==
-// @name           Economist
+// @name           block annoying
 // @namespace      local
-// @description    Tweak Economist
-// @include        http://*.economist.com/*
+// @include        http://slashdot.org/
 // ==/UserScript==
 
+	
 (function() {
-	// comment
-       var adIDAry = ['bigTopBanner', 'leaderboard', 'aptureTMMShowButtonCover'],
-               classNameAry = ['bigTopBanner', 'login', 'doya', 'cast', 'aptureTMMShowButtonCover'],
+
+       var adIDAry = ['slashboxes'],
+               classNameAry = [],
                tempEle = null,
                tempEles = null;
 
