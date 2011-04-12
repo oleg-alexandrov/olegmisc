@@ -212,7 +212,7 @@ void boxTree<Box>::getBoxesInRegion(// Inputs
                                     ){
 
   outBoxes.clear();
-  if (xl > xh || yl > yh) return;
+  if (xl > xh || yl > yh || m_root == NULL) return;
   getBoxesInRegionInternal(xl, yl, xh, yh, m_root, // Inputs
                            outBoxes                // Outputs
                            );
@@ -228,9 +228,7 @@ void boxTree<Box>::getBoxesInRegionInternal(// Inputs
                                             std::vector<Box> & outBoxes
                                             ){
 
-  // To do: Can this be done without recursion?
-  
-  if (root == NULL) return;
+  assert (root != NULL);
 
   const Box & B = root->Rect; // alias
 
@@ -238,15 +236,19 @@ void boxTree<Box>::getBoxesInRegionInternal(// Inputs
     outBoxes.push_back(B);
   
   if (root->isLeftRightSplit){
-    if (xl <= root->maxInLeftChild)
+    
+    if (root->left != NULL  && xl <= root->maxInLeftChild)
       getBoxesInRegionInternal(xl, yl, xh, yh, root->left,  outBoxes);
-    if (xh >= root->minInRightChild)
+    if (root->right != NULL && xh >= root->minInRightChild)
       getBoxesInRegionInternal(xl, yl, xh, yh, root->right, outBoxes);
+    
   }else{
-    if (yl <= root->maxInLeftChild)
+    
+    if (root->left != NULL  && yl <= root->maxInLeftChild)
       getBoxesInRegionInternal(xl, yl, xh, yh, root->left,  outBoxes);
-    if (yh >= root->minInRightChild)
+    if (root->right != NULL && yh >= root->minInRightChild)
       getBoxesInRegionInternal(xl, yl, xh, yh, root->right, outBoxes);
+    
   }
     
   return;

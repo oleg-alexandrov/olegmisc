@@ -41,10 +41,10 @@ void edgeTree::putPolyEdgesInTree(const dPoly & poly){
       // Transform an edge into a box, with the id storing
       // the information necessary to reverse this later.
       dRectWithId R; 
-      edgeToBdBox(//inputs
-                  bx, by, ex, ey, // inputs  
-                  R               // output
-                  );
+      edgeToBox(//inputs
+                bx, by, ex, ey, // inputs  
+                R               // output
+                );
       m_allEdges[start + vIter] = R;
       
     }
@@ -61,6 +61,7 @@ void edgeTree::putPolyEdgesInTree(const dPoly & poly){
 void edgeTree::findPolyEdgesInBox(// inputs
                                   double xl, double yl,
                                   double xh, double yh,
+                                  // outputs
                                   std::vector<utils::seg> & edgesInBox
                                   ){
   
@@ -73,9 +74,9 @@ void edgeTree::findPolyEdgesInBox(// inputs
 
     const dRectWithId & R = m_boxesInRegion[s]; // alias
     double bx, by, ex, ey;
-    bdBoxToEdge(R,             // input
-                bx, by, ex, ey // outputs
-                );
+    boxToEdge(R,             // input
+              bx, by, ex, ey // outputs
+              );
 
     bool res = edgeIntersectsBox(bx, by, ex, ey,  // arbitrary edge (input)
                                  xl, yl, xh, yh   // box to intersect (input)
@@ -107,13 +108,14 @@ void edgeTree::findClosestEdgeToPoint(// inputs
   // Note: This function uses internal details of the boxTree
   // implementation. There's got to be better ways of doing this.
   
-  boxNode<dRectWithId> * root = m_boxTree.getTreeRoot();
   closestDistance = DBL_MAX;
-  edgeTree::findClosestEdgeToPointInternal(// inputs
-                                           x0, y0, root,  
-                                           // outputs
-                                           closestEdge, closestDistance
-                                           );
+
+  boxNode<dRectWithId> * root = m_boxTree.getTreeRoot();
+  if (root == NULL) return;
+    
+  findClosestEdgeToPointInternal(x0, y0, root,                // inputs 
+                                 closestEdge, closestDistance // outputs
+                                 );
 }
 
 void edgeTree::findClosestEdgeToPointInternal(// inputs
@@ -124,12 +126,64 @@ void edgeTree::findClosestEdgeToPointInternal(// inputs
                                               double     & closestDistance
                                               ){
 
-  if (root == NULL) return;
+  // Find the distance from the input point to the edge at the root
+  // node. Decide if first to visit the left or right subtree from the
+  // root depending on which looks more promising.
+  
+  assert (root != NULL);
   
   dRectWithId R = root->Rect;
   double bx, by, ex, ey;
-  bdBoxToEdge(R,             // input
-              bx, by, ex, ey // outputs
-              );
+  boxToEdge(R,             // input
+            bx, by, ex, ey // outputs
+            );
+
+  double dist = DBL_MAX, xval, yval;
+  minDistFromPtToSeg(// inputs
+                     x0, y0, bx, by, ex, ey,
+                     // outputs
+                     xval, yval, dist
+                     );
   
+  if (dist < closestDistance){
+    closestEdge     = seg(bx, by, ex, ey);
+    closestDistance = dist;
+  }
+
+  // Midpoint of the root edge. 
+  double midx = (bx + ex)/2.0, midy = (by + ey)/2.0;
+
+  // Unify the left-right and down-up cases to avoid duplicating code.
+  double lx0 = x0, ly0 = y0, lmidx = midx, lmidy = midy;
+  if (!root->isLeftRightSplit){ // down-up split
+    swap(lx0,   ly0);
+    swap(lmidx, lmidy);
+  }
+  
+  if (lx0 <= lmidx){
+    // Search the entire left subtree first
+    if (root->left != NULL)
+      findClosestEdgeToPointInternal(x0, y0, root->left,          // inputs 
+                                     closestEdge, closestDistance // outputs
+                                     );
+    // Don't go right unless there's any chance on improving what we already found
+    bool bad = (root->right == NULL || lx0 + closestDistance <= root->minInRightChild);
+    if (!bad) findClosestEdgeToPointInternal(x0, y0, root->right,         // inputs 
+                                             closestEdge, closestDistance // outputs
+                                             );
+  }else{
+    // Search the entire right subtree first
+    if (root->right != NULL)
+      findClosestEdgeToPointInternal(x0, y0, root->right,         // inputs 
+                                     closestEdge, closestDistance // outputs
+                                     );
+    // Don't go left unless there's any chance on improving what we already found
+    bool bad = (root->left == NULL || root->maxInLeftChild + closestDistance <= lx0);
+    if (!bad) findClosestEdgeToPointInternal(x0, y0, root->left,          // inputs 
+                                             closestEdge, closestDistance // outputs
+                                             );
+    
+  }
+  
+  return;
 }
