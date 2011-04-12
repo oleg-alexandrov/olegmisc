@@ -639,6 +639,7 @@ void polyView::paintEvent( QPaintEvent*){
 }
 
 void polyView::popUp(std::string msg){
+  cout << msg << endl; // dump to the command line in addition to showing a pop-up
   QMessageBox msgBox;
   msgBox.setText(msg.c_str());
   msgBox.exec();
@@ -674,9 +675,7 @@ void polyView::setLineWidth(){
     m_lineWidth = (int) linewidth[0];
     update();
   }else{
-    string msg = "The line width must be a positive integer";
-    popUp(msg);
-    cerr << msg << endl;
+    popUp("The line width must be a positive integer");
   }
   return;
 }
@@ -711,7 +710,7 @@ void polyView::scalePolys(){
 void polyView::shiftPolys(std::vector<double> & shifts){
 
   if (shifts.size() < 2){
-    cerr << "Invalid shift_x and shift_y values" << endl;
+    popUp("Invalid shift_x and shift_y values");
     return;
   }
   shifts.resize(2);
@@ -733,7 +732,7 @@ void polyView::shiftPolys(std::vector<double> & shifts){
 void polyView::rotatePolys(std::vector<double> & angle){
 
   if (angle.size() < 1){
-    cerr << "Invalid rotation angle" << endl;
+    popUp("Invalid rotation angle");
     return;
   }
   angle.resize(1);
@@ -755,7 +754,7 @@ void polyView::rotatePolys(std::vector<double> & angle){
 void polyView::scalePolys(std::vector<double> & scale){
 
   if (scale.size() < 1){
-    cerr << "Invalid scale factor" << endl;
+    popUp("Invalid scale factor");
     return;
   }
   scale.resize(1);
@@ -1228,9 +1227,7 @@ void polyView::toggleShowPolyDiff(){
   assert(m_polyVec.size() == m_plotPointsOnlyVec.size());
   
   if (m_polyVec.size() < 2){
-    string msg = "Must have two polygon files to diff";
-    popUp(msg);
-    cerr << msg << endl;
+    popUp("Must have two polygon files to diff");
     return;
   }
 
@@ -1667,7 +1664,9 @@ void polyView::readOnePoly(// inputs
   
   if (type == "pol" || type == "cnt"){
      if ( poly.read_pol_or_cnt_format(filename, type, plotPointsOnly) ) return;
-     cerr << "Invalid ." << type << " format for " << filename << ". Trying to read it in .xg format." << endl;
+     string msg = string("Invalid .") + type + " format for " + filename
+       + ". Trying to read it in .xg format.";
+     cerr << msg << endl;
   }
   
   if ( ! poly.readPoly(filename, plotPointsOnly) ){
@@ -1679,10 +1678,6 @@ void polyView::readOnePoly(// inputs
 
   
 void polyView::saveOnePoly(){
-
-  if (m_polyVec.size() == 0){
-    cerr << "No polygons to save" << endl;
-  }
 
   string fileName = "out_poly.xg";
 
