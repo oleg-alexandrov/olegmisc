@@ -460,7 +460,7 @@ void dPoly::findClosestPolyEdge(//inputs
                          xval, yval, dist
                          );
 
-      if (dist <= minDist){
+      if (dist < minDist){
         minIndex = pIter;
         minX     = xval;
         minY     = yval;
