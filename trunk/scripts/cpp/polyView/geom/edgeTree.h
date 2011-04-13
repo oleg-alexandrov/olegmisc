@@ -23,7 +23,10 @@ public:
                               double x0, double y0,
                               // outputs
                               utils::seg & closestEdge,
-                              double     & closestDistance
+                              double     & closestDist,
+                              // The location on the closest
+                              // edge where closestDist is achieved
+                              double & closestX, double & closestY
                               );
   
 private:
@@ -59,7 +62,7 @@ private:
                                       boxNode<utils::dRectWithId> * root,
                                       // outputs
                                       utils::seg & closestEdge,
-                                      double     & closestDistance
+                                      double     & closestDist
                                       );
   // Internal data structures
   boxTree<utils::dRectWithId>      m_boxTree;

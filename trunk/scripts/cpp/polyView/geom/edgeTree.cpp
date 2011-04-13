@@ -91,7 +91,10 @@ void edgeTree::findClosestEdgeToPoint(// inputs
                                       double x0, double y0,
                                       // outputs
                                       utils::seg & closestEdge,
-                                      double     & closestDistance
+                                      double     & closestDist,
+                                      // The location on the closest
+                                      // edge where closestDist is achieved
+                                      double & closestX, double & closestY
                                       ){
 
   // Fast searching for the closest edge to a given point. We assume
@@ -108,14 +111,25 @@ void edgeTree::findClosestEdgeToPoint(// inputs
   // Note: This function uses internal details of the boxTree
   // implementation. There's got to be better ways of doing this.
   
-  closestDistance = DBL_MAX;
+  closestDist = DBL_MAX;
 
   boxNode<dRectWithId> * root = m_boxTree.getTreeRoot();
   if (root == NULL) return;
     
-  findClosestEdgeToPointInternal(x0, y0, root,                // inputs 
-                                 closestEdge, closestDistance // outputs
+  findClosestEdgeToPointInternal(x0, y0, root,            // inputs 
+                                 closestEdge, closestDist // outputs
                                  );
+
+  // Find the point on the closest edge at which the closest distance is achieved
+  minDistFromPtToSeg(// inputs
+                     x0, y0,
+                     closestEdge.begx, closestEdge.begy,
+                     closestEdge.endx, closestEdge.endy,
+                     // outputs
+                     closestX, closestY, closestDist
+                     );
+
+  return;
 }
 
 void edgeTree::findClosestEdgeToPointInternal(// inputs
@@ -123,7 +137,7 @@ void edgeTree::findClosestEdgeToPointInternal(// inputs
                                               boxNode<utils::dRectWithId> * root,
                                               // outputs
                                               utils::seg & closestEdge,
-                                              double     & closestDistance
+                                              double     & closestDist
                                               ){
 
   // Find the distance from the input point to the edge at the root
@@ -145,9 +159,9 @@ void edgeTree::findClosestEdgeToPointInternal(// inputs
                      xval, yval, dist
                      );
   
-  if (dist < closestDistance){
-    closestEdge     = seg(bx, by, ex, ey);
-    closestDistance = dist;
+  if (dist < closestDist){
+    closestEdge = seg(bx, by, ex, ey);
+    closestDist = dist;
   }
 
   // Midpoint of the root edge. 
@@ -163,24 +177,24 @@ void edgeTree::findClosestEdgeToPointInternal(// inputs
   if (lx0 <= lmidx){
     // Search the entire left subtree first
     if (root->left != NULL)
-      findClosestEdgeToPointInternal(x0, y0, root->left,          // inputs 
-                                     closestEdge, closestDistance // outputs
+      findClosestEdgeToPointInternal(x0, y0, root->left,      // inputs 
+                                     closestEdge, closestDist // outputs
                                      );
     // Don't go right unless there's any chance on improving what we already found
-    bool bad = (root->right == NULL || lx0 + closestDistance <= root->minInRightChild);
-    if (!bad) findClosestEdgeToPointInternal(x0, y0, root->right,         // inputs 
-                                             closestEdge, closestDistance // outputs
+    bool bad = (root->right == NULL || lx0 + closestDist <= root->minInRightChild);
+    if (!bad) findClosestEdgeToPointInternal(x0, y0, root->right,     // inputs 
+                                             closestEdge, closestDist // outputs
                                              );
   }else{
     // Search the entire right subtree first
     if (root->right != NULL)
       findClosestEdgeToPointInternal(x0, y0, root->right,         // inputs 
-                                     closestEdge, closestDistance // outputs
+                                     closestEdge, closestDist // outputs
                                      );
     // Don't go left unless there's any chance on improving what we already found
-    bool bad = (root->left == NULL || root->maxInLeftChild + closestDistance <= lx0);
-    if (!bad) findClosestEdgeToPointInternal(x0, y0, root->left,          // inputs 
-                                             closestEdge, closestDistance // outputs
+    bool bad = (root->left == NULL || root->maxInLeftChild + closestDist <= lx0);
+    if (!bad) findClosestEdgeToPointInternal(x0, y0, root->left,      // inputs 
+                                             closestEdge, closestDist // outputs
                                              );
     
   }
