@@ -1,7 +1,7 @@
 #ifndef EDGE_TREE_H
 #define EDGE_TREE_H
 
-#include "boxTree.h"
+#include "dTree.h"
 #include "geomUtils.h"
 
 class dPoly;

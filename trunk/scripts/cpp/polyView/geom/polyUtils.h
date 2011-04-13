@@ -7,7 +7,7 @@
 #include <set>
 #include "dPoly.h"
 #include "geomUtils.h"
-#include "boxTree.h"
+#include "dTree.h"
 
 namespace utils{
 
