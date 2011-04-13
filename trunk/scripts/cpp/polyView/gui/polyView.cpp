@@ -1290,11 +1290,19 @@ void polyView::plotDiff(int dir){
   
   if (m_distVec.size() == 0 ){
     assert( m_polyVec.size() >= 2);
+
+    //time_t Start_t, End_t;
+    //double time_task1, time_task2;
+    //Start_t = time(NULL);    //record time that task 1 begins
     findAndSortDistsBwPolys(// inputs
                             m_polyVec[0], m_polyVec[1], 
                             // outputs
                             m_distVec
                             );
+    //End_t = time(NULL);    //record time that task 1 ends
+    //time_task1 = difftime(End_t, Start_t);    //compute elapsed time of task 1
+    //cout << "Time is " << time_task1 << endl;
+    
   }
 
   if (m_indexOfDistToPlot < 0){
