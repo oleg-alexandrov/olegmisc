@@ -21,6 +21,9 @@ using namespace std;
 using namespace utils;
 
 // To do: handle colors correctly (convert dark-gray to darkGray, etc.).
+// To do: Make the background arbitrary, not hard-coded to black.
+// To do: In the geom directory, put everything in a namespace, say called 'pv'.
+//        Here too. Clean up, modularize, and structure the code more.
 
 polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(parent){
 
@@ -1290,19 +1293,11 @@ void polyView::plotDiff(int dir){
   
   if (m_distVec.size() == 0 ){
     assert( m_polyVec.size() >= 2);
-
-    //time_t Start_t, End_t;
-    //double time_task1, time_task2;
-    //Start_t = time(NULL);    //record time that task 1 begins
-    findAndSortDistsBwPolys(// inputs
-                            m_polyVec[0], m_polyVec[1], 
-                            // outputs
-                            m_distVec
-                            );
-    //End_t = time(NULL);    //record time that task 1 ends
-    //time_task1 = difftime(End_t, Start_t);    //compute elapsed time of task 1
-    //cout << "Time is " << time_task1 << endl;
-    
+    findDistanceBwPolys(// inputs
+                        m_polyVec[0], m_polyVec[1], 
+                        // outputs
+                        m_distVec
+                        );
   }
 
   if (m_indexOfDistToPlot < 0){
@@ -1343,12 +1338,12 @@ void polyView::plotDistBwPolyClips( QPainter *paint ){
   // This is to be called in diff mode only, when we study how
   // different m_polyVec[0] is from m_polyVec[1].
   
-  // For every vertex in m_polyVec[0], the distance to the closest
-  // point on the closest edge of m_polyVec[1], and the segment of
-  // this shortest distance. We sort such distances in decreasing
-  // order and store them in m_distVec. Here we plot the segment
-  // m_distVec[m_indexOfDistToPlot]. See (polyView::plotDiff) which calls
-  // this function.
+  // For every vertex in m_polyVec[0], find the distance to the
+  // closest point on the closest edge of m_polyVec[1], and the
+  // segment achieving this shortest distance. We sort such distances
+  // in decreasing order and store them in m_distVec. Here we plot the
+  // segment m_distVec[m_indexOfDistToPlot]. See (polyView::plotDiff)
+  // which calls this function.
 
   if ( !m_polyDiffMode ) return;
 
