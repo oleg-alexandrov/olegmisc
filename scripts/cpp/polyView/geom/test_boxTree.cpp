@@ -5,7 +5,7 @@
 #include <cassert>
 #include <limits>
 #include <ctime>
-#include "boxTree.h"
+#include "dTree.h"
 #include "dPoly.h"
 
 using namespace std;
