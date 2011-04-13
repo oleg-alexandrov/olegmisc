@@ -50,7 +50,7 @@ int main(int argc, char** argv){
   
   for (int t = 0; t < (int)distVec1.size(); t++){
 
-    if (distVec1[t] != distVec2[t]){
+    if (distVec1[t].dist != distVec2[t].dist){
       cerr << "Unequal segments" << endl;
       cout << distVec1[t] << endl;
       cout << distVec2[t] << endl;

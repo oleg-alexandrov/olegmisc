@@ -164,7 +164,7 @@ void edgeTree::findClosestEdgeToPointInternal(// inputs
     closestDist = dist;
   }
 
-  // Midpoint of the root edge. 
+  // Midpoint of the root edge 
   double midx = (bx + ex)/2.0, midy = (by + ey)/2.0;
 
   // Unify the left-right and down-up cases to avoid duplicating code.
@@ -188,7 +188,7 @@ void edgeTree::findClosestEdgeToPointInternal(// inputs
   }else{
     // Search the entire right subtree first
     if (root->right != NULL)
-      findClosestEdgeToPointInternal(x0, y0, root->right,         // inputs 
+      findClosestEdgeToPointInternal(x0, y0, root->right,     // inputs 
                                      closestEdge, closestDist // outputs
                                      );
     // Don't go left unless there's any chance on improving what we already found
