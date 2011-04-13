@@ -1,5 +1,5 @@
-#ifndef BOXTREE_H
-#define BOXTREE_H
+#ifndef DTREE_H
+#define DTREE_H
 
 // A tree for storing boxes for fast access
 
