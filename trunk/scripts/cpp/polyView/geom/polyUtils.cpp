@@ -14,6 +14,36 @@
 using namespace std;
 using namespace utils;
 
+void utils::findClosestPolyVertex(// inputs
+                                  double x0, double y0,
+                                  const std::vector<dPoly> & polyVec,
+                                  // outputs
+                                  double & minX, double & minY,
+                                  double & minDist
+                                  ){
+
+  // Find the closest point in a given vector of polygons to a given point.
+  
+  minX = x0; minY = y0; minDist = DBL_MAX;
+  
+  for (int s = 0; s < (int)polyVec.size(); s++){
+
+    double minX0 = x0, minY0 = y0, minDist0 = DBL_MAX;
+    polyVec[s].findClosestPolyVertex(x0, y0,                // inputs
+                                     minX0, minY0, minDist0 // outputs
+                                     );
+
+    if (minDist0 <= minDist){
+      minDist = minDist0;
+      minX    = minX0;
+      minY    = minY0;
+    }
+    
+  }
+
+  return;
+}
+
 void utils::findClosestPolyEdge(// inputs
                                 double x0, double y0,
                                 const std::vector<dPoly> & polyVec,
@@ -22,7 +52,7 @@ void utils::findClosestPolyEdge(// inputs
                                 double & minX, double & minY, double & minDist
                                 ){
 
-  // Find the closest edge in a given vector a polygons to a given point.
+  // Find the closest edge in a given vector of polygons to a given point.
   
   minVecIndex  = -1;
   minPolyIndex = -1;
@@ -51,48 +81,22 @@ void utils::findClosestPolyEdge(// inputs
   return;
 }
 
-void utils::findClosestPolyVertex(// inputs
-                                  double x0, double y0,
-                                  const std::vector<dPoly> & polyVec,
-                                  // outputs
-                                  double & minX, double & minY,
-                                  double & minDist
-                                  ){
+void utils::findDistanceBwPolys(// inputs
+                                const dPoly & poly1,
+                                const dPoly & poly2,
+                                // outputs
+                                std::vector<segDist> & distVec
+                                ){
 
-  // Find the closest point in a given vector a polygons to a given point.
+  // Given two sets of polygons, for each vertex in the first set of
+  // polygons find the distance to the closest point (may be on edge)
+  // in the second set of polygons, and the segment with the smallest
+  // distance. Sort these segments in decreasing value of their
+  // lengths.
+
+  // The complexity of this algorithm is roughly
+  // size(poly1)*log(size(poly2)).
   
-  minX = x0; minY = y0; minDist = DBL_MAX;
-  
-  for (int s = 0; s < (int)polyVec.size(); s++){
-
-    double minX0 = x0, minY0 = y0, minDist0 = DBL_MAX;
-    polyVec[s].findClosestPolyVertex(x0, y0,                // inputs
-                                     minX0, minY0, minDist0 // outputs
-                                     );
-
-    if (minDist0 <= minDist){
-      minDist = minDist0;
-      minX    = minX0;
-      minY    = minY0;
-    }
-    
-  }
-
-  return;
-}
-
-void utils::findAndSortDistsBwPolysNew(// inputs
-                                       const dPoly & poly1,
-                                       const dPoly & poly2,
-                                       // outputs
-                                       std::vector<segDist> & distVec
-                                       ){
-
-  // Given two sets of polygons, for each vertex in the first polygon
-  // set find the distance to the closest point (not necessarily on
-  // the edge) in the second polygon set, and the segment with the
-  // smallest distance.
-
   distVec.clear();
 
   const double * x1 = poly1.get_xv();
@@ -122,38 +126,17 @@ void utils::findAndSortDistsBwPolysNew(// inputs
 
   sort(distVec.begin(), distVec.end(), segDistGreaterThan);
 
-#if 0
-  // Wipe this code!
-  cout << "New" << endl;
-  for (int t = 0; t < 10; t++){
-    //for (int t = 0; t < (int)distVec.size(); t++){
-    const segDist & S = distVec[t];
-    cout << S.begx << ' ' << S.begy << ' ' << S.endx << ' ' << S.endy << ' '
-         << S.dist << endl;
-  }
-  cout << "Wipe this code!" << endl;  
-#endif
-  
   return;
 }
 
-void utils::findAndSortDistsBwPolys(// inputs
-                                    const dPoly & poly1,
-                                    const dPoly & poly2,
-                                    // outputs
-                                    std::vector<segDist> & distVec
-                                    ){
+void utils::findDistanceBwPolysBruteForce(// inputs
+                                          const dPoly & poly1,
+                                          const dPoly & poly2,
+                                          // outputs
+                                          std::vector<segDist> & distVec
+                                          ){
 
-  // Given two sets of polygons, for each vertex in the first polygon
-  // set find the distance to the closest point (not necessarily on
-  // the edge) in the second polygon set, and the segment with the
-  // smallest distance.
-
-  // The complexity of this is O(m*n) where m and n are the total
-  // number of vertices in the first and second polygon sets
-  // respectively. This will be slow for large m and n, and can be
-  // sped up using kd-trees or some hashing approach.
-
+  // A naive (but simple) implementation of findDistanceBwPolys.
   
   distVec.clear();
 
@@ -179,18 +162,6 @@ void utils::findAndSortDistsBwPolys(// inputs
 
   sort(distVec.begin(), distVec.end(), segDistGreaterThan);
   
-#if 0
-  // Wipe this code!
-  cout << "Old" << endl;
-  for (int t = 0; t < 10; t++){
-    //for (int t = 0; t < (int)distVec.size(); t++){
-    const segDist & S = distVec[t];
-    cout << S.begx << ' ' << S.begy << ' ' << S.endx << ' ' << S.endy << ' '
-         << S.dist << endl;
-  }
-  cout << "Wipe this code!" << endl;  
-#endif
-
   return;
 }
 
