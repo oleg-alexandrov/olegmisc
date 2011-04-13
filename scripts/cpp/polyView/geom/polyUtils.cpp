@@ -82,14 +82,12 @@ void utils::findClosestPolyVertex(// inputs
 }
 
 void utils::findAndSortDistsBwPolysNew(// inputs
-                                    const dPoly & poly1,
-                                    const dPoly & poly2,
-                                    // outputs
-                                    std::vector<segDist> & distVec
-                                    ){
+                                       const dPoly & poly1,
+                                       const dPoly & poly2,
+                                       // outputs
+                                       std::vector<segDist> & distVec
+                                       ){
 
-  // This code is not finished.
-  
   // Given two sets of polygons, for each vertex in the first polygon
   // set find the distance to the closest point (not necessarily on
   // the edge) in the second polygon set, and the segment with the
@@ -100,9 +98,6 @@ void utils::findAndSortDistsBwPolysNew(// inputs
   const double * x1 = poly1.get_xv();
   const double * y1 = poly1.get_yv();
   int numVerts1     = poly1.get_totalNumVerts();
-
-  const double * x2 = poly2.get_xv();
-  const double * y2 = poly2.get_yv();
   int numVerts2     = poly2.get_totalNumVerts();
 
   if (numVerts1 == 0 || numVerts2 == 0) return; // no vertices
@@ -116,46 +111,28 @@ void utils::findAndSortDistsBwPolysNew(// inputs
   for (int t = 0; t < numVerts1; t++){
 
     double x = x1[t], y = y1[t];
+    double closestX, closestY, closestDist;
+    seg closestEdge;
+    T.findClosestEdgeToPoint(x, y,                                        // inputs 
+                             closestEdge, closestDist, closestX, closestY // outputs
+                             );
+    distVec.push_back(segDist(x, y, closestX, closestY, closestDist));
     
-    // Need to have a window centered at (x, y) in which
-    // to search for edges in poly2. Since we are looking
-    // for closest edges, that window should not be too big.
-    // Estimate it by finding the distance to several points
-    // in poly2.
-    int num = 5;
-    double winSize = DBL_MAX;
-    for (int p2 = 0; p2 < num; p2++){
-      int j = min( numVerts2 - 1, int((1.0*p2*numVerts2)/num) );
-      winSize = min(winSize, distance(x, y, x2[j], y2[j]));
-    }
-    winSize /= 8.0;
-    if (winSize == 0.0) winSize = 1.0e-3; // Make sure it is positive
-    
-    // Keep on expanding the window until it intersects
-    // poly2.
-    while(1){
-      T.findPolyEdgesInBox(x - winSize, y - winSize,
-                           x + winSize, y + winSize, 
-                           edgesInBox      // output
-                           );
-      if (! edgesInBox.empty()) break;
-      winSize *= 2.0;
-    }
-
-    // Continue here.
-    
-    int minPolyIndex;
-    double minX, minY, minDist = DBL_MAX;
-    poly2.findClosestPolyEdge(x1[t], y1[t],                      // inputs
-                              minPolyIndex, minX, minY,  minDist // outputs
-                              );
-
-    
-    if (minDist != DBL_MAX)
-      distVec.push_back(segDist(x1[t], y1[t], minX, minY, minDist));
   }
 
   sort(distVec.begin(), distVec.end(), segDistGreaterThan);
+
+#if 0
+  // Wipe this code!
+  cout << "New" << endl;
+  for (int t = 0; t < 10; t++){
+    //for (int t = 0; t < (int)distVec.size(); t++){
+    const segDist & S = distVec[t];
+    cout << S.begx << ' ' << S.begy << ' ' << S.endx << ' ' << S.endy << ' '
+         << S.dist << endl;
+  }
+  cout << "Wipe this code!" << endl;  
+#endif
   
   return;
 }
@@ -182,9 +159,12 @@ void utils::findAndSortDistsBwPolys(// inputs
 
   const double * x = poly1.get_xv();
   const double * y = poly1.get_yv();
-  int numVerts     = poly1.get_totalNumVerts();
+  int numVerts1    = poly1.get_totalNumVerts();
+  int numVerts2    = poly2.get_totalNumVerts();
+  
+  if (numVerts1 == 0 || numVerts2 == 0) return; // no vertices
 
-  for (int t  = 0; t < numVerts; t++){
+  for (int t  = 0; t < numVerts1; t++){
     
     int minPolyIndex;
     double minX, minY, minDist = DBL_MAX;
@@ -199,6 +179,18 @@ void utils::findAndSortDistsBwPolys(// inputs
 
   sort(distVec.begin(), distVec.end(), segDistGreaterThan);
   
+#if 0
+  // Wipe this code!
+  cout << "Old" << endl;
+  for (int t = 0; t < 10; t++){
+    //for (int t = 0; t < (int)distVec.size(); t++){
+    const segDist & S = distVec[t];
+    cout << S.begx << ' ' << S.begy << ' ' << S.endx << ' ' << S.endy << ' '
+         << S.dist << endl;
+  }
+  cout << "Wipe this code!" << endl;  
+#endif
+
   return;
 }
 

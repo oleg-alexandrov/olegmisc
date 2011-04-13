@@ -121,8 +121,8 @@ namespace utils{
 
   struct seg{
     double begx, begy, endx, endy;
-    seg(double begx_in, double begy_in, double endx_in,
-        double endy_in):
+    seg(double begx_in = 0.0, double begy_in = 0.0,
+        double endx_in = 0.0, double endy_in = 0.0):
       begx(begx_in), begy(begy_in), endx(endx_in), endy(endy_in){}
   };
   
