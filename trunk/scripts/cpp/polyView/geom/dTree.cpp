@@ -6,7 +6,7 @@
 #include <cassert>
 #include <cstring>
 #include "edgeUtils.h"
-#include "edgeTree.h"
+#include "dTree.h"
 #include "geomUtils.h"
 #include "dPoly.h"
 using namespace std;
