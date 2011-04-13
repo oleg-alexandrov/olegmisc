@@ -135,9 +135,25 @@ namespace utils{
   };
 
   inline bool segDistGreaterThan(segDist s, segDist t){
-    return (s.dist > t.dist);
+    if (s.dist > t.dist) return true;
+    if (s.dist < t.dist) return false;
+    if (s.begx > t.begx) return true;
+    if (s.begx < t.begx) return false;
+    if (s.begy > t.begy) return true;
+    if (s.begy < t.begy) return false;
+    return false;
   }
 
+  inline bool operator==(segDist s, segDist t){
+    return ( s.dist == t.dist ) && ( s.begx == t.begx ) && ( s.begy == t.begy );
+  }
+
+  inline std::ostream& operator<<(std::ostream & output, const segDist & S) {
+    output << S.begx << ' ' << S.begy << ' ' << S.endx << ' ' << S.endy << ' '
+           << S.dist;
+    return output;  // for multiple << operators
+  }
+  
   bool boxesIntersect(double xl1, double yl1, double xh1, double yh1,
                       double xl2, double yl2, double xh2, double yh2
                       );

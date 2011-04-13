@@ -1,12 +1,14 @@
-#include ../Makefile.arpack
-
 CPP = g++ -O3 -Wall
 CC = gcc -O3
 FC = g77 -O3
 OBJ=cutPoly.o dPoly.o geomUtils.o polyUtils.o kdTree.o edgeUtils.o edgeTree.cpp
 HDR= cutPoly.h dPoly.h geomUtils.h polyUtils.h kdTree.h edgeUtils.h boxTree.h edgeTree.h
 
-all: test_dPoly testCutPoly polyPtsCmp test_boxTree test_kdTree test_edgesInBox
+all: test_distBwPolys test_dPoly testCutPoly polyPtsCmp test_boxTree test_kdTree \
+	test_edgesInBox 
+
+test_distBwPolys: test_distBwPolys.o $(OBJ) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ)  $(LIBS)
 
 test_edgesInBox: test_edgesInBox.o $(OBJ) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ)  $(LIBS)
