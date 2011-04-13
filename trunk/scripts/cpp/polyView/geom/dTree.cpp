@@ -12,10 +12,7 @@
 using namespace std;
 using namespace utils;
 
-// Utilities for 
-// * putting the edges of a polygon in a tree
-// * fast searching for the edges in a given box
-// * fast searching for the closest edge to the given point.
+// See the .h file for documentation.
 
 void edgeTree::putPolyEdgesInTree(const dPoly & poly){
 
@@ -107,9 +104,6 @@ void edgeTree::findClosestEdgeToPoint(// inputs
 
   // This function returns DBL_MAX for the closest distance if there
   // are no edges to search.
-  
-  // Note: This function uses internal details of the boxTree
-  // implementation. There's got to be better ways of doing this.
   
   closestDist = DBL_MAX;
 
