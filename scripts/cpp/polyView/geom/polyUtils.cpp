@@ -9,7 +9,7 @@
 #include "dPoly.h"
 #include "polyUtils.h"
 #include "geomUtils.h"
-#include "edgeTree.h"
+#include "dTree.h"
 
 using namespace std;
 using namespace utils;

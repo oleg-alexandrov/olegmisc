@@ -7,6 +7,8 @@
 #include <cfloat> // defines DBL_MAX
 #include "geomUtils.h"
 
+class dPoly;
+
 template <typename Box>
 inline bool leftLessThan (Box P, Box Q){
   return (P.xl + P.xh) < (Q.xl + Q.xh); // x midpoint comparison

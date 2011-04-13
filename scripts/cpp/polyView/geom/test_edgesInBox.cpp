@@ -5,7 +5,7 @@
 #include <cassert>
 #include <limits>
 #include "dPoly.h"
-#include "edgeTree.h"
+#include "dTree.h"
 #include "geomUtils.h"
 
 using namespace std;
