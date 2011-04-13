@@ -1,11 +1,31 @@
 #ifndef DTREE_H
 #define DTREE_H
 
-// A tree for storing boxes for fast access. 
-
 #include <vector>
 #include <cfloat> // defines DBL_MAX
 #include "geomUtils.h"
+
+// Trees for storing double precision (as opposed to integer) geometry.
+
+// boxTree
+// * Put Manhattan boxes in a tree.
+// * Fast access to all boxes intersecting a given rectangular region.
+// * Implemented as a template. The user defines the box class. Can be
+// * for example a plain box, or a box with id meant to store an
+// * edge (as in edgeTree below).
+
+// edgeTree
+// * Uses boxTree.
+// * Put the edges of a given set of polygons in a tree.
+// * Fast access to all edges intersecting a given rectangular region.
+// * Fast access to the closest edge to a given point.
+
+// If desired, the edgeTree code can be made a template too, with the
+// template parameter being the edge class. Then it could be used to
+// find all polygons intersecting a given box (by storing in each edge
+// the id of the polygon that edge came from, finding the edges
+// intersecting the box, and then finding the polygons having those
+// edges).
 
 class dPoly;
 
