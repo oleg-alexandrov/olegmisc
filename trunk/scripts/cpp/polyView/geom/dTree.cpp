@@ -50,7 +50,7 @@ void edgeTree::putPolyEdgesInTree(const dPoly & poly){
   // Form the tree. Boxes will be reordered but otherwise unchanged
   // inside of this function. Do not modify the vector m_allEdges
   // afterward.
-  m_boxTree.formTree(m_allEdges);
+  m_boxTree.formTreeOfBoxes(m_allEdges);
 
   return;
 }

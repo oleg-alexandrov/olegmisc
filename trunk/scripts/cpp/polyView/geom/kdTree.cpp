@@ -31,21 +31,23 @@ Node * kdTree::getNewNode(){
   return ptr;  
 }
 
-void kdTree::formTree(// Pts will be reordered but otherwise unchanged inside this function
-                      std::vector<Point> & Pts 
-                      ){
+void kdTree::formTreeOfPoints(// Pts will be reordered but otherwise
+                              // unchanged inside this function
+                              std::vector<Point> & Pts 
+                              ){
 
   reset();
   int numPts = Pts.size();
   m_nodePool.resize(numPts);
 
   bool isLeftRightSplit = true;
-  formTreeInternal(vecPtr(Pts), numPts, isLeftRightSplit, m_root);
+  formTreeOfPointsInternal(vecPtr(Pts), numPts, isLeftRightSplit, m_root);
   return;
 }
 
 
-void kdTree::formTreeInternal(Point * Pts, int numPts, bool isLeftRightSplit, Node *&  root){
+void kdTree::formTreeOfPointsInternal(Point * Pts, int numPts, bool isLeftRightSplit,
+                                      Node *&  root){
 
   // To do: Implement this without recursion.
   // To do: No need to store the point P in the tree. Store just a pointer to P
@@ -74,9 +76,14 @@ void kdTree::formTreeInternal(Point * Pts, int numPts, bool isLeftRightSplit, No
   
   root->P = Pts[mid]; // Must happen after sorting
 
-  // At the next split we will split perpendicularly to the direction of the current split
-  formTreeInternal( Pts,            mid,              !isLeftRightSplit, root->left  );
-  formTreeInternal( Pts + mid + 1,  numPts - mid - 1, !isLeftRightSplit, root->right );
+  // At the next split we will split perpendicularly to the direction
+  // of the current split.
+  formTreeOfPointsInternal( Pts,            mid,
+                            !isLeftRightSplit, root->left
+                            );
+  formTreeOfPointsInternal( Pts + mid + 1,  numPts - mid - 1,
+                            !isLeftRightSplit, root->right
+                            );
 
 }
 
