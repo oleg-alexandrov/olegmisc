@@ -44,7 +44,7 @@ int main(int argc, char** argv){
   kdTree T;
   // Pts will be reordered but otherwise unchanged inside of this function.
   // Do not modify this vector afterward.
-  T.formTree(Pts); 
+  T.formTreeOfPoints(Pts); 
 
   vector<Point> outPts; // Must be different than Pts
   T.getPointsInBox(xl, yl, xh, yh, outPts);

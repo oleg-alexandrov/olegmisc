@@ -63,7 +63,7 @@ int main(int argc, char** argv){
    boxTree<dRect> T;
    // Boxes will be reordered but otherwise unchanged inside of this function.
    // Do not modify this vector afterward.
-   T.formTree(Boxes); 
+   T.formTreeOfBoxes(Boxes); 
 
    double L2 = 2*L;
    double xl = rand_ab(-L2, L2), xh = xl + rand_ab(0, L2);

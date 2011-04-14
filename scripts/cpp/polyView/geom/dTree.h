@@ -13,19 +13,33 @@
 // * Implemented as a template. The user defines the box class. Can be
 // * for example a plain box, or a box with id meant to store an
 // * edge (as in edgeTree below).
+//
+// Usage:
+// -----
+//   void formTreeOfBoxes(std::vector<Box> & Boxes // This vector is reordered inside
+//                        );
+//
+//   void getBoxesInRegion(double xl, double yl, double xh, double yh, // Inputs
+//                         vector<Box> & outBoxes                      // Outputs
+//                         );
+//
 
 // edgeTree
 // * Uses boxTree.
 // * Put the edges of a given set of polygons in a tree.
 // * Fast access to all edges intersecting a given rectangular region.
 // * Fast access to the closest edge to a given point.
+//
+// Usage:
+// -----
+// void putPolyEdgesInTree(const polygonset & poly);
+// void findPolyEdgesInBox(// inputs
+//                         double xl, double yl,
+//                         double xh, double yh,
+//                         // outputs
+//                         vector<seg> & edgesInBox
+//                         );
 
-// If desired, the edgeTree code can be made a template too, with the
-// template parameter being the edge class. Then it could be used to
-// find all polygons intersecting a given box (by storing in each edge
-// the id of the polygon that edge came from, finding the edges
-// intersecting the box, and then finding the polygons having those
-// edges).
 
 class dPoly;
 
@@ -74,10 +88,10 @@ class boxTree{
 
 public:
   boxTree();
-  void formTree(// Boxes will be reordered but otherwise
-                // unchanged inside this function
-                std::vector<Box> & Boxes 
-                );
+  void formTreeOfBoxes(// Boxes will be reordered but otherwise
+                       // unchanged inside this function
+                       std::vector<Box> & Boxes 
+                       );
   
   void getBoxesInRegion(double xl, double yl, double xh, double yh, // Inputs
                         std::vector<Box> & outBoxes                 // Outputs
@@ -89,10 +103,10 @@ public:
 
 private:
 
-  void formTreeInternal(Box * Boxes, int numBoxes,
-                        bool isLeftRightSplit,
-                        boxNode<Box> *&  root
-                        );
+  void formTreeOfBoxesInternal(Box * Boxes, int numBoxes,
+                               bool isLeftRightSplit,
+                               boxNode<Box> *&  root
+                               );
 
   
   void getBoxesInRegionInternal(//Inputs
@@ -136,25 +150,25 @@ boxNode<Box> * boxTree<Box>::getNewboxNode(){
 }
 
 template <typename Box>
-void boxTree<Box>::formTree(// Boxes will be reordered but otherwise
-                            // unchanged inside this function
-                            std::vector<Box> & Boxes 
-                            ){
+void boxTree<Box>::formTreeOfBoxes(// Boxes will be reordered but otherwise
+                                   // unchanged inside this function
+                                   std::vector<Box> & Boxes 
+                                   ){
   
   reset();
   int numBoxes = Boxes.size();
   m_nodePool.resize(numBoxes);
 
   bool isLeftRightSplit = true;
-  formTreeInternal(vecPtr(Boxes), numBoxes, isLeftRightSplit, m_root);
+  formTreeOfBoxesInternal(vecPtr(Boxes), numBoxes, isLeftRightSplit, m_root);
   return;
 }
 
 template <typename Box>
-void boxTree<Box>::formTreeInternal(Box * Boxes, int numBoxes,
-                                    bool isLeftRightSplit,
-                                    boxNode<Box> *&  root
-                                    ){
+void boxTree<Box>::formTreeOfBoxesInternal(Box * Boxes, int numBoxes,
+                                           bool isLeftRightSplit,
+                                           boxNode<Box> *&  root
+                                           ){
   
 
   // To do: Implement this without recursion.
@@ -218,10 +232,10 @@ void boxTree<Box>::formTreeInternal(Box * Boxes, int numBoxes,
   
   // At the next split we will split perpendicularly to the direction
   // of the current split
-  formTreeInternal( Boxes,            mid,
-                    !isLeftRightSplit, root->left  );
-  formTreeInternal( Boxes + mid + 1,  numBoxes - mid - 1,
-                    !isLeftRightSplit, root->right );
+  formTreeOfBoxesInternal( Boxes,            mid,
+                           !isLeftRightSplit, root->left  );
+  formTreeOfBoxesInternal( Boxes + mid + 1,  numBoxes - mid - 1,
+                           !isLeftRightSplit, root->right );
 
   return;
 }

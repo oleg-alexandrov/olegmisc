@@ -29,15 +29,17 @@ class kdTree{
 
 public:
   kdTree();
-  void formTree(// Pts will be reordered but otherwise unchanged inside this function
-                std::vector<Point> & Pts 
-                );
+  void formTreeOfPoints(// Pts will be reordered but otherwise
+                        // unchanged inside this function
+                        std::vector<Point> & Pts 
+                        );
   void getPointsInBox(double xl, double yl, double xh, double yh, // input box
                       std::vector<Point> & outPts);
 
 private:
 
-  void formTreeInternal(Point * Pts, int numPts, bool isLeftRightSplit, Node *&  root);
+  void formTreeOfPointsInternal(Point * Pts, int numPts, bool isLeftRightSplit,
+                                Node *&  root);
 
   void getPointsInBoxInternal(//Inputs
                               double xl, double yl, double xh, double yh,
