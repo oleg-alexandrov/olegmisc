@@ -39,7 +39,15 @@
 //                         // outputs
 //                         vector<seg> & edgesInBox
 //                         );
-
+// void findClosestEdgeToPoint(// inputs
+//                             double x0, double y0,
+//                             // outputs
+//                             seg    & closestEdge,
+//                             double & closestDist,
+//                             // The location on the closest
+//                             // edge where closestDist is achieved
+//                             double & closestX, double & closestY
+//                             );
 
 class dPoly;
 
