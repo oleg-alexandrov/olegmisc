@@ -24,6 +24,8 @@ using namespace utils;
 // To do: Make the background arbitrary, not hard-coded to black.
 // To do: In the geom directory, put everything in a namespace, say called 'pv'.
 //        Here too. Clean up, modularize, and structure the code more.
+// To do: Don't plot one-point polygons as hollow circles. Plot them as
+//        1x1 or 2x2 pixels (use rectangle rather than circle).
 
 polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(parent){
 
@@ -61,6 +63,7 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   m_showPoints            = 3;
   m_toggleShowPointsEdges = m_showEdges;
 
+  // These are constants
   m_polyChanged  = 1;
   m_createHlt    = 2;
   
