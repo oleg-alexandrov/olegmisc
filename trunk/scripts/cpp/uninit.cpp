@@ -9,6 +9,11 @@ using namespace std;
 
 int main() {
 
+  int a = 256*256;
+  char * v = (char*) (&a);
+  cout << (int)v[0] << ' ' << (int)v[1] << ' ' << (int)v[2] << ' ' << (int)v[3] << endl;
+  return 0;
+  
   vector<int> V;
   V.clear();
   
