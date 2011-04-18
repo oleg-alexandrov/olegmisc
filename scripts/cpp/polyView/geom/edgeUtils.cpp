@@ -5,7 +5,7 @@
 #include <vector>
 #include <cassert>
 #include "edgeUtils.h"
-
+#include "baseUtils.h"
 using namespace std;
 
 bool utils::edgeIntersectsBox(// Input: arbitrary edge

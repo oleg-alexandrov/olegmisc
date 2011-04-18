@@ -6,6 +6,7 @@
 #include <cassert>
 #include <cstring>
 #include <string>
+#include "cutPoly.h"
 #include "dPoly.h"
 using namespace std;
 using namespace utils;

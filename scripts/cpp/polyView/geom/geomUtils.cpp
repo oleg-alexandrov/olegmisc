@@ -5,6 +5,7 @@
 #include <cfloat>
 #include <cstring>
 #include <cassert>
+#include "baseUtils.h"
 #include "geomUtils.h"
 
 using namespace std;

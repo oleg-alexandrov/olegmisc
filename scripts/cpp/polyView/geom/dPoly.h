@@ -5,7 +5,8 @@
 #include <algorithm>
 #include <cfloat> // defines DBL_MAX
 #include <vector>
-#include "cutPoly.h"
+#include "baseUtils.h"
+#include "geomUtils.h"
 
 // A class holding a set of polygons in double precision
 class dPoly{
