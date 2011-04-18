@@ -5,6 +5,7 @@
 #include <vector>
 #include <cassert>
 #include "kdTree.h"
+#include "baseUtils.h"
 #include "geomUtils.h"
 
 using namespace std;
