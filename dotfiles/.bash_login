@@ -7,7 +7,8 @@ fi
 
 if [ $SHELL != "$LZSH" ] && [ -f "$LZSH" ]; then 
     export SHELL="$LZSH"
-    exec "$LZSH" 
+    exec "$LZSH"
+    exit
 fi
 
 echo "                                                                   "
