@@ -4,7 +4,7 @@ FC = g77 -O3
 OBJ=cutPoly.o dPoly.o geomUtils.o polyUtils.o kdTree.o edgeUtils.o dTree.cpp
 HDR= cutPoly.h dPoly.h geomUtils.h polyUtils.h kdTree.h edgeUtils.h dTree.h dTree.h
 
-all: test_distBwPolys test_dPoly testCutPoly polyPtsCmp test_boxTree test_kdTree \
+all: test_distBwPolys test_dPoly test_cutPoly polyPtsCmp test_boxTree test_kdTree \
 	test_edgesInBox 
 
 test_distBwPolys: test_distBwPolys.o $(OBJ) $(HDR) 
@@ -25,7 +25,7 @@ test_dPoly: test_dPoly.o $(OBJ) $(HDR)
 test_kdTree: test_kdTree.o $(OBJ) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ)  $(LIBS)
 
-testCutPoly: testCutPoly.o $(OBJ) $(HDR) 
+test_cutPoly: test_cutPoly.o $(OBJ) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ)  $(LIBS)
 
 cutPoly.o: cutPoly.cpp cutPoly.h edgeUtils.h
@@ -58,8 +58,8 @@ test_dPoly.o: test_dPoly.cpp dPoly.h
 test_kdTree.o: test_kdTree.cpp kdTree.h dPoly.h
 	$(CPP)  -c  test_kdTree.cpp
 
-testCutPoly.o: testCutPoly.cpp dPoly.h cutPoly.h
-	$(CPP)  -c  testCutPoly.cpp
+test_cutPoly.o: test_cutPoly.cpp dPoly.h cutPoly.h
+	$(CPP)  -c  test_cutPoly.cpp
 
 .o:    %.cpp
 	$(CPP)  -c $<
