@@ -10,7 +10,8 @@ alias cel='perl -pi -e "s#\s*\n#\n#g"'
 alias cl=ccol.pl
 alias cmx='chmod a-x'
 alias cp='\cp -iv'
-alias cpdb='\cp -fv ~/bin/cpp/qt/drawpoly/drawpoly ~/bin'
+alias cpdb='builtin cp -fv ~/bin/cpp/qt/drawpoly/drawpoly ~/bin'
+alias cppv='\cp -fv ~/bin/cpp/polyView/gui/polyView ~/bin'
 alias cpu='cat /proc/cpuinfo'
 alias crl='crontab -l'
 alias crs='file=~/bin/crontab_$(hostname); echo "Saving crontab to $file"; crontab -l > $file'
@@ -94,22 +95,24 @@ alias t=top
 alias tail='\tail -n 100'
 alias tc='tar czfv'
 alias ti='~/bin/toink.pl'
-alias tk=tkdiff
+alias tk='~/bin/tkdiff_custom'
 alias ts='\tail'
 alias tt='time . ~/bin/rt.sh'
 alias tx='~/bin/toxg.pl'
+alias ua='uname -a'
 alias unp='. ~/bin/unsetpath'
 alias vg='$w/local/bin/valgrind  --log-file=Log --leak-check=full'
 alias vgp='valgrind --tool=callgrind --dump-instr=yes '
 alias vi=vim
 alias vl='validate; echo $?'
+alias vml='~/bin/vm'
 alias vnc='vncserver -geometry 1272x996'
 alias vncbig='vncserver -geometry 2550x1008'
 alias vr='. ~/bin/vr'
 alias vv=/usr/bin/kcachegrind
 alias which-command=whence
 alias x=exit
-alias xg='~/bin/cpp/qt/drawpoly/drawpoly -geo 1000x800'
+alias xg='~/bin/cpp/polyView/gui/polyView  -geo 1000x800'
 alias xg2='~/bin/drawpoly -geo 1000x800'
 alias xg5='xg -geo 500x500'
 alias xgg='xgraph -ng -geometry 1000x800+0+0'

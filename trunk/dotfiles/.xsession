@@ -24,6 +24,8 @@ xclock -geo -0+0 -brief -d -bg white >/dev/null 2>&1&
 
 ~/bin/unclutter -idle 1&
 
+vncconfig -nowin&
+
 if [ -e ~/diverse/fvwm/bin/fvwm ]; then 
     ~/diverse/fvwm/bin/fvwm
 else

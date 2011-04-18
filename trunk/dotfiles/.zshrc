@@ -119,5 +119,6 @@ for cFile in $w/local/share/zsh/4.3.10/functions/colors \
 done
 
 # Init the prompt
-proml;
+proml
+
 
