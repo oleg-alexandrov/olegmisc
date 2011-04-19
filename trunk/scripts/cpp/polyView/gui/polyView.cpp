@@ -26,6 +26,7 @@ using namespace utils;
 //        Here too. Clean up, modularize, and structure the code more.
 // To do: Don't plot one-point polygons as hollow circles. Plot them as
 //        1x1 or 2x2 pixels (use rectangle rather than circle).
+// To do: Fix other "To do" mentioned in the code.
 
 polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(parent){
 
