@@ -11,8 +11,8 @@
 // * Put Manhattan boxes in a tree.
 // * Fast access to all boxes intersecting a given rectangular region.
 // * Implemented as a template. The user defines the box class. Can be
-// * for example a plain box, or a box with id meant to store an
-// * edge (as in edgeTree below).
+//   for example a plain box, or a box with id meant to store an
+//   edge (as in edgeTree below).
 //
 // Usage:
 // -----
