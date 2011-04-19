@@ -88,6 +88,33 @@ void utils::findDistanceBwPolys(// inputs
                                 std::vector<segDist> & distVec
                                 ){
 
+  // Find the distances from poly1 to poly2, then from poly2 to poly1.
+  // Sort them in decreasing order of their lengths. See
+  // findDistanceFromPoly1ToPoly2 for more info.
+  
+  findDistanceFromPoly1ToPoly2(poly1, poly2, // inputs  
+                               distVec       // outputs
+                               );
+  
+  vector<segDist> l_distVec;
+  findDistanceFromPoly1ToPoly2(poly2, poly1, // inputs  
+                               l_distVec     // outputs
+                               );
+  
+  for (int s = 0; s < (int)l_distVec.size(); s++) distVec.push_back(l_distVec[s]);
+  
+  sort(distVec.begin(), distVec.end(), segDistGreaterThan);
+
+  return;
+}
+
+void utils::findDistanceFromPoly1ToPoly2(// inputs
+                                         const dPoly & poly1,
+                                         const dPoly & poly2,
+                                         // outputs
+                                         std::vector<segDist> & distVec
+                                         ){
+  
   // Given two sets of polygons, for each vertex in the first set of
   // polygons find the distance to the closest point (may be on edge)
   // in the second set of polygons, and the segment with the smallest
