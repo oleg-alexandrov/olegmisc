@@ -137,8 +137,6 @@ void utils::findDistanceFromPoly1ToPoly2(// inputs
   edgeTree T;
   T.putPolyEdgesInTree(poly2);
 
-  vector<seg> edgesInBox;
-  
   for (int t = 0; t < numVerts1; t++){
 
     double x = x1[t], y = y1[t];
@@ -163,7 +161,7 @@ void utils::findDistanceBwPolysBruteForce(// inputs
                                           std::vector<segDist> & distVec
                                           ){
 
-  // A naive (but simple) implementation of findDistanceBwPolys.
+  // A naive (but simple) implementation of findDistanceFromPoly1ToPoly2.
   
   distVec.clear();
 
