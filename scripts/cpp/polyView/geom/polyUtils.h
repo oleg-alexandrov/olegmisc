@@ -30,6 +30,13 @@ namespace utils{
                            // outputs
                            std::vector<segDist> & distVec
                            );
+  
+  void findDistanceFromPoly1ToPoly2(// inputs
+                                         const dPoly & poly1,
+                                         const dPoly & poly2,
+                                         // outputs
+                                         std::vector<segDist> & distVec
+                                         );
 
   void findDistanceBwPolysBruteForce(// inputs
                                      const dPoly & poly1,
