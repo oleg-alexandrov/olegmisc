@@ -1219,7 +1219,7 @@ void polyView::toggleShowPolyDiff(){
     m_plotPointsOnlyVec = m_plotPointsOnlyVecBk;
     m_polyFilesVec      = m_polyFilesVecBk;
 
-    // See plotDistBwPolyClips() for explanation.
+    // See polyView::plotDiff() for explanation.
     m_distVec.clear();
     m_indexOfDistToPlot = -1; 
 
@@ -1284,15 +1284,21 @@ void polyView::plotPrevDiff(){
   plotDiff(-1);
 }
 
-void polyView::plotDiff(int dir){
-  
-  // See plotDistBwPolyClips(...) for info.
-  
-  m_segX.clear(); m_segY.clear(); // First wipe the output
+void polyView::plotDiff(int direction){
+
+  // For every vertex in m_polyVec[0], find the distance to the
+  // closest point on the closest edge of m_polyVec[1], and the
+  // segment achieving this shortest distance. Do the same with the
+  // polygons reversed. We sort all these distances in decreasing
+  // order and store them in m_distVec. The user will navigate over
+  // these segments to see how different the polygon clips are.
 
   if ( !m_polyDiffMode ) return;
 
-  assert(dir == 1 || dir == -1);
+  // The current segment to plot
+  m_segX.clear(); m_segY.clear();
+
+  assert(direction == 1 || direction == -1);
   
   if (m_distVec.size() == 0 ){
     assert( m_polyVec.size() >= 2);
@@ -1304,10 +1310,10 @@ void polyView::plotDiff(int dir){
   }
 
   if (m_indexOfDistToPlot < 0){
-    if (dir > 0) m_indexOfDistToPlot = -1;
-    else         m_indexOfDistToPlot = 0;
+    if (direction > 0) m_indexOfDistToPlot = -1;
+    else               m_indexOfDistToPlot = 0;
   }
-  m_indexOfDistToPlot += dir;
+  m_indexOfDistToPlot += direction;
 
   int len = m_distVec.size();
   if (len > 0){
@@ -1338,16 +1344,10 @@ void polyView::plotDiff(int dir){
 
 void polyView::plotDistBwPolyClips( QPainter *paint ){
 
-  // This is to be called in diff mode only, when we study how
-  // different m_polyVec[0] is from m_polyVec[1].
+  // This is to be called in poly diff mode only. Plot the current
+  // segment/distance between clips of polygons. See
+  // polyView::plotDiff() for more info.
   
-  // For every vertex in m_polyVec[0], find the distance to the
-  // closest point on the closest edge of m_polyVec[1], and the
-  // segment achieving this shortest distance. We sort such distances
-  // in decreasing order and store them in m_distVec. Here we plot the
-  // segment m_distVec[m_indexOfDistToPlot]. See (polyView::plotDiff)
-  // which calls this function.
-
   if ( !m_polyDiffMode ) return;
 
   int pSize = m_segX.size();
@@ -1370,7 +1370,6 @@ void polyView::plotDistBwPolyClips( QPainter *paint ){
     pa[vIter] = QPoint(px0, py0);
   }
   paint->drawPolyline( pa );
-
 
   return;
 }
