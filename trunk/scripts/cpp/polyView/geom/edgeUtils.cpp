@@ -61,20 +61,17 @@ bool utils::edgeIntersectsHorizontalEdge(// Input: arbitrary edge
             min(max(x0, x1), max(begx, endx))
             );
   }
-  
-  // Find the intersection of the two edges.
-  // (1 - t)*(x0, y0) + t*(x1, y1) has yval as y coordinate.
-  double t = (yval - y0)/diff;
-  assert(0.0 <= t && t <= 1.0);
-  double x = (1 - t)*x0 + t*x1;
 
-  return ( min(begx, endx) <= x && x <= max(begx, endx) );
+  // See if the points (begx, yval) and (endx, yval) are on different
+  // sides of the non-degenerate edge (x0, y0), (x1, y1).
 
-  // Note: The answer above could be incorrect
-  // if the two edges intersect exactly at one of the
-  // two endpoints (begx, yval) or (endx, yval).
-  // In that case, if all inputs are integer,
-  // a more careful analysis could be done.
+  double det_beg = (begx - x0)*(y1 - y0) - (yval - y0)*(x1 - x0);
+  double det_end = (endx - x0)*(y1 - y0) - (yval - y0)*(x1 - x0);
+
+  if (det_beg > 0.0 && det_end > 0.0) return false;
+  if (det_beg < 0.0 && det_end < 0.0) return false;
+    
+  return true;
 }
 
 void utils::cutEdge(double x0, double y0, double x1, double y1,
