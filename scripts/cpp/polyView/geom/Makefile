@@ -2,7 +2,7 @@ CPP = g++ -O3 -Wall
 CC = gcc -O3
 FC = g77 -O3
 OBJ=cutPoly.o dPoly.o geomUtils.o polyUtils.o kdTree.o edgeUtils.o dTree.cpp
-HDR= cutPoly.h dPoly.h geomUtils.h polyUtils.h kdTree.h edgeUtils.h dTree.h dTree.h
+HDR= cutPoly.h dPoly.h geomUtils.h polyUtils.h kdTree.h edgeUtils.h dTree.h dTree.h baseUtils.h
 
 all: test_distBwPolys test_dPoly test_cutPoly polyPtsCmp test_boxTree test_kdTree \
 	test_edgesInBox 
