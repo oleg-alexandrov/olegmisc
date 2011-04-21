@@ -1239,8 +1239,8 @@ void polyView::toggleShowPolyDiff(){
   }
 
   if (m_polyVec.size() > 2){
-    cout << "Showing the differences of first two polygon files and ignoring the rest"
-         << endl;
+    cout << "Showing the differences of the first two polygon files "
+         << "and ignoring the rest" << endl;
   }
   
   m_polyDiffMode        = true;
