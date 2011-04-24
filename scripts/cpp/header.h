@@ -4,6 +4,7 @@ bool getLine(ifstream &, std::string &);
 bool isDigit(const char);
 bool isHeap(const int *, int);
 bool isInList(node *, int);
+double time_diff(const timeval &, const timeval &);
 endif for(int q = 0; q < n;);
 endif for(int s = 0; s < n;);
 int addOne(int);
