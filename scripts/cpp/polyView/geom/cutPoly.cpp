@@ -66,7 +66,10 @@ void utils::cutPoly(// inputs -- the polygons
                      cutHalfX, cutHalfY, cutHalfP);
       
       for (int pIterCut = 0; pIterCut < (int)cutHalfP.size(); pIterCut++){
-        Pout.push_back( cutHalfP[pIterCut] );
+        if (cutHalfP[pIterCut] > 0){
+          // Append only non-empty polygons
+          Pout.push_back( cutHalfP[pIterCut] );
+        }
       }
       
       for (int vIter = 0; vIter < (int)cutHalfX.size(); vIter++){
