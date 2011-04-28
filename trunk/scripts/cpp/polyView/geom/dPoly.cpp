@@ -11,6 +11,21 @@
 using namespace std;
 using namespace utils;
 
+void dPoly::reset(){
+  m_isPointCloud  = false;
+  m_numPolys      = 0;
+  m_totalNumVerts = 0;
+  m_numVerts.clear();
+  m_isPolyClosed.clear();
+  m_xv.clear();
+  m_yv.clear();
+  m_colors.clear();
+  m_layers.clear();
+  m_annotations.clear();
+  m_vertIndexAnno.clear();
+  m_layerAnno.clear();
+}
+
 void dPoly::bdBox(double & xll, double & yll, double & xur, double & yur)
   const{
 
@@ -692,15 +707,29 @@ bool dPoly::readPoly(std::string filename,
 
         // The current polygon is non-empty
 
+        assert( end == (int)m_xv.size() && end == (int)m_yv.size() );
+
         if (beg < end - 1              &&
             m_xv[beg] == m_xv[end - 1] &&
             m_yv[beg] == m_yv[end - 1]){
           // The first vertex equals to the last vertex in the current
-          // polygon. Then don't store the last vertex.
-          assert( end == (int)m_xv.size() && end == (int)m_yv.size() );
+          // polygon. That means that this is a true polygon rather
+          // than a polygonal line. Don't store the last
+          // vertex.
           end--;
           m_xv.resize(end);
           m_yv.resize(end);
+          m_isPolyClosed.push_back(true);
+        }else{
+          // We have a polygonal line rather than a polygon. Store it
+          // as a closed polygon by traversing the polygonal line
+          // backwards.
+          for (int s = 0; s < end - beg; s++){
+            m_xv.push_back(m_xv[end - 1 - s]);
+            m_yv.push_back(m_yv[end - 1 - s]);
+          }
+          end = m_xv.size();
+          m_isPolyClosed.push_back(false);
         }
         
         m_layers.push_back(layer);
