@@ -2,7 +2,7 @@
 use strict;	   # insist that all variables be declared
 use diagnostics;   # expand the cryptic warnings
 use Scalar::Util qw(looks_like_number);
-use List::Util   qw(max);
+use List::Util   qw(max min);
 
 undef $/;          # read one whole file in one scalar
 
@@ -17,24 +17,26 @@ MAIN:{
   
   my $file1 = shift @ARGV;
   my $file2 = shift @ARGV;
-
   open(FILE, "<$file1");  my @val1 = split("\n", <FILE>);  close(FILE);
   open(FILE, "<$file2");  my @val2 = split("\n", <FILE>);  close(FILE);
+  if ( scalar(@val1) != scalar(@val2) ){
+    print "Warning: Files $file1 and $file2 do not have the same number of rows.\n";
+  }
+  my $numRows = min( scalar(@val1), scalar(@val2) );
+  
+  my ($max_err, $max_row, $max_col) = (0, 0, 0);
 
-  my $max_err = 0;
-  my $max_row = 0;
-  my $max_col = 0;
-  
-  my $len = scalar (@val1);
-  if ($len <= 0) { exit(0); }
-  
-  for (my $row = 0; $row < $len; $row++){
+  for (my $row = 0; $row < $numRows; $row++){
     
     my @l1 = split(/(,|\s+)/, $val1[$row]);
     my @l2 = split(/(,|\s+)/, $val2[$row]);
 
-    my $numlen = scalar( @l1 );
-
+    if ( scalar(@l1) != scalar(@l2) ){
+      print "Warning: Row " . ($row + 1) . " does not have the same number "
+         . "of elements in $file1 and $file2.\n";
+    }
+    my $numlen = min( scalar(@l1), scalar(@l2) );
+    
     my $col_num = -1;
     for (my $col = 0; $col < $numlen; $col++){
       
