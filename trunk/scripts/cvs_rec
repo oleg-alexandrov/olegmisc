@@ -9,7 +9,6 @@ if [ "$#" -ne "1" ]; then
   exit 1;
 fi
 
-# Add recursively to CVS
 topDirName=$1
 
 # First remove the "CVS" subdirectories  
