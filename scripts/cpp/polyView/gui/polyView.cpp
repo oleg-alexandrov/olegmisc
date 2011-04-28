@@ -1997,6 +1997,8 @@ void polyView::sortBySizeAndMaybeAddBigFgPoly(// inputs
                                               dPoly& poly
                                               ){
 
+  // To do: move this to utilities.
+  
   // Sort the polygons from largest to smallest by size. If the
   // largest one is going clockwise, it is a hole. In that case, add a
   // large box going counter-clockwise so that we see the hole as a
