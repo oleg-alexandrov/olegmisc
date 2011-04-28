@@ -13,19 +13,14 @@ class dPoly{
 
 public:
 
-  dPoly(){
-    reset();
-  }
+  dPoly(){ reset(); }
 
-  void set_isPointCloud(bool isPointCloud){ m_isPointCloud = isPointCloud; }
-  bool isPointCloud() { return m_isPointCloud;}
+  void reset();
 
   bool read_pol_or_cnt_format(std::string filename,
                               std::string type,
                               bool isPointCloud = false
                               );
-  void set_pointCloud(const std::vector<dPoint> & P, std::string color,
-                      std::string layer);
 
   bool readPoly(std::string filename,
                 bool isPointCloud = false
@@ -33,19 +28,6 @@ public:
   
   void writePoly(std::string filename, std::string defaultColor = "yellow");
   
-  void reset(){
-    m_isPointCloud  = false;
-    m_numPolys      = 0;
-    m_totalNumVerts = 0;
-    m_numVerts.clear();
-    m_xv.clear();
-    m_yv.clear();
-    m_colors.clear();
-    m_layers.clear();
-    m_annotations.clear();
-    m_vertIndexAnno.clear();
-    m_layerAnno.clear();
-  }
 
   void appendPolygon(int numVerts,
                      const double * xv,
@@ -76,6 +58,11 @@ public:
 
   void set_color(std::string color);
   
+  void set_isPointCloud(bool isPointCloud){ m_isPointCloud = isPointCloud; }
+  bool isPointCloud() { return m_isPointCloud;}
+
+  void set_pointCloud(const std::vector<dPoint> & P, std::string color,
+                      std::string layer);
   // Annotations
   void get_annotations (std::vector<anno> & annotations) const;
   void get_layerAnno(std::vector<anno> & annotations) const;
@@ -122,6 +109,7 @@ private:
   std::vector<double>      m_xv;
   std::vector<double>      m_yv; 
   std::vector<int>         m_numVerts;
+  std::vector<int>         m_isPolyClosed;
   int                      m_numPolys;
   int                      m_totalNumVerts;
   std::vector<std::string> m_colors;
