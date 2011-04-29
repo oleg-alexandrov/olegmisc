@@ -782,7 +782,8 @@ void polyView::scalePolys(std::vector<double> & scale){
 
 void polyView::addPolyVert(int px, int py){
 
-  // Add a point to the polygon being drawn or stop drawing.
+  // Add a point to the polygon being drawn or stop drawing and append
+  // the drawn polygon to the list of polygons.
 
   double wx, wy;
   pixelToWorldCoords(px, py, wx, wy);
@@ -847,8 +848,10 @@ void polyView::addPolyVert(int px, int py){
 
   // Form the new polygon
   dPoly P;
+  bool isPolyClosed = true;
   P.reset();
-  P.appendPolygon(pSize, vecPtr(m_currPolyX), vecPtr(m_currPolyY), color, layer);
+  P.appendPolygon(pSize, vecPtr(m_currPolyX), vecPtr(m_currPolyY),
+                  isPolyClosed, color, layer);
       
   // So that we can undo later
   m_polyVecStack.push_back(m_polyVec); 
