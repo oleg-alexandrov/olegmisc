@@ -27,7 +27,9 @@ using namespace utils;
 // To do: Don't plot one-point polygons as hollow circles. Plot them as
 //        1x1 or 2x2 pixels (use rectangle rather than circle).
 // To do: Fix other "To do" mentioned in the code.
-
+// To do: The viewer does not render correctly in fill mode overlapping polygons
+//        with each polygon having holes. A fix would require a thorough analysis
+//        which would identify which hole belongs to which polygon.
 polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(parent){
 
   setStandardCursor();
