@@ -32,11 +32,11 @@ namespace utils{
                            );
   
   void findDistanceFromPoly1ToPoly2(// inputs
-                                         const dPoly & poly1,
-                                         const dPoly & poly2,
-                                         // outputs
-                                         std::vector<segDist> & distVec
-                                         );
+                                    const dPoly & poly1,
+                                    const dPoly & poly2,
+                                    // outputs
+                                    std::vector<segDist> & distVec
+                                    );
 
   void findDistanceBwPolysBruteForce(// inputs
                                      const dPoly & poly1,
@@ -56,6 +56,12 @@ namespace utils{
                            );
 
 
+  void setUpViewBox(// inputs
+                    const std::vector<dPoly> & polyVec,
+                    // outputs
+                    double & xll,  double & yll,
+                    double & widx, double & widy);
+  
 }
   
 

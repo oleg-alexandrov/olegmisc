@@ -132,11 +132,6 @@ private:
   void worldToPixelCoords(double wx, double wy,
                           int & px,  int & py);
   
-  static void setUpViewBox(// inputs
-                           const std::vector<dPoly> & polyVec,
-                           // outputs
-                           double & xll, double & yll,
-                           double &widx, double & widy);
   
   void setStandardCursor();
   void setPolyDrawCursor();
