@@ -13,22 +13,24 @@ class dPoly{
 
 public:
 
-  dPoly(){ reset(); }
+  dPoly(){
+    reset();
+  }
 
   void reset();
-
+  
   bool read_pol_or_cnt_format(std::string filename,
                               std::string type,
                               bool isPointCloud = false
                               );
-
+  
   bool readPoly(std::string filename,
                 bool isPointCloud = false
                 );
   
   void writePoly(std::string filename, std::string defaultColor = "yellow");
   
-
+  
   void appendPolygon(int numVerts,
                      const double * xv,
                      const double * yv,
@@ -43,11 +45,11 @@ public:
                 double clip_xur, double clip_yur,
                 dPoly & clippedPoly // output
                 );
-
+  
   void shift(double shift_x, double shift_y);
   void rotate(double angle);
   void scale(double scale);
-
+  
   const int    * get_numVerts         () const { return utils::vecPtr(m_numVerts); }
   const double * get_xv               () const { return utils::vecPtr(m_xv);       }
   const double * get_yv               () const { return utils::vecPtr(m_yv);       }
@@ -55,12 +57,12 @@ public:
   int get_totalNumVerts               () const { return m_totalNumVerts;           }
   std::vector<std::string> get_colors () const { return m_colors;                  }
   std::vector<std::string> get_layers () const { return m_layers;                  }
-
+  
   void set_color(std::string color);
   
   void set_isPointCloud(bool isPointCloud){ m_isPointCloud = isPointCloud; }
   bool isPointCloud() { return m_isPointCloud;}
-
+  
   void set_pointCloud(const std::vector<dPoint> & P, std::string color,
                       std::string layer);
   // Annotations
@@ -70,13 +72,13 @@ public:
   void set_annotations(const std::vector<anno> & A);
   void set_layerAnno(const std::vector<anno> & annotations);
   void set_vertIndexAnno(const std::vector<anno> & annotations);
-
+  
   void addAnno(const anno & A){m_annotations.push_back(A); }
   void compVertIndexAnno();
   void compLayerAnno();
-
+  
   void bdBox(double & xll, double & yll, double & xur, double & yur) const;
-
+  
   void bdBoxes(std::vector<double> & xll, std::vector<double> & yll,
                std::vector<double> & xur, std::vector<double> & yur) const;
   
@@ -96,6 +98,12 @@ public:
   
   void erasePoly(int polyIndex);
   void sortFromLargestToSmallest();
+
+  void sortBySizeAndMaybeAddBigFgPoly(// inputs
+                                      double bigXll, double bigYll,
+                                      double bigXur, double bigYur
+                                      );
+
   void enforce45();
   
 private:
