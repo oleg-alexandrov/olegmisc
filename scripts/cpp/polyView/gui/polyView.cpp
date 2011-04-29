@@ -1067,53 +1067,6 @@ void polyView::worldToPixelCoords(double wx, double wy,
   
 }
 
-void polyView::setUpViewBox(// inputs
-                            const std::vector<dPoly> & polyVec,
-                            // outputs
-                            double & xll, double & yll,
-                            double &widx, double & widy){
-
-  // To do: Move this to utilities
-  
-  // Given a set of polygons, set up a box containing these polygons.
-
-  double xur, yur; // local variables
-  
-  // Start with the poly bounding box
-  double big = DBL_MAX;
-  xll = big; yll = big; xur = -big; yur = -big;
-  for (int p = 0; p < (int)polyVec.size(); p++){
-    double xll0, yll0, xur0, yur0;
-    polyVec[p].bdBox(xll0, yll0, xur0, yur0);
-    xll = min(xll, xll0); xur = max(xur, xur0);
-    yll = min(yll, yll0); yur = max(yur, yur0);
-  }
-
-  // Treat the case of empty polygons
-  if (xur < xll || yur < yll){
-    xll = 0.0; yll = -1000.0; xur = 1000.0; yur = 0.0;
-  }
-
-  // Treat the case when the polygons are degenerate
-  if (xur == xll){ xll -= 0.5; xur += 0.5; }
-  if (yur == yll){ yll -= 0.5; yur += 0.5; }
-    
-  widx = xur - xll; assert(widx > 0.0);
-  widy = yur - yll; assert(widy > 0.0);
-
-  //   cout << "Bd box ll corner and widths are "
-  //        << xll  << ' ' << yll << ' ' << widx << ' ' << widy << endl;
-
-  // Expand the box slightly for plotting purposes
-  double factor = 0.05;
-  xll -= widx*factor; xur += widx*factor; widx *= 1.0 + 2*factor;
-  yll -= widy*factor; yur += widy*factor; widy *= 1.0 + 2*factor;
-  
-  return;
-  
-}
-
-
 void polyView::drawOneVertex(int x0, int y0, QColor color, int lineWidth,
                              int drawVertIndex, QPainter * paint){
 
