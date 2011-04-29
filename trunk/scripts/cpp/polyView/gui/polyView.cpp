@@ -254,12 +254,13 @@ void polyView::showPoly( QPainter *paint ){
                       clippedPoly
                       );
 
-    const double * xv           = clippedPoly.get_xv();
-    const double * yv           = clippedPoly.get_yv();
-    const int    * numVerts     = clippedPoly.get_numVerts();
-    int numPolys                = clippedPoly.get_numPolys();
-    const vector<string> colors = clippedPoly.get_colors();
-    //int numVerts              = clippedPoly.get_totalNumVerts();
+    const double * xv               = clippedPoly.get_xv();
+    const double * yv               = clippedPoly.get_yv();
+    const int    * numVerts         = clippedPoly.get_numVerts();
+    int numPolys                    = clippedPoly.get_numPolys();
+    const vector<bool> isPolyClosed = clippedPoly.get_isPolyClosed();
+    const vector<string> colors     = clippedPoly.get_colors();
+    //int numVerts                  = clippedPoly.get_totalNumVerts();
     
     vector<anno> annotations;
     annotations.clear();
@@ -290,7 +291,7 @@ void polyView::showPoly( QPainter *paint ){
 
       // Determine the orientation of polygons
       double signedArea = 0.0;
-      if (m_showFilledPolys){
+      if (m_showFilledPolys && isPolyClosed[pIter]){
         signedArea = signedPolyArea(pSize, xv + start, yv + start);
       }
       
@@ -319,7 +320,7 @@ void polyView::showPoly( QPainter *paint ){
       
       if (!plotPointsOnly && m_toggleShowPointsEdges != m_showPoints){
 
-        if (m_showFilledPolys){
+        if (m_showFilledPolys && isPolyClosed[pIter]){
           if (signedArea >= 0.0) paint->setBrush( color );
           else                   paint->setBrush( backgroundColor() ); 
           paint->setPen( NoPen );
@@ -1584,12 +1585,12 @@ void polyView::readAllPolys(){
 
 void polyView::openPoly(){
 
-  QString s = QFileDialog::getOpenFileName(
-                                           QDir::currentDirPath(),
+  QString s = QFileDialog::getOpenFileName(QDir::currentDirPath(),
                                            "(*.xg *.ly* *.pol)",
                                            this,
                                            "open file dialog"
-                                           "Choose a file" );
+                                           "Choose a file"
+                                           );
 
   if (s.length() == 0) return;
   
