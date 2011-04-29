@@ -720,7 +720,7 @@ bool dPoly::readPoly(std::string filename,
           m_xv.resize(end);
           m_yv.resize(end);
           m_isPolyClosed.push_back(true);
-        }else{
+        }else if (0){ // This is tough!
           // We have a polygonal line rather than a polygon. Store it
           // as a closed polygon by traversing the polygonal line
           // backwards.
