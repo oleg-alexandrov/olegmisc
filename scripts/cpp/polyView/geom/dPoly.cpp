@@ -598,6 +598,53 @@ void dPoly::sortFromLargestToSmallest(){
   
 }
 
+void dPoly::sortBySizeAndMaybeAddBigFgPoly(// inputs
+                                           double bigXll, double bigYll,
+                                           double bigXur, double bigYur
+                                           ){
+  
+  // Sort the polygons from largest to smallest by size. If the
+  // largest one is going clockwise, it is a hole. In this case, add a
+  // large box going counter-clockwise so that we see the hole as a
+  // hole in this box. This is important only when polygons are filled
+  // (and holes are of background color).
+
+  sortFromLargestToSmallest();
+
+  if (get_numPolys() <= 0) return;
+
+  const double         * xv       = get_xv();
+  const double         * yv       = get_yv();
+  const int            * numVerts = get_numVerts();
+  const vector<string> & colors   = get_colors();
+  const vector<string> & layers   = get_layers();
+
+  double signedArea = signedPolyArea(numVerts[0], xv, yv);
+
+  if (signedArea >= 0) return; // Outer poly is correctly oriented
+
+  double xll, yll, xur, yur;
+  bdBox(xll, yll, xur, yur);
+  bigXll = min(xll, bigXll); bigXur = max(xur, bigXur);
+  bigYll = min(yll, bigYll); bigYur = max(yur, bigYur);
+
+  // Add the extra term to ensure we get a box strictly bigger than
+  // the polygons and the big window (this will help with sorting below).
+  double extra = max(abs(bigXur - bigXll), abs(bigYur - bigYll)) + 10.0;
+  bigXll -= extra; bigXur += extra;
+  bigYll -= extra; bigYur += extra;
+
+  double boxX[4], boxY[4];
+  boxX[0] = bigXll; boxX[1] = bigXur; boxX[2] = bigXur; boxX[3] = bigXll;
+  boxY[0] = bigYll; boxY[1] = bigYll; boxY[2] = bigYur; boxY[3] = bigYur;
+  appendPolygon(4, boxX, boxY, colors[0], layers[0]);
+
+  // Reorder the updated set of polygons
+  sortFromLargestToSmallest();
+
+  return;
+}
+
 void dPoly::enforce45(){
 
   // Enforce that polygon vertices are integers and the angles are 45x. 
