@@ -16,9 +16,9 @@ void dPoly::reset(){
   m_numPolys      = 0;
   m_totalNumVerts = 0;
   m_numVerts.clear();
-  m_isPolyClosed.clear();
   m_xv.clear();
   m_yv.clear();
+  m_isPolyClosed.clear();
   m_colors.clear();
   m_layers.clear();
   m_annotations.clear();
@@ -745,51 +745,39 @@ bool dPoly::readPoly(std::string filename,
     // new one.
     istringstream iss_next(line);
     string val;
-    if ( isLastLine                               ||
-         ( (iss_next >> val) && (val == "next") ) ||
-         isPointCloud
-         ){
-
-      if (beg < end){
-
-        // The current polygon is non-empty
-
-        assert( end == (int)m_xv.size() && end == (int)m_yv.size() );
-
-        if (beg < end - 1              &&
-            m_xv[beg] == m_xv[end - 1] &&
-            m_yv[beg] == m_yv[end - 1]){
-          // The first vertex equals to the last vertex in the current
-          // polygon. That means that this is a true polygon rather
-          // than a polygonal line. Don't store the last
-          // vertex.
-          end--;
-          m_xv.resize(end);
-          m_yv.resize(end);
-          m_isPolyClosed.push_back(true);
-        }else if (0){ // This is tough!
-          // We have a polygonal line rather than a polygon. Store it
-          // as a closed polygon by traversing the polygonal line
-          // backwards.
-          for (int s = 0; s < end - beg; s++){
-            m_xv.push_back(m_xv[end - 1 - s]);
-            m_yv.push_back(m_yv[end - 1 - s]);
-          }
-          end = m_xv.size();
-          m_isPolyClosed.push_back(false);
-        }
-        
-        m_layers.push_back(layer);
-        m_colors.push_back(color);
-
-        m_numPolys++;
-        m_numVerts.push_back(end - beg);
-        m_totalNumVerts = end;
-        
-        // Start a new polygon
-        beg = end;
-        
+    bool isLastVertexOfCurrPoly = ( isLastLine                               ||
+                                    ( (iss_next >> val) && (val == "next") ) ||
+                                    isPointCloud
+                                    );
+    bool isCurrPolyNonEmpty = (beg < end);
+    if (isLastVertexOfCurrPoly && isCurrPolyNonEmpty){
+      
+      assert( end == (int)m_xv.size() && end == (int)m_yv.size() );
+      
+      if (beg < end - 1              &&
+          m_xv[beg] == m_xv[end - 1] &&
+          m_yv[beg] == m_yv[end - 1]){
+        // The first vertex equals to the last vertex in the current
+        // polygon. That means that this is a true polygon rather
+        // than a polygonal line. Don't store the last
+        // vertex.
+        end--;
+        m_xv.resize(end);
+        m_yv.resize(end);
+        m_isPolyClosed.push_back(true);
+      }else{
+        m_isPolyClosed.push_back(false);
       }
+      
+      m_layers.push_back(layer);
+      m_colors.push_back(color);
+      
+      m_numPolys++;
+      m_numVerts.push_back(end - beg);
+      m_totalNumVerts = end;
+      
+      // Start a new polygon
+      beg = end;
       
     } // End processing the current polygon in the list of polygons
 
