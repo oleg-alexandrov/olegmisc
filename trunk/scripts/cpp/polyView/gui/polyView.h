@@ -141,13 +141,6 @@ private:
   void setStandardCursor();
   void setPolyDrawCursor();
   
-  void sortBySizeAndMaybeAddBigFgPoly(// inputs
-                                      double viewXll, double viewYll,
-                                      double viewXur, double viewYur,
-                                      // input-output
-                                      dPoly& poly
-                                      );
-
   void plotDistBwPolyClips( QPainter *paint );
   
   double m_zoomFactor, m_shiftX, m_shiftY;
