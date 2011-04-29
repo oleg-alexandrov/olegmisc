@@ -80,6 +80,7 @@ void dPoly::bdBoxes(std::vector<double> & xll, std::vector<double> & yll,
 void dPoly::appendPolygon(int numVerts,
                           const double * xv,
                           const double * yv,
+                          bool isPolyClosed,
                           const std::string & color,
                           const std::string & layer
                           ){
@@ -90,6 +91,7 @@ void dPoly::appendPolygon(int numVerts,
   m_totalNumVerts += numVerts;
   
   m_numVerts.push_back(numVerts);
+  m_isPolyClosed.push_back(isPolyClosed);
   m_colors.push_back(color);
   m_layers.push_back(layer);
   for (int s = 0; s < numVerts; s++){
@@ -137,20 +139,22 @@ void dPoly::clipPoly(// inputs
   clippedPoly.reset();
   clippedPoly.set_isPointCloud(m_isPointCloud);
   
-  const double * xv           = get_xv();
-  const double * yv           = get_yv();
-  const int    * numVerts     = get_numVerts();
-  int numPolys                = get_numPolys();
-  const vector<string> colors = get_colors();
-  const vector<string> layers = get_layers();
+  const double * xv               = get_xv();
+  const double * yv               = get_yv();
+  const int    * numVerts         = get_numVerts();
+  int numPolys                    = get_numPolys();
+  const vector<bool> isPolyClosed = get_isPolyClosed();
+  const vector<string> colors     = get_colors();
+  const vector<string> layers     = get_layers();
   
   int start = 0;
   for (int pIter = 0; pIter < numPolys; pIter++){
       
     if (pIter > 0) start += numVerts[pIter - 1];
       
-    string color = colors[pIter];
-    string layer = layers[pIter];
+    int  isClosed = isPolyClosed [pIter];
+    string color  = colors       [pIter];
+    string layer  = layers       [pIter];
       
     vector<double> cxv, cyv;
     vector<int> cpoly;
@@ -192,7 +196,7 @@ void dPoly::clipPoly(// inputs
       clippedPoly.appendPolygon(cSize,
                                 vecPtr(cxv) + cstart,
                                 vecPtr(cyv) + cstart,
-                                color, layer
+                                isClosed, color, layer
                                 );
 
     }
@@ -298,12 +302,13 @@ void dPoly::scale(double scale){ // The angle is given in degrees
 
 void dPoly::appendPolygons(const dPoly & poly){
 
-  const double * xv        = poly.get_xv();
-  const double * yv        = poly.get_yv();
-  const int    * numVerts  = poly.get_numVerts();
-  int numPolys             = poly.get_numPolys();
-  vector<string> colors    = poly.get_colors();
-  vector<string> layers    = poly.get_layers();
+  const double * xv         = poly.get_xv();
+  const double * yv         = poly.get_yv();
+  const int    * numVerts   = poly.get_numVerts();
+  int numPolys              = poly.get_numPolys();
+  vector<bool> isPolyClosed = poly.get_isPolyClosed();
+  vector<string> colors     = poly.get_colors();
+  vector<string> layers     = poly.get_layers();
   vector<anno> annotations;  poly.get_annotations(annotations);
   
   int start = 0;
@@ -311,11 +316,12 @@ void dPoly::appendPolygons(const dPoly & poly){
       
     if (pIter > 0) start += numVerts[pIter - 1];
       
-    string color = colors   [pIter];
-    string layer = layers   [pIter];
-    int pSize    = numVerts [pIter];
+    bool isClosed = isPolyClosed [pIter];
+    string color  = colors       [pIter];
+    string layer  = layers       [pIter];
+    int pSize     = numVerts     [pIter];
     
-    appendPolygon(pSize, xv + start, yv + start, color, layer);
+    appendPolygon(pSize, xv + start, yv + start, isClosed, color, layer);
     
   }
 
@@ -508,9 +514,10 @@ void dPoly::erasePoly(int polyIndex){
   m_totalNumVerts -= m_numVerts[polyIndex];
   m_numPolys      -= 1;
   
-  m_colors.erase(m_colors.begin()     + polyIndex);
-  m_layers.erase(m_layers.begin()     + polyIndex);
-  m_numVerts.erase(m_numVerts.begin() + polyIndex); // better be last
+  m_isPolyClosed.erase(m_isPolyClosed.begin() + polyIndex);
+  m_colors.erase(m_colors.begin()             + polyIndex);
+  m_layers.erase(m_layers.begin()             + polyIndex);
+  m_numVerts.erase(m_numVerts.begin()         + polyIndex); // better be last
   m_vertIndexAnno.clear();
   m_layerAnno.clear();
 
@@ -569,15 +576,19 @@ void dPoly::sortFromLargestToSmallest(){
 
   // Sort the polygons using auxiliary storage
 
-  vector<double> l_xv     = m_xv, l_yv = m_yv;
-  vector<int> l_numVerts  = m_numVerts;
-  vector<string> l_colors = m_colors, l_layers = m_layers;
+  vector<double> l_xv           = m_xv;
+  vector<double> l_yv           = m_yv;
+  vector<int>    l_numVerts     = m_numVerts;
+  vector<bool>   l_isPolyClosed = m_isPolyClosed;
+  vector<string> l_colors       = m_colors;
+  vector<string> l_layers       = m_layers;
 
   for (int s = 0; s < numPolys; s++){
-    int index      = boxDims[s].index;
-    m_numVerts [s] = l_numVerts [index];
-    m_colors   [s] = l_colors   [index];
-    m_layers   [s] = l_layers   [index];
+    int index          = boxDims[s].index;
+    m_numVerts     [s] = l_numVerts     [index];
+    m_isPolyClosed [s] = l_isPolyClosed [index];
+    m_colors       [s] = l_colors       [index];
+    m_layers       [s] = l_layers       [index];
   }
   
   start = 0;
@@ -637,7 +648,9 @@ void dPoly::sortBySizeAndMaybeAddBigFgPoly(// inputs
   double boxX[4], boxY[4];
   boxX[0] = bigXll; boxX[1] = bigXur; boxX[2] = bigXur; boxX[3] = bigXll;
   boxY[0] = bigYll; boxY[1] = bigYll; boxY[2] = bigYur; boxY[3] = bigYur;
-  appendPolygon(4, boxX, boxY, colors[0], layers[0]);
+
+  bool isPolyClosed = true;
+  appendPolygon(4, boxX, boxY, isPolyClosed, colors[0], layers[0]);
 
   // Reorder the updated set of polygons
   sortFromLargestToSmallest();
@@ -799,6 +812,10 @@ void dPoly::writePoly(std::string filename, std::string defaultColor){
 
     if ( m_numVerts[j] <= 0 ) continue; // skip empty polygons
 
+    bool isPolyClosed;
+    if ((int)m_isPolyClosed.size() <= j ) isPolyClosed = true;
+    else isPolyClosed = m_isPolyClosed[j];
+
     if ( (int)m_colors.size() <= j ) currColor = defaultColor;
     else                             currColor = m_colors[j];
 
@@ -807,10 +824,10 @@ void dPoly::writePoly(std::string filename, std::string defaultColor){
     }
     prevColor = currColor;
 
-    string layer = "";
+    string layer;
     if ((int)m_layers.size() <= j ) layer = "";
     else layer = m_layers[j];
-
+    
     for (int i = 0; i < m_numVerts[j]; i++){ // Iterate over vertices of current poly
       
       outfile <<  m_xv[vertCount] << " " << m_yv[vertCount];
