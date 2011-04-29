@@ -866,7 +866,7 @@ void dPoly::writePoly(std::string filename, std::string defaultColor){
 
 bool dPoly::read_pol_or_cnt_format(std::string filename,
                                    std::string type, 
-                      		   bool isPointCloud 
+                                   bool isPointCloud 
                                    ){
 
   // Read in two very simple and related polygon formats.
@@ -910,6 +910,7 @@ bool dPoly::read_pol_or_cnt_format(std::string filename,
     m_numPolys++;
     m_numVerts.push_back(numVerts);
     m_totalNumVerts += numVerts;
+    m_isPolyClosed.push_back(true);
     m_colors.push_back(color);
     m_layers.push_back(layer);
   
@@ -947,6 +948,7 @@ void dPoly::set_pointCloud(const std::vector<dPoint> & P, std::string color,
     m_numPolys++;
     m_numVerts.push_back(1);
     m_layers.push_back(layer);
+    m_isPolyClosed.push_back(true);
     m_colors.push_back(color);
     m_xv.push_back(P[s].x);
     m_yv.push_back(P[s].y);
