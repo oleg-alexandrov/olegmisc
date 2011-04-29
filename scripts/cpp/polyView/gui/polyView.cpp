@@ -114,7 +114,7 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
 
 void polyView::showPoly( QPainter *paint ){
 
-  // To do: this function needs modularization
+  // To do: this function needs modularization and some cleanup.
 
   // Dimensions of the plotting window in pixels exluding any window
   // frame/menu bar/status bar
@@ -239,13 +239,11 @@ void polyView::showPoly( QPainter *paint ){
     dPoly currPoly = m_polyVec[vecIter]; // local copy which we can modify
     
     // When polys are filled, plot largest polys first
-    if (m_showFilledPolys) sortBySizeAndMaybeAddBigFgPoly(//inputs
-                                                          m_viewXll,  m_viewYll,
-                                                          m_viewXll + m_viewWidX,
-                                                          m_viewYll + m_viewWidY,
-                                                          // input-output
-                                                          currPoly 
-                                                          );
+    if (m_showFilledPolys)
+      currPoly.sortBySizeAndMaybeAddBigFgPoly(m_viewXll,  m_viewYll,
+                                              m_viewXll + m_viewWidX,
+                                              m_viewYll + m_viewWidY
+                                              );
     
     dPoly clippedPoly;
     currPoly.clipPoly(//inputs
@@ -1992,57 +1990,4 @@ void polyView::runCmd(std::string cmd){
   return;
 }
 
-void polyView::sortBySizeAndMaybeAddBigFgPoly(// inputs
-                                              double viewXll, double viewYll,
-                                              double viewXur, double viewYur,
-                                              // input-output
-                                              dPoly& poly
-                                              ){
-
-  // To do: move this to utilities.
-  
-  // Sort the polygons from largest to smallest by size. If the
-  // largest one is going clockwise, it is a hole. In that case, add a
-  // large box going counter-clockwise so that we see the hole as a
-  // hole in this box. This is important only when polygons are filled
-  // (and holes are of background color).
-
-  // We use the view box (what we currently see on the screen) as
-  // reference to the size of the box to add.
-  
-  poly.sortFromLargestToSmallest();
-
-  if (poly.get_numPolys() <= 0) return;
-
-  const double         * xv       = poly.get_xv();
-  const double         * yv       = poly.get_yv();
-  const int            * numVerts = poly.get_numVerts();
-  const vector<string> & colors   = poly.get_colors();
-  const vector<string> & layers   = poly.get_layers();
-
-  double signedArea = signedPolyArea(numVerts[0], xv, yv);
-
-  if (signedArea >= 0) return; // Outer poly is correctly oriented
-
-  double xll, yll, xur, yur;
-  poly.bdBox(xll, yll, xur, yur);
-  xll = min(xll, viewXll); xur = max(xur, viewXur);
-  yll = min(yll, viewYll); yur = max(yur, viewYur);
-
-  // Add the extra term to ensure we get a box strictly bigger than
-  // the polygons and the view (this will help with sorting below).
-  double extra = max(abs(xur - xll), abs(yur - yll)) + 10.0;
-  xll -= extra; xur += extra;
-  yll -= extra; yur += extra;
-
-  double boxX[4], boxY[4];
-  boxX[0] = xll; boxX[1] = xur; boxX[2] = xur; boxX[3] = xll;
-  boxY[0] = yll; boxY[1] = yll; boxY[2] = yur; boxY[3] = yur;
-  poly.appendPolygon(4, boxX, boxY, colors[0], layers[0]);
-
-  // Reorder the updated set of polygons
-  poly.sortFromLargestToSmallest();
-
-  return;
-}
 
