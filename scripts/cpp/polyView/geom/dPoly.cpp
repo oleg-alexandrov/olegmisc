@@ -182,7 +182,7 @@ void dPoly::clipPoly(// inputs
     }else{
 
       cutPoly(1, numVerts + pIter, xv + start, yv + start,
-              clip_xll, clip_yll, clip_xur, clip_yur,
+              clip_xll, clip_yll, clip_xur, clip_yur, isClosed,
               cutXv, cutYv, cutNumVerts // outputs
               );
 
