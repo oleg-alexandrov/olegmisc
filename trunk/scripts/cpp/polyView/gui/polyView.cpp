@@ -335,7 +335,7 @@ void polyView::showPoly( QPainter *paint ){
           // That one looks weird and unexpected.
           drawOneVertex(pa[0].x(), pa[0].y(), color, m_lineWidth, drawVertIndex,
                         paint);
-        }else if (!m_noClosedPolys || isPolyClosed[pIter]){
+        }else if (isPolyClosed[pIter]){
           paint->drawPolygon( pa );
         }else{
           paint->drawPolyline( pa ); // don't join the last vertex to the first
