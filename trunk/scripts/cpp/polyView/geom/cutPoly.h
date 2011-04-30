@@ -22,8 +22,8 @@ namespace utils{
                int numPolys, const int * numVerts,
                const double * xv, const double * yv,
                // inputs -- the cutting window
-               double xll, double yll,
-               double xur, double yur,
+               double xll, double yll, double xur, double yur,
+               bool isPolyClosed,
                // outputs -- the cut polygons
                std::vector< double> & cutX,
                std::vector< double> & cutY,
@@ -37,6 +37,7 @@ namespace utils{
                       double nx, double ny, double dotH,
                       int numV, 
                       const double * xv, const double * yv,
+                      bool isPolyClosed,
                       // outputs -- the cut polygons
                       std::vector<double> & cutX,
                       std::vector<double> & cutY,
