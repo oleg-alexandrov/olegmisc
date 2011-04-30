@@ -35,7 +35,7 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   setStandardCursor();
   
   m_plotAsLines       = options.plotAsLines;
-  m_noClosedPolys     = options.noClosedPolys;
+  m_noClosedPolys     = options.noClosedPolys;     // To do: Rm this variable
   m_useCmdLineColors  = options.useCmdLineColors;
   m_lineWidth         = options.lineWidth;
   m_cmdLineColors     = options.cmdLineColors;
@@ -275,6 +275,8 @@ void polyView::showPoly( QPainter *paint ){
     int start = 0;
     for (int pIter = 0; pIter < numPolys; pIter++){
 
+      if (pIter > 0) start += numVerts[pIter - 1];
+
       // Change the poly file color if it is the background color or invalid
       QColor color = QColor( colors[pIter] );
       if ( color == backgroundColor() || color == QColor::Invalid){
@@ -285,8 +287,6 @@ void polyView::showPoly( QPainter *paint ){
         }
       }
       
-      if (pIter > 0) start += numVerts[pIter - 1];
-
       int pSize = numVerts[pIter];
 
       // Determine the orientation of polygons
@@ -335,7 +335,7 @@ void polyView::showPoly( QPainter *paint ){
           // That one looks weird and unexpected.
           drawOneVertex(pa[0].x(), pa[0].y(), color, m_lineWidth, drawVertIndex,
                         paint);
-        }else if (!m_noClosedPolys){
+        }else if (!m_noClosedPolys || isPolyClosed[pIter]){
           paint->drawPolygon( pa );
         }else{
           paint->drawPolyline( pa ); // don't join the last vertex to the first

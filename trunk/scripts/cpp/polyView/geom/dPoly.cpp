@@ -156,9 +156,9 @@ void dPoly::clipPoly(// inputs
     string color  = colors       [pIter];
     string layer  = layers       [pIter];
       
-    vector<double> cxv, cyv;
-    vector<int> cpoly;
-    cxv.clear(); cyv.clear(); cpoly.clear();
+    vector<double> cutXv, cutYv;
+    vector<int> cutNumVerts;
+    cutXv.clear(); cutYv.clear(); cutNumVerts.clear();
     
     if (m_isPointCloud){
 
@@ -171,36 +171,36 @@ void dPoly::clipPoly(// inputs
         if (x >= clip_xll && x <= clip_xur &&
             y >= clip_yll && y <= clip_yur
             ){
-          cxv.push_back(x);
-          cyv.push_back(y);
+          cutXv.push_back(x);
+          cutYv.push_back(y);
         }
         
       }
 
-      cpoly.push_back( cxv.size() );
+      cutNumVerts.push_back( cutXv.size() );
       
     }else{
 
       cutPoly(1, numVerts + pIter, xv + start, yv + start,
               clip_xll, clip_yll, clip_xur, clip_yur,
-              cxv, cyv, cpoly // outputs
+              cutXv, cutYv, cutNumVerts // outputs
               );
 
     }
     
     int cstart = 0;
-    for (int cIter = 0; cIter < (int)cpoly.size(); cIter++){
+    for (int cIter = 0; cIter < (int)cutNumVerts.size(); cIter++){
         
-      if (cIter > 0) cstart += cpoly[cIter - 1];
-      int cSize = cpoly[cIter];
+      if (cIter > 0) cstart += cutNumVerts[cIter - 1];
+      int cSize = cutNumVerts[cIter];
       clippedPoly.appendPolygon(cSize,
-                                vecPtr(cxv) + cstart,
-                                vecPtr(cyv) + cstart,
+                                vecPtr(cutXv) + cstart,
+                                vecPtr(cutYv) + cstart,
                                 isClosed, color, layer
                                 );
 
     }
-
+    
   }
 
   // Cutting inherits the annotations at the vertices of the uncut
@@ -708,7 +708,7 @@ bool dPoly::readPoly(std::string filename,
     // Convert to lowercase
     transform(line.begin(), line.end(), line.begin(), ::tolower);
 
-    char * linePtr = (char*)line.c_str();
+    char * linePtr = (char*)line.c_str(); // To do: Avoid this casting hack.
 
     // Replace comma with space, to be able to use comma as separator
     for (int s = 0; s < (int)strlen(linePtr); s++){
@@ -846,7 +846,7 @@ void dPoly::writePoly(std::string filename, std::string defaultColor){
     // Print the first element again at the end (so that polygons are
     // closed).
     assert(m_numVerts[j] > 0);
-    if ( !m_isPointCloud ){
+    if ( !m_isPointCloud && isPolyClosed){
       int firstVert = vertCount - m_numVerts[j];
       outfile << m_xv[firstVert] << " " << m_yv[firstVert];
       if (layer != "") outfile << " ; " << layer;
