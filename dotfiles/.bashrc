@@ -88,12 +88,14 @@ function a {
   if [ -f ~/.unaliases    ]; then source ~/.unaliases;    fi;
   if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi;
 
-  if [ "$*" ]; then  
-    alias "$*";
-    alias > ~/.bash_aliases; 
-    perl -pi -e "s#^([^\s]+=)#alias \$1#" ~/.bash_aliases;
+  if [ "$*" ]; then
+      # Set the alias, and then display and save it 
+      ans=$( alias "$*" | perl -pi -e 's#(^|\n)(\w+=)#$1 . "a " . $2#eg' );
+      echo $ans;
+      alias > ~/.bash_aliases; 
+      perl -pi -e "s#^([^\s]+=)#alias \$1#" ~/.bash_aliases;
   else
-    alias;  # Just list the aliases
+      alias;  # Just list the aliases
   fi;
  
 }
