@@ -99,7 +99,8 @@ void utils::cutEdge(double x0, double y0, double x1, double y1,
   cutx = (1-t)*x0 + t*x1;
   cuty = (1-t)*y0 + t*y1;
 
-  // Cut symmetrically in x0 and x1 to avoid problems later
+  // Cut symmetrically in x0 and x1. We count on this symmetry
+  // in a few places.
   t = (H - dot1)/(dot0 - dot1);
   t = max(t, 0.0); t = min(t, 1.0); // extra precautions
   double cutx2 = (1-t)*x1 + t*x0;

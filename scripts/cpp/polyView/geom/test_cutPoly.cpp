@@ -34,13 +34,12 @@ int main(int argc, char** argv){
 //   double yll = 100, yur = 501.214;
 
   double w[] = {373.255, -54.6423, 1086, 4837};
-  bool isPolyClosed = true;
   
   vector<double> cutX, cutY;
   vector<int> cutNumPolys;
   
-  cutPoly(numPolys, numVerts, xv, yv, w[0], w[1], w[2], w[3], isPolyClosed, // inputs
-          cutX, cutY, cutNumPolys                                           // outputs
+  cutPoly(numPolys, numVerts, xv, yv, w[0], w[1], w[2], w[3], // inputs
+          cutX, cutY, cutNumPolys                             // outputs
           );
 
 

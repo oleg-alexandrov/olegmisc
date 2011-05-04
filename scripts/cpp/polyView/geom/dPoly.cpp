@@ -165,7 +165,6 @@ void dPoly::clipPoly(// inputs
       // To cut a point cloud to a box all is needed is to select
       // which points are in the box
       for (int vIter = 0; vIter < numVerts[pIter]; vIter++){
-
         double x = xv[start + vIter];
         double y = yv[start + vIter];
         if (x >= clip_xll && x <= clip_xur &&
@@ -174,18 +173,23 @@ void dPoly::clipPoly(// inputs
           cutXv.push_back(x);
           cutYv.push_back(y);
         }
-        
       }
-
       cutNumVerts.push_back( cutXv.size() );
       
-    }else{
+    }else if (isClosed){
 
       cutPoly(1, numVerts + pIter, xv + start, yv + start,
-              clip_xll, clip_yll, clip_xur, clip_yur, isClosed,
+              clip_xll, clip_yll, clip_xur, clip_yur, 
               cutXv, cutYv, cutNumVerts // outputs
               );
-
+      
+    }else{
+      
+      cutPolyLine(numVerts[pIter], xv + start, yv + start,
+                  clip_xll, clip_yll, clip_xur, clip_yur, 
+                  cutXv, cutYv, cutNumVerts // outputs
+                  );
+      
     }
     
     int cstart = 0;
