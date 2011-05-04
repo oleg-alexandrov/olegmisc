@@ -333,7 +333,8 @@ void polyView::showPoly( QPainter *paint ){
           // Treat the case of polygons which are made up of just one point
           // To do: Plot as a 2x2 filled pixel instead of an empty circle.
           // That one looks weird and unexpected.
-          drawOneVertex(pa[0].x(), pa[0].y(), color, m_lineWidth, drawVertIndex,
+          int l_drawVertIndex = -1;
+          drawOneVertex(pa[0].x(), pa[0].y(), color, m_lineWidth, l_drawVertIndex,
                         paint);
         }else if (isPolyClosed[pIter]){
           paint->drawPolygon( pa );
@@ -1076,8 +1077,6 @@ void polyView::drawOneVertex(int x0, int y0, QColor color, int lineWidth,
 
   // Draw a vertex as a small shape (a circle, rectangle, triangle)
   
-  drawVertIndex = max(0, drawVertIndex);
-
   // Use variable size shapes to distinguish better points on top of
   // each other
   int len = 3*(drawVertIndex+1); 
@@ -1085,7 +1084,15 @@ void polyView::drawOneVertex(int x0, int y0, QColor color, int lineWidth,
   paint->setPen( QPen(color, lineWidth) );
 
   int numTypes = 4;
-  if (drawVertIndex%numTypes == 0){
+  if (drawVertIndex < 0){
+    
+    // This will be reached only for the case when a polygon
+    // is so small that it collapses into a point.
+    len = lineWidth;
+    paint->setBrush( NoBrush );
+    paint->drawRect(x0 - len, y0 - len, 2*len, 2*len);
+    
+  } else if (drawVertIndex%numTypes == 0){
     
     // Draw a small empty ellipse
     paint->setBrush( NoBrush );
@@ -1112,14 +1119,7 @@ void polyView::drawOneVertex(int x0, int y0, QColor color, int lineWidth,
     paint->drawLine(x0 - len, y0 + len, x0 + len, y0 + len);
     paint->drawLine(x0 - len, y0 + len, x0 + 0,   y0 - len);
     paint->drawLine(x0 + len, y0 + len, x0 + 0,   y0 - len);
-#if 0
-    // Draw a star
-    paint->setBrush( NoBrush );
-    paint->drawLine(x0 - len, y0 - len, x0 + len, y0 + len);
-    paint->drawLine(x0 - len, y0 + len, x0 + len, y0 - len);
-    paint->drawLine(x0 - len, y0, x0 + len, y0);
-    paint->drawLine(x0, y0 - len, x0, y0 + len);
-#endif  
+    
   }
   
   return;
