@@ -7,7 +7,6 @@
 #include "../geom/dPoly.h"
 
 struct cmdLineOptions{
-  bool                     plotAsLines;
   bool                     noClosedPolys;
   bool                     useCmdLineColors; 
   int                      lineWidth;

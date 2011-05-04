@@ -11,7 +11,7 @@ using namespace std;
 void utils::printUsage(std::string progName){
   std::cout << "Usage: " << progName << " "
             << "[ -geo[metry] 1000x800 ] [ -c[olor] yellow ] [ -lw | -lineWidth 2 ] "
-            << "[ -p[oints] ] [ -nc | -noClosedPolys ] [ -l | -linesOnly ] "
+            << "[ -p[oints] ] [ -nc | -noClosedPolys ] "
             << "file_1.xg ... file_N.xg " << std::endl;
 }
 
@@ -65,7 +65,6 @@ void utils::parseCmdOptions(//inputs
   // To do: Convert everywhere below from strncmp to strcmp.
   
   options.useCmdLineColors = false;
-  options.plotAsLines      = false;
   options.noClosedPolys    = false;
   options.lineWidth        = 1;
   options.cmdLineColors.clear();
@@ -98,12 +97,6 @@ void utils::parseCmdOptions(//inputs
 
     if ( strncmp (currArg, "-p",  strlen("-p")) == 0 ){
       plotPointsOnly = !plotPointsOnly;
-      continue;
-    }
-
-    if ( strcmp (currArg, "-l"         ) == 0 ||
-         strcmp (currArg, "-linesonly" ) == 0 ){
-      options.plotAsLines = true;
       continue;
     }
 
