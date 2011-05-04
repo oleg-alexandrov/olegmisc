@@ -6,13 +6,32 @@
 #include <vector>
 #include "../geom/dPoly.h"
 
+enum closedPolyInfo{
+  // If an array of points as read from file has the first vertex equal to the last
+  // one, we treat it is a closed polygon (last vertex joins the first vertex).
+  // If the user wants to override this behavior, the first two fields below
+  // become necessary.
+  forceClosedPoly, forceNoClosedPoly, isClosedPolyFromFile
+};
+  
+
+struct polyOptions{
+  // Each polygon file has these options
+  bool            plotAsPoints;
+  bool            useCmdLineColor;
+  int             lineWidth;
+  closedPolyInfo  isClosedInfo;
+  std::string     cmdLineColor;
+  std::string     polyFileName;
+};
+
 struct cmdLineOptions{
   bool                     noClosedPolys;
+  std::vector<bool>        plotPointsOnlyVec;
   bool                     useCmdLineColors; 
   int                      lineWidth;
   std::vector<std::string> cmdLineColors; 
   std::vector<std::string> polyFilesVec; 
-  std::vector<bool>        plotPointsOnlyVec;
 };
 
 namespace utils{
