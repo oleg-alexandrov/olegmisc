@@ -11,19 +11,76 @@ using namespace utils;
 
 #define DEBUG_CUT_POLY 0 // Must be 0 in production code
 
+void utils::cutPolyLine(// inputs -- the polygonal line
+                        int numVerts,
+                        const double * xv, const double * yv,
+                        // inputs -- the cutting window
+                        double xll, double yll, double xur, double yur,
+                        // outputs -- the cut polygons
+                        std::vector< double> & cutX,
+                        std::vector< double> & cutY,
+                        std::vector< int>    & cutNumPolys){
+
+  // Cut a polygonal line. First make it into a polygon by traveling
+  // forward and then backward on the polygonal line, then cut the
+  // obtained polygon, then remove the backward portion from each
+  // obtained polygon.
+
+  vector<double> lXv, lYv, lCutX, lCutY;
+  vector<int> lCutNumPolys;
+  
+  lXv.clear(); lYv.clear();
+  for (int s = 0; s < numVerts; s++){
+    lXv.push_back(xv[s]);
+    lYv.push_back(yv[s]);
+  }
+  for (int s = numVerts - 1; s >= 0; s--){
+    lXv.push_back(xv[s]);
+    lYv.push_back(yv[s]);
+  }
+  int lNumVerts = lXv.size();
+  
+  cutPoly(// inputs -- the polygons
+          1, &lNumVerts,  
+          vecPtr(lXv), vecPtr(lYv),  
+          // inputs -- the cutting window
+          xll, yll, xur, yur,  
+          // outputs -- the cut polygons
+          lCutX, lCutY, lCutNumPolys
+          );
+
+  cutX.clear(); cutY.clear(); cutNumPolys.clear();
+  
+  int start = 0;
+  for (int pIter = 0; pIter < (int)lCutNumPolys.size(); pIter++){
+
+    if (pIter > 0) start += lCutNumPolys[pIter - 1];
+
+    // Keep only half of the points of the cut polygon
+    int half = lCutNumPolys[pIter]/2;
+    cutNumPolys.push_back(half);
+    for (int vIter = 0; vIter < half; vIter++){
+      cutX.push_back(lCutX[start + vIter]);
+      cutY.push_back(lCutY[start + vIter]);
+    }
+    
+  }
+
+  return;
+}
+
 void utils::cutPoly(// inputs -- the polygons
-                     int numPolys, const int * numVerts,
-                     const double * xv, const double * yv,
-                     // inputs -- the cutting window
-                     double xll, double yll, double xur, double yur,
-                     bool isPolyClosed,
-                     // outputs -- the cut polygons
-                     std::vector< double> & cutX,
-                     std::vector< double> & cutY,
-                     std::vector< int>    & cutNumPolys){
-
+                    int numPolys, const int * numVerts,
+                    const double * xv, const double * yv,
+                    // inputs -- the cutting window
+                    double xll, double yll, double xur, double yur,
+                    // outputs -- the cut polygons
+                    std::vector< double> & cutX,
+                    std::vector< double> & cutY,
+                    std::vector< int>    & cutNumPolys){
+  
   // Cut a given polygon with a box.
-
+  
   // Intersect the polygon with each of the the half-planes
   // nx*x + ny*y <= (nx + ny)*H.
   // There are four values for the triplet (nx, ny, H):
@@ -63,7 +120,6 @@ void utils::cutPoly(// inputs -- the polygons
       
       cutToHalfSpace(nx, ny, dotH,
                      numV, vecPtr(Xin) + start, vecPtr(Yin) + start,
-                     isPolyClosed,
                      cutHalfX, cutHalfY, cutHalfP);
       
       for (int pIterCut = 0; pIterCut < (int)cutHalfP.size(); pIterCut++){
@@ -93,24 +149,16 @@ void utils::cutToHalfSpace(// inputs
                            double nx, double ny, double dotH,
                            int numV, 
                            const double * xv, const double * yv,
-                           bool isPolyClosed,
                            // outputs -- the cut polygons
                            std::vector<double> & cutX,
                            std::vector<double> & cutY,
                            std::vector<int>    & cutNumPolys){
 
 
-  // True (closed) polygons will be cut differently than polygonal
-  // lines which are not closed. The flag isPolyClosed is used
-  // to decide if the polygon is closed (that is, the last vertex
-  // connects to the first vertex).
-  
   vector<valIndex> ptsOnCutline; ptsOnCutline.clear();
   valIndex C;
   
   cutX.clear(); cutY.clear(); cutNumPolys.clear();
-
-  if (!isPolyClosed) cutNumPolys.push_back(0); 
 
   int cutPtsIndex = 0;
   
@@ -133,24 +181,12 @@ void utils::cutToHalfSpace(// inputs
       cutY.push_back(ycurr);
       cutPtsIndex++; 
 
-      if (!isPolyClosed) cutNumPolys[cutNumPolys.size() - 1]++;
-      
       if (dotNext <= dotH) continue;
       
       cutEdge(xcurr, ycurr, xnext, ynext, nx, ny, dotH, cutx, cuty);
 
-      if (!isPolyClosed && v < numV - 1){
-        // If v is not the last point on the polygonal line
-        cutX.push_back(cutx);
-        cutY.push_back(cuty);
-        cutNumPolys[cutNumPolys.size() - 1]++;
-        cutNumPolys.push_back(0); // Next polygonal line piece
-      }
-      
-      if (isPolyClosed){
-        cutX.push_back(cutx);
-        cutY.push_back(cuty);
-      }
+      cutX.push_back(cutx);
+      cutY.push_back(cuty);
 
       C.val       = nx*cuty - ny*cutx;
       C.index     = cutPtsIndex;
@@ -166,18 +202,9 @@ void utils::cutToHalfSpace(// inputs
       if (dotNext >= dotH) continue;
 
       cutEdge(xcurr, ycurr, xnext, ynext, nx, ny, dotH, cutx, cuty);
-
-      if (!isPolyClosed && v < numV - 1){
-        // If v is not the last point on the polygonal line
-        cutX.push_back(cutx);
-        cutY.push_back(cuty);
-        cutNumPolys[cutNumPolys.size() - 1]++;
-      }
       
-      if (isPolyClosed){
-        cutX.push_back(cutx);
-        cutY.push_back(cuty);
-      }
+      cutX.push_back(cutx);
+      cutY.push_back(cuty);
       
       C.val       = nx*cuty - ny*cutx;
       C.index     = cutPtsIndex;
@@ -214,17 +241,9 @@ void utils::cutToHalfSpace(// inputs
     
   }
   
-  if (!isPolyClosed){
-    int np = cutNumPolys.size();
-    if (np > 1 && cutNumPolys[np - 1] == 0){
-      // Rm the last empty polygon
-      cutNumPolys.resize(np - 1);
-    }
-    return;
-  }
   
   int numPtsOnCutline = ptsOnCutline.size();
-  if (numPtsOnCutline == 0 && isPolyClosed){
+  if (numPtsOnCutline == 0){
     cutNumPolys.push_back( cutX.size() );
     return;
   }
