@@ -160,7 +160,6 @@ private:
   
   bool m_useCmdLineColors;
   std::vector<std::string> m_cmdLineColors;
-  bool                     m_plotAsLines;
   bool                     m_noClosedPolys;
   
   QRect m_rubberBandRect;

@@ -34,7 +34,6 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
 
   setStandardCursor();
   
-  m_plotAsLines       = options.plotAsLines;
   m_noClosedPolys     = options.noClosedPolys;     // To do: Rm this variable
   m_useCmdLineColors  = options.useCmdLineColors;
   m_lineWidth         = options.lineWidth;
@@ -329,10 +328,8 @@ void polyView::showPoly( QPainter *paint ){
           paint->setPen( QPen(color, m_lineWidth) );
         }
 
-        if ( pa.size() >= 1 && isPolyZeroDim(pa) && !m_plotAsLines){
+        if ( pa.size() >= 1 && isPolyZeroDim(pa) ){
           // Treat the case of polygons which are made up of just one point
-          // To do: Plot as a 2x2 filled pixel instead of an empty circle.
-          // That one looks weird and unexpected.
           int l_drawVertIndex = -1;
           drawOneVertex(pa[0].x(), pa[0].y(), color, m_lineWidth, l_drawVertIndex,
                         paint);
@@ -1089,7 +1086,7 @@ void polyView::drawOneVertex(int x0, int y0, QColor color, int lineWidth,
     // This will be reached only for the case when a polygon
     // is so small that it collapses into a point.
     len = lineWidth;
-    paint->setBrush( NoBrush );
+    paint->setBrush( color );
     paint->drawRect(x0 - len, y0 - len, 2*len, 2*len);
     
   } else if (drawVertIndex%numTypes == 0){
