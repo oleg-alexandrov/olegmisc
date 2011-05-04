@@ -34,7 +34,6 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
 
   setStandardCursor();
   
-  m_noClosedPolys     = options.noClosedPolys;     // To do: Rm this variable
   m_useCmdLineColors  = options.useCmdLineColors;
   m_lineWidth         = options.lineWidth;
   m_cmdLineColors     = options.cmdLineColors;

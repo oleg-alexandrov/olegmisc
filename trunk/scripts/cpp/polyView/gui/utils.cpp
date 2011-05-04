@@ -11,7 +11,7 @@ using namespace std;
 void utils::printUsage(std::string progName){
   std::cout << "Usage: " << progName << " "
             << "[ -geo[metry] 1000x800 ] [ -c[olor] yellow ] [ -lw | -lineWidth 2 ] "
-            << "[ -p[oints] ] [ -nc | -noClosedPolys ] "
+            << "[ -p[oints] ] "
             << "file_1.xg ... file_N.xg " << std::endl;
 }
 
@@ -37,7 +37,8 @@ void utils::extractWindowDims(// inputs
     args[s-1][0] = '\0';
     args[s  ][0] = '\0';
     
-    char * pch, * delimiter = "x";
+    char * pch;
+    char delimiter[] = "x";
     
     pch = strtok (line, delimiter);
     if (pch == NULL) continue;
@@ -65,7 +66,6 @@ void utils::parseCmdOptions(//inputs
   // To do: Convert everywhere below from strncmp to strcmp.
   
   options.useCmdLineColors = false;
-  options.noClosedPolys    = false;
   options.lineWidth        = 1;
   options.cmdLineColors.clear();
   options.polyFilesVec.clear();
@@ -107,13 +107,6 @@ void utils::parseCmdOptions(//inputs
       int lw = atoi(argv[argIter + 1]);
       if (lw > 0) options.lineWidth = lw;
       argIter++;
-      continue;
-    }
-
-    if ( strncmp (currArg, "-nc",             strlen("-nc"))            == 0 || 
-         strncmp (currArg, "-noclosedpolys",  strlen("-noclosedpolys")) == 0
-         ){
-      options.noClosedPolys = true;
       continue;
     }
 
