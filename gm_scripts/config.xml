@@ -6,7 +6,7 @@
 	<Script filename="digg_de-link_summaries.user.js" name="Digg de-link summaries" namespace="http://ruhl.in" description="" version="1.0" enabled="true" basedir="digg_de-link_summaries" modified="1263316970891" dependhash="da39a3ee5e6b4b0d3255bfef95601890afd80709">
 		<Include>http://digg.com/*</Include>
 	</Script>
-	<Script filename="tweaking_nyt.user.js" name="Tweaking NYT" namespace="NYT" description="Tweaking NYT" version="" enabled="true" basedir="tweaking_nyt" modified="1300987735198" dependhash="da39a3ee5e6b4b0d3255bfef95601890afd80709">
+	<Script filename="tweaking_nyt.user.js" name="Tweaking NYT" namespace="NYT" description="Tweaking NYT" version="" enabled="true" basedir="tweaking_nyt" modified="1303944595198" dependhash="da39a3ee5e6b4b0d3255bfef95601890afd80709">
 		<Include>http://*.nytimes.com/*</Include>
 		<Include>http://nytimes.com/*</Include>
 	</Script>
@@ -40,5 +40,8 @@
 	</Script>
 	<Script filename="hide_digg_sponsored_entr.user.js" name="Hide Digg Sponsored Entries" namespace="http://daryl.learnhouston.com/userscripts/" description="Remove those irritating sponsored links in Digg's entry list." version="" enabled="true" basedir="hide_digg_sponsored_entr" modified="1293899355000" dependhash="da39a3ee5e6b4b0d3255bfef95601890afd80709">
 		<Include>http*://*digg.com*</Include>
+	</Script>
+	<Script filename="eetimes.user.js" name="EETimes" namespace="local" description="Wipe user comments embedded in the middle of article" version="" enabled="true" basedir="eetimes" modified="1303944037959" dependhash="da39a3ee5e6b4b0d3255bfef95601890afd80709">
+		<Include>http://*.eetimes.com*</Include>
 	</Script>
 </UserScriptConfig>

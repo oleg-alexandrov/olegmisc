@@ -1,17 +1,15 @@
 // ==UserScript==
-// @name           Tweaking NYT
-// @namespace      NYT
-// @description    Tweaking NYT
-// @include        http://*.nytimes.com/*
-// @include        http://nytimes.com/*
+// @name           EETimes
+// @namespace      local
+// @description    Wipe user comments embedded in the middle of article
+// @include        http://*.eetimes.com*
 // ==/UserScript==
 
 	
 (function() {
 
-var adIDAry = ['articleToolsTop', 'TopRight', 'memberTools', 'mainTabs', 'adxBigAd', 'lastUpdate', 'switchEditions', 'HPTopNav', 'socialMediaModule'],
-		classNameAry = ['articleInline runaroundLeft', 'meta flushBottom', 'timestamp', 'singleAd', 'columnGroup firstColumnGroup fullWidth', 'toolbarPromo runaroundRight', 'navigationHomeEdition', 
-            'switchEditions', 'subNavigation tabContent active', 'socialMediaModule', 'facebook'],
+var adIDAry = ['NNA_Comment'],
+		classNameAry = [],
 		tempEle = null,
 		tempEles = null;
 
@@ -32,10 +30,10 @@ var adIDAry = ['articleToolsTop', 'TopRight', 'memberTools', 'mainTabs', 'adxBig
 // alert("Child is " + document.getElementById('toolsHome').childNodes[i].nodeName);
 //}
 
-tempEle = document.getElementById('toolsHome');
-var items = tempEle.getElementsByTagName("a");
-var item = items[0];
-item.parentNode.removeChild(item);
+//tempEle = document.getElementById('toolsHome');
+//var items = tempEle.getElementsByTagName("a");
+//var item = items[0];
+//item.parentNode.removeChild(item);
 
 // document.getElementById('toolsHome').getElementsByTagName("a")[0].text.replace('o', 'e');
 // document.getElementById('toolsHome').getElementsByTagName("a")[0].setAttribute('text', 'hi')
@@ -50,5 +48,6 @@ item.parentNode.removeChild(item);
 //	alert("You entered: " + tempEle.firstChild.nodeValue);
 
 })()
+
 
 
