@@ -81,6 +81,7 @@ Return
   ; Firefox bindings
   !h::Send {Browser_Home}   ; Go to the home page with alt-h
   !g::Send ^lgm{Enter}      ; Go to gmail with         alt-g
+  !n::Send ^ln{Enter}       ; Strip NYT stuff with     alt-n
   Return
 }
 
