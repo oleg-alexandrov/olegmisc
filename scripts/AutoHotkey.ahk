@@ -76,7 +76,7 @@ Return
 }
 
 
-#IfWinActive ahk_class MozillaUIWindowClass
+#IfWinActive ahk_class MozillaWindowClass
 {
   ; Firefox bindings
   !h::Send {Browser_Home}   ; Go to the home page with alt-h
