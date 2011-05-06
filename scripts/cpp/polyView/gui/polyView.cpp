@@ -1598,7 +1598,7 @@ void polyView::openPoly(){
   
   string fileName = string(s.data());
 
-  assert ( (int)m_polyVec.size() = (int)m_polyOptionsVec.size() );
+  assert ( (int)m_polyVec.size() == (int)m_polyOptionsVec.size() );
 
   m_polyOptionsVec.push_back(m_prefs);
   m_polyOptionsVec.back().polyFileName = fileName;
@@ -1677,7 +1677,7 @@ void polyView::saveMultiplePoly(bool overwrite){
 
     dPoly poly = m_polyVec[polyIter];
     
-    string fileName = m_polyOptionsVec[polyIter].fileName;
+    string fileName = m_polyOptionsVec[polyIter].polyFileName;
     if (!overwrite) fileName = inFileToOutFile(fileName);
 
     poly.writePoly(fileName.c_str());
