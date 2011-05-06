@@ -11,27 +11,32 @@ enum closedPolyInfo{
   // one, we treat it is a closed polygon (last vertex joins the first vertex).
   // If the user wants to override this behavior, the first two fields below
   // become necessary.
-  forceClosedPoly, forceNoClosedPoly, isClosedPolyFromFile
+  forceClosedPoly, forceNonClosedPoly, readClosedPolyInfoFromFile
 };
   
 
 struct polyOptions{
   // Each polygon file has these options
   bool            plotAsPoints;
-  bool            useCmdLineColor;
+  closedPolyInfo  isClosedPoly;
   int             lineWidth;
-  closedPolyInfo  isClosedInfo;
+  bool            useCmdLineColor;
   std::string     cmdLineColor;
   std::string     polyFileName;
+  
+  polyOptions(){
+    plotAsPoints    = false;
+    isClosedPoly    = readClosedPolyInfoFromFile;
+    lineWidth       = 1;
+    useCmdLineColor = false;
+    cmdLineColor    = "green";
+    polyFileName    = "unnamed.xg";
+  }
+  
 };
 
 struct cmdLineOptions{
-  bool                     noClosedPolys;
-  std::vector<bool>        plotPointsOnlyVec;
-  bool                     useCmdLineColors; 
-  int                      lineWidth;
-  std::vector<std::string> cmdLineColors; 
-  std::vector<std::string> polyFilesVec; 
+  std::vector<polyOptions> polyOptionsVec;
 };
 
 namespace utils{

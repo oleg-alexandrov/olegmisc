@@ -30,16 +30,19 @@ using namespace utils;
 // To do: The viewer does not render correctly in fill mode overlapping polygons
 //        with each polygon having holes. A fix would require a thorough analysis
 //        which would identify which hole belongs to which polygon.
+// To do: Replace cmdLineOptions directly with polyOptionsVec.
 polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(parent){
 
   setStandardCursor();
-  
-  m_useCmdLineColors  = options.useCmdLineColors;
-  m_lineWidth         = options.lineWidth;
-  m_cmdLineColors     = options.cmdLineColors;
-  m_polyFilesVec      = options.polyFilesVec;
-  m_plotPointsOnlyVec = options.plotPointsOnlyVec;
 
+  // Preferences per polygon file. The element in the vector
+  // m_polyOptionsVec below is not associated with any polygon
+  // file. Set it apart, it will be used for new polygons.
+  m_polyOptionsVec = options.polyOptionsVec;
+  assert(m_polyOptionsVec.size() >= 1);
+  m_prefs = m_polyOptionsVec.back(); m_polyOptionsVec.pop_back();
+  m_prefs.plotAsPoints = false; // most likely the user wants to see edges not points
+  
   // int
   m_screenXll  = 0; m_screenYll  = 0;
   m_screenWidX = 0; m_screenWidY = 0;
@@ -97,8 +100,7 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   // Show poly diff mode
   m_polyDiffMode = false;
   m_polyVecBk.clear();
-  m_plotPointsOnlyVecBk.clear();
-  m_polyFilesVecBk.clear();
+  m_polyOptionsVecBk.clear();
   m_distVec.clear(); // distances b/w polys to diff
   m_indexOfDistToPlot = -1;
 
@@ -113,6 +115,8 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
 void polyView::showPoly( QPainter *paint ){
 
   // To do: this function needs modularization and some cleanup.
+
+  assert( m_polyVec.size() == m_polyOptionsVec.size() );
 
   // Dimensions of the plotting window in pixels exluding any window
   // frame/menu bar/status bar
@@ -207,10 +211,8 @@ void polyView::showPoly( QPainter *paint ){
   // Will draw a vertex with a shape dependent on this index
   int drawVertIndex = -1; 
   
-  setupDisplayOrder(//inputs
-                    m_polyVec.size(), m_plotPointsOnlyVec,
-                    // inputs-outputs
-                    m_changeDisplayOrder, m_polyVecOrder        
+  setupDisplayOrder(m_polyVec.size(),                    //inputs
+                    m_changeDisplayOrder, m_polyVecOrder // inputs-outputs
                     );
   
   // Draw the polygons
@@ -218,8 +220,8 @@ void polyView::showPoly( QPainter *paint ){
 
     int vecIter = m_polyVecOrder[vi];
 
-    bool plotPointsOnly = m_plotPointsOnlyVec[vecIter];
-    if (plotPointsOnly                               ||
+    bool plotAsPoints = m_polyOptionsVec[vecIter].plotAsPoints;
+    if (plotAsPoints                                 ||
         m_toggleShowPointsEdges == m_showPoints      ||
         m_toggleShowPointsEdges == m_showPointsEdges 
         ) drawVertIndex++;
@@ -304,7 +306,7 @@ void polyView::showPoly( QPainter *paint ){
 
         // Qt's built in points are too small. Instead of drawing a point
         // draw a small shape. 
-        if ( ( plotPointsOnly                               ||
+        if ( ( plotAsPoints                                 ||
                m_toggleShowPointsEdges == m_showPoints      ||
                m_toggleShowPointsEdges == m_showPointsEdges
                )
@@ -312,11 +314,11 @@ void polyView::showPoly( QPainter *paint ){
              x0 > m_screenXll && x0 < m_screenXll + m_screenWidX && 
              y0 > m_screenYll && y0 < m_screenYll + m_screenWidY
              ){
-          drawOneVertex(x0, y0, color, m_lineWidth, drawVertIndex, paint);
+          drawOneVertex(x0, y0, color, m_prefs.lineWidth, drawVertIndex, paint);
         }
       }
       
-      if (!plotPointsOnly && m_toggleShowPointsEdges != m_showPoints){
+      if (!plotAsPoints && m_toggleShowPointsEdges != m_showPoints){
 
         if (m_showFilledPolys && isPolyClosed[pIter]){
           if (signedArea >= 0.0) paint->setBrush( color );
@@ -324,13 +326,13 @@ void polyView::showPoly( QPainter *paint ){
           paint->setPen( NoPen );
         }else {
           paint->setBrush( NoBrush );
-          paint->setPen( QPen(color, m_lineWidth) );
+          paint->setPen( QPen(color, m_prefs.lineWidth) );
         }
 
         if ( pa.size() >= 1 && isPolyZeroDim(pa) ){
           // Treat the case of polygons which are made up of just one point
           int l_drawVertIndex = -1;
-          drawOneVertex(pa[0].x(), pa[0].y(), color, m_lineWidth, l_drawVertIndex,
+          drawOneVertex(pa[0].x(), pa[0].y(), color, m_prefs.lineWidth, l_drawVertIndex,
                         paint);
         }else if (isPolyClosed[pIter]){
           paint->drawPolygon( pa );
@@ -350,7 +352,7 @@ void polyView::showPoly( QPainter *paint ){
       worldToPixelCoords(A.x, A.y, // inputs
                          x0, y0    // outputs
                          );
-      paint->setPen( QPen("gold", m_lineWidth) );
+      paint->setPen( QPen("gold", m_prefs.lineWidth) );
       if (isClosestGridPtFree(Grid, x0, y0)){
         paint->drawText(x0, y0, A.label);
       }
@@ -361,7 +363,7 @@ void polyView::showPoly( QPainter *paint ){
 
   // Plot the highlights
   for (int h = 0; h < (int)m_highlights.size(); h++){
-    drawRect(m_highlights[h], m_lineWidth, paint);
+    drawRect(m_highlights[h], m_prefs.lineWidth, paint);
   }
   
   // This draws the polygon being created if in that mode
@@ -373,7 +375,7 @@ void polyView::showPoly( QPainter *paint ){
     worldToPixelCoords(m_markX[0], m_markY[0], // inputs
                        x0, y0                  // outputs
                        );
-    drawMark(x0, y0, "white", m_lineWidth, paint);
+    drawMark(x0, y0, "white", m_prefs.lineWidth, paint);
   }
 
   // If in diff mode
@@ -677,7 +679,7 @@ void polyView::setLineWidth(){
   vector<double> linewidth;
   if ( getValuesFromGui("Line width", "Enter line width", linewidth) &&
        !linewidth.empty() && linewidth[0] >= 1.0 ){
-    m_lineWidth = (int) linewidth[0];
+    m_prefs.lineWidth = (int) round(linewidth[0]);
     update();
   }else{
     popUp("The line width must be a positive integer");
@@ -840,7 +842,7 @@ void polyView::addPolyVert(int px, int py){
   }else{
     // No other polygons to borrow layer and color info from. Just use
     // some defaults then.
-    color = "green";
+    color = m_prefs.cmdLineColor;
     layer = "";
   }
 
@@ -860,14 +862,14 @@ void polyView::addPolyVert(int px, int py){
   // clips already, append it to the last clip. If we have no clips,
   // create a new clip.
   if (m_polyVec.size() == 0){
-      
+
     m_polyVec.push_back(P);
-    m_plotPointsOnlyVec.push_back(false);
-    string fileName = "poly" + num2str(m_polyFilesVec.size()) + ".xg";
-    m_polyFilesVec.push_back(fileName);
+    m_polyOptionsVec.push_back(m_prefs);
+    string fileName = "poly" + num2str(m_polyVec.size() - 1) + ".xg";
+    m_polyOptionsVec.back().polyFileName = fileName;
       
   }else{
-    m_polyVec[m_polyVec.size() - 1].appendPolygons(P);
+    m_polyVec.back().appendPolygons(P);
   }
     
   // Reset
@@ -889,7 +891,7 @@ void polyView::drawCurrPolyLine(QPainter * paint){
   
   string color  = "white";
   paint->setBrush( NoBrush );
-  paint->setPen( QPen(color.c_str(), m_lineWidth) );
+  paint->setPen( QPen(color.c_str(), m_prefs.lineWidth) );
 
   // To do: The block below better become its own function
   // which can draw points, poly lines, and polygons
@@ -969,7 +971,7 @@ void polyView::printCurrCoords(const ButtonState & state, // input
 
   QPainter paint(this);
   int len = 3;
-  paint.setPen( QPen("white", m_lineWidth) );
+  paint.setPen( QPen("white", m_prefs.lineWidth) );
   paint.setBrush( NoBrush );
 
   // Snap to the closest vertex with the left mouse button
@@ -1168,10 +1170,10 @@ void polyView::toggleShowPolyDiff(){
   printCmd("poly_diff");
 
   if (m_polyDiffMode){
+    // Turn off diff mode
     m_polyDiffMode      = false;
     m_polyVec           = m_polyVecBk;
-    m_plotPointsOnlyVec = m_plotPointsOnlyVecBk;
-    m_polyFilesVec      = m_polyFilesVecBk;
+    m_polyOptionsVec    = m_polyOptionsVecBk;
 
     // See polyView::plotDiff() for explanation.
     m_distVec.clear();
@@ -1181,10 +1183,9 @@ void polyView::toggleShowPolyDiff(){
     return;
   }
 
-  // To do: The vector m_plotPointsOnlyVec should be unnecessary, as
-  // each polygon already knows if it is a point cloud (that is, to be
-  // plotted as points only).
-  assert(m_polyVec.size() == m_plotPointsOnlyVec.size());
+  // Turn on diff mode
+  
+  assert( m_polyVec.size() == m_polyOptionsVec.size() );
   
   if (m_polyVec.size() < 2){
     popUp("Must have two polygon files to diff");
@@ -1195,15 +1196,16 @@ void polyView::toggleShowPolyDiff(){
     cout << "Showing the differences of the first two polygon files "
          << "and ignoring the rest" << endl;
   }
-  
+
   m_polyDiffMode        = true;
-  m_polyVecBk           = m_polyVec;
-  m_plotPointsOnlyVecBk = m_plotPointsOnlyVec;
-  m_polyFilesVecBk      = m_polyFilesVec;
+
+  // Back up the current settings before entering poly diff mode
+  // to be able to restore them later.
+  m_polyVecBk        = m_polyVec;
+  m_polyOptionsVecBk = m_polyOptionsVec;
 
   m_polyVec.resize(4);
-  m_plotPointsOnlyVec.resize(4);
-  m_polyFilesVec.resize(4);
+  m_polyOptionsVec.resize(4);
 
   string color1 = "red", color2 = "blue", layer1 = "", layer2 = "";
   
@@ -1221,11 +1223,14 @@ void polyView::toggleShowPolyDiff(){
   P.set_color(color1);
   Q.set_color(color2);
   
-  m_polyVec[2].set_pointCloud(vP, color1, layer1); m_plotPointsOnlyVec[2] = true;
-  m_polyVec[3].set_pointCloud(vQ, color2, layer2); m_plotPointsOnlyVec[3] = true;
+  m_polyVec[2].set_pointCloud(vP, color1, layer1);
+  m_polyVec[3].set_pointCloud(vQ, color2, layer2);
 
-  m_polyFilesVec[2] = "diff1.xg";
-  m_polyFilesVec[3] = "diff2.xg";
+  m_polyOptionsVec[2].plotAsPoints = true;
+  m_polyOptionsVec[3].plotAsPoints = true;
+
+  m_polyOptionsVec[2].polyFileName = "diff1.xg";
+  m_polyOptionsVec[3].polyFileName = "diff2.xg";
   
   update();
 }
@@ -1309,7 +1314,7 @@ void polyView::plotDistBwPolyClips( QPainter *paint ){
 
   int radius    = 2;
   string color  = "yellow";
-  paint->setPen( QPen( color.c_str(), m_lineWidth) );
+  paint->setPen( QPen( color.c_str(), m_prefs.lineWidth) );
   paint->setBrush( QColor(color) );
 
   // To do: This does not behave well on zoom. Need to cut this segment to the viewing
@@ -1559,19 +1564,20 @@ void polyView::undoLast(){
 
 void polyView::readAllPolys(){
 
-  int numFiles = m_polyFilesVec.size();
+  int numFiles = m_polyOptionsVec.size();
   m_polyVec.resize(numFiles);
   
   for (int fileIter = 0; fileIter < numFiles; fileIter++){
     
     readOnePoly(// inputs
-                m_polyFilesVec[fileIter], m_plotPointsOnlyVec[fileIter],
+                m_polyOptionsVec[fileIter].polyFileName,
+                m_polyOptionsVec[fileIter].plotAsPoints,
                 // output
                 m_polyVec[fileIter]
                 );
 
-    if (m_useCmdLineColors){
-      m_polyVec[fileIter].set_color(m_cmdLineColors[fileIter]);
+    if (m_polyOptionsVec[fileIter].useCmdLineColor){
+      m_polyVec[fileIter].set_color(m_polyOptionsVec[fileIter].cmdLineColor);
     }
     
   }
@@ -1592,23 +1598,25 @@ void polyView::openPoly(){
   
   string fileName = string(s.data());
 
-  bool plotPointsOnly = false;
+  assert ( (int)m_polyVec.size() = (int)m_polyOptionsVec.size() );
 
-  int numFiles = m_polyFilesVec.size();
-  m_polyFilesVec.resize      (numFiles+1);
-  m_plotPointsOnlyVec.resize (numFiles+1);
-  m_polyVec.resize           (numFiles+1);
-
-  m_polyFilesVec[numFiles]      = fileName;
-  m_plotPointsOnlyVec[numFiles] = plotPointsOnly;
+  m_polyOptionsVec.push_back(m_prefs);
+  m_polyOptionsVec.back().polyFileName = fileName;
+  
+  dPoly poly;
   readOnePoly(// inputs
-              m_polyFilesVec[numFiles], m_plotPointsOnlyVec[numFiles],
+              m_polyOptionsVec.back().polyFileName,
+              m_polyOptionsVec.back().plotAsPoints,
               // output
-              m_polyVec[numFiles]
+              poly
               );
+  if (m_polyOptionsVec.back().useCmdLineColor){
+    poly.set_color(m_polyOptionsVec.back().cmdLineColor);
+  }
+  m_polyVec.push_back(poly);
 
   resetView();
-
+  
   return;
 }
 
@@ -1669,13 +1677,9 @@ void polyView::saveMultiplePoly(bool overwrite){
 
     dPoly poly = m_polyVec[polyIter];
     
-    string fileName;
-    if (overwrite){
-      fileName = m_polyFilesVec[polyIter];
-    }else{
-      fileName = inFileToOutFile(m_polyFilesVec[polyIter]);
-    }
-    
+    string fileName = m_polyOptionsVec[polyIter].fileName;
+    if (!overwrite) fileName = inFileToOutFile(fileName);
+
     poly.writePoly(fileName.c_str());
     allFiles += " " + fileName;
   }
@@ -1772,10 +1776,12 @@ void polyView::setPolyDrawCursor(){
   setCursor(C);
 }
 
-void polyView::setupDisplayOrder(int                 numPolys, 
-                                 std::vector<bool> & plotPointsOnlyVec,
+void polyView::setupDisplayOrder(// Inputs
+                                 int                 numPolys,
+                                 // Input-output
                                  bool              & changeDisplayOrder,
-                                 std::vector<int>  & polyVecOrder){
+                                 std::vector<int>  & polyVecOrder
+                                 ){
 
 
   // Decide the order in which polygons are displayed. 
@@ -1787,42 +1793,16 @@ void polyView::setupDisplayOrder(int                 numPolys,
     for (int c = 0; c < numPolys; c++){
       polyVecOrder[c] = c;
     }
-    
+
   }else if (changeDisplayOrder && numPolys >= 1){
 
     changeDisplayOrder = false;
 
-    assert((int)plotPointsOnlyVec.size() == numPolys);
-
-    bool hasNonPointPolys = false;
-    for (int c = 0; c < numPolys; c++){
-      if (!plotPointsOnlyVec[c]){
-        hasNonPointPolys = true;
-        break;
-      }
-    }
-    if (!hasNonPointPolys){
-      return;
-    }
-    
     // Cycle left
-    bool firstCycle = true;
-    while (
-           // We want the last polygon (the one displayed on top)
-           // to not be made up of points only.
-           // To do: Why on earth this restriction?
-           firstCycle || plotPointsOnlyVec[polyVecOrder[numPolys - 1]]
-           ){
-      
-      firstCycle = false;
-      
-      int bk = polyVecOrder[0];
-      for (int c = 1; c < numPolys; c++){
-        polyVecOrder[c-1] = polyVecOrder[c];
-      }
-      polyVecOrder[numPolys - 1] = bk;
-      
-    }
+    int bk = polyVecOrder[0];
+    for (int c = 1; c < numPolys; c++) polyVecOrder[c-1] = polyVecOrder[c];
+    polyVecOrder[numPolys - 1] = bk;
+    
     
   }
 

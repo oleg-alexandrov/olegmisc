@@ -9,10 +9,10 @@
 using namespace std;
 
 void utils::printUsage(std::string progName){
-  std::cout << "Usage: " << progName << " "
-            << "[ -geo[metry] 1000x800 ] [ -c[olor] yellow ] [ -lw | -lineWidth 2 ] "
-            << "[ -p[oints] ] "
-            << "file_1.xg ... file_N.xg " << std::endl;
+  cout << "Usage: " << progName << " "
+       << "[ -geo[metry] 1000x800 ] [ -c | -color yellow ] [ -lw | -lineWidth 2 ] "
+       << "[ -p | -points ] [ -cp | -closedPoly ] [ -nc | -nonClosedPoly ] "
+       << "file_1.xg ... file_N.xg " << endl;
 }
 
 void utils::extractWindowDims(// inputs
@@ -63,20 +63,13 @@ void utils::parseCmdOptions(//inputs
                             int & windowWidX, int & windowWidY, cmdLineOptions & options
                             ){
 
-  // To do: Convert everywhere below from strncmp to strcmp.
+  options.polyOptionsVec.clear();
   
-  options.useCmdLineColors = false;
-  options.lineWidth        = 1;
-  options.cmdLineColors.clear();
-  options.polyFilesVec.clear();
-  options.plotPointsOnlyVec.clear();
-
+  polyOptions opt; // Each polygon file will have one such entry
+  
   // Skip argv[0] as that's the program name
   extractWindowDims(argc - 1, argv + 1, windowWidX, windowWidY);
 
-  string color        = "yellow"; // default command line color
-  bool plotPointsOnly = false; // plot the edges or just the vertices
-  
   for (int argIter = 1; argIter < argc; argIter++){
 
     char * currArg = argv[argIter];
@@ -88,15 +81,27 @@ void utils::parseCmdOptions(//inputs
       transform(currArg, currArg + strlen(currArg), currArg, ::tolower);
     }
 
-    if (strncmp ( currArg, "-?",  strlen("-?")  ) == 0 ||
-        strncmp ( currArg, "-h",  strlen("-h")  ) == 0 ||
-        strncmp ( currArg, "--h", strlen("--h") ) == 0){
+    if (strcmp( currArg, "-h"     ) == 0 || strcmp( currArg, "--h"    ) == 0 ||
+        strcmp( currArg, "-help"  ) == 0 || strcmp( currArg, "--help" ) == 0 ||
+        strcmp( currArg, "-?"     ) == 0 || strcmp( currArg, "--?"    ) == 0 ){
       printUsage(exeName);
       exit(0);
     }
+    
+    if ( strcmp(currArg, "-p") == 0 || strcmp(currArg, "-points") == 0 ){
+      opt.plotAsPoints = !opt.plotAsPoints;
+      continue;
+    }
+    
+    if ( strcmp(currArg, "-cp") == 0 || strcmp(currArg, "-closedpoly") == 0 ){
+      // Plot as closed polygons
+      opt.isClosedPoly = forceClosedPoly;
+      continue;
+    }
 
-    if ( strncmp (currArg, "-p",  strlen("-p")) == 0 ){
-      plotPointsOnly = !plotPointsOnly;
+    if ( strcmp(currArg, "-nc") == 0 || strcmp(currArg, "-nonclosedpoly") == 0 ){
+      // Plot as polygonal lines
+      opt.isClosedPoly = forceNonClosedPoly;
       continue;
     }
 
@@ -105,14 +110,15 @@ void utils::parseCmdOptions(//inputs
          argIter < argc - 1
          ){
       int lw = atoi(argv[argIter + 1]);
-      if (lw > 0) options.lineWidth = lw;
+      if (lw > 0) opt.lineWidth = lw;
       argIter++;
       continue;
     }
 
-    if ( strncmp (currArg, "-c",  2) == 0 && argIter < argc - 1){
-      options.useCmdLineColors = true;
-      color = argv[argIter + 1];
+    if ( (strcmp(currArg, "-c") == 0 || strcmp(currArg, "-color") == 0 )
+         && argIter < argc - 1){
+      opt.useCmdLineColor = true;
+      opt.cmdLineColor    = argv[argIter + 1];
       argIter++;
       continue;
     }
@@ -120,10 +126,15 @@ void utils::parseCmdOptions(//inputs
     // Other command line options are ignored
     if (currArg[0] == '-') continue;
     
-    options.cmdLineColors.push_back(color);
-    options.polyFilesVec.push_back(currArg);
-    options.plotPointsOnlyVec.push_back(plotPointsOnly);
+    opt.polyFileName = currArg;
+
+    options.polyOptionsVec.push_back(opt);
   }
+
+  // Push one more time, to guarantee that the options vector is
+  // non-empty even if no polygons were provided as input, and to make
+  // sure we also parsed the options after the last polygon filename.
+  options.polyOptionsVec.push_back(opt);
   
   return;
 }

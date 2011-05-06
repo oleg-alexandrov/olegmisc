@@ -90,10 +90,12 @@ private:
   void scalePolys(std::vector<double> & scale);
   void drawMark(int x0, int y0, QColor color, int lineWidth,
                 QPainter * paint);
-  void setupDisplayOrder(int                 numPolys, 
-                         std::vector<bool> & plotPointsOnlyVec,
+  void setupDisplayOrder(// Inputs
+                         int                 numPolys,
+                         // Input-output
                          bool              & changeDisplayOrder,
-                         std::vector<int>  & polyVecOrder);
+                         std::vector<int>  & polyVecOrder
+                         );
   void drawCurrPolyLine(QPainter * paint);
   void drawPolyLine();
   void addPolyVert(int px, int py);
@@ -145,22 +147,17 @@ private:
   double m_prevClickedX, m_prevClickedY;
   double m_screenRatio, m_pixelSize;
   
-  // Polygons, plot as points or not, and file names.
-  // These three vectors must always have the same size.
+  // Polygons
   std::vector<dPoly>       m_polyVec;
-  std::vector<bool>        m_plotPointsOnlyVec;
-  std::vector<std::string> m_polyFilesVec;
+
+  std::vector<polyOptions> m_polyOptionsVec; // options for exiting polygons
+  polyOptions m_prefs;                       // options for future polygons
 
   // Used for undo
   std::vector< std::vector<dPoly> > m_polyVecStack;
   std::vector<int> m_actions;
   std::vector<bool> m_resetViewOnUndo;
 
-  int m_lineWidth;
-  
-  bool m_useCmdLineColors;
-  std::vector<std::string> m_cmdLineColors;
-  
   QRect m_rubberBandRect;
   bool m_resetView;
   bool m_prevClickExists;
@@ -196,7 +193,7 @@ private:
 
   std::vector<int> m_polyVecOrder;
 
-  // To print points at the nm scale as opposed to the database unit
+  // To print point coordinates at the nm scale as opposed to the database unit
   // (dbu) scale.
   bool m_useNmScale;
   double m_nmScale;
@@ -205,11 +202,9 @@ private:
   // For plotting in diff mode
   bool m_polyDiffMode;
   std::vector<dPoly> m_polyVecBk;
-  std::vector<bool>  m_plotPointsOnlyVecBk;
-  std::vector<std::string> m_polyFilesVecBk;
+  std::vector<polyOptions>  m_polyOptionsVecBk;
   std::vector<utils::segDist> m_distVec; // distances b/w polys to diff
   std::vector<double> m_segX, m_segY;    // segment to plot
-  
   int m_indexOfDistToPlot;
   
 };
