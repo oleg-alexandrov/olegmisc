@@ -61,6 +61,8 @@ public:
   std::vector<std::string> get_layers () const { return m_layers;                  }
   
   void set_color(std::string color);
+
+  void set_isPolyClosed(bool isPolyClosed);
   
   void set_isPointCloud(bool isPointCloud){ m_isPointCloud = isPointCloud; }
   bool isPointCloud() { return m_isPointCloud;}
