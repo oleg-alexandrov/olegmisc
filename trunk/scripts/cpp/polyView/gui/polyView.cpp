@@ -1572,6 +1572,7 @@ void polyView::readAllPolys(){
     readOnePoly(// inputs
                 m_polyOptionsVec[fileIter].polyFileName,
                 m_polyOptionsVec[fileIter].plotAsPoints,
+                m_polyOptionsVec[fileIter].isPolyClosed,
                 // output
                 m_polyVec[fileIter]
                 );
@@ -1607,6 +1608,7 @@ void polyView::openPoly(){
   readOnePoly(// inputs
               m_polyOptionsVec.back().polyFileName,
               m_polyOptionsVec.back().plotAsPoints,
+              m_polyOptionsVec.back().isPolyClosed,
               // output
               poly
               );
@@ -1621,8 +1623,9 @@ void polyView::openPoly(){
 }
 
 void polyView::readOnePoly(// inputs
-                           std::string & filename,
-                           bool plotPointsOnly,
+                           std::string   & filename,
+                           bool            plotPointsOnly,
+                           closedPolyInfo  isPolyClosed,
                            // output
                            dPoly & poly           
                            ){
@@ -1639,6 +1642,15 @@ void polyView::readOnePoly(// inputs
   if ( ! poly.readPoly(filename, plotPointsOnly) ){
     exit(1);
   }
+
+  bool isClosed;
+  if (isPolyClosed == forceClosedPoly){
+    isClosed = true;
+    dPoly.set_isPolyClosed(isClosed);
+  }else if (isPolyClosed == forceNonClosedPoly){
+    isClosed = false;
+    dPoly.set_isPolyClosed(isClosed);
+  } // else do not modify the isClosed info
   
   return;
 }
