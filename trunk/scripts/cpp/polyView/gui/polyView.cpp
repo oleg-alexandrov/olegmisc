@@ -848,7 +848,7 @@ void polyView::addPolyVert(int px, int py){
 
   // Form the new polygon
   dPoly P;
-  bool isPolyClosed = true;
+  bool isPolyClosed = (m_prefs.isPolyClosed != forceNonClosedPoly);
   P.reset();
   P.appendPolygon(pSize, vecPtr(m_currPolyX), vecPtr(m_currPolyY),
                   isPolyClosed, color, layer);
