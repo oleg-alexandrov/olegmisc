@@ -1646,10 +1646,10 @@ void polyView::readOnePoly(// inputs
   bool isClosed;
   if (isPolyClosed == forceClosedPoly){
     isClosed = true;
-    dPoly.set_isPolyClosed(isClosed);
+    poly.set_isPolyClosed(isClosed);
   }else if (isPolyClosed == forceNonClosedPoly){
     isClosed = false;
-    dPoly.set_isPolyClosed(isClosed);
+    poly.set_isPolyClosed(isClosed);
   } // else do not modify the isClosed info
   
   return;
