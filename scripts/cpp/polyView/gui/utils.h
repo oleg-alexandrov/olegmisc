@@ -18,7 +18,8 @@ enum closedPolyInfo{
 struct polyOptions{
   // Each polygon file has these options
   bool            plotAsPoints;
-  closedPolyInfo  isClosedPoly;
+  bool            isPolyFilled;
+  closedPolyInfo  isPolyClosed;
   int             lineWidth;
   bool            useCmdLineColor;
   std::string     cmdLineColor;
@@ -26,7 +27,8 @@ struct polyOptions{
   
   polyOptions(){
     plotAsPoints    = false;
-    isClosedPoly    = readClosedPolyInfoFromFile;
+    isPolyFilled    = false;
+    isPolyClosed    = readClosedPolyInfoFromFile;
     lineWidth       = 1;
     useCmdLineColor = false;
     cmdLineColor    = "green";

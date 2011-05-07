@@ -111,8 +111,9 @@ private:
                        int & currX, int  & currY  // in-out
                        );
   void readOnePoly(// inputs
-                   std::string & filename,
-                   bool plotPointsOnly,
+                   std::string &  filename,
+                   bool           plotPointsOnly,
+                   closedPolyInfo isPolyClosed,
                    // output
                    dPoly & poly           
                    );

@@ -12,6 +12,7 @@ void utils::printUsage(std::string progName){
   cout << "Usage: " << progName << " "
        << "[ -geo[metry] 1000x800 ] [ -c | -color yellow ] [ -lw | -lineWidth 2 ] "
        << "[ -p | -points ] [ -cp | -closedPoly ] [ -nc | -nonClosedPoly ] "
+       << "[ -f | -filledPoly ] [ -nf | -nonFilledPoly ] "
        << "file_1.xg ... file_N.xg " << endl;
 }
 
@@ -93,15 +94,25 @@ void utils::parseCmdOptions(//inputs
       continue;
     }
     
+    if ( strcmp(currArg, "-f") == 0 || strcmp(currArg, "-filledpoly") == 0 ){
+      opt.isPolyFilled = true;
+      continue;
+    }
+
+    if ( strcmp(currArg, "-nf") == 0 || strcmp(currArg, "-nonfilledpoly") == 0 ){
+      opt.isPolyFilled = false;
+      continue;
+    }
+
     if ( strcmp(currArg, "-cp") == 0 || strcmp(currArg, "-closedpoly") == 0 ){
       // Plot as closed polygons
-      opt.isClosedPoly = forceClosedPoly;
+      opt.isPolyClosed = forceClosedPoly;
       continue;
     }
 
     if ( strcmp(currArg, "-nc") == 0 || strcmp(currArg, "-nonclosedpoly") == 0 ){
       // Plot as polygonal lines
-      opt.isClosedPoly = forceNonClosedPoly;
+      opt.isPolyClosed = forceNonClosedPoly;
       continue;
     }
 
