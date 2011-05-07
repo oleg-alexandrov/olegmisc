@@ -366,7 +366,18 @@ void dPoly::set_color(std::string color){
   for (int s = 0; s < (int)m_colors.size(); s++){
     m_colors[s] = color;
   }
-  
+
+  return;
+}
+
+void dPoly::set_isPolyClosed(bool isPolyClosed){
+
+  m_isPolyClosed.resize(m_numPolys);
+  for (int s = 0; s < (int)m_isPolyClosed.size(); s++){
+    m_isPolyClosed[s] = isPolyClosed;
+  }
+
+  return;
 }
 
 void dPoly::compVertIndexAnno(){
@@ -817,7 +828,7 @@ void dPoly::writePoly(std::string filename, std::string defaultColor){
     if ( m_numVerts[j] <= 0 ) continue; // skip empty polygons
 
     bool isPolyClosed;
-    if ((int)m_isPolyClosed.size() <= j ) isPolyClosed = true;
+    if ( (int)m_isPolyClosed.size() <= j ) isPolyClosed = true;
     else isPolyClosed = m_isPolyClosed[j];
 
     if ( (int)m_colors.size() <= j ) currColor = defaultColor;
