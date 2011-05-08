@@ -220,9 +220,10 @@ void polyView::showPoly( QPainter *paint ){
 
     int vecIter = m_polyVecOrder[vi];
 
-    int lineWidth = m_polyOptionsVec[vecIter].lineWidth;
-
+    int lineWidth     = m_polyOptionsVec[vecIter].lineWidth;
+    bool fillPoly     = m_polyOptionsVec[vecIter].isPolyFilled || m_showFilledPolys;
     bool plotAsPoints = m_polyOptionsVec[vecIter].plotAsPoints;
+    
     if (plotAsPoints                                 ||
         m_toggleShowPointsEdges == m_showPoints      ||
         m_toggleShowPointsEdges == m_showPointsEdges 
@@ -241,7 +242,7 @@ void polyView::showPoly( QPainter *paint ){
     dPoly currPoly = m_polyVec[vecIter]; // local copy which we can modify
     
     // When polys are filled, plot largest polys first
-    if (m_showFilledPolys)
+    if (fillPoly)
       currPoly.sortBySizeAndMaybeAddBigFgPoly(m_viewXll,  m_viewYll,
                                               m_viewXll + m_viewWidX,
                                               m_viewYll + m_viewWidY
@@ -293,7 +294,7 @@ void polyView::showPoly( QPainter *paint ){
 
       // Determine the orientation of polygons
       double signedArea = 0.0;
-      if (m_showFilledPolys && isPolyClosed[pIter]){
+      if (fillPoly && isPolyClosed[pIter]){
         signedArea = signedPolyArea(pSize, xv + start, yv + start);
       }
       
@@ -322,7 +323,7 @@ void polyView::showPoly( QPainter *paint ){
       
       if (!plotAsPoints && m_toggleShowPointsEdges != m_showPoints){
 
-        if (m_showFilledPolys && isPolyClosed[pIter]){
+        if (fillPoly && isPolyClosed[pIter]){
           if (signedArea >= 0.0) paint->setBrush( color );
           else                   paint->setBrush( backgroundColor() ); 
           paint->setPen( NoPen );
