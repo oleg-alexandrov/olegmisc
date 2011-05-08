@@ -220,6 +220,8 @@ void polyView::showPoly( QPainter *paint ){
 
     int vecIter = m_polyVecOrder[vi];
 
+    int lineWidth = m_polyOptionsVec[vecIter].lineWidth;
+
     bool plotAsPoints = m_polyOptionsVec[vecIter].plotAsPoints;
     if (plotAsPoints                                 ||
         m_toggleShowPointsEdges == m_showPoints      ||
@@ -314,7 +316,7 @@ void polyView::showPoly( QPainter *paint ){
              x0 > m_screenXll && x0 < m_screenXll + m_screenWidX && 
              y0 > m_screenYll && y0 < m_screenYll + m_screenWidY
              ){
-          drawOneVertex(x0, y0, color, m_prefs.lineWidth, drawVertIndex, paint);
+          drawOneVertex(x0, y0, color, lineWidth, drawVertIndex, paint);
         }
       }
       
@@ -326,13 +328,13 @@ void polyView::showPoly( QPainter *paint ){
           paint->setPen( NoPen );
         }else {
           paint->setBrush( NoBrush );
-          paint->setPen( QPen(color, m_prefs.lineWidth) );
+          paint->setPen( QPen(color, lineWidth) );
         }
 
         if ( pa.size() >= 1 && isPolyZeroDim(pa) ){
           // Treat the case of polygons which are made up of just one point
           int l_drawVertIndex = -1;
-          drawOneVertex(pa[0].x(), pa[0].y(), color, m_prefs.lineWidth, l_drawVertIndex,
+          drawOneVertex(pa[0].x(), pa[0].y(), color, lineWidth, l_drawVertIndex,
                         paint);
         }else if (isPolyClosed[pIter]){
           paint->drawPolygon( pa );
@@ -352,7 +354,7 @@ void polyView::showPoly( QPainter *paint ){
       worldToPixelCoords(A.x, A.y, // inputs
                          x0, y0    // outputs
                          );
-      paint->setPen( QPen("gold", m_prefs.lineWidth) );
+      paint->setPen( QPen("gold", lineWidth) );
       if (isClosestGridPtFree(Grid, x0, y0)){
         paint->drawText(x0, y0, A.label);
       }
@@ -679,8 +681,16 @@ void polyView::setLineWidth(){
   vector<double> linewidth;
   if ( getValuesFromGui("Line width", "Enter line width", linewidth) &&
        !linewidth.empty() && linewidth[0] >= 1.0 ){
-    m_prefs.lineWidth = (int) round(linewidth[0]);
+    
+    int lw = (int) round(linewidth[0]);
+
+    for (int polyIter = 0; polyIter < (int)m_polyOptionsVec.size(); polyIter++){
+      m_polyOptionsVec[polyIter].lineWidth = lw;
+    }
+    m_prefs.lineWidth = lw;
+    
     update();
+  
   }else{
     popUp("The line width must be a positive integer");
   }
