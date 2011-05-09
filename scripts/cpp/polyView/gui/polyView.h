@@ -157,7 +157,7 @@ private:
   // Used for undo
   std::vector< std::vector<dPoly> > m_polyVecStack;
   std::vector<int> m_actions;
-  std::vector<bool> m_resetViewOnUndo;
+  std::vector<char> m_resetViewOnUndo;
 
   QRect m_rubberBandRect;
   bool m_resetView;

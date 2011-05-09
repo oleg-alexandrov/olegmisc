@@ -56,7 +56,7 @@ public:
   const double * get_yv               () const { return utils::vecPtr(m_yv);       }
   int get_numPolys                    () const { return m_numPolys;                }
   int get_totalNumVerts               () const { return m_totalNumVerts;           }
-  std::vector<bool> get_isPolyClosed  () const { return m_isPolyClosed;            }
+  std::vector<char> get_isPolyClosed  () const { return m_isPolyClosed;            }
   std::vector<std::string> get_colors () const { return m_colors;                  }
   std::vector<std::string> get_layers () const { return m_layers;                  }
   
@@ -123,7 +123,7 @@ private:
   std::vector<int>         m_numVerts;
   int                      m_numPolys;
   int                      m_totalNumVerts;
-  std::vector<bool>        m_isPolyClosed;
+  std::vector<char>        m_isPolyClosed;
   std::vector<std::string> m_colors;
   std::vector<std::string> m_layers;
   std::vector<anno>        m_annotations;
