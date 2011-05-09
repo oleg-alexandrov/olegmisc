@@ -261,7 +261,7 @@ void polyView::showPoly( QPainter *paint ){
     const double * yv               = clippedPoly.get_yv();
     const int    * numVerts         = clippedPoly.get_numVerts();
     int numPolys                    = clippedPoly.get_numPolys();
-    const vector<bool> isPolyClosed = clippedPoly.get_isPolyClosed();
+    const vector<char> isPolyClosed = clippedPoly.get_isPolyClosed();
     const vector<string> colors     = clippedPoly.get_colors();
     //int numVerts                  = clippedPoly.get_totalNumVerts();
     

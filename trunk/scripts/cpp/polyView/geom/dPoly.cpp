@@ -143,7 +143,7 @@ void dPoly::clipPoly(// inputs
   const double * yv               = get_yv();
   const int    * numVerts         = get_numVerts();
   int numPolys                    = get_numPolys();
-  const vector<bool> isPolyClosed = get_isPolyClosed();
+  const vector<char> isPolyClosed = get_isPolyClosed();
   const vector<string> colors     = get_colors();
   const vector<string> layers     = get_layers();
   
@@ -310,7 +310,7 @@ void dPoly::appendPolygons(const dPoly & poly){
   const double * yv         = poly.get_yv();
   const int    * numVerts   = poly.get_numVerts();
   int numPolys              = poly.get_numPolys();
-  vector<bool> isPolyClosed = poly.get_isPolyClosed();
+  vector<char> isPolyClosed = poly.get_isPolyClosed();
   vector<string> colors     = poly.get_colors();
   vector<string> layers     = poly.get_layers();
   vector<anno> annotations;  poly.get_annotations(annotations);
@@ -594,7 +594,7 @@ void dPoly::sortFromLargestToSmallest(){
   vector<double> l_xv           = m_xv;
   vector<double> l_yv           = m_yv;
   vector<int>    l_numVerts     = m_numVerts;
-  vector<bool>   l_isPolyClosed = m_isPolyClosed;
+  vector<char>   l_isPolyClosed = m_isPolyClosed;
   vector<string> l_colors       = m_colors;
   vector<string> l_layers       = m_layers;
 
