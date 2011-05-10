@@ -112,7 +112,7 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   return;
 }
 
-void polyView::showPoly( QPainter *paint ){
+void polyView::displayData( QPainter *paint ){
 
   // To do: this function needs modularization and some cleanup.
 
@@ -220,14 +220,20 @@ void polyView::showPoly( QPainter *paint ){
 
     int vecIter = m_polyVecOrder[vi];
 
-    int lineWidth     = m_polyOptionsVec[vecIter].lineWidth;
-    bool fillPoly     = m_polyOptionsVec[vecIter].isPolyFilled || m_showFilledPolys;
-    bool plotAsPoints = m_polyOptionsVec[vecIter].plotAsPoints;
+    int lineWidth   = m_polyOptionsVec[vecIter].lineWidth;
+
+    // Note: plotFilled, plotEdges, and plotPoints below are not mutually exclusive.
     
-    if (plotAsPoints                                 ||
-        m_toggleShowPointsEdges == m_showPoints      ||
-        m_toggleShowPointsEdges == m_showPointsEdges 
-        ) drawVertIndex++;
+    bool plotFilled = m_polyOptionsVec[vecIter].isPolyFilled || m_showFilledPolys;
+    
+    bool plotEdges  = (!m_polyOptionsVec[vecIter].plotAsPoints) &&
+      (m_toggleShowPointsEdges != m_showPoints);
+    
+    bool plotPoints = m_polyOptionsVec[vecIter].plotAsPoints  ||
+      ( m_toggleShowPointsEdges == m_showPoints )             ||
+      ( m_toggleShowPointsEdges == m_showPointsEdges);
+    
+    if (plotPoints) drawVertIndex++;
     
     // Note: Having annotations at vertices can make the display
     // slow for large polygons.
@@ -242,11 +248,11 @@ void polyView::showPoly( QPainter *paint ){
     dPoly currPoly = m_polyVec[vecIter]; // local copy which we can modify
     
     // When polys are filled, plot largest polys first
-    if (fillPoly)
-      currPoly.sortBySizeAndMaybeAddBigFgPoly(m_viewXll,  m_viewYll,
-                                              m_viewXll + m_viewWidX,
-                                              m_viewYll + m_viewWidY
-                                              );
+    if (plotFilled)
+      currPoly.sortBySizeAndMaybeAddBigContainingRect(m_viewXll,  m_viewYll,
+                                                      m_viewXll + m_viewWidX,
+                                                      m_viewYll + m_viewWidY
+                                                      );
     
     dPoly clippedPoly;
     currPoly.clipPoly(//inputs
@@ -294,7 +300,7 @@ void polyView::showPoly( QPainter *paint ){
 
       // Determine the orientation of polygons
       double signedArea = 0.0;
-      if (fillPoly && isPolyClosed[pIter]){
+      if (plotFilled && isPolyClosed[pIter]){
         signedArea = signedPolyArea(pSize, xv + start, yv + start);
       }
       
@@ -309,11 +315,7 @@ void polyView::showPoly( QPainter *paint ){
 
         // Qt's built in points are too small. Instead of drawing a point
         // draw a small shape. 
-        if ( ( plotAsPoints                                 ||
-               m_toggleShowPointsEdges == m_showPoints      ||
-               m_toggleShowPointsEdges == m_showPointsEdges
-               )
-             &&
+        if ( plotPoints                                          &&
              x0 > m_screenXll && x0 < m_screenXll + m_screenWidX && 
              y0 > m_screenYll && y0 < m_screenYll + m_screenWidY
              ){
@@ -321,9 +323,9 @@ void polyView::showPoly( QPainter *paint ){
         }
       }
       
-      if (!plotAsPoints && m_toggleShowPointsEdges != m_showPoints){
+      if (plotEdges){
 
-        if (fillPoly && isPolyClosed[pIter]){
+        if (plotFilled && isPolyClosed[pIter]){
           if (signedArea >= 0.0) paint->setBrush( color );
           else                   paint->setBrush( backgroundColor() ); 
           paint->setPen( NoPen );
@@ -640,7 +642,7 @@ void polyView::paintEvent( QPaintEvent*){
 
   QPainter paint( &m_cache, this );
   paint.translate(-R.x(), -R.y());
-  showPoly( &paint );
+  displayData( &paint );
 
   // Copy the buffer to the screen
   bitBlt( this, R.x(), R.y(), &m_cache, 0, 0, R.width(), R.height() );

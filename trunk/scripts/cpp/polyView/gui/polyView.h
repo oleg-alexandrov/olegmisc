@@ -128,7 +128,7 @@ private:
                      int drawVertIndex, QPainter * paint);
   void wipeRubberBand(QRect & R);
 
-  void showPoly( QPainter *paint );
+  void displayData( QPainter *paint );
   void resetTransformSettings();
   void pixelToWorldCoords(int px, int py,
                           double & wx, double & wy);
