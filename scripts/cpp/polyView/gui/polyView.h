@@ -110,10 +110,10 @@ private:
   void printCurrCoords(const ButtonState & state, // input
                        int & currX, int  & currY  // in-out
                        );
-  void readOnePoly(// inputs
-                   std::string &  filename,
-                   bool           plotPointsOnly,
-                   closedPolyInfo isPolyClosed,
+  bool readOnePoly(// inputs
+                   std::string   & filename,
+                   bool            plotPointsOnly,
+                   closedPolyInfo  isPolyClosed,
                    // output
                    dPoly & poly           
                    );
