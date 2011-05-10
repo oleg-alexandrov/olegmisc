@@ -1577,23 +1577,35 @@ void polyView::readAllPolys(){
 
   int numFiles = m_polyOptionsVec.size();
   m_polyVec.resize(numFiles);
+
+  string missingFiles = "";
+  int numMissing = 0;
   
   for (int fileIter = 0; fileIter < numFiles; fileIter++){
     
-    readOnePoly(// inputs
-                m_polyOptionsVec[fileIter].polyFileName,
-                m_polyOptionsVec[fileIter].plotAsPoints,
-                m_polyOptionsVec[fileIter].isPolyClosed,
-                // output
-                m_polyVec[fileIter]
-                );
-
+    bool success = readOnePoly(// inputs
+                               m_polyOptionsVec[fileIter].polyFileName,
+                               m_polyOptionsVec[fileIter].plotAsPoints,
+                               m_polyOptionsVec[fileIter].isPolyClosed,
+                               // output
+                               m_polyVec[fileIter]
+                               );
+    if (!success){
+      missingFiles += " " + m_polyOptionsVec[fileIter].polyFileName;
+      numMissing++;
+    }
+    
     if (m_polyOptionsVec[fileIter].useCmdLineColor){
       m_polyVec[fileIter].set_color(m_polyOptionsVec[fileIter].cmdLineColor);
     }
     
   }
-
+  
+  if (numMissing >= 1){
+    string errMsg = "Warning: The following files are could not be read:" + missingFiles;
+    popUp(errMsg);
+  }
+  
   return;
 }
 
@@ -1616,13 +1628,13 @@ void polyView::openPoly(){
   m_polyOptionsVec.back().polyFileName = fileName;
   
   dPoly poly;
-  readOnePoly(// inputs
-              m_polyOptionsVec.back().polyFileName,
-              m_polyOptionsVec.back().plotAsPoints,
-              m_polyOptionsVec.back().isPolyClosed,
-              // output
-              poly
-              );
+  bool success = readOnePoly(// inputs
+                             m_polyOptionsVec.back().polyFileName,
+                             m_polyOptionsVec.back().plotAsPoints,
+                             m_polyOptionsVec.back().isPolyClosed,
+                             // output
+                             poly
+                             );
   if (m_polyOptionsVec.back().useCmdLineColor){
     poly.set_color(m_polyOptionsVec.back().cmdLineColor);
   }
@@ -1633,25 +1645,27 @@ void polyView::openPoly(){
   return;
 }
 
-void polyView::readOnePoly(// inputs
+bool polyView::readOnePoly(// inputs
                            std::string   & filename,
                            bool            plotPointsOnly,
                            closedPolyInfo  isPolyClosed,
                            // output
                            dPoly & poly           
                            ){
+
+  poly.reset();
   
   string type = getFilenameExtension(filename);
   
   if (type == "pol" || type == "cnt"){
-     if ( poly.read_pol_or_cnt_format(filename, type, plotPointsOnly) ) return;
+     if ( poly.read_pol_or_cnt_format(filename, type, plotPointsOnly) ) return true;
      string msg = string("Invalid .") + type + " format for " + filename
        + ". Trying to read it in .xg format.";
      cerr << msg << endl;
   }
   
   if ( ! poly.readPoly(filename, plotPointsOnly) ){
-    exit(1);
+    return false;
   }
 
   bool isClosed;
@@ -1661,9 +1675,9 @@ void polyView::readOnePoly(// inputs
   }else if (isPolyClosed == forceNonClosedPoly){
     isClosed = false;
     poly.set_isPolyClosed(isClosed);
-  } // else do not modify the isClosed info
+  } // else use the isClosed info from file
   
-  return;
+  return true;
 }
 
   
