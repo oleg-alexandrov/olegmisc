@@ -649,7 +649,6 @@ void polyView::paintEvent( QPaintEvent*){
 }
 
 void polyView::popUp(std::string msg){
-  cout << msg << endl; // dump to the command line in addition to showing a pop-up
   QMessageBox msgBox;
   msgBox.setText(msg.c_str());
   msgBox.exec();
@@ -1600,10 +1599,11 @@ void polyView::readAllPolys(){
     }
     
   }
-  
+
+
   if (numMissing >= 1){
-    string errMsg = "Warning: The following files are could not be read:" + missingFiles;
-    popUp(errMsg);
+    string suffix = ""; if (numMissing > 1) suffix = "s";
+    popUp("Warning: Could not read file" + suffix + ":" + missingFiles);
   }
   
   return;
@@ -1635,6 +1635,11 @@ void polyView::openPoly(){
                              // output
                              poly
                              );
+
+  if (!success){
+    popUp("Warning: Could not read file: " + m_polyOptionsVec.back().polyFileName);
+  }
+
   if (m_polyOptionsVec.back().useCmdLineColor){
     poly.set_color(m_polyOptionsVec.back().cmdLineColor);
   }
