@@ -103,10 +103,10 @@ public:
   void erasePoly(int polyIndex);
   void sortFromLargestToSmallest();
 
-  void sortBySizeAndMaybeAddBigFgPoly(// inputs
-                                      double bigXll, double bigYll,
-                                      double bigXur, double bigYur
-                                      );
+  void sortBySizeAndMaybeAddBigContainingRect(// inputs
+                                              double bigXll, double bigYll,
+                                              double bigXur, double bigYur
+                                              );
 
   void enforce45();
   

@@ -624,10 +624,10 @@ void dPoly::sortFromLargestToSmallest(){
   
 }
 
-void dPoly::sortBySizeAndMaybeAddBigFgPoly(// inputs
-                                           double bigXll, double bigYll,
-                                           double bigXur, double bigYur
-                                           ){
+void dPoly::sortBySizeAndMaybeAddBigContainingRect(// inputs
+                                                   double bigXll, double bigYll,
+                                                   double bigXur, double bigYur
+                                                   ){
   
   // Sort the polygons from largest to smallest by size. If the
   // largest one is going clockwise, it is a hole. In this case, add a
