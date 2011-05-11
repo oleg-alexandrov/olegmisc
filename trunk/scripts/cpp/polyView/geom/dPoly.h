@@ -30,7 +30,6 @@ public:
   
   void writePoly(std::string filename, std::string defaultColor = "yellow");
   
-  
   void appendPolygon(int numVerts,
                      const double * xv,
                      const double * yv,

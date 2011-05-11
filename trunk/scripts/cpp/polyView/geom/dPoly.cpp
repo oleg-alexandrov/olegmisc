@@ -705,7 +705,7 @@ bool dPoly::readPoly(std::string filename,
   
   ifstream fh(filename.c_str());
   if( !fh ){
-    cerr << "Could not open " << filename << endl;
+    cerr << "Error: Could not open " << filename << endl;
     return false;
   }
 
@@ -817,66 +817,63 @@ bool dPoly::readPoly(std::string filename,
 
 void dPoly::writePoly(std::string filename, std::string defaultColor){
 
-  ofstream outfile(filename.c_str());
-  outfile.precision(16);
+  ofstream out(filename.c_str());
+  if (!out.is_open()){
+    cerr << "Error: Could not write to " << filename << endl;
+    return;
+  }
+  
+  out.precision(16);
+  
+  string color = defaultColor, prevColor = defaultColor;
+  
+  int start = 0, annoCount = 0;
+  for (int pIter = 0; pIter < m_numPolys; pIter++){ // iterate over polygons
 
-  int vertCount = 0, annoCount = 0, numAnno = m_annotations.size();
-  string prevColor = defaultColor, currColor = "";
+    if (m_numVerts[pIter] <= 0) continue; // skip empty polygons
+    if (pIter > 0) start += m_numVerts[pIter - 1];
+
+    if (pIter < (int)m_colors.size()) color = m_colors[pIter];
+    if (color != prevColor || pIter == 0) out << "color = " << color << endl;
+    prevColor = color;
+
+    string layer = "";
+    if (pIter < (int)m_layers.size()) layer = m_layers[pIter];
+    if (layer != "") layer = " ; " + layer;
+
+    bool isPolyClosed = true; 
+    if ( pIter < (int)m_colors.size() ) isPolyClosed = m_isPolyClosed[pIter];
     
-  for (int j = 0; j < m_numPolys; j++){ // Iterate over polygons
-
-    if ( m_numVerts[j] <= 0 ) continue; // skip empty polygons
-
-    bool isPolyClosed;
-    if ( (int)m_isPolyClosed.size() <= j ) isPolyClosed = true;
-    else isPolyClosed = m_isPolyClosed[j];
-
-    if ( (int)m_colors.size() <= j ) currColor = defaultColor;
-    else                             currColor = m_colors[j];
-
-    if (j == 0 || prevColor != currColor){
-      outfile << "color = " << currColor << endl; 
-    }
-    prevColor = currColor;
-
-    string layer;
-    if ((int)m_layers.size() <= j ) layer = "";
-    else layer = m_layers[j];
-    
-    for (int i = 0; i < m_numVerts[j]; i++){ // Iterate over vertices of current poly
+    for (int vIter = 0; vIter < m_numVerts[pIter]; vIter++){ // iterate over vertices
       
-      outfile <<  m_xv[vertCount] << " " << m_yv[vertCount];
-      if (layer != "") outfile << " ; " << layer;
-      outfile << endl;
-      vertCount++;
-
+      int pos = start + vIter;
+      out << m_xv[pos] << ' ' << m_yv[pos] << layer << endl;
+      
       // Put one annotation for each vertex, if possible
-      if (annoCount < numAnno){
-        m_annotations[annoCount].appendTo(outfile);
+      if (annoCount < (int)m_annotations.size() ){
+        m_annotations[annoCount].appendTo(out);
         annoCount++;
       }
       
     }
     
-    // Print the first element again at the end (so that polygons are
-    // closed).
-    assert(m_numVerts[j] > 0);
     if ( !m_isPointCloud && isPolyClosed){
-      int firstVert = vertCount - m_numVerts[j];
-      outfile << m_xv[firstVert] << " " << m_yv[firstVert];
-      if (layer != "") outfile << " ; " << layer;
-      outfile << endl;
+      // Repeat last vertex for closed poly
+      assert(m_numVerts[pIter] > 0);
+      out << m_xv[start] << ' ' << m_yv[start] << layer << endl;
     }
     
-    if ( !m_isPointCloud ) outfile << "NEXT" << endl;
+    if ( !m_isPointCloud ) out << "NEXT" << endl;
   }
 
   // Write the remaining annotations
-  for (int a = annoCount; a < numAnno; a++){
-    m_annotations[a].appendTo(outfile);
+  for (int a = annoCount; a < (int)m_annotations.size(); a++){
+    m_annotations[a].appendTo(out);
   }
 
-  outfile.close();
+  out.close();
+  
+  return;
 }
 
 bool dPoly::read_pol_or_cnt_format(std::string filename,
