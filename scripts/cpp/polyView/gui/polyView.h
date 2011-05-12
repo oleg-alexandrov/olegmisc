@@ -156,6 +156,8 @@ private:
 
   // Used for undo
   std::vector< std::vector<dPoly> > m_polyVecStack;
+  std::vector< std::vector<polyOptions> > m_polyOptionsVecStack;
+  
   std::vector<int> m_actions;
   std::vector<char> m_resetViewOnUndo;
 

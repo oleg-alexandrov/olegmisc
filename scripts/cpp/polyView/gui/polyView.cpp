@@ -94,6 +94,7 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
 
   // Used for undo
   m_polyVecStack.clear();
+  m_polyOptionsVecStack.clear();
   m_actions.clear();
   m_resetViewOnUndo.clear();
   
@@ -736,6 +737,7 @@ void polyView::shiftPolys(std::vector<double> & shifts){
   
   // So that we can undo later
   m_polyVecStack.push_back(m_polyVec); 
+  m_polyOptionsVecStack.push_back(m_polyOptionsVec); 
   m_actions.push_back(m_polyChanged);
   m_resetViewOnUndo.push_back(true);
   
@@ -758,6 +760,7 @@ void polyView::rotatePolys(std::vector<double> & angle){
   
   // So that we can undo later
   m_polyVecStack.push_back(m_polyVec); 
+  m_polyOptionsVecStack.push_back(m_polyOptionsVec); 
   m_actions.push_back(m_polyChanged);
   m_resetViewOnUndo.push_back(true);
 
@@ -780,6 +783,7 @@ void polyView::scalePolys(std::vector<double> & scale){
   
   // So that we can undo later
   m_polyVecStack.push_back(m_polyVec); 
+  m_polyOptionsVecStack.push_back(m_polyOptionsVec); 
   m_actions.push_back(m_polyChanged);
   m_resetViewOnUndo.push_back(true);
 
@@ -867,6 +871,7 @@ void polyView::addPolyVert(int px, int py){
       
   // So that we can undo later
   m_polyVecStack.push_back(m_polyVec); 
+  m_polyOptionsVecStack.push_back(m_polyOptionsVec); 
   m_actions.push_back(m_polyChanged);
   m_resetViewOnUndo.push_back(false);
 
@@ -1209,7 +1214,7 @@ void polyView::toggleShowPolyDiff(){
          << "and ignoring the rest" << endl;
   }
 
-  m_polyDiffMode        = true;
+  m_polyDiffMode = true;
 
   // Back up the current settings before entering poly diff mode
   // to be able to restore them later.
@@ -1373,6 +1378,7 @@ void polyView::deletePoly(){
   
   // So that we can undo later
   m_polyVecStack.push_back(m_polyVec); 
+  m_polyOptionsVecStack.push_back(m_polyOptionsVec); 
   m_actions.push_back(m_polyChanged);
   m_resetViewOnUndo.push_back(false);
 
@@ -1490,6 +1496,7 @@ void polyView::cutToHlt(){
   
   // So that we can undo later
   m_polyVecStack.push_back(m_polyVec);
+  m_polyOptionsVecStack.push_back(m_polyOptionsVec); 
   m_actions.push_back(m_polyChanged);
   m_resetViewOnUndo.push_back(false);
 
@@ -1521,6 +1528,7 @@ void polyView::enforce45(){
     
   // So that we can undo later
   m_polyVecStack.push_back(m_polyVec);
+  m_polyOptionsVecStack.push_back(m_polyOptionsVec); 
   m_actions.push_back(m_polyChanged);
   m_resetViewOnUndo.push_back(false);
 
@@ -1561,8 +1569,8 @@ void polyView::undoLast(){
       return;
     }
 
-    m_polyVec = m_polyVecStack[numCopies - 1];
-    m_polyVecStack.resize(numCopies - 1);
+    m_polyVec        = m_polyVecStack.back();        m_polyVecStack.pop_back();
+    m_polyOptionsVec = m_polyOptionsVecStack.back(); m_polyOptionsVecStack.pop_back();
 
     bool resetViewOnUndo = m_resetViewOnUndo[numCopies - 1];
     m_resetViewOnUndo.resize(numCopies - 1);
