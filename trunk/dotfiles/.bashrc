@@ -93,12 +93,12 @@ function a {
       alias "$*" > /dev/null # set the alias
       ans=$( alias "$*" | perl -pi -e 's#(^|\n)(\w+=)#$1 . "a " . $2#eg' ); # echo it
       if [ "$ans" != "" ]; then echo $ans; fi;
-      alias > ~/.bash_aliases; 
+      alias > ~/.bash_aliases;
       perl -pi -e "s#^([^\s]+=)#alias \$1#" ~/.bash_aliases;
   else
       alias;  # Just list the aliases
   fi;
- 
+
 }
 
 function ald {
