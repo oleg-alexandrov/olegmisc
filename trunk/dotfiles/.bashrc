@@ -89,9 +89,10 @@ function a {
   if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi;
 
   if [ "$*" ]; then
-      # Set the alias, and then display and save it 
-      ans=$( alias "$*" | perl -pi -e 's#(^|\n)(\w+=)#$1 . "a " . $2#eg' );
-      echo $ans;
+      # Set the alias, and then display and save it
+      alias "$*" > /dev/null # set the alias
+      ans=$( alias "$*" | perl -pi -e 's#(^|\n)(\w+=)#$1 . "a " . $2#eg' ); # echo it
+      if [ "$ans" != "" ]; then echo $ans; fi;
       alias > ~/.bash_aliases; 
       perl -pi -e "s#^([^\s]+=)#alias \$1#" ~/.bash_aliases;
   else
