@@ -1,0 +1,104 @@
+Log for qt3to4 on Thu May 12 21:47:58 2011. Number of log entries: 98
+No changes made to file /home/oleg/bin/cpp/polyView/gui/mainProg.cpp
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 16 column 21: qfiledialog.h -> q3filedialog.h
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 18 column 20: qpopupmenu.h -> q3popupmenu.h
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 315 column 17: QPointArray -> Q3PointArray
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 339 column 30: NoPen -> Qt::NoPen
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 341 column 34: NoBrush -> Qt::NoBrush
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 475 column 27: NoBrush -> Qt::NoBrush
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 498 column 51: AltButton -> AltModifier
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 505 column 55: ControlButton -> ControlModifier
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 553 column 37: ControlButton -> ControlModifier
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 572 column 37: ShiftButton -> ShiftModifier
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 626 column 12: QPopupMenu -> Q3PopupMenu
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 917 column 26: NoBrush -> Qt::NoBrush
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 922 column 13: QPointArray -> Q3PointArray
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 972 column 48: ButtonState -> Qt::ButtonState
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 999 column 25: NoBrush -> Qt::NoBrush
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 1015 column 54: ShiftButton -> ShiftModifier
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 1120 column 28: NoBrush -> Qt::NoBrush
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 1126 column 28: NoBrush -> Qt::NoBrush
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 1132 column 28: NoBrush -> Qt::NoBrush
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 1140 column 28: NoBrush -> Qt::NoBrush
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 1155 column 26: NoBrush -> Qt::NoBrush
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 1346 column 13: QPointArray -> Q3PointArray
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 1480 column 13: QPointArray -> Q3PointArray
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 1488 column 26: NoBrush -> Qt::NoBrush
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 1631 column 25: QFileDialog -> Q3FileDialog
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp at line 1767 column 46: QPointArray -> Q3PointArray
+In file /home/oleg/bin/cpp/polyView/gui/polyView.cpp: Added the following include directives:
+	#include <QContextMenuEvent> 	#include <QKeyEvent> 	#include <Q3PointArray> 	#include <QMouseEvent> 	#include <QPaintEvent> 	#include <QWheelEvent> 
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 6 column 21: qmainwindow.h -> q3mainwindow.h
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 27 column 13: QMainWindow -> Q3MainWindow
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 37 column 32: QWidget -> Qt
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 44 column 35: QWidget -> Qt
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 133 column 12: QPopupMenu -> Q3PopupMenu
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 133 column 35: QPopupMenu -> Q3PopupMenu
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 135 column 67: Key_O -> Qt::Key_O
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 137 column 33: Key_S -> Qt::Key_S
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 139 column 61: Key_S -> Qt::Key_S
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 141 column 65: Key_W -> Qt::Key_W
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 142 column 52: Key_Q -> Qt::Key_Q
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 144 column 12: QPopupMenu -> Q3PopupMenu
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 144 column 35: QPopupMenu -> Q3PopupMenu
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 147 column 82: Key_Minus -> Qt::Key_Minus
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 148 column 82: Key_Equal -> Qt::Key_Equal
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 149 column 81: Key_Left -> Qt::Key_Left
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 150 column 82: Key_Right -> Qt::Key_Right
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 151 column 79: Key_Up -> Qt::Key_Up
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 152 column 81: Key_Down -> Qt::Key_Down
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 153 column 78: Key_R -> Qt::Key_R
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 154 column 78: Key_O -> Qt::Key_O
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 155 column 78: Key_A -> Qt::Key_A
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 156 column 78: Key_F -> Qt::Key_F
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 158 column 59: Key_P -> Qt::Key_P
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 160 column 61: Key_V -> Qt::Key_V
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 161 column 79: Key_L -> Qt::Key_L
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 163 column 12: QPopupMenu -> Q3PopupMenu
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 163 column 35: QPopupMenu -> Q3PopupMenu
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 165 column 70: Key_Z -> Qt::Key_Z
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 166 column 70: Key_C -> Qt::Key_C
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 168 column 63: Key_N -> Qt::Key_N
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 170 column 70: Key_N -> Qt::Key_N
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 172 column 12: QPopupMenu -> Q3PopupMenu
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 172 column 40: QPopupMenu -> Q3PopupMenu
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 175 column 38: Key_4 -> Qt::Key_4
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 177 column 38: Key_T -> Qt::Key_T
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 179 column 38: Key_R -> Qt::Key_R
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 181 column 38: Key_X -> Qt::Key_X
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 183 column 12: QPopupMenu -> Q3PopupMenu
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 183 column 35: QPopupMenu -> Q3PopupMenu
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 185 column 85: Key_D -> Qt::Key_D
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 186 column 72: Key_K -> Qt::Key_K
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 187 column 72: Key_J -> Qt::Key_J
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 189 column 12: QPopupMenu -> Q3PopupMenu
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 189 column 38: QPopupMenu -> Q3PopupMenu
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 193 column 12: QPopupMenu -> Q3PopupMenu
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp at line 193 column 35: QPopupMenu -> Q3PopupMenu
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.cpp: Added the following include directives:
+	#include <Q3PopupMenu> 	#include <QEvent> 
+No changes made to file /home/oleg/bin/cpp/polyView/gui/utils.cpp
+No changes made to file /home/oleg/bin/cpp/polyView/geom/dPoly.cpp
+No changes made to file /home/oleg/bin/cpp/polyView/geom/cutPoly.cpp
+No changes made to file /home/oleg/bin/cpp/polyView/geom/geomUtils.cpp
+No changes made to file /home/oleg/bin/cpp/polyView/geom/polyUtils.cpp
+No changes made to file /home/oleg/bin/cpp/polyView/geom/edgeUtils.cpp
+No changes made to file /home/oleg/bin/cpp/polyView/geom/dTree.cpp
+In file /home/oleg/bin/cpp/polyView/gui/polyView.h at line 117 column 40: ButtonState -> Qt::ButtonState
+In file /home/oleg/bin/cpp/polyView/gui/polyView.h at line 130 column 38: QPointArray -> Q3PointArray
+In file /home/oleg/bin/cpp/polyView/gui/polyView.h: Added the following include directives:
+	#include <QContextMenuEvent> 	#include <Q3PointArray> 	#include <QWheelEvent> 	#include <QPaintEvent> 	#include <QMouseEvent> 	#include <QKeyEvent> 
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.h at line 6 column 21: qmainwindow.h -> q3mainwindow.h
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.h at line 21 column 36: QMainWindow -> Q3MainWindow
+In file /home/oleg/bin/cpp/polyView/gui/appWindow.h: Added the following include directives:
+	#include <QEvent> 
+No changes made to file /home/oleg/bin/cpp/polyView/gui/utils.h
+No changes made to file /home/oleg/bin/cpp/polyView/geom/dPoly.h
+No changes made to file /home/oleg/bin/cpp/polyView/geom/cutPoly.h
+No changes made to file /home/oleg/bin/cpp/polyView/geom/geomUtils.h
+No changes made to file /home/oleg/bin/cpp/polyView/geom/polyUtils.h
+No changes made to file /home/oleg/bin/cpp/polyView/geom/edgeUtils.h
+No changes made to file /home/oleg/bin/cpp/polyView/geom/dTree.h
+No changes made to file /home/oleg/bin/cpp/polyView/geom/baseUtils.h
+In file polyView.pro: Added entry QT +=  
+
