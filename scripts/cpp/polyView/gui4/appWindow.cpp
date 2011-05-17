@@ -1,4 +1,5 @@
 #include <qapplication.h>
+#include <Q3PopupMenu>
 #include <qlabel.h>
 #include <QtGui/QMainWindow>
 #include <qmenubar.h>
@@ -133,15 +134,15 @@ QMenuBar* appWindow::createMenus(){
 
   QMenuBar* menu = menuBar();
 
-  newAct = new QAction(tr("&New"), this);
-  newAct->setShortcuts(QKeySequence::New);
-  newAct->setStatusTip(tr("Create a new file"));
-  connect(newAct, SIGNAL(triggered()), m_poly, SLOT(zoomOut()));
-  fileMenu = menuBar()->addMenu(tr("&File"));
-  fileMenu->addAction(newAct);
+//   QAction *newAct = new QAction(tr("&New"), this);
+//   newAct->setShortcuts(QKeySequence::New);
+//   newAct->setStatusTip(tr("Create a new file"));
+//   connect(newAct, SIGNAL(triggered()), m_poly, SLOT(zoomOut()));
+//   m_fileMenu = menuBar()->addMenu(tr("&File"));
+//   m_fileMenu->addAction(newAct);
   
-#if 0  
-  QPopupMenu* file = new QPopupMenu( menu );
+#if 1  
+  Q3PopupMenu* file = new Q3PopupMenu( menu );
   menu->insertItem("&File", file);
   file->insertItem("Open", m_poly, SLOT(openPoly()), Qt::CTRL+Qt::Key_O);
   file->insertItem("Save as one clip", m_poly, SLOT(saveOnePoly()),
@@ -152,7 +153,7 @@ QMenuBar* appWindow::createMenus(){
                    SLOT(overwriteMultiplePolys()), Qt::CTRL+Qt::Key_W);
   file->insertItem("Exit", this, SLOT(forceQuit()), Qt::Key_Q);
 
-  QPopupMenu* view = new QPopupMenu( menu );
+  Q3PopupMenu* view = new Q3PopupMenu( menu );
   menu->insertItem("&View", view);
   //view->insertSeparator();
   view->insertItem("Zoom out",             m_poly, SLOT(zoomOut()),      Qt::Key_Minus);
@@ -171,7 +172,7 @@ QMenuBar* appWindow::createMenus(){
                    m_poly, SLOT(toggleVertIndexAnno()), Qt::Key_V);
   view->insertItem("Toggle show layers", m_poly, SLOT(toggleLayerAnno()), Qt::Key_L);
 
-  QPopupMenu* edit = new QPopupMenu( menu );
+  Q3PopupMenu* edit = new Q3PopupMenu( menu );
   menu->insertItem("&Edit", edit);
   edit->insertItem("Undo",             m_poly, SLOT(undoLast()), Qt::Key_Z);
   edit->insertItem("Cut to highlight", m_poly, SLOT(cutToHlt()), Qt::Key_C);
@@ -180,7 +181,7 @@ QMenuBar* appWindow::createMenus(){
   edit->insertItem("Create arbitrary polygon",
                    m_poly, SLOT(createArbitraryPoly()), Qt::CTRL+Qt::Key_N);
 
-  QPopupMenu* transform = new QPopupMenu( menu );
+  Q3PopupMenu* transform = new Q3PopupMenu( menu );
   menu->insertItem("&Transform", transform);
   transform->insertItem("Enforce int vertices and 45x angles", m_poly, SLOT(enforce45()),
                         Qt::CTRL+Qt::Key_4);
@@ -191,17 +192,17 @@ QMenuBar* appWindow::createMenus(){
   transform->insertItem("Scale polygons", m_poly, SLOT(scalePolys()),
                         Qt::CTRL+Qt::Key_X);
 
-  QPopupMenu* diff = new QPopupMenu( menu );
+  Q3PopupMenu* diff = new Q3PopupMenu( menu );
   menu->insertItem("&Diff", diff);
   diff->insertItem("Toggle show poly diff", m_poly, SLOT(toggleShowPolyDiff()), Qt::Key_D);
   diff->insertItem("Show next diff", m_poly, SLOT(plotNextDiff()), Qt::Key_K);
   diff->insertItem("Show prev diff", m_poly, SLOT(plotPrevDiff()), Qt::Key_J);
 
-  QPopupMenu* options = new QPopupMenu( menu );
+  Q3PopupMenu* options = new Q3PopupMenu( menu );
   menu->insertItem("&Options", options);
   options->insertItem("Line width", m_poly, SLOT(setLineWidth()));
 
-  QPopupMenu* help = new QPopupMenu( menu );
+  Q3PopupMenu* help = new Q3PopupMenu( menu );
   menu->insertItem("&Help", help);
   help->insertItem("About", this, SLOT(help()));
 #endif

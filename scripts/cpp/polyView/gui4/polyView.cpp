@@ -2,6 +2,7 @@
 #include <QContextMenuEvent>
 #include <QFileDialog>
 #include <QKeyEvent>
+#include <Q3PopupMenu>
 #include <Q3PointArray>
 #include <QMouseEvent>
 #include <QPaintEvent>
@@ -629,8 +630,8 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
 
   int x = E->x(), y = E->y();
   pixelToWorldCoords(x, y, m_menuX, m_menuY);
-#if 0  
-  QPopupMenu menu(this);
+
+  Q3PopupMenu menu(this);
   menu.insertItem("Save mark at point", this, SLOT(saveMark()));
   int id = 1;
   menu.insertItem("Use nm scale", this, SLOT(toggleNmScale()), 0, id);
@@ -641,7 +642,6 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
                   SLOT(createArbitraryPoly()));
   menu.insertItem("Delete polygon", this, SLOT(deletePoly()));
   menu.exec(E->globalPos());
-#endif
 }
 
 void polyView::refreshPixmap(){
