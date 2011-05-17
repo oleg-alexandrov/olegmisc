@@ -1,7 +1,7 @@
 #ifndef EXAMPLE_H
 #define EXAMPLE_H
 
-#include <q3mainwindow.h>
+#include <qmainwindow.h>
 #include <qlineedit.h>
 //Added by qt3to4:
 #include <QEvent>
@@ -18,7 +18,7 @@ public:
   virtual ~cmdLine();
 };
 
-class appWindow : public Q3MainWindow {
+class appWindow : public QMainWindow {
   Q_OBJECT
 
 public:
@@ -49,6 +49,10 @@ private:
   std::string   m_progName;
   std::vector<std::string> m_cmdHist;
   int m_histPos;
+
+  QMenu *fileMenu;
+  QAction *newAct;
+
 };
 
 
