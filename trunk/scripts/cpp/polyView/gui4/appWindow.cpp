@@ -63,6 +63,7 @@ bool appWindow::eventFilter(QObject *obj, QEvent *event){
     // Intercept the 'Quit' signal from anywhere within the application
     QKeyEvent* ptr = dynamic_cast<QKeyEvent*>(event);
     if (ptr && ptr->key() == Qt::Key_Q ){
+    cout << "Now in Q"<< endl;
       QApplication::exit(); 
     }
   }
