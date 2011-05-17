@@ -50,9 +50,6 @@ private:
   std::vector<std::string> m_cmdHist;
   int m_histPos;
 
-  QMenu *fileMenu;
-  QAction *newAct;
-
 };
 
 
