@@ -1,5 +1,6 @@
 #include <qwidget.h>
 #include <QContextMenuEvent>
+#include <QFileDialog>
 #include <QKeyEvent>
 #include <Q3PointArray>
 #include <QMouseEvent>
@@ -14,9 +15,7 @@
 #include <iomanip>   // required for use of setw()
 #include <iostream>
 #include <qapplication.h>
-#include <q3filedialog.h>
 #include <qcursor.h>
-#include <q3popupmenu.h>
 #include <qdir.h>
 #include <qinputdialog.h>
 #include <qpainter.h>
@@ -630,8 +629,8 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
 
   int x = E->x(), y = E->y();
   pixelToWorldCoords(x, y, m_menuX, m_menuY);
-  
-  Q3PopupMenu menu(this);
+#if 0  
+  QPopupMenu menu(this);
   menu.insertItem("Save mark at point", this, SLOT(saveMark()));
   int id = 1;
   menu.insertItem("Use nm scale", this, SLOT(toggleNmScale()), 0, id);
@@ -642,6 +641,7 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
                   SLOT(createArbitraryPoly()));
   menu.insertItem("Delete polygon", this, SLOT(deletePoly()));
   menu.exec(E->globalPos());
+#endif
 }
 
 void polyView::refreshPixmap(){
@@ -1660,7 +1660,7 @@ void polyView::readAllPolys(){
 
 void polyView::openPoly(){
 
-  QString s = Q3FileDialog::getOpenFileName(QDir::currentDirPath(),
+  QString s = QFileDialog::getOpenFileName(QDir::currentDirPath(),
                                            "(*.xg *.ly* *.pol)",
                                            this,
                                            "open file dialog"
