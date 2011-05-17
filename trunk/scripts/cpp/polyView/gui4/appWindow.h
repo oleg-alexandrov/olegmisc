@@ -32,13 +32,14 @@ public slots:
   void help();
 
 protected:
-  bool eventFilter(QObject *obj, QEvent *ev);
+  bool eventFilter(QObject *obj, QEvent *event);
 
 private slots:
   QMenuBar* createMenus();
   void procCmdLine();
   void shiftUp ();
   void shiftDown ();
+  void forceQuit();
   
 private:
   void insertCmdFromHist();

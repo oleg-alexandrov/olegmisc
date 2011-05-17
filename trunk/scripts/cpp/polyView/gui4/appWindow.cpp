@@ -57,17 +57,12 @@ appWindow::appWindow(QWidget* parent, std::string progName,
 
 }
 
+void appWindow::forceQuit(){
+  exit(0); // A fix for an older buggy version of Qt
+}
+                     
 bool appWindow::eventFilter(QObject *obj, QEvent *event){
 
-  if (event->type() == QEvent::KeyPress){
-    // Intercept the 'Quit' signal from anywhere within the application
-    QKeyEvent* ptr = dynamic_cast<QKeyEvent*>(event);
-    if (ptr && ptr->key() == Qt::Key_Q ){
-      exit(0); // Force exit, this is a bug fix
-      //QApplication::exit(); 
-    }
-  }
-  
   if (obj == m_poly) {
     // Avoid repainting on these events
     if (event->type() == QEvent::FocusIn          ||
@@ -148,7 +143,7 @@ QMenuBar* appWindow::createMenus(){
                    SLOT(saveAsMultiplePolys()), Qt::ALT+Qt::Key_S);
   file->insertItem("Overwrite current clips", m_poly,
                    SLOT(overwriteMultiplePolys()), Qt::CTRL+Qt::Key_W);
-//  file->insertItem("Exit", qApp, SLOT(quit()), Qt::Key_Q);
+  file->insertItem("Exit", this, SLOT(forceQuit()), Qt::Key_Q);
 
   Q3PopupMenu* view = new Q3PopupMenu( menu );
   menu->insertItem("&View", view);
