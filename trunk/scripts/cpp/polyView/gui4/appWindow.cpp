@@ -59,6 +59,14 @@ appWindow::appWindow(QWidget* parent, std::string progName,
 
 bool appWindow::eventFilter(QObject *obj, QEvent *event){
 
+  if (event->type() == QEvent::KeyPress){
+    // Intercept the 'Quit' signal from anywhere within the application
+    QKeyEvent* ptr = dynamic_cast<QKeyEvent*>(event);
+    if (ptr && ptr->key() == Qt::Key_Q ){
+      QApplication::exit(); 
+    }
+  }
+  
   if (obj == m_poly) {
     // Avoid repainting on these events
     if (event->type() == QEvent::FocusIn          ||

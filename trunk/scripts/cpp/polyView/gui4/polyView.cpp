@@ -622,9 +622,6 @@ void polyView::keyPressEvent( QKeyEvent *K ){
   case Qt::Key_Down:
     shiftDown();
     break;
-  case Qt::Key_Q:
-    QApplication::exit(); 
-    break;
   }
   
 }
