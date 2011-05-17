@@ -3,7 +3,6 @@
 
 #include <qmainwindow.h>
 #include <qlineedit.h>
-//Added by qt3to4:
 #include <QEvent>
 #include <string>
 #include <vector>
