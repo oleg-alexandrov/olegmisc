@@ -1,8 +1,8 @@
 /****************************************************************************
 ** Meta object code from reading C++ file 'appWindow.h'
 **
-** Created: Thu May 12 22:12:20 2011
-**      by: The Qt Meta Object Compiler version 62 (Qt 4.7.0)
+** Created: Sun May 15 22:59:06 2011
+**      by: The Qt Meta Object Compiler version 59 (Qt 4.2.3)
 **
 ** WARNING! All changes made in this file will be lost!
 *****************************************************************************/
@@ -10,25 +10,21 @@
 #include "appWindow.h"
 #if !defined(Q_MOC_OUTPUT_REVISION)
 #error "The header file 'appWindow.h' doesn't include <QObject>."
-#elif Q_MOC_OUTPUT_REVISION != 62
-#error "This file was generated using the moc from 4.7.0. It"
+#elif Q_MOC_OUTPUT_REVISION != 59
+#error "This file was generated using the moc from 4.2.3. It"
 #error "cannot be used with the include files from this version of Qt."
 #error "(The moc has changed too much.)"
 #endif
 
-QT_BEGIN_MOC_NAMESPACE
 static const uint qt_meta_data_cmdLine[] = {
 
  // content:
-       5,       // revision
+       1,       // revision
        0,       // classname
        0,    0, // classinfo
        0,    0, // methods
        0,    0, // properties
        0,    0, // enums/sets
-       0,    0, // constructors
-       0,       // flags
-       0,       // signalCount
 
        0        // eod
 };
@@ -42,20 +38,16 @@ const QMetaObject cmdLine::staticMetaObject = {
       qt_meta_data_cmdLine, 0 }
 };
 
-#ifdef Q_NO_DATA_RELOCATION
-const QMetaObject &cmdLine::getStaticMetaObject() { return staticMetaObject; }
-#endif //Q_NO_DATA_RELOCATION
-
 const QMetaObject *cmdLine::metaObject() const
 {
-    return QObject::d_ptr->metaObject ? QObject::d_ptr->metaObject : &staticMetaObject;
+    return &staticMetaObject;
 }
 
 void *cmdLine::qt_metacast(const char *_clname)
 {
     if (!_clname) return 0;
     if (!strcmp(_clname, qt_meta_stringdata_cmdLine))
-        return static_cast<void*>(const_cast< cmdLine*>(this));
+	return static_cast<void*>(const_cast< cmdLine*>(this));
     return QLineEdit::qt_metacast(_clname);
 }
 
@@ -69,15 +61,12 @@ int cmdLine::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
 static const uint qt_meta_data_appWindow[] = {
 
  // content:
-       5,       // revision
+       1,       // revision
        0,       // classname
        0,    0, // classinfo
-       5,   14, // methods
+       5,   10, // methods
        0,    0, // properties
        0,    0, // enums/sets
-       0,    0, // constructors
-       0,       // flags
-       0,       // signalCount
 
  // slots: signature, parameters, type, tag, flags
       11,   10,   10,   10, 0x0a,
@@ -99,20 +88,16 @@ const QMetaObject appWindow::staticMetaObject = {
       qt_meta_data_appWindow, 0 }
 };
 
-#ifdef Q_NO_DATA_RELOCATION
-const QMetaObject &appWindow::getStaticMetaObject() { return staticMetaObject; }
-#endif //Q_NO_DATA_RELOCATION
-
 const QMetaObject *appWindow::metaObject() const
 {
-    return QObject::d_ptr->metaObject ? QObject::d_ptr->metaObject : &staticMetaObject;
+    return &staticMetaObject;
 }
 
 void *appWindow::qt_metacast(const char *_clname)
 {
     if (!_clname) return 0;
     if (!strcmp(_clname, qt_meta_stringdata_appWindow))
-        return static_cast<void*>(const_cast< appWindow*>(this));
+	return static_cast<void*>(const_cast< appWindow*>(this));
     return Q3MainWindow::qt_metacast(_clname);
 }
 
@@ -129,10 +114,8 @@ int appWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
         case 2: procCmdLine(); break;
         case 3: shiftUp(); break;
         case 4: shiftDown(); break;
-        default: ;
         }
         _id -= 5;
     }
     return _id;
 }
-QT_END_MOC_NAMESPACE
