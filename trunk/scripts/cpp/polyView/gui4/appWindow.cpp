@@ -134,14 +134,6 @@ QMenuBar* appWindow::createMenus(){
 
   QMenuBar* menu = menuBar();
 
-//   QAction *newAct = new QAction(tr("&New"), this);
-//   newAct->setShortcuts(QKeySequence::New);
-//   newAct->setStatusTip(tr("Create a new file"));
-//   connect(newAct, SIGNAL(triggered()), m_poly, SLOT(zoomOut()));
-//   m_fileMenu = menuBar()->addMenu(tr("&File"));
-//   m_fileMenu->addAction(newAct);
-  
-#if 1  
   Q3PopupMenu* file = new Q3PopupMenu( menu );
   menu->insertItem("&File", file);
   file->insertItem("Open", m_poly, SLOT(openPoly()), Qt::CTRL+Qt::Key_O);
@@ -205,7 +197,7 @@ QMenuBar* appWindow::createMenus(){
   Q3PopupMenu* help = new Q3PopupMenu( menu );
   menu->insertItem("&Help", help);
   help->insertItem("About", this, SLOT(help()));
-#endif
+
   return menu;
 }
 
