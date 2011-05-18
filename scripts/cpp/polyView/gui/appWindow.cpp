@@ -1,10 +1,13 @@
 #include <qapplication.h>
+#include <Q3PopupMenu>
 #include <qlabel.h>
-#include <qmainwindow.h>
+#include <QtGui/QMainWindow>
 #include <qmenubar.h>
 #include <qmessagebox.h>
 #include <qstatusbar.h>
 #include <qlayout.h>
+#include <QMenu>
+#include <QEvent>
 #include <cstdlib>
 #include <iostream>
 #include <cmath>
@@ -31,14 +34,14 @@ appWindow::appWindow(QWidget* parent, std::string progName,
   // Central widget
   m_poly = new polyView (this, options);
   m_poly->setBackgroundColor (QColor("black"));
-  m_poly->setFocusPolicy(QWidget::StrongFocus);
+  m_poly->setFocusPolicy(Qt::StrongFocus);
   m_poly->setFocus();
   setCentralWidget(m_poly);
 
   // Command line
   m_cmdLine = new cmdLine(this);
   m_cmdLine->setAlignment(Qt::AlignLeft);
-  m_cmdLine->setFocusPolicy(QWidget::StrongFocus);
+  m_cmdLine->setFocusPolicy(Qt::StrongFocus);
   connect( m_cmdLine, SIGNAL( returnPressed() ),
            this, SLOT( procCmdLine() ) );
 
@@ -54,6 +57,10 @@ appWindow::appWindow(QWidget* parent, std::string progName,
 
 }
 
+void appWindow::forceQuit(){
+  exit(0); // A fix for an older buggy version of Qt
+}
+                     
 bool appWindow::eventFilter(QObject *obj, QEvent *event){
 
   if (obj == m_poly) {
@@ -78,7 +85,7 @@ appWindow::~appWindow(){
 }
 
 void appWindow::procCmdLine(){
-  string cmd = m_cmdLine->text().data();
+  string cmd = (char*)m_cmdLine->text().data();
   m_cmdHist.push_back(cmd);
   m_poly->runCmd(cmd);
   m_cmdLine->setText("");
@@ -124,70 +131,70 @@ void appWindow::shiftDown (){
 }
 
 QMenuBar* appWindow::createMenus(){
-  
+
   QMenuBar* menu = menuBar();
 
-  QPopupMenu* file = new QPopupMenu( menu );
+  Q3PopupMenu* file = new Q3PopupMenu( menu );
   menu->insertItem("&File", file);
-  file->insertItem("Open", m_poly, SLOT(openPoly()), Qt::CTRL+Key_O);
+  file->insertItem("Open", m_poly, SLOT(openPoly()), Qt::CTRL+Qt::Key_O);
   file->insertItem("Save as one clip", m_poly, SLOT(saveOnePoly()),
-                   Qt::CTRL+Key_S);
+                   Qt::CTRL+Qt::Key_S);
   file->insertItem("Save as multiple clips", m_poly,
-                   SLOT(saveAsMultiplePolys()), Qt::ALT+Key_S);
+                   SLOT(saveAsMultiplePolys()), Qt::ALT+Qt::Key_S);
   file->insertItem("Overwrite current clips", m_poly,
-                   SLOT(overwriteMultiplePolys()), Qt::CTRL+Key_W);
-  file->insertItem("Exit", qApp, SLOT(quit()), Key_Q);
+                   SLOT(overwriteMultiplePolys()), Qt::CTRL+Qt::Key_W);
+  file->insertItem("Exit", this, SLOT(forceQuit()), Qt::Key_Q);
 
-  QPopupMenu* view = new QPopupMenu( menu );
+  Q3PopupMenu* view = new Q3PopupMenu( menu );
   menu->insertItem("&View", view);
   //view->insertSeparator();
-  view->insertItem("Zoom out",             m_poly, SLOT(zoomOut()),      Key_Minus);
-  view->insertItem("Zoom in",              m_poly, SLOT(zoomIn()),       Key_Equal);
-  view->insertItem("Move left",            m_poly, SLOT(shiftLeft()),    Key_Left);
-  view->insertItem("Move right",           m_poly, SLOT(shiftRight()),   Key_Right);
-  view->insertItem("Move up",              this,   SLOT(shiftUp()),      Key_Up);
-  view->insertItem("Move down",            this,   SLOT(shiftDown()),    Key_Down);
-  view->insertItem("Reset view",           m_poly, SLOT(resetView()),    Key_R);
-  view->insertItem("Change display order", m_poly, SLOT(changeOrder()),  Key_O);
-  view->insertItem("Toggle annotations",   m_poly, SLOT(toggleAnno()),   Key_A);
-  view->insertItem("Toggle filled",        m_poly, SLOT(toggleFilled()), Key_F);
+  view->insertItem("Zoom out",             m_poly, SLOT(zoomOut()),      Qt::Key_Minus);
+  view->insertItem("Zoom in",              m_poly, SLOT(zoomIn()),       Qt::Key_Equal);
+  view->insertItem("Move left",            m_poly, SLOT(shiftLeft()),    Qt::Key_Left);
+  view->insertItem("Move right",           m_poly, SLOT(shiftRight()),   Qt::Key_Right);
+  view->insertItem("Move up",              this,   SLOT(shiftUp()),      Qt::Key_Up);
+  view->insertItem("Move down",            this,   SLOT(shiftDown()),    Qt::Key_Down);
+  view->insertItem("Reset view",           m_poly, SLOT(resetView()),    Qt::Key_R);
+  view->insertItem("Change display order", m_poly, SLOT(changeOrder()),  Qt::Key_O);
+  view->insertItem("Toggle annotations",   m_poly, SLOT(toggleAnno()),   Qt::Key_A);
+  view->insertItem("Toggle filled",        m_poly, SLOT(toggleFilled()), Qt::Key_F);
   view->insertItem("Toggle points display",
-                   m_poly, SLOT(togglePE()),          Key_P);
+                   m_poly, SLOT(togglePE()),          Qt::Key_P);
   view->insertItem("Toggle show vertex indices",
-                   m_poly, SLOT(toggleVertIndexAnno()), Key_V);
-  view->insertItem("Toggle show layers", m_poly, SLOT(toggleLayerAnno()), Key_L);
+                   m_poly, SLOT(toggleVertIndexAnno()), Qt::Key_V);
+  view->insertItem("Toggle show layers", m_poly, SLOT(toggleLayerAnno()), Qt::Key_L);
 
-  QPopupMenu* edit = new QPopupMenu( menu );
+  Q3PopupMenu* edit = new Q3PopupMenu( menu );
   menu->insertItem("&Edit", edit);
-  edit->insertItem("Undo",             m_poly, SLOT(undoLast()), Key_Z);
-  edit->insertItem("Cut to highlight", m_poly, SLOT(cutToHlt()), Key_C);
+  edit->insertItem("Undo",             m_poly, SLOT(undoLast()), Qt::Key_Z);
+  edit->insertItem("Cut to highlight", m_poly, SLOT(cutToHlt()), Qt::Key_C);
   edit->insertItem("Create poly with int vertices and 45x angles",
-                   m_poly, SLOT(create45DegreeIntPoly()), Key_N);
+                   m_poly, SLOT(create45DegreeIntPoly()), Qt::Key_N);
   edit->insertItem("Create arbitrary polygon",
-                   m_poly, SLOT(createArbitraryPoly()), Qt::CTRL+Key_N);
+                   m_poly, SLOT(createArbitraryPoly()), Qt::CTRL+Qt::Key_N);
 
-  QPopupMenu* transform = new QPopupMenu( menu );
+  Q3PopupMenu* transform = new Q3PopupMenu( menu );
   menu->insertItem("&Transform", transform);
   transform->insertItem("Enforce int vertices and 45x angles", m_poly, SLOT(enforce45()),
-                        Qt::CTRL+Key_4);
+                        Qt::CTRL+Qt::Key_4);
   transform->insertItem("Translate polygons", m_poly, SLOT(shiftPolys()),
-                        Qt::CTRL+Key_T);
+                        Qt::CTRL+Qt::Key_T);
   transform->insertItem("Rotate polygons", m_poly, SLOT(rotatePolys()),
-                        Qt::CTRL+Key_R);
+                        Qt::CTRL+Qt::Key_R);
   transform->insertItem("Scale polygons", m_poly, SLOT(scalePolys()),
-                        Qt::CTRL+Key_X);
+                        Qt::CTRL+Qt::Key_X);
 
-  QPopupMenu* diff = new QPopupMenu( menu );
+  Q3PopupMenu* diff = new Q3PopupMenu( menu );
   menu->insertItem("&Diff", diff);
-  diff->insertItem("Toggle show poly diff", m_poly, SLOT(toggleShowPolyDiff()), Key_D);
-  diff->insertItem("Show next diff", m_poly, SLOT(plotNextDiff()), Key_K);
-  diff->insertItem("Show prev diff", m_poly, SLOT(plotPrevDiff()), Key_J);
+  diff->insertItem("Toggle show poly diff", m_poly, SLOT(toggleShowPolyDiff()), Qt::Key_D);
+  diff->insertItem("Show next diff", m_poly, SLOT(plotNextDiff()), Qt::Key_K);
+  diff->insertItem("Show prev diff", m_poly, SLOT(plotPrevDiff()), Qt::Key_J);
 
-  QPopupMenu* options = new QPopupMenu( menu );
+  Q3PopupMenu* options = new Q3PopupMenu( menu );
   menu->insertItem("&Options", options);
   options->insertItem("Line width", m_poly, SLOT(setLineWidth()));
 
-  QPopupMenu* help = new QPopupMenu( menu );
+  Q3PopupMenu* help = new Q3PopupMenu( menu );
   menu->insertItem("&Help", help);
   help->insertItem("About", this, SLOT(help()));
 

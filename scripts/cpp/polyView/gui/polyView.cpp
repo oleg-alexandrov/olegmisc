@@ -1,4 +1,14 @@
 #include <qwidget.h>
+#include <QContextMenuEvent>
+#include <QFileDialog>
+#include <QKeyEvent>
+#include <Q3PopupMenu>
+#include <Q3PointArray>
+#include <QMouseEvent>
+#include <QPaintEvent>
+#include <QWheelEvent>
+#include <QStylePainter>
+#include <QStyleOptionFocusRect>
 #include <cassert>
 #include <cfloat>    // defines DBL_MAX
 #include <cmath>
@@ -6,9 +16,7 @@
 #include <iomanip>   // required for use of setw()
 #include <iostream>
 #include <qapplication.h>
-#include <qfiledialog.h>
 #include <qcursor.h>
-#include <qpopupmenu.h>
 #include <qdir.h>
 #include <qinputdialog.h>
 #include <qpainter.h>
@@ -53,6 +61,7 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
 
   m_resetView       = true;
   m_prevClickExists = false;
+  m_firstPaintEvent = true;
   
   m_showAnnotations    = true;
   m_showVertIndexAnno  = false;
@@ -105,6 +114,12 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   m_distVec.clear(); // distances b/w polys to diff
   m_indexOfDistToPlot = -1;
 
+  // Plot the point wheres the mouse clicked (with or without snapping
+  // to the closest vertex).
+  m_snappedPoints.clear();
+  m_nonSnappedPoints.clear();
+  m_smallLen = 2; // Used for plotting the points
+  
   resetTransformSettings();
 
   // This statement must be the last
@@ -288,7 +303,7 @@ void polyView::displayData( QPainter *paint ){
       if (pIter > 0) start += numVerts[pIter - 1];
 
       // Change the poly file color if it is the background color or invalid
-      QColor color = QColor( colors[pIter] );
+      QColor color = QColor( colors[pIter].c_str() );
       if ( color == backgroundColor() || color == QColor::Invalid){
         if ( backgroundColor() != QColor("white") ){
           color = QColor("white");
@@ -305,7 +320,7 @@ void polyView::displayData( QPainter *paint ){
         signedArea = signedPolyArea(pSize, xv + start, yv + start);
       }
       
-      QPointArray pa(pSize);
+      Q3PointArray pa(pSize);
       for (int vIter = 0; vIter < pSize; vIter++){
 
         int x0, y0;
@@ -329,9 +344,9 @@ void polyView::displayData( QPainter *paint ){
         if (plotFilled && isPolyClosed[pIter]){
           if (signedArea >= 0.0) paint->setBrush( color );
           else                   paint->setBrush( backgroundColor() ); 
-          paint->setPen( NoPen );
+          paint->setPen( Qt::NoPen );
         }else {
-          paint->setBrush( NoBrush );
+          paint->setBrush( Qt::NoBrush );
           paint->setPen( QPen(color, lineWidth) );
         }
 
@@ -358,9 +373,9 @@ void polyView::displayData( QPainter *paint ){
       worldToPixelCoords(A.x, A.y, // inputs
                          x0, y0    // outputs
                          );
-      paint->setPen( QPen("gold", lineWidth) );
+      paint->setPen( QPen(QColor("gold"), lineWidth) );
       if (isClosestGridPtFree(Grid, x0, y0)){
-        paint->drawText(x0, y0, A.label);
+        paint->drawText(x0, y0, (A.label).c_str());
       }
       
     } // End placing annotations
@@ -387,43 +402,47 @@ void polyView::displayData( QPainter *paint ){
   // If in diff mode
   plotDistBwPolyClips(paint);
 
+  // Wipe this temporary data now that the display changed
+  m_snappedPoints.clear();
+  m_nonSnappedPoints.clear(); 
+  
   return;
 }
 
 void polyView::zoomIn(){
   m_zoomFactor  = 0.5;
   m_viewChanged = true;
-  update();
+  refreshPixmap();
 }
 
 void polyView::zoomOut(){
   m_zoomFactor  = 2.0;
   m_viewChanged = true;
-  update();
+  refreshPixmap();
 }
 
 void polyView::shiftRight(){
   m_shiftX      = 0.25;
   m_viewChanged = true;
-  update();
+  refreshPixmap();
 }
 
 void polyView::shiftLeft(){
   m_shiftX      = -0.25;
   m_viewChanged = true;
-  update();
+  refreshPixmap();
 }
 
 void polyView::shiftUp(){
   m_shiftY      = 0.25;
   m_viewChanged = true;
-  update();
+  refreshPixmap();
 }
 
 void polyView::shiftDown(){
   m_shiftY      = -0.25;
   m_viewChanged = true;
-  update();
+  refreshPixmap();
 }
 
 void polyView::centerViewAtPoint(double x, double y){
@@ -435,7 +454,7 @@ void polyView::centerViewAtPoint(double x, double y){
 void polyView::resetView(){
   m_resetView   = true;
   m_viewChanged = true;
-  update();
+  refreshPixmap();
 }
 
 
@@ -462,15 +481,12 @@ void polyView::mouseMoveEvent( QMouseEvent *E){
   const QPoint Q = E->pos();
   int x = Q.x();
   int y = Q.y();
-  
-  QPainter painter(this);
-  painter.setPen(Qt::white);
-  painter.setBrush( NoBrush );
-  
-  wipeRubberBand(m_rubberBand);
+
+  // Standard Qt rubberband trick (kind of confusing as to how it works).
+  updateRubberBand(m_rubberBand);
   m_rubberBand = QRect( min(m_mousePrsX, x), min(m_mousePrsY, y),
                         abs(x - m_mousePrsX), abs(y - m_mousePrsY) );
-  painter.drawRect(m_rubberBand);
+  updateRubberBand(m_rubberBand);
   
 }
 
@@ -486,20 +502,24 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
        << m_mouseRelX << ' ' << m_mouseRelY << endl;
 #endif
 
-  wipeRubberBand(m_rubberBand); // Wipe any rubberband artifacts
-
-  if (E->state() == (Qt::LeftButton | Qt::AltButton) ){
+  // Wipe the rubberband
+  updateRubberBand(m_rubberBand); 
+  m_rubberBand = QRect(0, 0, 0, 0); 
+  updateRubberBand(m_rubberBand);
+  
+  if (E->state() == ((int)Qt::LeftButton | (int)Qt::AltModifier) ){
     // To do: consolidate this with the other call to this function.
     // See if can pass the relevant variables as input arguments.
     pixelToWorldCoords(m_mouseRelX, m_mouseRelY, m_menuX, m_menuY); 
     deletePoly();
   }
   
-  if (E->state() == (Qt::LeftButton | Qt::ControlButton) ){
+  if (E->state() == ((int)Qt::LeftButton | (int)Qt::ControlModifier) ){
     // Draw a  highlight with control + left mouse button
     // ending at the current point
-    createHighlightWithPixelInputs(m_mousePrsX, m_mousePrsY, m_mouseRelX, m_mouseRelY);
-    update();
+    createHighlightWithPixelInputs(m_mousePrsX, m_mousePrsY,
+                                   m_mouseRelX, m_mouseRelY);
+    refreshPixmap();
     return;
   }
 
@@ -511,7 +531,7 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
             m_mouseRelY > m_mousePrsY + tol){
     
     m_zoomToMouseSelection = true; // Will zoom to the region selected with the mouse
-    update(); 
+    refreshPixmap(); 
     return;
     
   }else if (m_mouseRelX + tol < m_mousePrsX &&
@@ -533,8 +553,8 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
                     m_mouseRelX, m_mouseRelY // in-out
                     );
     return;
-  }    
-   
+  }
+  
   return;
 }
 
@@ -543,7 +563,7 @@ void polyView::wheelEvent(QWheelEvent *E){
 
   int delta = E->delta();
 
-  if (E->state() == Qt::ControlButton){
+  if (E->state() == Qt::ControlModifier){
 
     // The control button was pressed. Zoom in/out around the current point.
 
@@ -562,7 +582,7 @@ void polyView::wheelEvent(QWheelEvent *E){
   }else{
 
     // Shift wheel goes left and right. Without shift we go up and down.
-    if (E->state() == Qt::ShiftButton){
+    if (E->state() == Qt::ShiftModifier){
       if (delta > 0){
         shiftLeft();
       }else if (delta < 0){
@@ -604,9 +624,6 @@ void polyView::keyPressEvent( QKeyEvent *K ){
   case Qt::Key_Down:
     shiftDown();
     break;
-  case Qt::Key_Q:
-    QApplication::exit(); 
-    break;
   }
   
 }
@@ -615,8 +632,8 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
 
   int x = E->x(), y = E->y();
   pixelToWorldCoords(x, y, m_menuX, m_menuY);
-  
-  QPopupMenu menu(this);
+
+  Q3PopupMenu menu(this);
   menu.insertItem("Save mark at point", this, SLOT(saveMark()));
   int id = 1;
   menu.insertItem("Use nm scale", this, SLOT(toggleNmScale()), 0, id);
@@ -629,25 +646,60 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
   menu.exec(E->globalPos());
 }
 
-void polyView::paintEvent( QPaintEvent*){
+void polyView::refreshPixmap(){
 
-  // This function will be called by update()
+  // Draw the data onto the pixmap instead of the screen
+  // directly. Later we'll display the pixmap without redrawing
+  // whenever possible for reasons of speed.
   
-  // Instead of drawing on the screen right away, draw onto
-  // a cache, then display the cache. We'll use the cache
-  // later to avoid repainting when the view does not change.
-  QRect R = this->rect();
-  QSize expandedSize = R.size().expandedTo(m_cache.size());
-  m_cache.resize(expandedSize);
-  m_cache.fill(this, R.topLeft());
-
-  QPainter paint( &m_cache, this );
-  paint.translate(-R.x(), -R.y());
+  m_pixmap = QPixmap(size());
+  m_pixmap.fill(this, 0, 0);
+  
+  QPainter paint(&m_pixmap);
+  paint.initFrom(this);
   displayData( &paint );
+  update();
 
-  // Copy the buffer to the screen
-  bitBlt( this, R.x(), R.y(), &m_cache, 0, 0, R.width(), R.height() );
+  return;
+}
 
+void polyView::paintEvent(QPaintEvent *){
+
+  if (m_firstPaintEvent){
+    // This will be called the very first time the display is
+    // initialized. There must be a better way.
+    m_firstPaintEvent = false;
+    refreshPixmap();
+  }
+  
+  QStylePainter paint(this);
+  paint.drawPixmap(0, 0, m_pixmap);
+
+  QColor lightColor = palette().light().color();
+  paint.setPen(lightColor);
+  paint.drawRect(m_rubberBand.normalized().adjusted(0, 0, -1, -1));
+  
+  // Plot the mouse clicks (snapped or not snapped to closest vertex).
+  // Do it here since those are temporary, they are supposed
+  // to go away when the display changes such as on zoom.
+  paint.setPen( QPen(lightColor, m_prefs.lineWidth) );
+  paint.setBrush( Qt::NoBrush );
+  for (int p = 0; p < (int)m_snappedPoints.size(); p++){
+    const QPoint & P = m_snappedPoints[p];
+    paint.drawEllipse(P.x() - m_smallLen, P.y() - m_smallLen,
+                      2*m_smallLen, 2*m_smallLen
+                      );
+  }
+  for (int p = 0; p < (int)m_nonSnappedPoints.size(); p++){
+    const QPoint & P = m_nonSnappedPoints[p];
+    paint.drawRect(P.x() - m_smallLen, P.y() - m_smallLen,
+                   2*m_smallLen, 2*m_smallLen
+                   );
+  }
+
+  // Draw the current polygon being plotted
+  drawCurrPolyLine(&paint);  
+  
   return;
 }
 
@@ -667,7 +719,7 @@ bool polyView::getValuesFromGui(std::string title, std::string description,
                                        QLineEdit::Normal, QString::null, &ok, this );
   if ( ok && !text.isEmpty() ) {
     // user entered something and pressed OK
-    string data = text.data();
+    string data = (char*)text.data();
     data = replaceAll(data, ",", " ");
     istringstream ts(data);
     double val;
@@ -692,7 +744,7 @@ void polyView::setLineWidth(){
     }
     m_prefs.lineWidth = lw;
     
-    update();
+    refreshPixmap();
   
   }else{
     popUp("The line width must be a positive integer");
@@ -822,9 +874,9 @@ void polyView::addPolyVert(int px, int py){
       snapPolyLineTo45DegAngles(isClosedPolyLine, pSize,
                                 vecPtr(m_currPolyX), vecPtr(m_currPolyY));
     }
-    
-    QPainter paint(this);
-    drawCurrPolyLine(&paint);
+
+    // This will call paintEvent which will draw the current poly line
+    update();
 
     return;
   }
@@ -894,25 +946,28 @@ void polyView::addPolyVert(int px, int py){
   m_currPolyX.clear();
   m_currPolyY.clear();
   setStandardCursor();
-  update();
+  refreshPixmap();
     
   return;
 }
 
 void polyView::drawCurrPolyLine(QPainter * paint){
 
+  // To do: Need to cut before drawing, as otherwise there are odd effects
+  // due to integer overflow when zooming in a lot.
+  
   int pSize = m_currPolyX.size();
   if (pSize == 0){
     return;
   }
   
-  string color  = "white";
-  paint->setBrush( NoBrush );
-  paint->setPen( QPen(color.c_str(), m_prefs.lineWidth) );
+  string color  = "white"; // To do: Consolidate light and dark colors in one place
+  paint->setBrush( Qt::NoBrush );
+  paint->setPen( QPen(QColor(color.c_str()), m_prefs.lineWidth) );
 
   // To do: The block below better become its own function
   // which can draw points, poly lines, and polygons
-  QPointArray pa(pSize);
+  Q3PointArray pa(pSize);
   for (int vIter = 0; vIter < pSize; vIter++){
       
     int x0, y0;
@@ -962,7 +1017,7 @@ void polyView::createHighlightWithRealInputs(double xll, double yll,
   return;
 }
 
-void polyView::printCurrCoords(const ButtonState & state, // input
+void polyView::printCurrCoords(const Qt::ButtonState & state, // input
                                int & currX, int  & currY  // in-out
                                ){
   
@@ -985,15 +1040,12 @@ void polyView::printCurrCoords(const ButtonState & state, // input
         
   double wx, wy;
   pixelToWorldCoords(currX, currY, wx, wy);
+  int len = 2*m_smallLen + 2*m_prefs.lineWidth; // big enough
 
-  QPainter paint(this);
-  int len = 3;
-  paint.setPen( QPen("white", m_prefs.lineWidth) );
-  paint.setBrush( NoBrush );
-
-  // Snap to the closest vertex with the left mouse button
-  if (state == Qt::LeftButton){
+  if (state == (int)Qt::LeftButton){
       
+    // Snap to the closest vertex with the left mouse button.
+    
     double min_x, min_y, min_dist;
     findClosestPolyVertex(wx, wy, m_polyVec,     // inputs
                             min_x, min_y, min_dist // outputs
@@ -1002,16 +1054,22 @@ void polyView::printCurrCoords(const ButtonState & state, // input
     worldToPixelCoords(wx, wy,      // inputs
                        currX, currY // outputs
                        );
-
-    paint.drawEllipse(currX - len, currY - len, 2*len, 2*len);
     
-  }else if (state == (Qt::LeftButton | Qt::ShiftButton)
+    // Save the point to plot. Call update to paint the point.
+    m_snappedPoints.push_back(QPoint(currX, currY));
+    update(currX - len, currY - len, 2*len, 2*len);
+
+  }else if (state == ( (int)Qt::LeftButton | (int)Qt::ShiftModifier )
             ||
-            state == (Qt::MidButton)
+            state == ((int)Qt::MidButton)
             ){
       
-    // Don't snap with the shift-left button or the middle button
-    paint.drawRect(currX - len, currY - len, 2*len, 2*len);
+    // Don't snap with the shift-left button or the middle button.
+    
+    // Save the point to plot. Call update to paint the point.
+    m_nonSnappedPoints.push_back(QPoint(currX, currY));
+    int len = 2*m_smallLen + 2*m_prefs.lineWidth; // big enough
+    update(currX - len, currY - len, 2*len, 2*len);
       
   }
   
@@ -1038,27 +1096,13 @@ void polyView::printCurrCoords(const ButtonState & state, // input
 }
 
 
-void polyView::wipeRubberBand(QRect & R){
+void polyView::updateRubberBand(QRect & R){
   
-  // Wipe the current rubberband by overwriting the region it occupies
-  // (a set of four segments forming a rectangle) with the cached
-  // version of image before the rubberband was drawn.
-
-  int left  = min(R.left(), R.right());
-  int right = max(R.left(), R.right());
-  int top   = min(R.top(), R.bottom());
-  int bot   = max(R.top(), R.bottom());
-  int wd    = abs(R.width());
-  int ht    = abs(R.height());
-  int px    = 1; 
-
-  QPainter paint(this);
-  paint.drawPixmap (left,  top, m_cache, left,  top, wd, px);
-  paint.drawPixmap (left,  top, m_cache, left,  top, px, ht);
-  paint.drawPixmap (left,  bot, m_cache, left,  bot, wd, px);
-  paint.drawPixmap (right, top, m_cache, right, top, px, ht);
-
-  R = QRect(0, 0, 0, 0); // wipe
+  QRect rect = R.normalized();
+  update(rect.left(), rect.top(),    rect.width(), 1             );
+  update(rect.left(), rect.top(),    1,            rect.height() );
+  update(rect.left(), rect.bottom(), rect.width(), 1             );
+  update(rect.right(), rect.top(),   1,            rect.height() );
   
   return;
 }
@@ -1110,19 +1154,19 @@ void polyView::drawOneVertex(int x0, int y0, QColor color, int lineWidth,
   } else if (drawVertIndex%numTypes == 0){
     
     // Draw a small empty ellipse
-    paint->setBrush( NoBrush );
+    paint->setBrush( Qt::NoBrush );
     paint->drawEllipse(x0 - len, y0 - len, 2*len, 2*len);
     
   }else if (drawVertIndex%numTypes == 1){
     
     // Draw an empty square
-    paint->setBrush( NoBrush );
+    paint->setBrush( Qt::NoBrush );
     paint->drawRect(x0 - len, y0 - len, 2*len, 2*len);
     
   }else if (drawVertIndex%numTypes == 2){
     
     // Draw an empty triangle
-    paint->setBrush( NoBrush );
+    paint->setBrush( Qt::NoBrush );
     paint->drawLine(x0 - len, y0 - len, x0 + len, y0 - len);
     paint->drawLine(x0 - len, y0 - len, x0 + 0,   y0 + len);
     paint->drawLine(x0 + len, y0 - len, x0 + 0,   y0 + len);
@@ -1130,7 +1174,7 @@ void polyView::drawOneVertex(int x0, int y0, QColor color, int lineWidth,
   }else{
     
     // Draw an empty reversed triangle
-    paint->setBrush( NoBrush );
+    paint->setBrush( Qt::NoBrush );
     paint->drawLine(x0 - len, y0 + len, x0 + len, y0 + len);
     paint->drawLine(x0 - len, y0 + len, x0 + 0,   y0 - len);
     paint->drawLine(x0 + len, y0 + len, x0 + 0,   y0 - len);
@@ -1145,7 +1189,7 @@ void polyView::drawMark(int x0, int y0, QColor color, int lineWidth,
   
   int len = 6;
 
-  paint->setBrush( NoBrush );
+  paint->setBrush( Qt::NoBrush );
   paint->setPen( QPen(color, lineWidth) );
 
   // Draw a cross
@@ -1158,26 +1202,26 @@ void polyView::toggleAnno(){
   m_showAnnotations   = !m_showAnnotations;
   m_showVertIndexAnno = false;
   m_showLayerAnno     = false;
-  update();
+  refreshPixmap();
 }
 
 void polyView::toggleVertIndexAnno(){
   m_showVertIndexAnno = !m_showVertIndexAnno;
   m_showAnnotations   = false;
   m_showLayerAnno     = false;
-  update();
+  refreshPixmap();
 }
 
 void polyView::toggleLayerAnno(){
   m_showLayerAnno     = !m_showLayerAnno;
   m_showAnnotations   = false;
   m_showVertIndexAnno = false;
-  update();
+  refreshPixmap();
 }
 
 void polyView::toggleFilled(){
   m_showFilledPolys = !m_showFilledPolys;
-  update();
+  refreshPixmap();
 }
 
 void polyView::toggleShowPolyDiff(){
@@ -1196,7 +1240,7 @@ void polyView::toggleShowPolyDiff(){
     m_distVec.clear();
     m_indexOfDistToPlot = -1; 
 
-    update();
+    refreshPixmap();
     return;
   }
 
@@ -1249,7 +1293,7 @@ void polyView::toggleShowPolyDiff(){
   m_polyOptionsVec[2].polyFileName = "diff1.xg";
   m_polyOptionsVec[3].polyFileName = "diff2.xg";
   
-  update();
+  refreshPixmap();
 }
 
 void polyView::plotNextDiff(){
@@ -1314,7 +1358,7 @@ void polyView::plotDiff(int direction){
   m_viewXll  = midX - m_viewWidX/2.0;
   m_viewYll  = midY - m_viewWidY/2.0;
   
-  update(); // Will call plotDistBwPolyClips(...)
+  refreshPixmap(); // Will call plotDistBwPolyClips(...)
 }
 
 
@@ -1331,12 +1375,12 @@ void polyView::plotDistBwPolyClips( QPainter *paint ){
 
   int radius    = 2;
   string color  = "yellow";
-  paint->setPen( QPen( color.c_str(), m_prefs.lineWidth) );
-  paint->setBrush( QColor(color) );
+  paint->setPen( QPen( QColor(color.c_str()), m_prefs.lineWidth) );
+  paint->setBrush( QColor(color.c_str()) );
 
   // To do: This does not behave well on zoom. Need to cut this segment to the viewing
   // box, as done with polygons.
-  QPointArray pa(pSize);
+  Q3PointArray pa(pSize);
   for (int vIter = 0; vIter < pSize; vIter++){
     int px0, py0;
     worldToPixelCoords(m_segX[vIter], m_segY[vIter], // inputs
@@ -1397,7 +1441,7 @@ void polyView::deletePoly(){
     m_polyVec[minVecIndex].erasePoly(minPolyIndex);
   }
 
-  update();
+  refreshPixmap();
   
   return;
 }
@@ -1424,7 +1468,7 @@ void polyView::saveMark(){
   // Plot the mark
   m_markX.resize(1); m_markX[0] = m_menuX;
   m_markY.resize(1); m_markY[0] = m_menuY;
-  update();
+  refreshPixmap();
 }
 
 void polyView::toggleNmScale(){
@@ -1470,7 +1514,7 @@ void polyView::drawRect(const utils::dRect & R, int lineWidth,
   double xv[] = { R.xl, R.xh, R.xh, R.xl };
   double yv[] = { R.yl, R.yl, R.yh, R.yh };
   
-  QPointArray pa(numV);
+  Q3PointArray pa(numV);
   for (int vIter = 0; vIter < numV; vIter++){
     int x0, y0;
     worldToPixelCoords(xv[vIter], yv[vIter], // inputs
@@ -1478,8 +1522,8 @@ void polyView::drawRect(const utils::dRect & R, int lineWidth,
                        );
     pa[vIter] = QPoint(x0, y0);
   }
-  paint->setBrush( NoBrush );
-  paint->setPen( QPen("white", lineWidth) );
+  paint->setBrush( Qt::NoBrush );
+  paint->setPen( QPen(QColor("white"), lineWidth) );
   paint->drawPolygon( pa );
 
   return;
@@ -1516,8 +1560,8 @@ void polyView::cutToHlt(){
 
   m_highlights.resize(numH - 1);
   
-  update();
-  
+  refreshPixmap();
+  return;
 }
 
 void polyView::enforce45(){
@@ -1536,7 +1580,7 @@ void polyView::enforce45(){
     m_polyVec[vecIter].enforce45();
   }
 
-  update();
+  refreshPixmap();
   return;
 }
 
@@ -1559,7 +1603,7 @@ void polyView::undoLast(){
       return;
     }
     m_highlights.resize(numH - 1);
-    update();
+    refreshPixmap();
     
   }else if (lastAction == m_polyChanged){
   
@@ -1576,7 +1620,7 @@ void polyView::undoLast(){
     m_resetViewOnUndo.resize(numCopies - 1);
     if (resetViewOnUndo) resetView();
 
-    update();
+    refreshPixmap();
   }
 
   return;
@@ -1630,7 +1674,7 @@ void polyView::openPoly(){
 
   if (s.length() == 0) return;
   
-  string fileName = string(s.data());
+  string fileName = string((char*)s.data());
 
   assert ( (int)m_polyVec.size() == (int)m_polyOptionsVec.size() );
 
@@ -1746,18 +1790,18 @@ void polyView::saveMultiplePoly(bool overwrite){
 void polyView::togglePE(){
 
   m_toggleShowPointsEdges = m_toggleShowPointsEdges%3 + 1;
-  update();
+  refreshPixmap();
   
 }
 
 void polyView::changeOrder(){
 
   m_changeDisplayOrder = true;
-  update();
+  refreshPixmap();
   
 }
 
-bool polyView::isPolyZeroDim(const QPointArray & pa){
+bool polyView::isPolyZeroDim(const Q3PointArray & pa){
 
   int numPts = pa.size();
   for (int s = 1; s < numPts; s++){
@@ -1924,7 +1968,7 @@ void polyView::runCmd(std::string cmd){
           m_viewXll = xll; m_viewWidX = widx;
           m_viewYll = yll; m_viewWidY = widy;
           m_viewChanged = true;
-          update();
+          refreshPixmap();
           return;
         }
       }

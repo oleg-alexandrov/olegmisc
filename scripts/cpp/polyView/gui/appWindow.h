@@ -3,6 +3,7 @@
 
 #include <qmainwindow.h>
 #include <qlineedit.h>
+#include <QEvent>
 #include <string>
 #include <vector>
 class polyView;
@@ -30,13 +31,14 @@ public slots:
   void help();
 
 protected:
-  bool eventFilter(QObject *obj, QEvent *ev);
+  bool eventFilter(QObject *obj, QEvent *event);
 
 private slots:
   QMenuBar* createMenus();
   void procCmdLine();
   void shiftUp ();
   void shiftDown ();
+  void forceQuit();
   
 private:
   void insertCmdFromHist();
@@ -46,6 +48,7 @@ private:
   std::string   m_progName;
   std::vector<std::string> m_cmdHist;
   int m_histPos;
+
 };
 
 
