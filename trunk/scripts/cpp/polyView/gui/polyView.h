@@ -4,6 +4,13 @@
 #include <qwidget.h>
 #include <qpixmap.h>
 #include <qevent.h>
+//Added by qt3to4:
+#include <QContextMenuEvent>
+#include <Q3PointArray>
+#include <QWheelEvent>
+#include <QPaintEvent>
+#include <QMouseEvent>
+#include <QKeyEvent>
 #include <vector>
 #include "utils.h"
 #include "../geom/dPoly.h"
@@ -81,6 +88,7 @@ protected:
 
 private:
   void readAllPolys();
+  void refreshPixmap();
   void printCmd(std::string cmd, const std::vector<double> & vals);
   void printCmd(std::string cmd, double xll, double yll,
                 double widX, double widY);
@@ -107,7 +115,7 @@ private:
                                      double xur, double yur
                                      );
 
-  void printCurrCoords(const ButtonState & state, // input
+  void printCurrCoords(const Qt::ButtonState & state, // input
                        int & currX, int  & currY  // in-out
                        );
   bool readOnePoly(// inputs
@@ -120,13 +128,13 @@ private:
   bool isClosestGridPtFree(std::vector< std::vector<int> > & Grid,
                            int x, int y);
   void initScreenGrid(std::vector< std::vector<int> > & Grid);
-  bool isPolyZeroDim(const QPointArray & pa);
+  bool isPolyZeroDim(const Q3PointArray & pa);
   void drawRect(const utils::dRect & R, int lineWidth,
                 QPainter * paint);
   void centerViewAtPoint(double x, double y);
   void drawOneVertex(int x0, int y0, QColor color, int lineWidth,
                      int drawVertIndex, QPainter * paint);
-  void wipeRubberBand(QRect & R);
+  void updateRubberBand(QRect & R);
 
   void displayData( QPainter *paint );
   void resetTransformSettings();
@@ -164,10 +172,15 @@ private:
   QRect m_rubberBandRect;
   bool m_resetView;
   bool m_prevClickExists;
+  bool m_firstPaintEvent;
   
-  // For double buffering
-  QPixmap m_cache;
+  // Use double buffering: draw to a pixmap first, refresh it only
+  // if really necessary, and display it when paintEvent is called.
+  QPixmap m_pixmap;
 
+  std::vector<QPoint> m_snappedPoints, m_nonSnappedPoints;
+  int m_smallLen;
+  
   QRect   m_rubberBand;
 
   bool m_showAnnotations;
