@@ -207,9 +207,7 @@ void polyView::displayData( QPainter *paint ){
 
   // The two ratios below will always be the same. Take the maximum
   // for robustness to floating point errors.
-  m_pixelSize = max(m_screenWidX/m_viewWidX, m_screenWidY/m_viewWidY);
-  //assert( abs(m_pixelSize - m_screenWidX/m_viewWidX) < 1.0e-5*m_pixelSize );
-  //assert( abs(m_pixelSize - m_screenWidY/m_viewWidY) < 1.0e-5*m_pixelSize );
+  m_pixelSize = max(m_viewWidX/m_screenWidX, m_viewWidY/m_screenWidY);
   
   // Use a grid to not draw text too densely as that's slow
   vector< vector<int> > Grid; 
@@ -236,7 +234,7 @@ void polyView::displayData( QPainter *paint ){
 
     int vecIter = m_polyVecOrder[vi];
 
-    int lineWidth   = m_polyOptionsVec[vecIter].lineWidth;
+    int lineWidth = m_polyOptionsVec[vecIter].lineWidth;
 
     // Note: plotFilled, plotEdges, and plotPoints below are not mutually exclusive.
     
@@ -269,12 +267,16 @@ void polyView::displayData( QPainter *paint ){
                                                       m_viewXll + m_viewWidX,
                                                       m_viewYll + m_viewWidY
                                                       );
-    
+
+    // Clip the polygon a bit beyond the viewing window, as to not see
+    // the edges where the cut took place.
+    double extra = 2*m_pixelSize*lineWidth;
     dPoly clippedPoly;
     currPoly.clipPoly(//inputs
-                      m_viewXll,  m_viewYll,
-                      m_viewXll + m_viewWidX,
-                      m_viewYll + m_viewWidY,
+                      m_viewXll - extra,
+                      m_viewYll - extra,
+                      m_viewXll + m_viewWidX + extra,
+                      m_viewYll + m_viewWidY+ extra,
                       // output
                       clippedPoly
                       );
@@ -718,14 +720,15 @@ bool polyView::getValuesFromGui(std::string title, std::string description,
   QString text = QInputDialog::getText(title.c_str(), description.c_str(),
                                        QLineEdit::Normal, QString::null, &ok, this );
   if ( ok && !text.isEmpty() ) {
-    // user entered something and pressed OK
-    string data = (char*)text.data();
+    // The user entered something and pressed OK.
+    string data = text.toStdString();
+    
     data = replaceAll(data, ",", " ");
     istringstream ts(data);
     double val;
     while (ts >> val) values.push_back(val);
   } else {
-    // user entered nothing or pressed Cancel
+    // The user entered nothing or pressed Cancel.
   }
 
   return ok;
@@ -736,7 +739,7 @@ void polyView::setLineWidth(){
   vector<double> linewidth;
   if ( getValuesFromGui("Line width", "Enter line width", linewidth) &&
        !linewidth.empty() && linewidth[0] >= 1.0 ){
-    
+
     int lw = (int) round(linewidth[0]);
 
     for (int polyIter = 0; polyIter < (int)m_polyOptionsVec.size(); polyIter++){
@@ -1116,16 +1119,16 @@ void polyView::pixelToWorldCoords(int px, int py,
   // instead of the lower-left corner.
   py = m_screenWidY - py;
 
-  wx = px/m_pixelSize + m_viewXll;
-  wy = py/m_pixelSize + m_viewYll;
+  wx = px*m_pixelSize + m_viewXll;
+  wy = py*m_pixelSize + m_viewYll;
 
 }
 
 void polyView::worldToPixelCoords(double wx, double wy,
                                   int & px,  int & py){
 
-  px = iround((wx - m_viewXll)*m_pixelSize);
-  py = iround((wy - m_viewYll)*m_pixelSize);
+  px = iround((wx - m_viewXll)/m_pixelSize);
+  py = iround((wy - m_viewYll)/m_pixelSize);
   
   // Compensate for the Qt's origin being in the upper-left corner
   // instead of the lower-left corner.
@@ -1679,8 +1682,8 @@ void polyView::openPoly(){
 
   if (s.length() == 0) return;
   
-  string fileName = string((char*)s.data());
-
+  string fileName = s.toStdString();
+  
   assert ( (int)m_polyVec.size() == (int)m_polyOptionsVec.size() );
 
   m_polyOptionsVec.push_back(m_prefs);

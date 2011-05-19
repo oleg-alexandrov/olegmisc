@@ -85,7 +85,7 @@ appWindow::~appWindow(){
 }
 
 void appWindow::procCmdLine(){
-  string cmd = (char*)m_cmdLine->text().data();
+  string cmd = m_cmdLine->text().toStdString();
   m_cmdHist.push_back(cmd);
   m_poly->runCmd(cmd);
   m_cmdLine->setText("");
