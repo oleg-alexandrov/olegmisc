@@ -75,7 +75,7 @@ public slots:
 
 protected:
 
-  void paintEvent( QPaintEvent*);
+  void paintEvent(QPaintEvent *);
   void popUp(std::string msg);
   bool getValuesFromGui(std::string title, std::string description,
                         std::vector<double> & values);
@@ -129,7 +129,7 @@ private:
                            int x, int y);
   void initScreenGrid(std::vector< std::vector<int> > & Grid);
   bool isPolyZeroDim(const Q3PointArray & pa);
-  void drawRect(const utils::dRect & R, int lineWidth,
+  void drawRect(const dPoly & R, int lineWidth,
                 QPainter * paint);
   void centerViewAtPoint(double x, double y);
   void drawOneVertex(int x0, int y0, QColor color, int lineWidth,
@@ -186,7 +186,7 @@ private:
   bool m_showAnnotations;
   bool m_showFilledPolys;
   
-  std::vector<utils::dRect> m_highlights;
+  std::vector<dPoly> m_highlights;
 
   int m_polyChanged, m_createHlt;
 
