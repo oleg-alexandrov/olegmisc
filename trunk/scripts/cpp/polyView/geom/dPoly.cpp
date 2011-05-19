@@ -719,7 +719,9 @@ bool dPoly::readPoly(std::string filename,
   reset();
   
   m_isPointCloud = isPointCloud;
-  
+
+  // To do: The test below will succeed if filename is a directory.
+  // This is probably not right.
   ifstream fh(filename.c_str());
   if( !fh ){
     cerr << "Error: Could not open " << filename << endl;
