@@ -40,6 +40,16 @@ public:
   
   void appendPolygons(const dPoly & poly);
   
+  void appendRectangle(double xl, double yl, double xh, double yh,
+                       bool isPolyClosed,
+                       const std::string & color, const std::string & layer
+                       );
+
+  void setRectangle(double xl, double yl, double xh, double yh,
+                    bool isPolyClosed,
+                    const std::string & color, const std::string & layer
+                    );
+
   void clipPoly(// inputs
                 double clip_xll, double clip_yll,
                 double clip_xur, double clip_yur,

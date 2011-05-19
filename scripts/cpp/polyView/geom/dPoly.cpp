@@ -102,6 +102,26 @@ void dPoly::appendPolygon(int numVerts,
   return;
 }
 
+void dPoly::appendRectangle(double xl, double yl, double xh, double yh,
+                            bool isPolyClosed,
+                            const std::string & color, const std::string & layer
+                            ){
+  double xv[4], yv[4];
+  xv[0] = xl; xv[1] = xh; xv[2] = xh; xv[3] = xl;
+  yv[0] = yl; yv[1] = yl; yv[2] = yh; yv[3] = yh;
+  appendPolygon(4, xv, yv, isPolyClosed, color, layer);
+  return;
+}
+
+void dPoly::setRectangle(double xl, double yl, double xh, double yh,
+                         bool isPolyClosed,
+                         const std::string & color, const std::string & layer
+                         ){
+  reset();
+  appendRectangle(xl, yl, xh, yh, isPolyClosed, color, layer);
+  return;
+}
+
 void dPoly::get_annoByType(std::vector<anno> & annotations, int annoType){
   
   if (annoType == 0){
@@ -660,18 +680,15 @@ void dPoly::sortBySizeAndMaybeAddBigContainingRect(// inputs
   bigXll -= extra; bigXur += extra;
   bigYll -= extra; bigYur += extra;
 
-  double boxX[4], boxY[4];
-  boxX[0] = bigXll; boxX[1] = bigXur; boxX[2] = bigXur; boxX[3] = bigXll;
-  boxY[0] = bigYll; boxY[1] = bigYll; boxY[2] = bigYur; boxY[3] = bigYur;
-
   bool isPolyClosed = true;
-  appendPolygon(4, boxX, boxY, isPolyClosed, colors[0], layers[0]);
+  appendRectangle(bigXll, bigYll, bigXur, bigYur, isPolyClosed, colors[0], layers[0]); 
 
   // Reorder the updated set of polygons
   sortFromLargestToSmallest();
 
   return;
 }
+
 
 void dPoly::enforce45(){
 
