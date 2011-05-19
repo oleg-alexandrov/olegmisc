@@ -269,14 +269,19 @@ void polyView::displayData( QPainter *paint ){
                                                       );
 
     // Clip the polygon a bit beyond the viewing window, as to not see
-    // the edges where the cut took place.
-    double extra = 2*m_pixelSize*lineWidth;
+    // the edges where the cut took place. It is a bit tricky to
+    // decide how much the extra should be.
+    double tol    = 1e-12;
+    double extra  = 2*m_pixelSize*lineWidth;
+    double extraX = extra + tol*max(abs(m_viewXll), abs(m_viewXll + m_viewWidX));
+    double extraY = extra + tol*max(abs(m_viewYll), abs(m_viewYll + m_viewWidY));
+    
     dPoly clippedPoly;
     currPoly.clipPoly(//inputs
-                      m_viewXll - extra,
-                      m_viewYll - extra,
-                      m_viewXll + m_viewWidX + extra,
-                      m_viewYll + m_viewWidY+ extra,
+                      m_viewXll - extraX,
+                      m_viewYll - extraY,
+                      m_viewXll + m_viewWidX + extraX,
+                      m_viewYll + m_viewWidY + extraY,
                       // output
                       clippedPoly
                       );
