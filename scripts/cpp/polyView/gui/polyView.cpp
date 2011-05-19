@@ -1008,9 +1008,11 @@ void polyView::createHighlightWithRealInputs(double xll, double yll,
                                              double xur, double yur
                                              ){
   
-  // To do: Use dPoly instead of dRect so that we can plot
-  // highlights exactly in the same way as we plot polygons.
-  dRect R( min(xll, xur), min(yll, yur), max(xll, xur), max(yll, yur) );
+  dPoly R;
+  bool isPolyClosed = true;
+  string color = "white", layer = "";
+  R.setRectangle(min(xll, xur), min(yll, yur), max(xll, xur), max(yll, yur),
+                 isPolyClosed, color, layer);
   m_highlights.push_back(R);
   m_actions.push_back(m_createHlt);
   
@@ -1505,14 +1507,15 @@ void polyView::toggleNmScale(){
   return;
 }
 
-// actions
-
-void polyView::drawRect(const utils::dRect & R, int lineWidth,
+void polyView::drawRect(const dPoly & R, int lineWidth,
                         QPainter * paint){
 
-  int numV = 4;
-  double xv[] = { R.xl, R.xh, R.xh, R.xl };
-  double yv[] = { R.yl, R.yl, R.yh, R.yh };
+  int numV = R.get_totalNumVerts();
+  assert(numV == 4);
+  
+  const double * xv = R.get_xv();
+  const double * yv = R.get_yv();
+  const vector<string> colors = R.get_colors();
   
   Q3PointArray pa(numV);
   for (int vIter = 0; vIter < numV; vIter++){
@@ -1523,7 +1526,7 @@ void polyView::drawRect(const utils::dRect & R, int lineWidth,
     pa[vIter] = QPoint(x0, y0);
   }
   paint->setBrush( Qt::NoBrush );
-  paint->setPen( QPen(QColor("white"), lineWidth) );
+  paint->setPen( QPen(QColor(colors[0].c_str()), lineWidth) );
   paint->drawPolygon( pa );
 
   return;
@@ -1544,15 +1547,17 @@ void polyView::cutToHlt(){
   m_actions.push_back(m_polyChanged);
   m_resetViewOnUndo.push_back(false);
 
-  dRect H = m_highlights[numH - 1];
-
-  printCmd( "clip", H.xl, H.yl, H.xh - H.xl, H.yh - H.yl );
+  dPoly H = m_highlights[numH - 1];
+  assert(H.get_totalNumVerts() == 4);
+  double xl, yl, xh, yh;
+  H.bdBox(xl, yl, xh, yh);
+  printCmd( "clip", xl, yl, xh - xl, yh - yl );
     
   dPoly clippedPoly;
   for (int vecIter = 0; vecIter < (int)m_polyVec.size(); vecIter++){
 
-    m_polyVec[vecIter].clipPoly(H.xl, H.yl, H.xh, H.yh, //inputs
-                                clippedPoly             // output
+    m_polyVec[vecIter].clipPoly(xl, yl, xh, yh, //inputs
+                                clippedPoly     // output
                                 );
 
     m_polyVec[vecIter] = clippedPoly;    
