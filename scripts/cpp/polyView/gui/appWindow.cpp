@@ -33,7 +33,6 @@ appWindow::appWindow(QWidget* parent, std::string progName,
 
   // Central widget
   m_poly = new polyView (this, options);
-  m_poly->setBackgroundColor (QColor("black"));
   m_poly->setFocusPolicy(Qt::StrongFocus);
   m_poly->setFocus();
   setCentralWidget(m_poly);
@@ -192,7 +191,8 @@ QMenuBar* appWindow::createMenus(){
 
   Q3PopupMenu* options = new Q3PopupMenu( menu );
   menu->insertItem("&Options", options);
-  options->insertItem("Line width", m_poly, SLOT(setLineWidth()));
+  options->insertItem("Set line width", m_poly, SLOT(setLineWidth()));
+  options->insertItem("Set background", m_poly, SLOT(setBgColor()));
 
   Q3PopupMenu* help = new Q3PopupMenu( menu );
   menu->insertItem("&Help", help);

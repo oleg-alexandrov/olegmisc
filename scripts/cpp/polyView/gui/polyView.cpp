@@ -29,7 +29,6 @@ using namespace std;
 using namespace utils;
 
 // To do: handle colors correctly (convert dark-gray to darkGray, etc.).
-// To do: Make the background arbitrary, not hard-coded to black.
 // To do: In the geom directory, put everything in a namespace, say called 'pv'.
 //        Here too. Clean up, modularize, and structure the code more.
 // To do: Don't plot one-point polygons as hollow circles. Plot them as
@@ -50,6 +49,7 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   assert(m_polyOptionsVec.size() >= 1);
   m_prefs = m_polyOptionsVec.back(); m_polyOptionsVec.pop_back();
   m_prefs.plotAsPoints = false; // most likely the user wants to see edges not points
+  setBgFgColorsFromPrefs(); // must be called after m_prefs is set
   
   // int
   m_screenXll  = 0; m_screenYll  = 0;
@@ -403,7 +403,7 @@ void polyView::displayData( QPainter *paint ){
     worldToPixelCoords(m_markX[0], m_markY[0], // inputs
                        x0, y0                  // outputs
                        );
-    drawMark(x0, y0, "white", m_prefs.lineWidth, paint);
+    drawMark(x0, y0, QColor(m_prefs.fgColor.c_str()), m_prefs.lineWidth, paint);
   }
 
   // If in diff mode
@@ -682,14 +682,14 @@ void polyView::paintEvent(QPaintEvent *){
   QStylePainter paint(this);
   paint.drawPixmap(0, 0, m_pixmap);
 
-  QColor lightColor = palette().light().color();
-  paint.setPen(lightColor);
+  QColor fgColor = QColor(m_prefs.fgColor.c_str());
+  paint.setPen(fgColor);
   paint.drawRect(m_rubberBand.normalized().adjusted(0, 0, -1, -1));
   
   // Plot the mouse clicks (snapped or not snapped to closest vertex).
   // Do it here since those are temporary, they are supposed
   // to go away when the display changes such as on zoom.
-  paint.setPen( QPen(lightColor, m_prefs.lineWidth) );
+  paint.setPen( QPen(fgColor, m_prefs.lineWidth) );
   paint.setBrush( Qt::NoBrush );
   for (int p = 0; p < (int)m_snappedPoints.size(); p++){
     const QPoint & P = m_snappedPoints[p];
@@ -717,24 +717,34 @@ void polyView::popUp(std::string msg){
   return;
 }
 
-bool polyView::getValuesFromGui(std::string title, std::string description,
-                                std::vector<double> & values){
+bool polyView::getStringFromGui(std::string title, std::string description,
+                                std::string & data // output
+                                ){
 
-  values.clear();
+  data = "";
+
   bool ok = false;
   QString text = QInputDialog::getText(title.c_str(), description.c_str(),
                                        QLineEdit::Normal, QString::null, &ok, this );
-  if ( ok && !text.isEmpty() ) {
-    // The user entered something and pressed OK.
-    string data = text.toStdString();
-    
-    data = replaceAll(data, ",", " ");
-    istringstream ts(data);
-    double val;
-    while (ts >> val) values.push_back(val);
-  } else {
-    // The user entered nothing or pressed Cancel.
-  }
+
+  if (ok) data = text.toStdString();
+
+  return ok;
+}
+
+bool polyView::getRealValuesFromGui(std::string title, std::string description,
+                                    std::vector<double> & values){
+
+  values.clear();
+  string data;
+  bool ok = getStringFromGui(title, description,
+                             data // output
+                             );
+  
+  data = replaceAll(data, ",", " ");
+  istringstream ts(data);
+  double val;
+  while (ts >> val) values.push_back(val);
 
   return ok;
 }
@@ -742,7 +752,7 @@ bool polyView::getValuesFromGui(std::string title, std::string description,
 void polyView::setLineWidth(){
 
   vector<double> linewidth;
-  if ( getValuesFromGui("Line width", "Enter line width", linewidth) &&
+  if ( getRealValuesFromGui("Line width", "Enter line width", linewidth) &&
        !linewidth.empty() && linewidth[0] >= 1.0 ){
 
     int lw = (int) round(linewidth[0]);
@@ -760,10 +770,66 @@ void polyView::setLineWidth(){
   return;
 }
 
+void polyView::setBgColor(){
+
+  string data = "";
+  bool ok = getStringFromGui("Background", "Enter background",
+                             data // output
+                             );
+
+  istringstream in(data);
+  string bgColor = "";
+  if (ok && in >> bgColor && QColor(bgColor.c_str()) != QColor::Invalid){
+    m_prefs.bgColor = bgColor;
+    setBgFgColorsFromPrefs();
+    refreshPixmap();
+  }else{
+    popUp("Invalid background color");
+  }
+  return;
+}
+
+void polyView::setBgFgColorsFromPrefs(){
+
+  // Set the background. Watch for invalid colors.
+  string bgColor   = m_prefs.bgColor;
+  QColor qtBgColor = QColor(bgColor.c_str());
+  if (qtBgColor == QColor::Invalid){
+    bgColor   = "black";
+    qtBgColor = QColor(bgColor.c_str()); // fallback color
+  }
+  setBackgroundColor(qtBgColor);
+
+  string fgColor = m_prefs.fgColor;
+  if ( QColor(fgColor.c_str()) == QColor::Invalid ){
+    fgColor = "white";
+  }
+
+  // Make sure bg and fg have different colors
+  if (bgColor == fgColor){
+    if (bgColor == "black") fgColor = "white";
+    else                    fgColor = "black";
+  }
+
+  // Update the preferences after doing the logic above
+  m_prefs.bgColor = bgColor;
+  m_prefs.fgColor = fgColor;
+
+  // While unnecessary, also update the preferences for each
+  // polygon file, for consistency with other preferences per file.
+  for (int s = 0; s < (int)m_polyOptionsVec.size(); s++){
+    m_polyOptionsVec[s].bgColor = bgColor; 
+    m_polyOptionsVec[s].fgColor = fgColor; 
+  }
+
+  return;
+}
+
+
 void polyView::shiftPolys(){
 
   vector<double> shifts;
-  if ( getValuesFromGui("Translate polygons", "Enter shift_x and shift_y", shifts) ){
+  if ( getRealValuesFromGui("Translate polygons", "Enter shift_x and shift_y", shifts) ){
     shiftPolys(shifts);
   }
   return;
@@ -772,7 +838,7 @@ void polyView::shiftPolys(){
 void polyView::rotatePolys(){
 
   vector<double> angle;
-  if ( getValuesFromGui("Rotate polygons", "Enter rotation angle in degrees", angle) ){
+  if ( getRealValuesFromGui("Rotate polygons", "Enter rotation angle in degrees", angle) ){
     rotatePolys(angle);
   }
   return;
@@ -781,7 +847,7 @@ void polyView::rotatePolys(){
 void polyView::scalePolys(){
 
   vector<double> scale;
-  if ( getValuesFromGui("Scale polygons", "Enter scale factor", scale) ){
+  if ( getRealValuesFromGui("Scale polygons", "Enter scale factor", scale) ){
     scalePolys(scale);
   }
   return;
@@ -969,9 +1035,8 @@ void polyView::drawCurrPolyLine(QPainter * paint){
     return;
   }
   
-  string color  = "white"; // To do: Consolidate light and dark colors in one place
   paint->setBrush( Qt::NoBrush );
-  paint->setPen( QPen(QColor(color.c_str()), m_prefs.lineWidth) );
+  paint->setPen( QPen(QColor(m_prefs.fgColor.c_str()), m_prefs.lineWidth) );
 
   // To do: The block below better become its own function
   // which can draw points, poly lines, and polygons
@@ -1018,7 +1083,7 @@ void polyView::createHighlightWithRealInputs(double xll, double yll,
   
   dPoly R;
   bool isPolyClosed = true;
-  string color = "white", layer = "";
+  string color = m_prefs.fgColor, layer = "";
   R.setRectangle(min(xll, xur), min(yll, yur), max(xll, xur), max(yll, yur),
                  isPolyClosed, color, layer);
   m_highlights.push_back(R);
@@ -1523,7 +1588,6 @@ void polyView::drawRect(const dPoly & R, int lineWidth,
   
   const double * xv = R.get_xv();
   const double * yv = R.get_yv();
-  const vector<string> colors = R.get_colors();
   
   Q3PointArray pa(numV);
   for (int vIter = 0; vIter < numV; vIter++){
@@ -1534,7 +1598,7 @@ void polyView::drawRect(const dPoly & R, int lineWidth,
     pa[vIter] = QPoint(x0, y0);
   }
   paint->setBrush( Qt::NoBrush );
-  paint->setPen( QPen(QColor(colors[0].c_str()), lineWidth) );
+  paint->setPen( QPen(QColor(m_prefs.fgColor.c_str()), lineWidth) );
   paint->drawPolygon( pa );
 
   return;

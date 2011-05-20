@@ -22,6 +22,8 @@ struct polyOptions{
   closedPolyInfo  isPolyClosed;
   int             lineWidth;
   bool            useCmdLineColor;
+  std::string     bgColor;
+  std::string     fgColor;
   std::string     cmdLineColor;
   std::string     polyFileName;
   
@@ -31,6 +33,8 @@ struct polyOptions{
     isPolyClosed    = readClosedPolyInfoFromFile;
     lineWidth       = 1;
     useCmdLineColor = false;
+    bgColor         = "black";
+    fgColor         = "white";
     cmdLineColor    = "green";
     polyFileName    = "unnamed.xg";
   }
