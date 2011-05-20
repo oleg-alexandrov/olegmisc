@@ -10,7 +10,8 @@ using namespace std;
 
 void utils::printUsage(std::string progName){
   cout << "Usage: " << progName << " "
-       << "[ -geo[metry] 1000x800 ] [ -c | -color yellow ] [ -lw | -lineWidth 2 ] "
+       << "[ -geo[metry] 1000x800 ] [-bg | -backgroundColor black ] [ -c | -color yellow ] "
+       << "[ -lw | -lineWidth 2 ] "
        << "[ -p | -points ] [ -cp | -closedPoly ] [ -nc | -nonClosedPoly ] "
        << "[ -f | -filledPoly ] [ -nf | -nonFilledPoly ] "
        << "file_1.xg ... file_N.xg " << endl;
@@ -116,11 +117,20 @@ void utils::parseCmdOptions(//inputs
       continue;
     }
 
+    if ( (strcmp(currArg, "-bg") == 0 || strcmp(currArg, "-backgroundcolor") == 0 )
+         &&
+         argIter < argc - 1
+         ){
+      opt.bgColor = argv[argIter + 1];
+      argIter++;
+      continue;
+    }
+
     if ( (strcmp(currArg, "-lw") == 0 || strcmp(currArg, "-linewidth") == 0 )
          &&
          argIter < argc - 1
          ){
-      int lw = atoi(argv[argIter + 1]);
+      int lw = (int)round(atof(argv[argIter + 1]));
       if (lw > 0) opt.lineWidth = lw;
       argIter++;
       continue;

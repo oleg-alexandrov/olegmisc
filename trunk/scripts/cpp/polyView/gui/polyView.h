@@ -67,6 +67,7 @@ public slots:
 
   // Options menu
   void setLineWidth();
+  void setBgColor();
 
   // Right-click menu
   void saveMark();
@@ -77,8 +78,12 @@ protected:
 
   void paintEvent(QPaintEvent *);
   void popUp(std::string msg);
-  bool getValuesFromGui(std::string title, std::string description,
-                        std::vector<double> & values);
+  bool getStringFromGui(std::string title, std::string description,
+                                std::string & data // output
+                                );
+  bool getRealValuesFromGui(std::string title, std::string description,
+                            std::vector<double> & values);
+  void setBgFgColorsFromPrefs();
   void mousePressEvent( QMouseEvent *E);
   void mouseMoveEvent( QMouseEvent *E);
   void keyPressEvent( QKeyEvent *K );
