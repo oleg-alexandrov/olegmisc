@@ -118,6 +118,8 @@ def parse_cpp(cpp_text, namespace):
           
         cpp_map[fun_name][fun_decl] = count
         count = count + 1
+
+        #print "In parse_cpp:", fun_name, fun_decl, count
         
     return cpp_map
 
@@ -225,8 +227,9 @@ def parse_update_h(h_text, cpp_map, namespace):
 
         #print "closest index is ", closestFunBefore, "--", closestIndexBefore
         
+        h_map[key] = cpp_block
+        
         if closestIndexBefore >= 0:
-          h_map[key] = cpp_block
           
           for count in h_blocks.keys():
             if h_blocks[count] == h_map[closestFunBefore]:
@@ -234,9 +237,14 @@ def parse_update_h(h_text, cpp_map, namespace):
               #print "Corresp index in the h file is: ", closestIndexBefore
               
           indexToAdd = closestIndexBefore + 0.1
-          h_blocks[indexToAdd] = "  " + cpp_block + ";\n"
-          #print "New index is ", indexToAdd, h_blocks[indexToAdd]
           
+        else:
+          # The case when the new function is the first in the file
+          indexToAdd = 0.1
+
+        h_blocks[indexToAdd] = "  " + cpp_block + ";\n"
+        #print "New index is ", indexToAdd, h_blocks[indexToAdd]
+         
       # End adding new blocks to the h file map
       
     # Regenerate the header file after including information from the cpp file
