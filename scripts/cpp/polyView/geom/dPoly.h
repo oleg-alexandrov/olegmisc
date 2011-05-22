@@ -95,6 +95,14 @@ public:
   void bdBoxes(std::vector<double> & xll, std::vector<double> & yll,
                std::vector<double> & xur, std::vector<double> & yur) const;
   
+  void setPolygon(int numVerts,
+                  const double * xv,
+                  const double * yv,
+                  bool isPolyClosed,
+                  const std::string & color,
+                  const std::string & layer
+                  );
+  
   void findClosestPolyVertex(// inputs
                              double x0, double y0,
                              // outputs
