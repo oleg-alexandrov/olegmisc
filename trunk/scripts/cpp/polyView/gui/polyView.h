@@ -79,8 +79,8 @@ protected:
   void paintEvent(QPaintEvent *);
   void popUp(std::string msg);
   bool getStringFromGui(std::string title, std::string description,
-                                std::string & data // output
-                                );
+                        std::string & data // output
+                        );
   bool getRealValuesFromGui(std::string title, std::string description,
                             std::vector<double> & values);
   void setBgFgColorsFromPrefs();
@@ -109,8 +109,9 @@ private:
                          bool              & changeDisplayOrder,
                          std::vector<int>  & polyVecOrder
                          );
-  void drawCurrPolyLine(QPainter * paint);
-  void drawPolyLine();
+  void drawPolyLine(const std::vector<double> & polyX,
+                    const std::vector<double> & polyY,
+                    QPainter * paint);
   void addPolyVert(int px, int py);
   double pixelToWorldDist(int pd);
   void createHighlightWithPixelInputs(int pxll, int pyll, int pxur, int pyur
@@ -132,16 +133,22 @@ private:
                    );
   bool isClosestGridPtFree(std::vector< std::vector<int> > & Grid,
                            int x, int y);
-  void initScreenGrid(std::vector< std::vector<int> > & Grid);
+  void initTextOnScreenGrid(std::vector< std::vector<int> > & Grid);
   bool isPolyZeroDim(const Q3PointArray & pa);
-  void drawRect(const dPoly & R, int lineWidth,
-                QPainter * paint);
   void centerViewAtPoint(double x, double y);
   void drawOneVertex(int x0, int y0, QColor color, int lineWidth,
                      int drawVertIndex, QPainter * paint);
   void updateRubberBand(QRect & R);
 
   void displayData( QPainter *paint );
+  void plotDPoly(bool plotPoints, bool plotEdges,
+                 bool plotFilled, int lineWidth,
+                 int drawVertIndex, // 0 is a good choice here
+                 // An empty grid is a good choice if not text is present
+                 std::vector< std::vector<int> > & textOnScreenGrid,
+                 QPainter *paint,
+                 dPoly currPoly // Make a local copy on purpose
+                 );
   void resetTransformSettings();
   void pixelToWorldCoords(int px, int py,
                           double & wx, double & wy);

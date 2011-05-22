@@ -210,8 +210,8 @@ void polyView::displayData( QPainter *paint ){
   m_pixelSize = max(m_viewWidX/m_screenWidX, m_viewWidY/m_screenWidY);
   
   // Use a grid to not draw text too densely as that's slow
-  vector< vector<int> > Grid; 
-  initScreenGrid(Grid);
+  vector< vector<int> > textOnScreenGrid; 
+  initTextOnScreenGrid(textOnScreenGrid);
   
   // Plot the polygons
   QFont F;
@@ -236,166 +236,42 @@ void polyView::displayData( QPainter *paint ){
 
     int lineWidth = m_polyOptionsVec[vecIter].lineWidth;
 
-    // Note: plotFilled, plotEdges, and plotPoints below are not mutually exclusive.
-    
+    // Note: plotFilled, plotEdges, and plotPoints are not mutually exclusive.
     bool plotFilled = m_polyOptionsVec[vecIter].isPolyFilled || m_showFilledPolys;
-    
     bool plotEdges  = (!m_polyOptionsVec[vecIter].plotAsPoints) &&
       (m_toggleShowPointsEdges != m_showPoints);
-    
     bool plotPoints = m_polyOptionsVec[vecIter].plotAsPoints  ||
       ( m_toggleShowPointsEdges == m_showPoints )             ||
       ( m_toggleShowPointsEdges == m_showPointsEdges);
     
     if (plotPoints) drawVertIndex++;
     
-    // Note: Having annotations at vertices can make the display
-    // slow for large polygons.
-    // The operations below must happen before cutting,
-    // as cutting will inherit the result computed here.
-    if (m_showVertIndexAnno){
-      m_polyVec[vecIter].compVertIndexAnno();
-    }else if (m_showLayerAnno){
-      m_polyVec[vecIter].compLayerAnno();
-    }
-    
-    dPoly currPoly = m_polyVec[vecIter]; // local copy which we can modify
-    
-    // When polys are filled, plot largest polys first
-    if (plotFilled)
-      currPoly.sortBySizeAndMaybeAddBigContainingRect(m_viewXll,  m_viewYll,
-                                                      m_viewXll + m_viewWidX,
-                                                      m_viewYll + m_viewWidY
-                                                      );
-
-    // Clip the polygon a bit beyond the viewing window, as to not see
-    // the edges where the cut took place. It is a bit tricky to
-    // decide how much the extra should be.
-    double tol    = 1e-12;
-    double extra  = 2*m_pixelSize*lineWidth;
-    double extraX = extra + tol*max(abs(m_viewXll), abs(m_viewXll + m_viewWidX));
-    double extraY = extra + tol*max(abs(m_viewYll), abs(m_viewYll + m_viewWidY));
-    
-    dPoly clippedPoly;
-    currPoly.clipPoly(//inputs
-                      m_viewXll - extraX,
-                      m_viewYll - extraY,
-                      m_viewXll + m_viewWidX + extraX,
-                      m_viewYll + m_viewWidY + extraY,
-                      // output
-                      clippedPoly
-                      );
-
-    const double * xv               = clippedPoly.get_xv();
-    const double * yv               = clippedPoly.get_yv();
-    const int    * numVerts         = clippedPoly.get_numVerts();
-    int numPolys                    = clippedPoly.get_numPolys();
-    const vector<char> isPolyClosed = clippedPoly.get_isPolyClosed();
-    const vector<string> colors     = clippedPoly.get_colors();
-    //int numVerts                  = clippedPoly.get_totalNumVerts();
-    
-    vector<anno> annotations;
-    annotations.clear();
-    if (m_showVertIndexAnno){
-      clippedPoly.get_vertIndexAnno(annotations);
-    }else if (m_showLayerAnno){
-      clippedPoly.get_layerAnno(annotations);
-    }else if (m_showAnnotations){
-      clippedPoly.get_annotations(annotations);
-    }
-    
-    int start = 0;
-    for (int pIter = 0; pIter < numPolys; pIter++){
-
-      if (pIter > 0) start += numVerts[pIter - 1];
-
-      // Change the poly file color if it is the background color or invalid
-      QColor color = QColor( colors[pIter].c_str() );
-      if ( color == backgroundColor() || color == QColor::Invalid){
-        if ( backgroundColor() != QColor("white") ){
-          color = QColor("white");
-        }else{
-          color = QColor("black");
-        }
-      }
-      
-      int pSize = numVerts[pIter];
-
-      // Determine the orientation of polygons
-      double signedArea = 0.0;
-      if (plotFilled && isPolyClosed[pIter]){
-        signedArea = signedPolyArea(pSize, xv + start, yv + start);
-      }
-      
-      Q3PointArray pa(pSize);
-      for (int vIter = 0; vIter < pSize; vIter++){
-
-        int x0, y0;
-        worldToPixelCoords(xv[start + vIter], yv[start + vIter], // inputs
-                           x0, y0                                // outputs
-                           );
-        pa[vIter] = QPoint(x0, y0);
-
-        // Qt's built in points are too small. Instead of drawing a point
-        // draw a small shape. 
-        if ( plotPoints                                          &&
-             x0 > m_screenXll && x0 < m_screenXll + m_screenWidX && 
-             y0 > m_screenYll && y0 < m_screenYll + m_screenWidY
-             ){
-          drawOneVertex(x0, y0, color, lineWidth, drawVertIndex, paint);
-        }
-      }
-      
-      if (plotEdges){
-
-        if (plotFilled && isPolyClosed[pIter]){
-          if (signedArea >= 0.0) paint->setBrush( color );
-          else                   paint->setBrush( backgroundColor() ); 
-          paint->setPen( Qt::NoPen );
-        }else {
-          paint->setBrush( Qt::NoBrush );
-          paint->setPen( QPen(color, lineWidth) );
-        }
-
-        if ( pa.size() >= 1 && isPolyZeroDim(pa) ){
-          // Treat the case of polygons which are made up of just one point
-          int l_drawVertIndex = -1;
-          drawOneVertex(pa[0].x(), pa[0].y(), color, lineWidth, l_drawVertIndex,
-                        paint);
-        }else if (isPolyClosed[pIter]){
-          paint->drawPolygon( pa );
-        }else{
-          paint->drawPolyline( pa ); // don't join the last vertex to the first
-        }
-        
-      }
-      
-    } // End plotting the current set of polygons
-
-    // Plot the annotations
-    int numAnno = annotations.size();
-    for (int aIter = 0; aIter < numAnno; aIter++){
-      const anno & A = annotations[aIter];
-      int x0, y0;
-      worldToPixelCoords(A.x, A.y, // inputs
-                         x0, y0    // outputs
-                         );
-      paint->setPen( QPen(QColor("gold"), lineWidth) );
-      if (isClosestGridPtFree(Grid, x0, y0)){
-        paint->drawText(x0, y0, (A.label).c_str());
-      }
-      
-    } // End placing annotations
+    plotDPoly(plotPoints, plotEdges,  
+              plotFilled, lineWidth,  
+              drawVertIndex,    // 0 is a good choice here
+              textOnScreenGrid, // empty grid is fine here  
+              paint,  
+              m_polyVec[vecIter]
+              );
     
   } // End iterating over sets of polygons
 
   // Plot the highlights
+  bool plotPoints = false, plotEdges = true, plotFilled = false;
+  drawVertIndex = 0;
   for (int h = 0; h < (int)m_highlights.size(); h++){
-    drawRect(m_highlights[h], m_prefs.lineWidth, paint);
+    m_highlights[h].set_color(m_prefs.fgColor.c_str());
+    plotDPoly(plotPoints, plotEdges,  
+              plotFilled, m_prefs.lineWidth,  
+              drawVertIndex,    // 0 is a good choice here
+              textOnScreenGrid, // empty grid is fine here  
+              paint,  
+              m_highlights[h]
+              );
   }
   
   // This draws the polygon being created if in that mode
-  drawCurrPolyLine(paint);
+  drawPolyLine(m_currPolyX, m_currPolyY, paint);
 
   // Draw the mark if there
   if (m_markX.size() > 0){
@@ -412,6 +288,155 @@ void polyView::displayData( QPainter *paint ){
   // Wipe this temporary data now that the display changed
   m_snappedPoints.clear();
   m_nonSnappedPoints.clear(); 
+  
+  return;
+}
+
+void polyView::plotDPoly(bool plotPoints, bool plotEdges,
+                         bool plotFilled, int lineWidth,
+                         int drawVertIndex, // 0 is a good choice here
+                         // An empty grid is a good choice if not text is present
+                         std::vector< std::vector<int> > & textOnScreenGrid,
+                         QPainter *paint,
+                         dPoly currPoly // Make a local copy on purpose
+                         ){
+
+  // Plot a given dPoly with given options.
+  
+  // Note: Having annotations at vertices can make the display
+  // slow for large polygons.
+  // The operations below must happen before cutting,
+  // as cutting will inherit the result computed here.
+  if (m_showVertIndexAnno){
+    currPoly.compVertIndexAnno();
+  }else if (m_showLayerAnno){
+    currPoly.compLayerAnno();
+  }
+    
+  // When polys are filled, plot largest polys first
+  if (plotFilled)
+    currPoly.sortBySizeAndMaybeAddBigContainingRect(m_viewXll,  m_viewYll,
+                                                    m_viewXll + m_viewWidX,
+                                                    m_viewYll + m_viewWidY
+                                                    );
+
+  // Clip the polygon a bit beyond the viewing window, as to not see
+  // the edges where the cut took place. It is a bit tricky to
+  // decide how much the extra should be.
+  double tol    = 1e-12;
+  double extra  = 2*m_pixelSize*lineWidth;
+  double extraX = extra + tol*max(abs(m_viewXll), abs(m_viewXll + m_viewWidX));
+  double extraY = extra + tol*max(abs(m_viewYll), abs(m_viewYll + m_viewWidY));
+    
+  dPoly clippedPoly;
+  currPoly.clipPoly(//inputs
+                    m_viewXll - extraX,
+                    m_viewYll - extraY,
+                    m_viewXll + m_viewWidX + extraX,
+                    m_viewYll + m_viewWidY + extraY,
+                    // output
+                    clippedPoly
+                    );
+
+  const double * xv               = clippedPoly.get_xv();
+  const double * yv               = clippedPoly.get_yv();
+  const int    * numVerts         = clippedPoly.get_numVerts();
+  int numPolys                    = clippedPoly.get_numPolys();
+  const vector<char> isPolyClosed = clippedPoly.get_isPolyClosed();
+  const vector<string> colors     = clippedPoly.get_colors();
+  //int numVerts                  = clippedPoly.get_totalNumVerts();
+    
+  vector<anno> annotations;
+  annotations.clear();
+  if (m_showVertIndexAnno){
+    clippedPoly.get_vertIndexAnno(annotations);
+  }else if (m_showLayerAnno){
+    clippedPoly.get_layerAnno(annotations);
+  }else if (m_showAnnotations){
+    clippedPoly.get_annotations(annotations);
+  }
+    
+  int start = 0;
+  for (int pIter = 0; pIter < numPolys; pIter++){
+
+    if (pIter > 0) start += numVerts[pIter - 1];
+
+    // Change the poly file color if it is the background color or invalid
+    QColor color = QColor( colors[pIter].c_str() );
+    if ( color == backgroundColor() || color == QColor::Invalid){
+      if ( backgroundColor() != QColor("white") ){
+        color = QColor("white");
+      }else{
+        color = QColor("black");
+      }
+    }
+      
+    int pSize = numVerts[pIter];
+
+    // Determine the orientation of polygons
+    double signedArea = 0.0;
+    if (plotFilled && isPolyClosed[pIter]){
+      signedArea = signedPolyArea(pSize, xv + start, yv + start);
+    }
+      
+    Q3PointArray pa(pSize);
+    for (int vIter = 0; vIter < pSize; vIter++){
+
+      int x0, y0;
+      worldToPixelCoords(xv[start + vIter], yv[start + vIter], // inputs
+                         x0, y0                                // outputs
+                         );
+      pa[vIter] = QPoint(x0, y0);
+
+      // Qt's built in points are too small. Instead of drawing a point
+      // draw a small shape. 
+      if ( plotPoints                                          &&
+           x0 > m_screenXll && x0 < m_screenXll + m_screenWidX && 
+           y0 > m_screenYll && y0 < m_screenYll + m_screenWidY
+           ){
+        drawOneVertex(x0, y0, color, lineWidth, drawVertIndex, paint);
+      }
+    }
+      
+    if (plotEdges){
+
+      if (plotFilled && isPolyClosed[pIter]){
+        if (signedArea >= 0.0) paint->setBrush( color );
+        else                   paint->setBrush( backgroundColor() ); 
+        paint->setPen( Qt::NoPen );
+      }else {
+        paint->setBrush( Qt::NoBrush );
+        paint->setPen( QPen(color, lineWidth) );
+      }
+
+      if ( pa.size() >= 1 && isPolyZeroDim(pa) ){
+        // Treat the case of polygons which are made up of just one point
+        int l_drawVertIndex = -1;
+        drawOneVertex(pa[0].x(), pa[0].y(), color, lineWidth, l_drawVertIndex,
+                      paint);
+      }else if (isPolyClosed[pIter]){
+        paint->drawPolygon( pa );
+      }else{
+        paint->drawPolyline( pa ); // don't join the last vertex to the first
+      }
+        
+    }
+  }
+
+  // Plot the annotations
+  int numAnno = annotations.size();
+  for (int aIter = 0; aIter < numAnno; aIter++){
+    const anno & A = annotations[aIter];
+    int x0, y0;
+    worldToPixelCoords(A.x, A.y, // inputs
+                       x0, y0    // outputs
+                       );
+    paint->setPen( QPen(QColor("gold"), lineWidth) );
+    if (isClosestGridPtFree(textOnScreenGrid, x0, y0)){
+      paint->drawText(x0, y0, (A.label).c_str());
+    }
+      
+  } // End placing annotations
   
   return;
 }
@@ -705,7 +730,7 @@ void polyView::paintEvent(QPaintEvent *){
   }
 
   // Draw the current polygon being plotted
-  drawCurrPolyLine(&paint);  
+  drawPolyLine(m_currPolyX, m_currPolyY, &paint);
   
   return;
 }
@@ -1025,39 +1050,29 @@ void polyView::addPolyVert(int px, int py){
   return;
 }
 
-void polyView::drawCurrPolyLine(QPainter * paint){
+void polyView::drawPolyLine(const std::vector<double> & polyX,
+                            const std::vector<double> & polyY,
+                            QPainter * paint){
 
-  // To do: Need to cut before drawing, as otherwise there are odd effects
-  // due to integer overflow when zooming in a lot.
+  dPoly  polyLine;
+  bool   isPolyClosed = false;
+  string color        = m_prefs.fgColor.c_str();
+  string layer        = "";
+  polyLine.setPolygon(polyX.size(), vecPtr(polyX), vecPtr(polyY),
+                      isPolyClosed, color, layer
+                      );
+
+  bool plotPoints = false, plotEdges = true, plotFilled = false;
+  int drawVertIndex = 0;
+  vector< vector<int> > textOnScreenGrid;
+  textOnScreenGrid.clear();
+  plotDPoly(plotPoints, plotEdges, plotFilled, m_prefs.lineWidth,  
+            drawVertIndex,    // 0 is a good choice here
+            textOnScreenGrid, // empty grid is fine here  
+            paint,  
+            polyLine
+            );
   
-  int pSize = m_currPolyX.size();
-  if (pSize == 0){
-    return;
-  }
-  
-  paint->setBrush( Qt::NoBrush );
-  paint->setPen( QPen(QColor(m_prefs.fgColor.c_str()), m_prefs.lineWidth) );
-
-  // To do: The block below better become its own function
-  // which can draw points, poly lines, and polygons
-  Q3PointArray pa(pSize);
-  for (int vIter = 0; vIter < pSize; vIter++){
-      
-    int x0, y0;
-    worldToPixelCoords(m_currPolyX[vIter], m_currPolyY[vIter], // inputs
-                       x0, y0                                  // outputs
-                       );
-    pa[vIter] = QPoint(x0, y0);
-
-    if (vIter == 0){
-      // Emphasize the starting point of the polygon
-      paint->drawRect(x0 - m_pixelTol,  y0 - m_pixelTol,
-                      2*m_pixelTol, 2*m_pixelTol); 
-    }
-  }
-
-  paint->drawPolyline( pa );
-
   return;
 }
 
@@ -1444,28 +1459,7 @@ void polyView::plotDistBwPolyClips( QPainter *paint ){
   // polyView::plotDiff() for more info.
   
   if ( !m_polyDiffMode ) return;
-
-  int pSize = m_segX.size();
-  if (pSize != 2) return;
-
-  int radius    = 2;
-  string color  = "yellow";
-  paint->setPen( QPen( QColor(color.c_str()), m_prefs.lineWidth) );
-  paint->setBrush( QColor(color.c_str()) );
-
-  // To do: This does not behave well on zoom. Need to cut this segment to the viewing
-  // box, as done with polygons.
-  Q3PointArray pa(pSize);
-  for (int vIter = 0; vIter < pSize; vIter++){
-    int px0, py0;
-    worldToPixelCoords(m_segX[vIter], m_segY[vIter], // inputs
-                       px0, py0                      // outputs
-                       );
-    paint->drawEllipse(px0 - radius, py0 - radius, 2*radius, 2*radius);
-    pa[vIter] = QPoint(px0, py0);
-  }
-  paint->drawPolyline( pa );
-
+  drawPolyLine(m_segX, m_segY, paint);
   return;
 }
 
@@ -1576,30 +1570,6 @@ void polyView::toggleNmScale(){
   }
   
   cout << "Using the nm scale factor " << m_nmScale << endl;
-
-  return;
-}
-
-void polyView::drawRect(const dPoly & R, int lineWidth,
-                        QPainter * paint){
-
-  int numV = R.get_totalNumVerts();
-  assert(numV == 4);
-  
-  const double * xv = R.get_xv();
-  const double * yv = R.get_yv();
-  
-  Q3PointArray pa(numV);
-  for (int vIter = 0; vIter < numV; vIter++){
-    int x0, y0;
-    worldToPixelCoords(xv[vIter], yv[vIter], // inputs
-                       x0, y0                // outputs
-                       );
-    pa[vIter] = QPoint(x0, y0);
-  }
-  paint->setBrush( Qt::NoBrush );
-  paint->setPen( QPen(QColor(m_prefs.fgColor.c_str()), lineWidth) );
-  paint->drawPolygon( pa );
 
   return;
 }
@@ -1888,7 +1858,7 @@ bool polyView::isPolyZeroDim(const Q3PointArray & pa){
   return true;
 }
 
-void polyView::initScreenGrid(std::vector< std::vector<int> > & Grid){
+void polyView::initTextOnScreenGrid(std::vector< std::vector<int> > & Grid){
 
   // Split the screen into numGridPts x numGridPts rectangles.  For
   // performance reasons, will not allow more than one string of text
@@ -1910,6 +1880,7 @@ bool polyView::isClosestGridPtFree(std::vector< std::vector<int> > & Grid,
                                    int x, int y){
 
   int numGridPts = Grid.size();
+  if (numGridPts <= 0) return;
   
   // Take a point on the screen and snap it to the closest grid point
   int sx = (int)round ((numGridPts - 1)*(double(x - m_screenXll)/double(m_screenWidX)));
@@ -2095,5 +2066,4 @@ void polyView::runCmd(std::string cmd){
   
   return;
 }
-
 
