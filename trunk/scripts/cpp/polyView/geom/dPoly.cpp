@@ -77,6 +77,18 @@ void dPoly::bdBoxes(std::vector<double> & xll, std::vector<double> & yll,
   return;
 };
 
+void dPoly::setPolygon(int numVerts,
+                       const double * xv,
+                       const double * yv,
+                       bool isPolyClosed,
+                       const std::string & color,
+                       const std::string & layer
+                       ){
+  reset();
+  appendPolygon(numVerts, xv, yv, isPolyClosed, color, layer);
+  return;
+}
+
 void dPoly::appendPolygon(int numVerts,
                           const double * xv,
                           const double * yv,
