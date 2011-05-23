@@ -181,7 +181,6 @@ private:
   std::vector<int> m_actions;
   std::vector<char> m_resetViewOnUndo;
 
-  QRect m_rubberBandRect;
   bool m_resetView;
   bool m_prevClickExists;
   bool m_firstPaintEvent;
@@ -193,6 +192,7 @@ private:
   std::vector<QPoint> m_snappedPoints, m_nonSnappedPoints;
   int m_smallLen;
   
+  QRect   m_emptyRubberBand;
   QRect   m_rubberBand;
 
   bool m_showAnnotations;

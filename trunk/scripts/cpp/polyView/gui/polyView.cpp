@@ -69,7 +69,8 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   m_showFilledPolys    = false;
   m_changeDisplayOrder = false;
   
-  m_rubberBand = QRect(0, 0, 0, 0); // initial rubberband
+  m_emptyRubberBand = QRect(-10, -10, 0, 0); // off-screen rubberband
+  m_rubberBand      = m_emptyRubberBand;
 
   m_showEdges             = 1;
   m_showPointsEdges       = 2;
@@ -505,7 +506,7 @@ void polyView::mousePressEvent( QMouseEvent *E){
        << m_mousePrsX << ' ' << m_mousePrsY << endl;
 #endif
 
-  m_rubberBand = QRect(m_mousePrsX, m_mousePrsY, 0, 0); // initial rubberband
+  m_rubberBand = m_emptyRubberBand;
 }
 
 void polyView::mouseMoveEvent( QMouseEvent *E){
@@ -536,7 +537,7 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
 
   // Wipe the rubberband
   updateRubberBand(m_rubberBand); 
-  m_rubberBand = QRect(0, 0, 0, 0); 
+  m_rubberBand = m_emptyRubberBand;
   updateRubberBand(m_rubberBand);
   
   if (E->state() == ((int)Qt::LeftButton | (int)Qt::AltModifier) ){
@@ -710,7 +711,7 @@ void polyView::paintEvent(QPaintEvent *){
   QColor fgColor = QColor(m_prefs.fgColor.c_str());
   paint.setPen(fgColor);
   paint.drawRect(m_rubberBand.normalized().adjusted(0, 0, -1, -1));
-  
+
   // Plot the mouse clicks (snapped or not snapped to closest vertex).
   // Do it here since those are temporary, they are supposed
   // to go away when the display changes such as on zoom.
@@ -1880,7 +1881,7 @@ bool polyView::isClosestGridPtFree(std::vector< std::vector<int> > & Grid,
                                    int x, int y){
 
   int numGridPts = Grid.size();
-  if (numGridPts <= 0) return;
+  if (numGridPts <= 0) return false;
   
   // Take a point on the screen and snap it to the closest grid point
   int sx = (int)round ((numGridPts - 1)*(double(x - m_screenXll)/double(m_screenWidX)));
