@@ -216,7 +216,7 @@ void polyView::displayData( QPainter *paint ){
   
   // Plot the polygons
   QFont F;
-  int fontSize = 12;
+  int fontSize = 10;
   F.setPointSize(fontSize);
   //F.setStyleStrategy(QFont::ForceOutline);
   //F.setStyleStrategy(QFont::PreferBitmap);
