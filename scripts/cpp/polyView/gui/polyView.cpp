@@ -31,13 +31,13 @@ using namespace utils;
 // To do: handle colors correctly (convert dark-gray to darkGray, etc.).
 // To do: In the geom directory, put everything in a namespace, say called 'pv'.
 //        Here too. Clean up, modularize, and structure the code more.
-// To do: Don't plot one-point polygons as hollow circles. Plot them as
-//        1x1 or 2x2 pixels (use rectangle rather than circle).
 // To do: Fix other "To do" mentioned in the code.
 // To do: The viewer does not render correctly in fill mode overlapping polygons
 //        with each polygon having holes. A fix would require a thorough analysis
 //        which would identify which hole belongs to which polygon.
 // To do: Replace cmdLineOptions directly with polyOptionsVec.
+// To do: Make font size a preference.
+
 polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(parent){
 
   setStandardCursor();
@@ -87,7 +87,8 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
 
   m_zoomToMouseSelection = false;
   m_viewChanged          = false;
-  
+
+  m_zoomFactor = 1.0;
   m_mousePrsX = 0; m_mousePrsY = 0;
   m_mouseRelX = 0; m_mouseRelY = 0;
   
@@ -137,7 +138,7 @@ void polyView::displayData( QPainter *paint ){
 
   // Dimensions of the plotting window in pixels exluding any window
   // frame/menu bar/status bar
-  QRect v       = this->rect();
+  QRect v       = this->geometry();
   m_screenXll   = v.left();
   m_screenYll   = v.top();
   m_screenWidX  = v.width();
@@ -215,13 +216,6 @@ void polyView::displayData( QPainter *paint ){
   initTextOnScreenGrid(textOnScreenGrid);
   
   // Plot the polygons
-  QFont F;
-  int fontSize = 10;
-  F.setPointSize(fontSize);
-  //F.setStyleStrategy(QFont::ForceOutline);
-  //F.setStyleStrategy(QFont::PreferBitmap);
-  //F.setStyleStrategy(QFont::NoAntialias);
-  paint->setFont(F);
 
   // Will draw a vertex with a shape dependent on this index
   int drawVertIndex = -1; 
@@ -690,6 +684,13 @@ void polyView::refreshPixmap(){
   
   QPainter paint(&m_pixmap);
   paint.initFrom(this);
+
+  QFont F;
+  int fontSize = 10;
+  F.setPointSize(fontSize);
+  //F.setStyleStrategy(QFont::NoAntialias);
+  paint.setFont(F);
+
   displayData( &paint );
   update();
 
@@ -701,8 +702,8 @@ void polyView::paintEvent(QPaintEvent *){
   if (m_firstPaintEvent){
     // This will be called the very first time the display is
     // initialized. There must be a better way.
-    m_firstPaintEvent = false;
     refreshPixmap();
+    m_firstPaintEvent = false;
   }
   
   QStylePainter paint(this);

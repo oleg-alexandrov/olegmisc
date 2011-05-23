@@ -23,8 +23,7 @@ cmdLine::~cmdLine(){}
 appWindow::appWindow(QWidget* parent, std::string progName,
                      const cmdLineOptions & options, 
                      int windowWidX, int windowWidY
-                     ):
-  QMainWindow(parent, progName.c_str()){
+                     ): QMainWindow(parent, progName.c_str()){
 
   installEventFilter(this);
 
@@ -35,6 +34,7 @@ appWindow::appWindow(QWidget* parent, std::string progName,
   m_poly = new polyView (this, options);
   m_poly->setFocusPolicy(Qt::StrongFocus);
   m_poly->setFocus();
+
   setCentralWidget(m_poly);
 
   // Command line
@@ -54,6 +54,7 @@ appWindow::appWindow(QWidget* parent, std::string progName,
   // Menus (must be created after the other widgets were initialized)
   createMenus();
 
+  return;
 }
 
 void appWindow::forceQuit(){
@@ -132,7 +133,6 @@ void appWindow::shiftDown (){
 QMenuBar* appWindow::createMenus(){
 
   QMenuBar* menu = menuBar();
-
   Q3PopupMenu* file = new Q3PopupMenu( menu );
   menu->insertItem("&File", file);
   file->insertItem("Open", m_poly, SLOT(openPoly()), Qt::CTRL+Qt::Key_O);
@@ -197,7 +197,6 @@ QMenuBar* appWindow::createMenus(){
   Q3PopupMenu* help = new Q3PopupMenu( menu );
   menu->insertItem("&Help", help);
   help->insertItem("About", this, SLOT(help()));
-
   return menu;
 }
 
