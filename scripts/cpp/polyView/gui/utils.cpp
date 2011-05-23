@@ -10,7 +10,8 @@ using namespace std;
 
 void utils::printUsage(std::string progName){
   cout << "Usage: " << progName << " "
-       << "[ -geo[metry] 1000x800 ] [-bg | -backgroundColor black ] [ -c | -color yellow ] "
+       << "[ -geo[metry] 1000x800 ] [-bg | -backgroundColor black ] "
+       << "[ -c | -color yellow ] "
        << "[ -lw | -lineWidth 2 ] "
        << "[ -p | -points ] [ -cp | -closedPoly ] [ -nc | -nonClosedPoly ] "
        << "[ -f | -filledPoly ] [ -nf | -nonFilledPoly ] "
