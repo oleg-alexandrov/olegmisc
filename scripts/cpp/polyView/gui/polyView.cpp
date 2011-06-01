@@ -143,6 +143,9 @@ void polyView::displayData( QPainter *paint ){
   m_screenYll   = v.top();
   m_screenWidX  = v.width();
   m_screenWidY  = v.height();
+  cout << "geom is: " << m_screenXll << ' ' << m_screenYll << ' '
+       << m_screenWidX << ' ' << m_screenWidY << endl;
+  
   m_screenRatio = double(m_screenWidY)/double(m_screenWidX);
 
   if (m_resetView){
