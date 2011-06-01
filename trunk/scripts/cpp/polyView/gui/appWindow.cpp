@@ -30,12 +30,7 @@ appWindow::appWindow(QWidget* parent, std::string progName,
   m_progName = progName;
   resize(windowWidX, windowWidY);
 
-  // Central widget
-  m_poly = new polyView (this, options);
-  m_poly->setFocusPolicy(Qt::StrongFocus);
-  m_poly->setFocus();
-
-  setCentralWidget(m_poly);
+  createMenusAndMainWidget(options);
 
   // Command line
   m_cmdLine = new cmdLine(this);
@@ -50,9 +45,6 @@ appWindow::appWindow(QWidget* parent, std::string progName,
   status->addWidget(m_cmdLine, 1);
   m_cmdHist.clear();
   m_histPos = 0;
-
-  // Menus (must be created after the other widgets were initialized)
-  createMenus();
 
   return;
 }
@@ -130,11 +122,24 @@ void appWindow::shiftDown (){
   
 }
 
-QMenuBar* appWindow::createMenus(){
+void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
 
+  // There is some twisted logic here. First initialize the menus,
+  // then create the main widget, then finish creating the menus.
+  // This is a workaround for a bug in a certain versions of Qt. If
+  // the main widget is created before the menus then it gets
+  // incorrect geometry.
+  
   QMenuBar* menu = menuBar();
   Q3PopupMenu* file = new Q3PopupMenu( menu );
   menu->insertItem("&File", file);
+
+  // Central widget
+  m_poly = new polyView (this, opt);
+  m_poly->setFocusPolicy(Qt::StrongFocus);
+  m_poly->setFocus();
+  setCentralWidget(m_poly);
+
   file->insertItem("Open", m_poly, SLOT(openPoly()), Qt::CTRL+Qt::Key_O);
   file->insertItem("Save as one clip", m_poly, SLOT(saveOnePoly()),
                    Qt::CTRL+Qt::Key_S);
@@ -197,7 +202,8 @@ QMenuBar* appWindow::createMenus(){
   Q3PopupMenu* help = new Q3PopupMenu( menu );
   menu->insertItem("&Help", help);
   help->insertItem("About", this, SLOT(help()));
-  return menu;
+
+  return;
 }
 
 void appWindow::help(){

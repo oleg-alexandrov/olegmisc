@@ -40,8 +40,6 @@ using namespace utils;
 
 polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(parent){
 
-  setStandardCursor();
-
   // Preferences per polygon file. The element in the vector
   // m_polyOptionsVec below is not associated with any polygon
   // file. Set it apart, it will be used for new polygons.
@@ -51,6 +49,8 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   m_prefs.plotAsPoints = false; // most likely the user wants to see edges not points
   setBgFgColorsFromPrefs(); // must be called after m_prefs is set
   
+  setStandardCursor();
+
   // int
   m_screenXll  = 0; m_screenYll  = 0;
   m_screenWidX = 0; m_screenWidY = 0;
@@ -143,8 +143,8 @@ void polyView::displayData( QPainter *paint ){
   m_screenYll   = v.top();
   m_screenWidX  = v.width();
   m_screenWidY  = v.height();
-  cout << "geom is: " << m_screenXll << ' ' << m_screenYll << ' '
-       << m_screenWidX << ' ' << m_screenWidY << endl;
+  //cout << "geom is: " << m_screenXll << ' ' << m_screenYll << ' '
+  //     << m_screenWidX << ' ' << m_screenWidY << endl;
   
   m_screenRatio = double(m_screenWidY)/double(m_screenWidX);
 
