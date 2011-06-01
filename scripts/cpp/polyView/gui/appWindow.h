@@ -34,7 +34,7 @@ protected:
   bool eventFilter(QObject *obj, QEvent *event);
 
 private slots:
-  QMenuBar* createMenus();
+  void createMenusAndMainWidget(const cmdLineOptions & opt);
   void procCmdLine();
   void shiftUp ();
   void shiftDown ();
