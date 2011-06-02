@@ -1,5 +1,4 @@
 alias an='~/bin/putanno.pl'
-alias bj=bjobs
 alias bk=bkill
 alias c=clear
 alias c2s='~/bin/syncSettings.sh'
@@ -42,7 +41,6 @@ alias ka='killall -v -9'
 alias km='killall -9 -v matlab; killall -9 -v MATLAB'
 alias kv='killall -v Xvnc; killall -v gnome-keyring-daemon'
 alias l='ls -a'
-alias l.='ls -d .* --color=tty'
 alias lc='~/bin/lc.pl'
 alias less=mymore
 alias ll='ls -alh --color'
@@ -81,7 +79,6 @@ alias rmanno='perl -pi -e "s#anno.*?\n##g"'
 alias rmc='perl -pi -e "s#^\s*\#.*?\n##g"'
 alias rr='source ~/.zshrc'
 alias rs='alias > ~/.bash_aliases; perl -pi -e "s#^([^\s]+=)#alias \$1#g" ~/.bash_aliases'
-alias run-help=man
 alias sep='. ~/bin/setpath'
 alias sis=sis.pl
 alias srs=see_res.sh
@@ -104,13 +101,12 @@ alias unp='. ~/bin/unsetpath'
 alias vg='$w/local/bin/valgrind  --log-file=Log --leak-check=full'
 alias vgp='valgrind --tool=callgrind --dump-instr=yes '
 alias vi=vim
-alias vl='validate; echo $?'
+alias vl='./validate; echo $?'
 alias vml='~/bin/vm'
 alias vnc='vncserver -geometry 1272x996'
 alias vncbig='vncserver -geometry 2550x1008'
 alias vr='. ~/bin/vr'
 alias vv=/usr/bin/kcachegrind
-alias which-command=whence
 alias x=exit
 alias xg='~/bin/cpp/polyView/gui/polyView  -geo 1000x800'
 alias xg2='~/bin/drawpoly -geo 1000x800'
