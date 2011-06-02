@@ -8,16 +8,16 @@ set history=10000
 set filec
 set show-all-if-ambiguous on
 
-if [ "$SSH_TTY" != "" ] || [ "$DISPLAY" != "" ]; then 
-
+if [ "$SSH_TTY" != "" ] && [ "$DISPLAY" != "" ]; then 
+  
   # Make the backspace behave
   stty erase '^?'
-
+   
   # Disable control s and control q, so that I can use them in vim.
-  #stty -a # see what is enabled
+  # stty -a # see what is enabled
   stty stop  undef # control s
   stty start undef # control q
-
+  
   # Bind the windows key for use in fvwm, if we have a display 
   if [ "$DISPLAY" != "" ]; then 
     xmodmap -e "clear mod3"
@@ -91,8 +91,8 @@ function a {
   if [ "$*" ]; then
       # Set the alias, and then display and save it
       alias "$*" > /dev/null # set the alias
-      ans=$( alias "$*" | perl -pi -e 's#(^|\n)(\w+=)#$1 . "a " . $2#eg' ); # echo it
-      if [ "$ans" != "" ]; then echo $ans; fi;
+      ans=$( alias "$*" | perl -pi -e 's#(^|\n)(\w+=)#$1 . "a " . $2#eg' ); 
+      if [ "$ans" != "" ]; then echo $ans; fi; # echo it
       alias > ~/.bash_aliases;
       perl -pi -e "s#^([^\s]+=)#alias \$1#" ~/.bash_aliases;
   else
