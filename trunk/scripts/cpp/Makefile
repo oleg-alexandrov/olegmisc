@@ -11,9 +11,6 @@ OBJ1  =  $(XTRA_OBJ)
 atoi: atoi.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
-binary_search: binary_search.o $(OBJ1) $(HDR) 
-	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
-
 breadth: breadth.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
@@ -26,13 +23,13 @@ closedHash: closedHash.o $(OBJ1) $(HDR)
 closestFriend: closestFriend.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
-context: context.o $(OBJ1) $(HDR) 
-	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
-
 depth: depth.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 endian: endian.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
+eval_expr: eval_expr.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 factory: factory.o $(OBJ1) $(HDR) 
@@ -131,9 +128,6 @@ smartPtr: smartPtr.o $(OBJ1) $(HDR)
 stack_as_linked_list: stack_as_linked_list.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
-stc: stc.o $(OBJ1) $(HDR) 
-	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
-
 stock: stock.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
@@ -147,9 +141,6 @@ trees: trees.o $(OBJ1) $(HDR)
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 uninit: uninit.o $(OBJ1) $(HDR) 
-	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
-
-union: union.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 vec_equal: vec_equal.o $(OBJ1) $(HDR) 
