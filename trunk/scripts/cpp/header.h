@@ -43,6 +43,7 @@ void printList(list *);
 void printList(node *);
 void printList2(list *);
 void printTree(node *);
+void print_list(node *);
 void pushToListFront(node*&, int);
 void push_back(int);
 void push_front(int);
