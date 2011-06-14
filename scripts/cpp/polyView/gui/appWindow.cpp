@@ -23,7 +23,7 @@ cmdLine::~cmdLine(){}
 appWindow::appWindow(QWidget* parent, std::string progName,
                      const cmdLineOptions & options, 
                      int windowWidX, int windowWidY
-                     ): QMainWindow(parent, progName.c_str()){
+                     ): QMainWindow(parent, progName.c_str()), m_poly(NULL){
 
   installEventFilter(this);
 
@@ -38,7 +38,6 @@ appWindow::appWindow(QWidget* parent, std::string progName,
   m_cmdLine->setFocusPolicy(Qt::StrongFocus);
   connect( m_cmdLine, SIGNAL( returnPressed() ),
            this, SLOT( procCmdLine() ) );
-
   QStatusBar * status = statusBar();
   QRect Rp = status->rect();
   m_cmdLine->setGeometry(Rp);
@@ -55,6 +54,18 @@ void appWindow::forceQuit(){
                      
 bool appWindow::eventFilter(QObject *obj, QEvent *event){
 
+  // If the alt or control key is hit, and the focus is on the command
+  // line widget, move the focus to the m_poly widget.
+  if ( event->type() == QEvent::KeyPress ||
+       event->type() == QEvent::ShortcutOverride){
+    QKeyEvent * keyEvent = (QKeyEvent*)event;
+    Qt::KeyboardModifiers modifiers = keyEvent->modifiers();
+    if ( ( modifiers & Qt::ControlModifier ) ||
+         ( modifiers & Qt::AltModifier ) ){
+      if (m_cmdLine->hasFocus() && m_poly != NULL) m_poly->setFocus();
+    }
+  }
+  
   if (obj == m_poly) {
     // Avoid repainting on these events
     if (event->type() == QEvent::FocusIn          ||
