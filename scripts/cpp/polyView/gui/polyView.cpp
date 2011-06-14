@@ -174,7 +174,7 @@ void polyView::displayData( QPainter *paint ){
     widx = xur - xll;
     widy = yur - yll;
 
-  }else if(m_viewChanged){
+  }else if (m_viewChanged){
 
     // Modify the view for given shift or zoom
     xll  = m_viewXll + m_viewWidX*( (1 - m_zoomFactor)/2.0 + m_shiftX );
@@ -203,11 +203,9 @@ void polyView::displayData( QPainter *paint ){
       m_viewXll = xll; m_viewWidX = widx;
       m_viewYll = yll; m_viewWidY = widy;
     }
-
     printCmd("view", m_viewXll, m_viewYll, m_viewWidX, m_viewWidY);
     m_zoomToMouseSelection = false;
     m_viewChanged          = false;
-
   }
 
   // The two ratios below will always be the same. Take the maximum
