@@ -12,6 +12,7 @@ int delFromHeap(int *, int &);
 int deleteAtBeg(list*&);
 int deleteOneElem(list*&, int);
 int edit_dist(const char *, int, const char *, int);
+int find_stack_size(const char *, const char*);
 int insert(list*&, int);
 int leftChild(int);
 int myfun1(int, int);
