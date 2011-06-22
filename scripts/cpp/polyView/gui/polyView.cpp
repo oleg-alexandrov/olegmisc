@@ -738,6 +738,11 @@ void polyView::paintEvent(QPaintEvent *){
   return;
 }
 
+void polyView::resizeEvent(QResizeEvent*){
+  refreshPixmap();
+  return;
+}
+
 void polyView::popUp(std::string msg){
   QMessageBox msgBox;
   msgBox.setText(msg.c_str());
