@@ -77,6 +77,7 @@ public slots:
 protected:
 
   void paintEvent(QPaintEvent *);
+  void resizeEvent(QResizeEvent*);
   void popUp(std::string msg);
   bool getStringFromGui(std::string title, std::string description,
                         std::string & data // output
