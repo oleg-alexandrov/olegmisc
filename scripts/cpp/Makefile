@@ -29,6 +29,9 @@ depth: depth.o $(OBJ1) $(HDR)
 edit_dist: edit_dist.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
+emptyObj: emptyObj.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 endian: endian.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
@@ -102,12 +105,6 @@ quine: quine.o $(OBJ1) $(HDR)
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 random: random.o $(OBJ1) $(HDR) 
-	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
-
-repeat2: repeat2.o $(OBJ1) $(HDR) 
-	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
-
-repeat3: repeat3.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 reverse_linked: reverse_linked.o $(OBJ1) $(HDR) 
