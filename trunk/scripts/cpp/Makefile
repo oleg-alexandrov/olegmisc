@@ -23,6 +23,9 @@ closedHash: closedHash.o $(OBJ1) $(HDR)
 closestFriend: closestFriend.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
+const_ptr: const_ptr.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 depth: depth.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
