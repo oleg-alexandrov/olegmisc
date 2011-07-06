@@ -23,6 +23,7 @@ int push(int);
 int randn(int);
 int rightChild(int);
 int rmLargestFromHeap(heap &);
+string num2word(int, map<int, string> &);
 void addToHeap(int *, int &, int);
 void allocAndReturn(int, smartPtr &);
 void doSort(int *, int, int);
