@@ -1,18 +1,10 @@
 #include <cassert>
 #include <iostream>
 #include <QDialogButtonBox>
-#include <QHeaderView>
 #include <QLabel>
-#include <QLineEdit>
-#include <QPushButton>
-#include <QRadioButton>
-#include <QButtonGroup>
-#include <QSize>
-#include <QSplitter>
 #include <QTableWidget>
 #include <QVBoxLayout>
 #include <QWidget>
-#include <QtGui>
 #include "chooseFilesDlg.h"
 #include "utils.h"
 using namespace std;
