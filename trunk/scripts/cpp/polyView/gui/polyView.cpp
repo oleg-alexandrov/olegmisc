@@ -230,6 +230,10 @@ void polyView::displayData( QPainter *paint ){
 
     int vecIter = m_polyVecOrder[vi];
 
+    // Skip the files the user does not want to see
+    string fileName = m_polyOptionsVec[vecIter].polyFileName;
+    if (m_filesNotToShow.find(fileName) != m_filesNotToShow.end()) continue;
+      
     int lineWidth = m_polyOptionsVec[vecIter].lineWidth;
 
     // Note: plotFilled, plotEdges, and plotPoints are not mutually exclusive.
@@ -1714,6 +1718,16 @@ void polyView::readAllPolys(){
     string suffix = ""; if (numMissing > 1) suffix = "s";
     popUp("Warning: Could not read file" + suffix + ":" + missingFiles);
   }
+  
+  return;
+}
+
+void polyView::chooseFilesToShow(){
+
+  bool success = m_chooseFilesDlg.chooseFiles(m_polyOptionsVec, // Input
+                                              m_filesNotToShow  // In-out
+                                              ); 
+  if ( success) refreshPixmap();
   
   return;
 }
