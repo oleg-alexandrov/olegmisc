@@ -15,8 +15,9 @@
 #include "utils.h"
 #include "../geom/dPoly.h"
 #include "../geom/geomUtils.h"
+#include "chooseFilesDlg.h"
 
-struct cmdLineOptions;
+class cmdLineOptions;
 
 class polyView : public QWidget{
     Q_OBJECT
@@ -28,6 +29,7 @@ public:
 public slots:
 
   // File menu
+  void chooseFilesToShow();
   void openPoly();
   void saveOnePoly();
   void overwriteMultiplePolys();
@@ -229,12 +231,16 @@ private:
   std::string m_nmScaleFile;
 
   // For plotting in diff mode
-  bool m_polyDiffMode;
-  std::vector<dPoly> m_polyVecBk;
-  std::vector<polyOptions>  m_polyOptionsVecBk;
-  std::vector<utils::segDist> m_distVec; // distances b/w polys to diff
-  std::vector<double> m_segX, m_segY;    // segment to plot
-  int m_indexOfDistToPlot;
+  bool                        m_polyDiffMode;
+  std::vector<dPoly>          m_polyVecBk;
+  std::vector<polyOptions>    m_polyOptionsVecBk;
+  std::vector<utils::segDist> m_distVec;       // distances b/w polys to diff
+  std::vector<double>         m_segX, m_segY;  // segment to plot
+  int                         m_indexOfDistToPlot;
+
+  // Choose which files to show or not in the GUI
+  chooseFilesDlg        m_chooseFilesDlg;
+  std::set<std::string> m_filesNotToShow;
   
 };
 

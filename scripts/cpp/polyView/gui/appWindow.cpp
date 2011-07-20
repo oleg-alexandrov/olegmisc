@@ -48,6 +48,10 @@ appWindow::appWindow(QWidget* parent, std::string progName,
   return;
 }
 
+void appWindow::closeEvent(QCloseEvent *){
+  forceQuit();
+}
+
 void appWindow::forceQuit(){
   exit(0); // A fix for an older buggy version of Qt
 }
@@ -151,12 +155,13 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
   m_poly->setFocus();
   setCentralWidget(m_poly);
 
+  file->insertItem("Choose files to show", m_poly, SLOT(chooseFilesToShow()));
   file->insertItem("Open", m_poly, SLOT(openPoly()), Qt::CTRL+Qt::Key_O);
-  file->insertItem("Save as one clip", m_poly, SLOT(saveOnePoly()),
+  file->insertItem("Save as one file", m_poly, SLOT(saveOnePoly()),
                    Qt::CTRL+Qt::Key_S);
-  file->insertItem("Save as multiple clips", m_poly,
+  file->insertItem("Save as multiple files", m_poly,
                    SLOT(saveAsMultiplePolys()), Qt::ALT+Qt::Key_S);
-  file->insertItem("Overwrite current clips", m_poly,
+  file->insertItem("Overwrite current files", m_poly,
                    SLOT(overwriteMultiplePolys()), Qt::CTRL+Qt::Key_W);
   file->insertItem("Exit", this, SLOT(forceQuit()), Qt::Key_Q);
 

@@ -7,7 +7,8 @@
 #include <string>
 #include <vector>
 class polyView;
-struct cmdLineOptions;
+class QCloseEvent;
+class cmdLineOptions;
 
 class cmdLine : public QLineEdit {
   Q_OBJECT
@@ -41,11 +42,12 @@ private slots:
   void forceQuit();
   
 private:
+  void closeEvent(QCloseEvent *);
   void insertCmdFromHist();
   
-  polyView    * m_poly;
-  cmdLine     * m_cmdLine;
-  std::string   m_progName;
+  polyView       * m_poly;
+  cmdLine        * m_cmdLine;
+  std::string      m_progName;
   std::vector<std::string> m_cmdHist;
   int m_histPos;
 
