@@ -77,6 +77,9 @@ linked_sorted: linked_sorted.o $(OBJ1) $(HDR)
 map_example: map_example.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
+maxCommonSubSeq: maxCommonSubSeq.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 maxpsum: maxpsum.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
