@@ -158,6 +158,9 @@ singleton3: singleton3.o $(OBJ1) $(HDR)
 sizeOfPtr: sizeOfPtr.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
+sizeW: sizeW.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 smartPtr: smartPtr.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
