@@ -333,6 +333,10 @@ if __name__ == '__main__':
     fh = open(cpp_file, 'r'); cpp_text = fh.read(); fh.close()
     fh = open(h_file,   'r'); h_text   = fh.read(); fh.close()
 
+    # Need this to deal with pecularities in my cpp style.
+    #cpp_text = re.sub("\n\s*\/\*\s+\*\/\s*\(", "(", cpp_text)
+    #h_text   = re.sub("\n\s*\/\*\s+\*\/\s*\(", "(", h_text)
+    
     # Identify all scopes (blocks between { and }). For each of those
     # scopes which is a namespace/class/struct, find all cpp files
     # with it and update that scope.
