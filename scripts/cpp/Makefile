@@ -107,6 +107,9 @@ num2words: num2words.o $(OBJ1) $(HDR)
 openHash: openHash.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
+permNoRepeats: permNoRepeats.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 print_cnk: print_cnk.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
