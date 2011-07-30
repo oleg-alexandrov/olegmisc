@@ -51,6 +51,7 @@ void printInOrderNonRec(node*);
 void printList(list *);
 void printList(node *);
 void printList2(list *);
+void printParens(int, int, int, char *);
 void printPerm(int, int, int, std::set<int> &, int *, int *);
 void printSeq(int, int *);
 void printTree(node *);

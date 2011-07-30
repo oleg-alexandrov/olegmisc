@@ -74,6 +74,9 @@ linked_ints: linked_ints.o $(OBJ1) $(HDR)
 linked_sorted: linked_sorted.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
+listAllParens: listAllParens.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 map_example: map_example.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
