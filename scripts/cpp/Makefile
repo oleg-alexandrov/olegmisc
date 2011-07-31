@@ -140,6 +140,9 @@ repl_word: repl_word.o $(OBJ1) $(HDR)
 reverse_linked: reverse_linked.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
+rv_list_recursion: rv_list_recursion.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 rv_words: rv_words.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
