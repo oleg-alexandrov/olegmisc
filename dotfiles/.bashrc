@@ -92,7 +92,7 @@ function a {
       # Set the alias, and then display and save it
       alias "$*" > /dev/null # set the alias
       ans=$( alias "$*" | perl -pi -e 's#(^|\n)(\w+=)#$1 . "a " . $2#eg' ); 
-      if [ "$ans" != "" ]; then echo $ans; fi; # echo it
+      if [ "$ans" != "" ]; then echo "$ans"; fi; # echo it
       alias > ~/.bash_aliases;
       perl -pi -e "s#^([^\s]+=)#alias \$1#" ~/.bash_aliases;
   else
