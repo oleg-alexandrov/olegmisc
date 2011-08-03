@@ -8,6 +8,9 @@ XTRA_OBJ=
 OBJ1  =  $(XTRA_OBJ)
 
 
+allPalin: allPalin.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 atoi: atoi.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
@@ -24,6 +27,9 @@ closestFriend: closestFriend.o $(OBJ1) $(HDR)
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 const_ptr: const_ptr.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
+constMember: constMember.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 depth: depth.o $(OBJ1) $(HDR) 
