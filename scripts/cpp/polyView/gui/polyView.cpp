@@ -9,6 +9,7 @@
 #include <QWheelEvent>
 #include <QStylePainter>
 #include <QStyleOptionFocusRect>
+#include <QTableWidget>
 #include <cassert>
 #include <cfloat>    // defines DBL_MAX
 #include <cmath>
@@ -40,6 +41,13 @@ using namespace utils;
 
 polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(parent){
 
+  // Choose which files to show in the GUI
+  QObject::connect(m_chooseFilesDlg.getFilesTable(),
+                   SIGNAL(cellClicked(int, int)),
+                   this,
+                   SLOT(showFilesChosenByUser())
+                   );
+  
   // Preferences per polygon file. The element in the vector
   // m_polyOptionsVec below is not associated with any polygon
   // file. Set it apart, it will be used for new polygons.
@@ -1723,11 +1731,33 @@ void polyView::readAllPolys(){
 }
 
 void polyView::chooseFilesToShow(){
+  m_chooseFilesDlg.chooseFiles(m_polyOptionsVec, // Input
+                               m_filesNotToShow  // In-out
+                               );
+  // User's choice is processed in showFilesChosenByUser.
+  return;
+}
 
-  bool success = m_chooseFilesDlg.chooseFiles(m_polyOptionsVec, // Input
-                                              m_filesNotToShow  // In-out
-                                              ); 
-  if ( success) refreshPixmap();
+void polyView::showFilesChosenByUser(){
+  
+  // Process user's choice from chooseFilesToShow().
+
+  QTableWidget * filesTable = m_chooseFilesDlg.getFilesTable();
+  int numFiles = filesTable->rowCount();
+  int numCols  = filesTable->columnCount();
+  
+  for (int fileIter = 0; fileIter < numFiles; fileIter++){
+
+    QTableWidgetItem *item = filesTable->item(fileIter, numCols - 1);
+    bool isChecked  = (item->checkState() != Qt::Unchecked);
+    string fileName = ((item->data(0)).toString()).toStdString();
+    
+    if (!isChecked) m_filesNotToShow.insert(fileName);
+    else            m_filesNotToShow.erase (fileName);
+    
+  }
+
+  refreshPixmap();
   
   return;
 }

@@ -94,6 +94,9 @@ protected:
   void wheelEvent(QWheelEvent *E);
   void contextMenuEvent(QContextMenuEvent *E);
 
+private slots:
+ void showFilesChosenByUser();
+  
 private:
   void readAllPolys();
   void refreshPixmap();
