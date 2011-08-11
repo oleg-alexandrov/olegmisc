@@ -15,9 +15,10 @@ class chooseFilesDlg: public QDialog{
 public:
   chooseFilesDlg(QWidget * parent = NULL);
   ~chooseFilesDlg();
-  bool chooseFiles(const std::vector<polyOptions> & optionsVec,   // In
+  void chooseFiles(const std::vector<polyOptions> & optionsVec,   // In
                    std::set<std::string>          & filesNotToShow// In-out
                    );
+  QTableWidget * getFilesTable(){ return m_filesTable; }
   
 private:
   QTableWidget * m_filesTable;

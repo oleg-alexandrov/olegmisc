@@ -29,10 +29,7 @@ chooseFilesDlg::chooseFilesDlg(QWidget * parent): QDialog(parent){
 
   QDialogButtonBox * submitBox = new QDialogButtonBox(this);
   submitBox->setOrientation(Qt::Horizontal);
-  submitBox->setStandardButtons(QDialogButtonBox::Cancel   |
-                                QDialogButtonBox::NoButton |
-                                QDialogButtonBox::Ok
-                                );
+  submitBox->setStandardButtons(QDialogButtonBox::Ok);
 
   vBoxLayout->addWidget(label);
   vBoxLayout->addWidget(m_filesTable);
@@ -46,7 +43,7 @@ chooseFilesDlg::chooseFilesDlg(QWidget * parent): QDialog(parent){
 
 chooseFilesDlg::~chooseFilesDlg(){}
 
-bool chooseFilesDlg::chooseFiles(const std::vector<polyOptions> & optionsVec,   // In
+void chooseFilesDlg::chooseFiles(const std::vector<polyOptions> & optionsVec,   // In
                                  std::set<std::string>          & filesNotToShow// In-out
                                  ){
 
@@ -86,20 +83,10 @@ bool chooseFilesDlg::chooseFiles(const std::vector<polyOptions> & optionsVec,   
   m_filesTable->resizeColumnsToContents();
   m_filesTable->resizeRowsToContents();
   
-  int ans = exec(); // Pop-up the filled in dialog
-  if (ans == QDialog::Rejected) return false;
+  exec(); // Pop-up the filled in dialog
 
-  // Process user's choice
-  for (int fileIter = 0; fileIter < numFiles; fileIter++){
-    
-    QTableWidgetItem *item = m_filesTable->item(fileIter, numCols - 1);
-    bool isChecked  = (item->checkState() != Qt::Unchecked);
-    string fileName = ((item->data(0)).toString()).toStdString();
-    
-    if (!isChecked) filesNotToShow.insert(fileName);
-    else            filesNotToShow.erase (fileName);
-  }
+  // The processing of user's choice happens in polyView::showFilesChosenByUser()
   
-  return true;
+  return;
 }
 
