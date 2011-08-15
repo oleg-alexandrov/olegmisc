@@ -20,6 +20,9 @@ namespace utils{
                              double x0, double y0,
                              const std::vector<dPoly> & polyVec,
                              // outputs
+                             int & polyVecIndex,
+                             int & polyIndexInCurrPoly,
+                             int & vertIndexInCurrPoly,
                              double & minX, double & minY,
                              double & minDist
                              );
@@ -51,7 +54,8 @@ namespace utils{
                            double x0, double y0,
                            const std::vector<dPoly> & polyVec,
                            // outputs
-                           int & minVecIndex, int & minPolyIndex,
+                           int & vecIndex, int & polyIndex,
+                           int & vertIndex,
                            double & minX, double & minY, double & minDist
                            );
 
