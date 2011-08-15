@@ -1626,9 +1626,10 @@ void polyView::insertVertex(){
   m_polyOptionsVecStack.push_back(m_polyOptionsVec); 
   m_actions.push_back(m_polyChanged);
   m_resetViewOnUndo.push_back(false);
-  
+
+  // Need +1 below as we insert AFTER current vertex.
   m_polyVec[m_polyVecIndex].insertVertex(m_polyIndexInCurrPoly,
-                                         m_vertIndexInCurrPoly,
+                                         m_vertIndexInCurrPoly + 1,
                                          min_x, min_y
                                          );
   
