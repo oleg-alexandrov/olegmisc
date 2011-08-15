@@ -74,6 +74,9 @@ public slots:
   // Right-click menu
   void saveMark();
   void toggleNmScale();
+  void toggleEditVerticesMode();
+  void insertVertex();
+  void deleteVertex();
   void deletePoly();
 
 protected:
@@ -91,6 +94,8 @@ protected:
   void mouseMoveEvent( QMouseEvent *E);
   void keyPressEvent( QKeyEvent *K );
   void mouseReleaseEvent ( QMouseEvent * E );
+  bool isAltLeftMouse(QMouseEvent * E);
+  bool isCtrlLeftMouse(QMouseEvent * E);
   void wheelEvent(QWheelEvent *E);
   void contextMenuEvent(QContextMenuEvent *E);
 
@@ -244,7 +249,13 @@ private:
   // Choose which files to show or not in the GUI
   chooseFilesDlg        m_chooseFilesDlg;
   std::set<std::string> m_filesNotToShow;
-  
+
+  // Edit vertices mode
+  bool m_editVerticesMode;
+  int  m_toggleShowPointsEdgesBk;
+  int  m_polyVecIndex;
+  int  m_polyIndexInCurrPoly;
+  int  m_vertIndexInCurrPoly;
 };
 
 #endif // POLYVIEW_H
