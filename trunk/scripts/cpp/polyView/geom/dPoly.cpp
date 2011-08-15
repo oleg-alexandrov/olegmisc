@@ -587,7 +587,7 @@ void dPoly::insertVertex(int polyIndex, int vertIndex,
                          double x, double y){
 
   assert(0 <= polyIndex && polyIndex < m_numPolys);
-  assert(0 <= vertIndex && vertIndex < m_numVerts[polyIndex]);
+  assert(0 <= vertIndex && vertIndex < m_numVerts[polyIndex] + 1);
 
   int start = 0;
   for (int pIter = 0; pIter < polyIndex; pIter++){
@@ -595,8 +595,8 @@ void dPoly::insertVertex(int polyIndex, int vertIndex,
   }
 
   int iv = start + vertIndex;
-  m_xv.insert(m_xv.begin() + iv + 1, x);
-  m_yv.insert(m_yv.begin() + iv + 1, y);
+  m_xv.insert(m_xv.begin() + iv, x);
+  m_yv.insert(m_yv.begin() + iv, y);
   
   m_totalNumVerts++;
   m_numVerts[polyIndex]++;
