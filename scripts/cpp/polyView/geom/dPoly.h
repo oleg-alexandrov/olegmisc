@@ -106,6 +106,8 @@ public:
   void findClosestPolyVertex(// inputs
                              double x0, double y0,
                              // outputs
+                             int & polyIndex,
+                             int & vertIndex,
                              double & min_x, double & min_y,
                              double & min_dist
                              ) const;
@@ -113,11 +115,15 @@ public:
   void findClosestPolyEdge(//inputs
                            double x0, double y0,
                            // outputs
-                           int & minIndex,
+                           int & polyIndex, int & vertIndex,
                            double & minX, double & minY, double & minDist
                            ) const;
   
   void erasePoly(int polyIndex);
+  void insertVertex(int polyIndex, int vertIndex,
+                    double x, double y);
+  void eraseVertex(int polyIndex, int vertIndex);
+  void changeVertexValue(int polyIndex, int vertIndex, double x, double y);
   void sortFromLargestToSmallest();
 
   void sortBySizeAndMaybeAddBigContainingRect(// inputs

@@ -469,6 +469,8 @@ void dPoly::compLayerAnno(){
 void dPoly::findClosestPolyVertex(// inputs
                                   double x0, double y0,
                                   // outputs
+                                  int & polyIndex,
+                                  int & vertIndex,
                                   double & min_x, double & min_y,
                                   double & min_dist
                                   ) const {
@@ -479,14 +481,22 @@ void dPoly::findClosestPolyVertex(// inputs
   // polygon is empty.
   
   min_x = x0; min_y = y0; min_dist = DBL_MAX;
+  polyIndex = -1; vertIndex = -1;
   
-  for (int s = 0; s < m_totalNumVerts; s++){
+  int start = 0;
+  for (int pIter = 0; pIter < m_numPolys; pIter++){
+    
+    if (pIter > 0) start += m_numVerts[pIter - 1];
 
-    double dist = distance(x0, y0, m_xv[s], m_yv[s]);
-    if (dist <= min_dist){
-      min_dist = dist;
-      min_x    = m_xv[s];
-      min_y    = m_yv[s];
+    for (int vIter = 0; vIter < m_numVerts[pIter]; vIter++){
+      double dist = distance(x0, y0, m_xv[start + vIter], m_yv[start + vIter]);
+      if (dist <= min_dist){
+        polyIndex = pIter;
+        vertIndex = vIter;
+        min_dist  = dist;
+        min_x     = m_xv[start + vIter];
+        min_y     = m_yv[start + vIter];
+      }
     }
     
   }
@@ -497,7 +507,7 @@ void dPoly::findClosestPolyVertex(// inputs
 void dPoly::findClosestPolyEdge(//inputs
                                  double x0, double y0,
                                  // outputs
-                                 int & minIndex,
+                                 int & polyIndex, int & vertIndex,
                                  double & minX, double & minY, double & minDist
                                  ) const{
 
@@ -507,7 +517,8 @@ void dPoly::findClosestPolyEdge(//inputs
   // where the closest distance is achieved, as well as the point at
   // which that distance is achieved and the smallest distance itself.
   
-  minIndex = -1;
+  polyIndex = -1;
+  vertIndex = -1;
   minX     = DBL_MAX, minY = DBL_MAX;
   minDist  = DBL_MAX;
   
@@ -529,11 +540,12 @@ void dPoly::findClosestPolyEdge(//inputs
                          xval, yval, dist
                          );
 
-      if (dist < minDist){
-        minIndex = pIter;
-        minX     = xval;
-        minY     = yval;
-        minDist  = dist;
+      if (dist <= minDist){
+        polyIndex = pIter;
+        vertIndex = vIter;
+        minX      = xval;
+        minY      = yval;
+        minDist   = dist;
       }
 
     }
@@ -567,6 +579,69 @@ void dPoly::erasePoly(int polyIndex){
   m_numVerts.erase(m_numVerts.begin()         + polyIndex); // better be last
   m_vertIndexAnno.clear();
   m_layerAnno.clear();
+
+  return;
+}
+
+void dPoly::insertVertex(int polyIndex, int vertIndex,
+                         double x, double y){
+
+  assert(0 <= polyIndex && polyIndex < m_numPolys);
+  assert(0 <= vertIndex && vertIndex < m_numVerts[polyIndex]);
+
+  int start = 0;
+  for (int pIter = 0; pIter < polyIndex; pIter++){
+    start += m_numVerts[pIter]; 
+  }
+
+  int iv = start + vertIndex;
+  m_xv.insert(m_xv.begin() + iv + 1, x);
+  m_yv.insert(m_yv.begin() + iv + 1, y);
+  
+  m_totalNumVerts++;
+  m_numVerts[polyIndex]++;
+  
+  m_vertIndexAnno.clear();
+
+  return;
+}
+
+void dPoly::eraseVertex(int polyIndex, int vertIndex){
+
+  assert(0 <= polyIndex && polyIndex < m_numPolys);
+  assert(0 <= vertIndex && vertIndex < m_numVerts[polyIndex]);
+
+  int start = 0;
+  for (int pIter = 0; pIter < polyIndex; pIter++){
+    start += m_numVerts[pIter]; 
+  }
+
+  int iv = start + vertIndex;
+  m_xv.erase(m_xv.begin() + iv, m_xv.begin() + iv + 1);
+  m_yv.erase(m_yv.begin() + iv, m_yv.begin() + iv + 1);
+  
+  m_totalNumVerts--;
+  m_numVerts[polyIndex]--;
+  
+  m_vertIndexAnno.clear();
+
+  return;
+}
+
+void dPoly::changeVertexValue(int polyIndex, int vertIndex, double x, double y){
+
+  assert(0 <= polyIndex && polyIndex < m_numPolys);
+  assert(0 <= vertIndex && vertIndex < m_numVerts[polyIndex]);
+  
+  int start = 0;
+  for (int pIter = 0; pIter < polyIndex; pIter++){
+    start += m_numVerts[pIter]; 
+  }
+
+  m_xv[start + vertIndex] = x;
+  m_yv[start + vertIndex] = y;
+
+  m_vertIndexAnno.clear();
 
   return;
 }

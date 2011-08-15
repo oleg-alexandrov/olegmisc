@@ -18,25 +18,35 @@ void utils::findClosestPolyVertex(// inputs
                                   double x0, double y0,
                                   const std::vector<dPoly> & polyVec,
                                   // outputs
+                                  int & polyVecIndex,
+                                  int & polyIndexInCurrPoly,
+                                  int & vertIndexInCurrPoly,
                                   double & minX, double & minY,
                                   double & minDist
                                   ){
 
   // Find the closest point in a given vector of polygons to a given point.
   
+  polyVecIndex = -1; polyIndexInCurrPoly = -1; vertIndexInCurrPoly = -1;
   minX = x0; minY = y0; minDist = DBL_MAX;
   
   for (int s = 0; s < (int)polyVec.size(); s++){
 
-    double minX0 = x0, minY0 = y0, minDist0 = DBL_MAX;
-    polyVec[s].findClosestPolyVertex(x0, y0,                // inputs
-                                     minX0, minY0, minDist0 // outputs
+    double minX0, minY0, minDist0;
+    int polyIndex, vertIndex;
+    polyVec[s].findClosestPolyVertex(// inputs
+                                     x0, y0,    
+                                     // outputs
+                                     polyIndex, vertIndex, minX0, minY0, minDist0
                                      );
 
     if (minDist0 <= minDist){
-      minDist = minDist0;
-      minX    = minX0;
-      minY    = minY0;
+      polyVecIndex  = s;
+      polyIndexInCurrPoly = polyIndex;
+      vertIndexInCurrPoly = vertIndex;
+      minDist       = minDist0;
+      minX          = minX0;
+      minY          = minY0;
     }
     
   }
@@ -48,32 +58,35 @@ void utils::findClosestPolyEdge(// inputs
                                 double x0, double y0,
                                 const std::vector<dPoly> & polyVec,
                                 // outputs
-                                int & minVecIndex, int & minPolyIndex,
+                                int & vecIndex, int & polyIndex,
+                                int & vertIndex,
                                 double & minX, double & minY, double & minDist
                                 ){
 
   // Find the closest edge in a given vector of polygons to a given point.
   
-  minVecIndex  = -1;
-  minPolyIndex = -1;
-  minX         = DBL_MAX;
-  minY         = DBL_MAX;
-  minDist      = DBL_MAX;
+  vecIndex  = -1;
+  polyIndex = -1;
+  vertIndex = -1;
+  minX      = DBL_MAX;
+  minY      = DBL_MAX;
+  minDist   = DBL_MAX;
   
   for (int vecIter = 0; vecIter < (int)polyVec.size(); vecIter++){
 
-    double lx = DBL_MAX, ly = DBL_MAX, ldist = DBL_MAX;
-    int polyIndex = -1;
-    polyVec[vecIter].findClosestPolyEdge(x0, y0,                   // in
-                                         polyIndex, lx, ly, ldist  // out
+    double lx, ly, ldist;
+    int pIndex, vIndex;
+    polyVec[vecIter].findClosestPolyEdge(x0, y0,                        // in
+                                         pIndex, vIndex, lx, ly, ldist  // out
                                          );
 
     if (ldist <= minDist){
-      minVecIndex  = vecIter;
-      minPolyIndex = polyIndex;
-      minX         = lx;
-      minY         = ly;
-      minDist      = ldist;
+      vecIndex  = vecIter;
+      polyIndex = pIndex;
+      vertIndex = vIndex;      
+      minX      = lx;
+      minY      = ly;
+      minDist   = ldist;
     }
     
   }
@@ -174,10 +187,10 @@ void utils::findDistanceBwPolysBruteForce(// inputs
 
   for (int t  = 0; t < numVerts1; t++){
     
-    int minPolyIndex;
+    int minPolyIndex, minVertIndex;
     double minX, minY, minDist = DBL_MAX;
-    poly2.findClosestPolyEdge(x[t], y[t],                        // inputs
-                              minPolyIndex, minX, minY,  minDist // outputs
+    poly2.findClosestPolyEdge(x[t], y[t],                                      // inputs
+                              minPolyIndex, minVertIndex, minX, minY,  minDist // outputs
                               );
 
     
