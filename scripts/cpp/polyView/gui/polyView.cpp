@@ -129,6 +129,13 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   m_snappedPoints.clear();
   m_nonSnappedPoints.clear();
   m_smallLen = 2; // Used for plotting the points
+
+  // For edit vertices mode
+  m_editVerticesMode        = false;
+  m_toggleShowPointsEdgesBk = m_showEdges;
+  m_polyVecIndex            = -1;
+  m_polyIndexInCurrPoly     = -1;
+  m_vertIndexInCurrPoly     = -1;
   
   resetTransformSettings();
 
@@ -514,6 +521,23 @@ void polyView::mousePressEvent( QMouseEvent *E){
 #endif
 
   m_rubberBand = m_emptyRubberBand;
+
+  if ( m_editVerticesMode && !m_createPoly ){
+    double wx, wy;
+    pixelToWorldCoords(m_mousePrsX, m_mousePrsY, wx, wy); 
+    double min_x, min_y, min_dist;
+    findClosestPolyVertex(// inputs
+                          wx, wy, m_polyVec,
+                          // outputs
+                          m_polyVecIndex,
+                          m_polyIndexInCurrPoly,
+                          m_vertIndexInCurrPoly,
+                          min_x, min_y, min_dist
+                          );
+    return;
+  }
+
+  return;
 }
 
 void polyView::mouseMoveEvent( QMouseEvent *E){
@@ -522,12 +546,28 @@ void polyView::mouseMoveEvent( QMouseEvent *E){
   int x = Q.x();
   int y = Q.y();
 
-  // Standard Qt rubberband trick (kind of confusing as to how it works).
-  updateRubberBand(m_rubberBand);
-  m_rubberBand = QRect( min(m_mousePrsX, x), min(m_mousePrsY, y),
-                        abs(x - m_mousePrsX), abs(y - m_mousePrsY) );
-  updateRubberBand(m_rubberBand);
+  if ( m_editVerticesMode && isAltLeftMouse(E) && !m_createPoly ){
+    double wx, wy;
+    pixelToWorldCoords(x, y, wx, wy);
+    if (m_polyVecIndex        < 0 ||
+        m_polyIndexInCurrPoly < 0 ||
+        m_vertIndexInCurrPoly < 0) return;
+    m_polyVec[m_polyVecIndex].changeVertexValue(m_polyIndexInCurrPoly,
+                                                m_vertIndexInCurrPoly,
+                                                wx, wy
+                                                );
+    refreshPixmap(); // To do: Need to update just a small region, not the whole screen
+  }
+
+  if ( !isAltLeftMouse(E) ){
+    // Standard Qt rubberband trick (kind of confusing as to how it works).
+    updateRubberBand(m_rubberBand);
+    m_rubberBand = QRect( min(m_mousePrsX, x), min(m_mousePrsY, y),
+                          abs(x - m_mousePrsX), abs(y - m_mousePrsY) );
+    updateRubberBand(m_rubberBand);
+  }
   
+  return;
 }
 
 void polyView::mouseReleaseEvent ( QMouseEvent * E ){
@@ -542,19 +582,21 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
        << m_mouseRelX << ' ' << m_mouseRelY << endl;
 #endif
 
+  if (m_editVerticesMode) refreshPixmap();
+
   // Wipe the rubberband
   updateRubberBand(m_rubberBand); 
   m_rubberBand = m_emptyRubberBand;
   updateRubberBand(m_rubberBand);
   
-  if (E->state() == ((int)Qt::LeftButton | (int)Qt::AltModifier) ){
+  if ( !m_editVerticesMode && isAltLeftMouse(E) ){
     // To do: consolidate this with the other call to this function.
     // See if can pass the relevant variables as input arguments.
     pixelToWorldCoords(m_mouseRelX, m_mouseRelY, m_menuX, m_menuY); 
     deletePoly();
   }
   
-  if (E->state() == ((int)Qt::LeftButton | (int)Qt::ControlModifier) ){
+  if ( isCtrlLeftMouse(E) ){
     // Draw a  highlight with control + left mouse button
     // ending at the current point
     createHighlightWithPixelInputs(m_mousePrsX, m_mousePrsY,
@@ -567,14 +609,16 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
   // Any selection smaller than 'tol' number of pixels will be ignored
   // as perhaps the user moved the mouse unintentionally between press
   // and release.
-  if       (m_mouseRelX > m_mousePrsX + tol &&
+  if       (!isAltLeftMouse(E)              &&
+            m_mouseRelX > m_mousePrsX + tol &&
             m_mouseRelY > m_mousePrsY + tol){
     
     m_zoomToMouseSelection = true; // Will zoom to the region selected with the mouse
     refreshPixmap(); 
     return;
     
-  }else if (m_mouseRelX + tol < m_mousePrsX &&
+  }else if (!isAltLeftMouse(E)              &&
+            m_mouseRelX + tol < m_mousePrsX &&
             m_mouseRelY + tol < m_mousePrsY ){
     
     zoomOut();
@@ -598,6 +642,13 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
   return;
 }
 
+bool polyView::isAltLeftMouse(QMouseEvent * E){
+  return (E->state() == ((int)Qt::LeftButton | (int)Qt::AltModifier));
+}
+
+bool polyView::isCtrlLeftMouse(QMouseEvent * E){
+  return (E->state() == ((int)Qt::LeftButton | (int)Qt::ControlModifier));
+}
 
 void polyView::wheelEvent(QWheelEvent *E){
 
@@ -674,16 +725,36 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
   pixelToWorldCoords(x, y, m_menuX, m_menuY);
 
   Q3PopupMenu menu(this);
-  menu.insertItem("Save mark at point", this, SLOT(saveMark()));
+
   int id = 1;
-  menu.insertItem("Use nm scale", this, SLOT(toggleNmScale()), 0, id);
-  menu.setItemChecked(id, m_useNmScale);
+
+  menu.insertItem("Edit vertices mode", this,
+                  SLOT(toggleEditVerticesMode()), 0, id);
+  menu.setItemChecked(id, m_editVerticesMode);
+
+  if (m_editVerticesMode){
+    menu.insertItem("Insert vertex on edge", this, SLOT(insertVertex()));
+    menu.insertItem("Delete vertex",         this, SLOT(deleteVertex()));
+  }
+  
   menu.insertItem("Create 45-degree integer polygon", this,
                   SLOT(create45DegreeIntPoly()));
   menu.insertItem("Create arbitrary polygon", this,
                   SLOT(createArbitraryPoly()));
+  
   menu.insertItem("Delete polygon", this, SLOT(deletePoly()));
+  
+  menu.insertItem("Save mark at point", this, SLOT(saveMark()));
+  
+  if (!m_editVerticesMode){
+    id++;
+    menu.insertItem("Use nm scale", this, SLOT(toggleNmScale()), 0, id);
+    menu.setItemChecked(id, m_useNmScale);
+  }
+
   menu.exec(E->globalPos());
+
+  return;
 }
 
 void polyView::refreshPixmap(){
@@ -1011,13 +1082,12 @@ void polyView::addPolyVert(int px, int py){
   
   // Get the layer and color from the closest existing polygon
   double minX = DBL_MAX, minY = DBL_MAX, minDist = DBL_MAX;
-  int minVecIndex  = -1;
-  int minPolyIndex = -1;
+  int minVecIndex, minPolyIndex, minVertIndex;
   findClosestPolyEdge(// inputs
                       m_currPolyX[0], m_currPolyY[0],
                       m_polyVec,  
                       // outputs
-                      minVecIndex, minPolyIndex,  
+                      minVecIndex, minPolyIndex, minVertIndex, 
                       minX, minY, minDist
                       );
   string color, layer;
@@ -1157,9 +1227,15 @@ void polyView::printCurrCoords(const Qt::ButtonState & state, // input
     // Snap to the closest vertex with the left mouse button.
     
     double min_x, min_y, min_dist;
-    findClosestPolyVertex(wx, wy, m_polyVec,     // inputs
-                            min_x, min_y, min_dist // outputs
-                            );
+    int polyVecIndex, polyIndexInCurrPoly, vertIndexInCurrPoly;
+    findClosestPolyVertex(// inputs
+                          wx, wy, m_polyVec,
+                          // outputs
+                          polyVecIndex,
+                          polyIndexInCurrPoly,
+                          vertIndexInCurrPoly,
+                          min_x, min_y, min_dist
+                          );
     wx = min_x; wy = min_y;
     worldToPixelCoords(wx, wy,      // inputs
                        currX, currY // outputs
@@ -1483,6 +1559,26 @@ void polyView::plotDistBwPolyClips( QPainter *paint ){
   return;
 }
 
+void polyView::toggleEditVerticesMode(){
+  
+  if (!m_editVerticesMode){
+    
+    // So that we can undo later
+    m_polyVecStack.push_back(m_polyVec); 
+    m_polyOptionsVecStack.push_back(m_polyOptionsVec); 
+    m_actions.push_back(m_polyChanged);
+    m_resetViewOnUndo.push_back(false);
+
+    m_toggleShowPointsEdgesBk = m_toggleShowPointsEdges;
+    m_toggleShowPointsEdges   = m_showPointsEdges;
+    
+  }else{
+    m_toggleShowPointsEdges = m_toggleShowPointsEdgesBk;
+  }
+  m_editVerticesMode = !m_editVerticesMode;
+  refreshPixmap();
+}
+
 void polyView::create45DegreeIntPoly(){
 
   // This flag will change the behavior of mouseReleaseEvent() so that
@@ -1505,6 +1601,75 @@ void polyView::createArbitraryPoly(){
   setPolyDrawCursor();
 }
 
+void polyView::insertVertex(){
+
+  if (!m_editVerticesMode) return;
+
+  if (m_polyVec.size() == 0) return;
+  
+  double min_x, min_y, min_dist;
+  findClosestPolyEdge(// inputs
+                      m_menuX, m_menuY, m_polyVec,  
+                      // outputs
+                      m_polyVecIndex,
+                      m_polyIndexInCurrPoly,
+                      m_vertIndexInCurrPoly,
+                      min_x, min_y, min_dist
+                      );
+  
+  if (m_polyVecIndex        < 0 ||
+      m_polyIndexInCurrPoly < 0 ||
+      m_vertIndexInCurrPoly < 0) return;
+  
+  // So that we can undo later
+  m_polyVecStack.push_back(m_polyVec); 
+  m_polyOptionsVecStack.push_back(m_polyOptionsVec); 
+  m_actions.push_back(m_polyChanged);
+  m_resetViewOnUndo.push_back(false);
+  
+  m_polyVec[m_polyVecIndex].insertVertex(m_polyIndexInCurrPoly,
+                                         m_vertIndexInCurrPoly,
+                                         min_x, min_y
+                                         );
+  
+  refreshPixmap();
+  return;
+}
+
+void polyView::deleteVertex(){
+
+  if (!m_editVerticesMode) return;
+
+  if (m_polyVec.size() == 0) return;
+  
+  double min_x, min_y, min_dist;
+  findClosestPolyVertex(// inputs
+                        m_menuX, m_menuY, m_polyVec,
+                        // outputs
+                        m_polyVecIndex,
+                        m_polyIndexInCurrPoly,
+                        m_vertIndexInCurrPoly,
+                        min_x, min_y, min_dist
+                        );
+  
+  if (m_polyVecIndex        < 0 ||
+      m_polyIndexInCurrPoly < 0 ||
+      m_vertIndexInCurrPoly < 0) return;
+  
+  // So that we can undo later
+  m_polyVecStack.push_back(m_polyVec); 
+  m_polyOptionsVecStack.push_back(m_polyOptionsVec); 
+  m_actions.push_back(m_polyChanged);
+  m_resetViewOnUndo.push_back(false);
+
+  m_polyVec[m_polyVecIndex].eraseVertex(m_polyIndexInCurrPoly,
+                                        m_vertIndexInCurrPoly
+                                        );
+  
+  refreshPixmap();
+  return;
+}
+
 void polyView::deletePoly(){
 
   if (m_polyVec.size() == 0) return;
@@ -1515,16 +1680,15 @@ void polyView::deletePoly(){
   m_actions.push_back(m_polyChanged);
   m_resetViewOnUndo.push_back(false);
 
-  int minVecIndex  = -1;
-  int minPolyIndex = -1;
+  int minVecIndex, minPolyIndex, minVertIndex;
   double minX = DBL_MAX, minY = DBL_MAX, minDist = DBL_MAX;
   findClosestPolyEdge(// inputs
-                         m_menuX, m_menuY,
-                         m_polyVec,  
-                         // outputs
-                         minVecIndex, minPolyIndex,  
-                         minX, minY, minDist
-                         );
+                      m_menuX, m_menuY,
+                      m_polyVec,  
+                      // outputs
+                      minVecIndex, minPolyIndex, minVertIndex, 
+                      minX, minY, minDist
+                      );
   
   if (minVecIndex >= 0 && minPolyIndex >= 0){
     m_polyVec[minVecIndex].erasePoly(minPolyIndex);
@@ -1579,6 +1743,7 @@ void polyView::toggleNmScale(){
   if (! (scaleHandle >> dummy >> m_nmScale) ){
     cerr << "Could not read the nm scale factor from "
          << m_nmScaleFile << endl;
+    cerr << "Syntax is: scale 1.5" << endl;
     m_useNmScale = false;
     return;
   }
