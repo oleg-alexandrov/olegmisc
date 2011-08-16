@@ -646,6 +646,25 @@ void dPoly::changeVertexValue(int polyIndex, int vertIndex, double x, double y){
   return;
 }
 
+void dPoly::shiftOnePoly(int polyIndex, double shift_x, double shift_y){
+
+  assert(0 <= polyIndex && polyIndex < m_numPolys);
+  
+  int start = 0;
+  for (int pIter = 0; pIter < polyIndex; pIter++){
+    start += m_numVerts[pIter]; 
+  }
+
+  for (int vIter = 0; vIter < m_numVerts[polyIndex]; vIter++){
+    m_xv[start + vIter] += shift_x;
+    m_yv[start + vIter] += shift_y;
+  }
+  
+  m_vertIndexAnno.clear();
+
+  return;
+}
+
 namespace dPoly_local_functions{
   struct ptAndIndex{
     dPoint point;
