@@ -132,6 +132,8 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
 
   // For edit vertices mode
   m_editVerticesMode        = false;
+  m_moveVertices            = false;
+  m_movePolys               = false;
   m_toggleShowPointsEdgesBk = m_showEdges;
   m_polyVecIndex            = -1;
   m_polyIndexInCurrPoly     = -1;
@@ -523,17 +525,29 @@ void polyView::mousePressEvent( QMouseEvent *E){
   m_rubberBand = m_emptyRubberBand;
 
   if ( m_editVerticesMode && !m_createPoly ){
-    double wx, wy;
-    pixelToWorldCoords(m_mousePrsX, m_mousePrsY, wx, wy); 
+    pixelToWorldCoords(m_mousePrsX, m_mousePrsY, m_mouseStartX, m_mouseStartY); 
     double min_x, min_y, min_dist;
-    findClosestPolyVertex(// inputs
-                          wx, wy, m_polyVec,
+    if (m_moveVertices){
+      findClosestPolyVertex(// inputs
+                            m_mouseStartX, m_mouseStartY, m_polyVec,
+                            // outputs
+                            m_polyVecIndex,
+                            m_polyIndexInCurrPoly,
+                            m_vertIndexInCurrPoly,
+                            min_x, min_y, min_dist
+                            );
+    }else if (m_movePolys){
+      findClosestPolyEdge(// inputs
+                          m_mouseStartX, m_mouseStartY, m_polyVec,  
                           // outputs
                           m_polyVecIndex,
                           m_polyIndexInCurrPoly,
                           m_vertIndexInCurrPoly,
                           min_x, min_y, min_dist
                           );
+      if (m_polyVecIndex >= 0) m_polyBeforeShift = m_polyVec[m_polyVecIndex];
+    }
+    
     return;
   }
 
@@ -552,10 +566,18 @@ void polyView::mouseMoveEvent( QMouseEvent *E){
     if (m_polyVecIndex        < 0 ||
         m_polyIndexInCurrPoly < 0 ||
         m_vertIndexInCurrPoly < 0) return;
-    m_polyVec[m_polyVecIndex].changeVertexValue(m_polyIndexInCurrPoly,
-                                                m_vertIndexInCurrPoly,
-                                                wx, wy
-                                                );
+    if (m_moveVertices){
+      m_polyVec[m_polyVecIndex].changeVertexValue(m_polyIndexInCurrPoly,
+                                                  m_vertIndexInCurrPoly,
+                                                  wx, wy
+                                                  );
+    }else if (m_movePolys && m_polyVecIndex >= 0){
+      m_polyVec[m_polyVecIndex] = m_polyBeforeShift;
+      m_polyVec[m_polyVecIndex].shiftOnePoly(m_polyIndexInCurrPoly,
+                                             wx - m_mouseStartX, 
+                                             wy - m_mouseStartY 
+                                             );
+    }
     refreshPixmap(); // To do: Need to update just a small region, not the whole screen
   }
 
@@ -731,8 +753,20 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
   menu.insertItem("Edit vertices mode", this,
                   SLOT(toggleEditVerticesMode()), 0, id);
   menu.setItemChecked(id, m_editVerticesMode);
+  id++;
 
   if (m_editVerticesMode){
+
+    menu.insertItem("Move vertices (Alt-Mouse)", this,
+                    SLOT(turnOnMoveVertices()), 0, id);
+    menu.setItemChecked(id, m_moveVertices);
+    id++;
+
+    menu.insertItem("Move polygons (Alt-Mouse)", this,
+                    SLOT(turnOnMovePolys()), 0, id);
+    menu.setItemChecked(id, m_movePolys);
+    id++;
+    
     menu.insertItem("Insert vertex on edge", this, SLOT(insertVertex()));
     menu.insertItem("Delete vertex",         this, SLOT(deleteVertex()));
   }
@@ -747,9 +781,9 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
   menu.insertItem("Save mark at point", this, SLOT(saveMark()));
   
   if (!m_editVerticesMode){
-    id++;
     menu.insertItem("Use nm scale", this, SLOT(toggleNmScale()), 0, id);
     menu.setItemChecked(id, m_useNmScale);
+    id++;
   }
 
   menu.exec(E->globalPos());
@@ -1562,6 +1596,9 @@ void polyView::plotDistBwPolyClips( QPainter *paint ){
 void polyView::toggleEditVerticesMode(){
   
   if (!m_editVerticesMode){
+
+    m_moveVertices = true;
+    m_movePolys    = false;
     
     // So that we can undo later
     m_polyVecStack.push_back(m_polyVec); 
@@ -1573,10 +1610,24 @@ void polyView::toggleEditVerticesMode(){
     m_toggleShowPointsEdges   = m_showPointsEdges;
     
   }else{
+    m_moveVertices = false;
+    m_movePolys    = false;
     m_toggleShowPointsEdges = m_toggleShowPointsEdgesBk;
   }
   m_editVerticesMode = !m_editVerticesMode;
   refreshPixmap();
+}
+
+void polyView::turnOnMoveVertices(){
+  if (!m_editVerticesMode) return;
+  m_moveVertices = true;
+  m_movePolys    = false;
+}
+
+void polyView::turnOnMovePolys(){
+  if (!m_editVerticesMode) return;
+  m_moveVertices = false;
+  m_movePolys = true;
 }
 
 void polyView::create45DegreeIntPoly(){

@@ -75,6 +75,8 @@ public slots:
   void saveMark();
   void toggleNmScale();
   void toggleEditVerticesMode();
+  void turnOnMoveVertices();
+  void turnOnMovePolys();
   void insertVertex();
   void deleteVertex();
   void deletePoly();
@@ -251,11 +253,16 @@ private:
   std::set<std::string> m_filesNotToShow;
 
   // Edit vertices mode
-  bool m_editVerticesMode;
-  int  m_toggleShowPointsEdgesBk;
-  int  m_polyVecIndex;
-  int  m_polyIndexInCurrPoly;
-  int  m_vertIndexInCurrPoly;
+  bool   m_editVerticesMode;
+  bool   m_moveVertices;
+  bool   m_movePolys;
+  int    m_toggleShowPointsEdgesBk;
+  int    m_polyVecIndex;
+  int    m_polyIndexInCurrPoly;
+  int    m_vertIndexInCurrPoly;
+  double m_mouseStartX, m_mouseStartY;
+  dPoly  m_polyBeforeShift;
+  
 };
 
 #endif // POLYVIEW_H
