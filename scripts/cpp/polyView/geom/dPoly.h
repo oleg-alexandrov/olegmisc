@@ -124,6 +124,7 @@ public:
                     double x, double y);
   void eraseVertex(int polyIndex, int vertIndex);
   void changeVertexValue(int polyIndex, int vertIndex, double x, double y);
+  void shiftOnePoly(int polyIndex, double shift_x, double shift_y);
   void sortFromLargestToSmallest();
 
   void sortBySizeAndMaybeAddBigContainingRect(// inputs
