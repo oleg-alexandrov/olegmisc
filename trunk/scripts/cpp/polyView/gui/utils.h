@@ -20,6 +20,7 @@ struct polyOptions{
   bool            plotAsPoints;
   bool            isPolyFilled;
   closedPolyInfo  isPolyClosed;
+  int             fontSize;
   int             lineWidth;
   bool            useCmdLineColor;
   std::string     bgColor;
@@ -31,6 +32,7 @@ struct polyOptions{
     plotAsPoints    = false;
     isPolyFilled    = false;
     isPolyClosed    = readClosedPolyInfoFromFile;
+    fontSize        = 10; 
     lineWidth       = 1;
     useCmdLineColor = false;
     bgColor         = "black";
