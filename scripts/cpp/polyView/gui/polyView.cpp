@@ -619,12 +619,13 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
   updateRubberBand(m_rubberBand); 
   m_rubberBand = m_emptyRubberBand;
   updateRubberBand(m_rubberBand);
-  
+
   if ( E->modifiers() & Qt::ShiftModifier ){
     // To do: consolidate this with the other call to this function.
     // See if can pass the relevant variables as input arguments.
     pixelToWorldCoords(m_mouseRelX, m_mouseRelY, m_menuX, m_menuY); 
     deletePoly();
+    return;
   }
   
   if ( isControlLeftMouse(E) ){
@@ -785,7 +786,7 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
   menu.insertItem("Create arbitrary polygon", this,
                   SLOT(createArbitraryPoly()));
   
-  menu.insertItem("Delete polygon", this, SLOT(deletePoly()));
+  menu.insertItem("Delete polygon (Shift-Mouse)", this, SLOT(deletePoly()));
   
   menu.insertItem("Save mark at point", this, SLOT(saveMark()));
   
