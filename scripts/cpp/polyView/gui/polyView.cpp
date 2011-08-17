@@ -262,9 +262,9 @@ void polyView::displayData( QPainter *paint ){
       ( m_toggleShowPointsEdges == m_showPointsEdges);
     
     if (plotPoints) drawVertIndex++;
-    
-    plotDPoly(plotPoints, plotEdges,  
-              plotFilled, lineWidth,  
+
+    bool showAnno = true;
+    plotDPoly(plotPoints, plotEdges, plotFilled, showAnno, lineWidth,  
               drawVertIndex,    // 0 is a good choice here
               textOnScreenGrid, // empty grid is fine here  
               paint,  
@@ -278,8 +278,8 @@ void polyView::displayData( QPainter *paint ){
   drawVertIndex = 0;
   for (int h = 0; h < (int)m_highlights.size(); h++){
     m_highlights[h].set_color(m_prefs.fgColor.c_str());
-    plotDPoly(plotPoints, plotEdges,  
-              plotFilled, m_prefs.lineWidth,  
+    bool showAnno = false;
+    plotDPoly(plotPoints, plotEdges, plotFilled, showAnno, m_prefs.lineWidth,  
               drawVertIndex,    // 0 is a good choice here
               textOnScreenGrid, // empty grid is fine here  
               paint,  
@@ -310,7 +310,8 @@ void polyView::displayData( QPainter *paint ){
 }
 
 void polyView::plotDPoly(bool plotPoints, bool plotEdges,
-                         bool plotFilled, int lineWidth,
+                         bool plotFilled, bool showAnno,
+                         int lineWidth,
                          int drawVertIndex, // 0 is a good choice here
                          // An empty grid is a good choice if not text is present
                          std::vector< std::vector<int> > & textOnScreenGrid,
@@ -365,14 +366,16 @@ void polyView::plotDPoly(bool plotPoints, bool plotEdges,
     
   vector<anno> annotations;
   annotations.clear();
-  if (m_showVertIndexAnno){
-    clippedPoly.get_vertIndexAnno(annotations);
-  }else if (m_showLayerAnno){
-    clippedPoly.get_layerAnno(annotations);
-  }else if (m_showAnnotations){
-    clippedPoly.get_annotations(annotations);
+  if (showAnno){
+    if (m_showVertIndexAnno){
+      clippedPoly.get_vertIndexAnno(annotations);
+    }else if (m_showLayerAnno){
+      clippedPoly.get_layerAnno(annotations);
+    }else if (m_showAnnotations){
+      clippedPoly.get_annotations(annotations);
+    }
   }
-    
+  
   int start = 0;
   for (int pIter = 0; pIter < numPolys; pIter++){
 
@@ -1190,7 +1193,8 @@ void polyView::drawPolyLine(const std::vector<double> & polyX,
   int drawVertIndex = 0;
   vector< vector<int> > textOnScreenGrid;
   textOnScreenGrid.clear();
-  plotDPoly(plotPoints, plotEdges, plotFilled, m_prefs.lineWidth,  
+  bool showAnno = false;
+  plotDPoly(plotPoints, plotEdges, plotFilled, showAnno, m_prefs.lineWidth,  
             drawVertIndex,    // 0 is a good choice here
             textOnScreenGrid, // empty grid is fine here  
             paint,  

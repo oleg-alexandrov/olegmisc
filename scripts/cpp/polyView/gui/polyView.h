@@ -155,7 +155,8 @@ private:
 
   void displayData( QPainter *paint );
   void plotDPoly(bool plotPoints, bool plotEdges,
-                 bool plotFilled, int lineWidth,
+                 bool plotFilled, bool showAnno,
+                 int lineWidth,
                  int drawVertIndex, // 0 is a good choice here
                  // An empty grid is a good choice if not text is present
                  std::vector< std::vector<int> > & textOnScreenGrid,
