@@ -627,8 +627,8 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
     deletePoly();
     return;
   }
-  
-  if ( isControlLeftMouse(E) ){
+
+  if ( E->modifiers() & Qt::ControlModifier ){
     // Draw a  highlight with control + left mouse button
     // ending at the current point
     createHighlightWithPixelInputs(m_mousePrsX, m_mousePrsY,
@@ -675,11 +675,8 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
 }
 
 bool polyView::isAltLeftMouse(QMouseEvent * E){
+  // This does not work in mouseReleaseEvent. 
   return ( E->buttons() & Qt::LeftButton  ) && ( E->modifiers() & Qt::AltModifier );
-}
-
-bool polyView::isControlLeftMouse(QMouseEvent * E){
-  return ( E->buttons() & Qt::LeftButton  ) && ( E->modifiers() & Qt::ControlModifier );
 }
 
 void polyView::wheelEvent(QWheelEvent *E){
