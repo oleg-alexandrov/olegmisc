@@ -131,7 +131,7 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   m_smallLen = 2; // Used for plotting the points
 
   // For edit vertices mode
-  m_editVerticesMode        = false;
+  m_editMode                = false;
   m_moveVertices            = false;
   m_movePolys               = false;
   m_toggleShowPointsEdgesBk = m_showEdges;
@@ -516,7 +516,7 @@ void polyView::resetTransformSettings(){
 }
 
 void polyView::mousePressEvent( QMouseEvent *E){
-  
+
   const QPoint Q = E->pos();
   m_mousePrsX = Q.x();
   m_mousePrsY = Q.y();
@@ -526,8 +526,15 @@ void polyView::mousePressEvent( QMouseEvent *E){
 #endif
 
   m_rubberBand = m_emptyRubberBand;
+  m_movingVertsOrPolysNow =  ( m_editMode && isAltLeftMouse(E) && !m_createPoly );
+  if (m_movingVertsOrPolysNow){
 
-  if ( m_editVerticesMode && !m_createPoly ){
+    // So that we can undo later
+    m_polyVecStack.push_back(m_polyVec); 
+    m_polyOptionsVecStack.push_back(m_polyOptionsVec); 
+    m_actions.push_back(m_polyChanged);
+    m_resetViewOnUndo.push_back(false);
+
     pixelToWorldCoords(m_mousePrsX, m_mousePrsY, m_mouseStartX, m_mouseStartY); 
     double min_x, min_y, min_dist;
     if (m_moveVertices){
@@ -563,7 +570,7 @@ void polyView::mouseMoveEvent( QMouseEvent *E){
   int x = Q.x();
   int y = Q.y();
 
-  if ( m_editVerticesMode && isAltLeftMouse(E) && !m_createPoly ){
+  if (m_movingVertsOrPolysNow){
     double wx, wy;
     pixelToWorldCoords(x, y, wx, wy);
     if (m_polyVecIndex        < 0 ||
@@ -582,15 +589,14 @@ void polyView::mouseMoveEvent( QMouseEvent *E){
                                              );
     }
     refreshPixmap(); // To do: Need to update just a small region, not the whole screen
+    return;
   }
 
-  if ( !isAltLeftMouse(E) ){
-    // Standard Qt rubberband trick (kind of confusing as to how it works).
-    updateRubberBand(m_rubberBand);
-    m_rubberBand = QRect( min(m_mousePrsX, x), min(m_mousePrsY, y),
-                          abs(x - m_mousePrsX), abs(y - m_mousePrsY) );
-    updateRubberBand(m_rubberBand);
-  }
+  // Standard Qt rubberband trick (kind of confusing as to how it works).
+  updateRubberBand(m_rubberBand);
+  m_rubberBand = QRect( min(m_mousePrsX, x), min(m_mousePrsY, y),
+                        abs(x - m_mousePrsX), abs(y - m_mousePrsY) );
+  updateRubberBand(m_rubberBand);
   
   return;
 }
@@ -607,21 +613,21 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
        << m_mouseRelX << ' ' << m_mouseRelY << endl;
 #endif
 
-  if (m_editVerticesMode) refreshPixmap();
+  if (m_movingVertsOrPolysNow) refreshPixmap();
 
   // Wipe the rubberband
   updateRubberBand(m_rubberBand); 
   m_rubberBand = m_emptyRubberBand;
   updateRubberBand(m_rubberBand);
   
-  if ( !m_editVerticesMode && isAltLeftMouse(E) ){
+  if ( E->modifiers() & Qt::ShiftModifier ){
     // To do: consolidate this with the other call to this function.
     // See if can pass the relevant variables as input arguments.
     pixelToWorldCoords(m_mouseRelX, m_mouseRelY, m_menuX, m_menuY); 
     deletePoly();
   }
   
-  if ( isCtrlLeftMouse(E) ){
+  if ( isControlLeftMouse(E) ){
     // Draw a  highlight with control + left mouse button
     // ending at the current point
     createHighlightWithPixelInputs(m_mousePrsX, m_mousePrsY,
@@ -634,7 +640,7 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
   // Any selection smaller than 'tol' number of pixels will be ignored
   // as perhaps the user moved the mouse unintentionally between press
   // and release.
-  if       (!isAltLeftMouse(E)              &&
+  if       (!m_movingVertsOrPolysNow        &&
             m_mouseRelX > m_mousePrsX + tol &&
             m_mouseRelY > m_mousePrsY + tol){
     
@@ -642,7 +648,7 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
     refreshPixmap(); 
     return;
     
-  }else if (!isAltLeftMouse(E)              &&
+  }else if (!m_movingVertsOrPolysNow        &&
             m_mouseRelX + tol < m_mousePrsX &&
             m_mouseRelY + tol < m_mousePrsY ){
     
@@ -668,11 +674,11 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
 }
 
 bool polyView::isAltLeftMouse(QMouseEvent * E){
-  return (E->state() == ((int)Qt::LeftButton | (int)Qt::AltModifier));
+  return ( E->buttons() & Qt::LeftButton  ) && ( E->modifiers() & Qt::AltModifier );
 }
 
-bool polyView::isCtrlLeftMouse(QMouseEvent * E){
-  return (E->state() == ((int)Qt::LeftButton | (int)Qt::ControlModifier));
+bool polyView::isControlLeftMouse(QMouseEvent * E){
+  return ( E->buttons() & Qt::LeftButton  ) && ( E->modifiers() & Qt::ControlModifier );
 }
 
 void polyView::wheelEvent(QWheelEvent *E){
@@ -755,10 +761,10 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
 
   menu.insertItem("Edit vertices mode", this,
                   SLOT(toggleEditVerticesMode()), 0, id);
-  menu.setItemChecked(id, m_editVerticesMode);
+  menu.setItemChecked(id, m_editMode);
   id++;
 
-  if (m_editVerticesMode){
+  if (m_editMode){
 
     menu.insertItem("Move vertices (Alt-Mouse)", this,
                     SLOT(turnOnMoveVertices()), 0, id);
@@ -783,7 +789,7 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
   
   menu.insertItem("Save mark at point", this, SLOT(saveMark()));
   
-  if (!m_editVerticesMode){
+  if (!m_editMode){
     menu.insertItem("Use nm scale", this, SLOT(toggleNmScale()), 0, id);
     menu.setItemChecked(id, m_useNmScale);
     id++;
@@ -1599,17 +1605,10 @@ void polyView::plotDistBwPolyClips( QPainter *paint ){
 
 void polyView::toggleEditVerticesMode(){
   
-  if (!m_editVerticesMode){
+  if (!m_editMode){
 
     m_moveVertices = true;
     m_movePolys    = false;
-    
-    // So that we can undo later
-    m_polyVecStack.push_back(m_polyVec); 
-    m_polyOptionsVecStack.push_back(m_polyOptionsVec); 
-    m_actions.push_back(m_polyChanged);
-    m_resetViewOnUndo.push_back(false);
-
     m_toggleShowPointsEdgesBk = m_toggleShowPointsEdges;
     m_toggleShowPointsEdges   = m_showPointsEdges;
     
@@ -1618,18 +1617,18 @@ void polyView::toggleEditVerticesMode(){
     m_movePolys    = false;
     m_toggleShowPointsEdges = m_toggleShowPointsEdgesBk;
   }
-  m_editVerticesMode = !m_editVerticesMode;
+  m_editMode = !m_editMode;
   refreshPixmap();
 }
 
 void polyView::turnOnMoveVertices(){
-  if (!m_editVerticesMode) return;
+  if (!m_editMode) return;
   m_moveVertices = true;
   m_movePolys    = false;
 }
 
 void polyView::turnOnMovePolys(){
-  if (!m_editVerticesMode) return;
+  if (!m_editMode) return;
   m_moveVertices = false;
   m_movePolys = true;
 }
@@ -1658,7 +1657,7 @@ void polyView::createArbitraryPoly(){
 
 void polyView::insertVertex(){
 
-  if (!m_editVerticesMode) return;
+  if (!m_editMode) return;
 
   if (m_polyVec.size() == 0) return;
   
@@ -1694,7 +1693,7 @@ void polyView::insertVertex(){
 
 void polyView::deleteVertex(){
 
-  if (!m_editVerticesMode) return;
+  if (!m_editMode) return;
 
   if (m_polyVec.size() == 0) return;
   

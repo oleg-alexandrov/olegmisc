@@ -97,7 +97,7 @@ protected:
   void keyPressEvent( QKeyEvent *K );
   void mouseReleaseEvent ( QMouseEvent * E );
   bool isAltLeftMouse(QMouseEvent * E);
-  bool isCtrlLeftMouse(QMouseEvent * E);
+  bool isControlLeftMouse(QMouseEvent * E);
   void wheelEvent(QWheelEvent *E);
   void contextMenuEvent(QContextMenuEvent *E);
 
@@ -254,9 +254,10 @@ private:
   std::set<std::string> m_filesNotToShow;
 
   // Edit vertices mode
-  bool   m_editVerticesMode;
+  bool   m_editMode;
   bool   m_moveVertices;
   bool   m_movePolys;
+  bool   m_movingVertsOrPolysNow;
   int    m_toggleShowPointsEdgesBk;
   int    m_polyVecIndex;
   int    m_polyIndexInCurrPoly;
