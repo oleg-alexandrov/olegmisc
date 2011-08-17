@@ -814,8 +814,7 @@ void polyView::refreshPixmap(){
   paint.initFrom(this);
 
   QFont F;
-  int fontSize = 10;
-  F.setPointSize(fontSize);
+  F.setPointSize(m_prefs.fontSize);
   //F.setStyleStrategy(QFont::NoAntialias);
   paint.setFont(F);
 

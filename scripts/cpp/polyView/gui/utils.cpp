@@ -12,6 +12,7 @@ void utils::printUsage(std::string progName){
   cout << "Usage: " << progName << " "
        << "[ -geo[metry] 1000x800 ] [-bg | -backgroundColor black ] "
        << "[ -c | -color yellow ] "
+       << "[ -fs | -fontSize 10 ] "
        << "[ -lw | -lineWidth 2 ] "
        << "[ -p | -points ] [ -cp | -closedPoly ] [ -nc | -nonClosedPoly ] "
        << "[ -f | -filledPoly ] [ -nf | -nonFilledPoly ] "
@@ -123,6 +124,16 @@ void utils::parseCmdOptions(//inputs
          argIter < argc - 1
          ){
       opt.bgColor = argv[argIter + 1];
+      argIter++;
+      continue;
+    }
+
+    if ( (strcmp(currArg, "-fs") == 0 || strcmp(currArg, "-fontsize") == 0 )
+         &&
+         argIter < argc - 1
+         ){
+      int fs = (int)round(atof(argv[argIter + 1]));
+      if (fs > 0) opt.fontSize = fs;
       argIter++;
       continue;
     }
