@@ -97,7 +97,6 @@ protected:
   void keyPressEvent( QKeyEvent *K );
   void mouseReleaseEvent ( QMouseEvent * E );
   bool isAltLeftMouse(QMouseEvent * E);
-  bool isControlLeftMouse(QMouseEvent * E);
   void wheelEvent(QWheelEvent *E);
   void contextMenuEvent(QContextMenuEvent *E);
 
