@@ -811,6 +811,14 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
     id++;
     
   }
+
+  if (m_alignMode){
+    menu.insertItem("Rotate  90 degrees",  this, SLOT(align_rotate90()));
+    menu.insertItem("Rotate 180 degrees",  this, SLOT(align_rotate180()));
+    menu.insertItem("Rotate 270 degrees",  this, SLOT(align_rotate270()));
+    menu.insertItem("Flip against x axis", this, SLOT(align_flip_against_x_axis()));
+    menu.insertItem("Flip against y axis", this, SLOT(align_flip_against_y_axis()));
+  }
   
   menu.insertItem("Create 45-degree integer polygon", this,
                   SLOT(create45DegreeIntPoly()));
@@ -1675,6 +1683,35 @@ void polyView::toggleAlignMode(){
   return;
 }
 
+void polyView::align_rotate90(){
+  assert(m_alignMode);
+  m_polyVec[0].applyTransformAroundCenterOfMass(0, -1, 1, 0);
+  refreshPixmap();
+}
+
+void polyView::align_rotate180(){
+  assert(m_alignMode);
+  m_polyVec[0].applyTransformAroundCenterOfMass(-1, 0, 0, -1);
+  refreshPixmap();
+}
+
+void polyView::align_rotate270(){
+  assert(m_alignMode);
+  m_polyVec[0].applyTransformAroundCenterOfMass(0, 1, -1, 0);
+  refreshPixmap();
+}
+
+void polyView::align_flip_against_y_axis(){
+  assert(m_alignMode);
+  m_polyVec[0].applyTransformAroundCenterOfMass(-1, 0, 0, 1);
+  refreshPixmap();
+}
+
+void polyView::align_flip_against_x_axis(){
+  assert(m_alignMode);
+  m_polyVec[0].applyTransformAroundCenterOfMass(1, 0, 0, -1);
+  refreshPixmap();
+}
 
 void polyView::turnOnMoveVertices(){
   if (!m_editMode) return;
