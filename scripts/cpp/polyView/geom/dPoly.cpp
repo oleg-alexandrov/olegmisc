@@ -77,6 +77,18 @@ void dPoly::bdBoxes(std::vector<double> & xll, std::vector<double> & yll,
   return;
 };
 
+void dPoly::centerOfMass(double & mx, double & my) const{
+
+  double xll, yll, xur, yur;
+  bdBox(xll, yll, xur, yur);
+  
+  mx = (xll + xur)/2.0;
+  my = (yll + yur)/2.0;
+
+  return;
+}
+
+
 void dPoly::setPolygon(int numVerts,
                        const double * xv,
                        const double * yv,
@@ -264,6 +276,8 @@ void dPoly::clipPoly(// inputs
 
 void dPoly::shift(double shift_x, double shift_y){
 
+  // To do: Need to integrate the several very similar transform functions
+
   for (int i = 0; i < (int)m_xv.size(); i++){
     m_xv[i] += shift_x;
     m_yv[i] += shift_y;
@@ -284,6 +298,8 @@ void dPoly::shift(double shift_x, double shift_y){
 }
 
 void dPoly::rotate(double angle){ // The angle is given in degrees
+
+  // To do: Need to integrate the several very similar transform functions
 
   double a = angle*M_PI/180.0, c = cos(a), s= sin(a);
 
@@ -315,7 +331,9 @@ void dPoly::rotate(double angle){ // The angle is given in degrees
   return;
 }
 
-void dPoly::scale(double scale){ // The angle is given in degrees
+void dPoly::scale(double scale){
+
+  // To do: Need to integrate the several very similar transform functions
 
   for (int i = 0; i < (int)m_xv.size(); i++){
     m_xv[i] *= scale;
@@ -333,6 +351,48 @@ void dPoly::scale(double scale){ // The angle is given in degrees
     set_annoByType(annotations, annoType);
   }
 
+  return;
+}
+
+void dPoly::applyTransform(double a11, double a12, double a21, double a22,
+                           double sx, double sy){
+  
+
+  // To do: Need to integrate the several very similar transform functions
+  
+  for (int i = 0; i < (int)m_xv.size(); i++){
+    double tmpx = a11*m_xv[i] + a12*m_yv[i] + sx;
+    double tmpy = a21*m_xv[i] + a22*m_yv[i] + sy;
+    m_xv[i] = tmpx;
+    m_yv[i] = tmpy;
+  }
+
+  vector<anno> annotations;
+  for (int annoType = 0; annoType < 3; annoType++){
+    get_annoByType(annotations, annoType);
+    for (int i = 0; i < (int)annotations.size(); i++){
+      anno & A = annotations[i]; // alias
+      double tmpx = a11*A.x + a12*A.y + sx;
+      double tmpy = a21*A.x + a22*A.y + sy;
+      A.x = tmpx;
+      A.y = tmpy;
+    }
+    set_annoByType(annotations, annoType);
+  }
+
+  return;
+}
+
+
+void dPoly::applyTransformAroundCenterOfMass(double a11, double a12,
+                                             double a21, double a22){
+
+  if (m_totalNumVerts == 0) return;
+    
+  double mx, my;
+  centerOfMass(mx, my);
+  applyTransform(a11, a12, a21, a22, mx - a11*mx - a12*my, my - a21*mx - a22*my);
+  
   return;
 }
 

@@ -29,6 +29,7 @@ public:
                 );
   
   void writePoly(std::string filename, std::string defaultColor = "yellow");
+  void centerOfMass(double & mx, double & my) const;
   
   void appendPolygon(int numVerts,
                      const double * xv,
@@ -59,6 +60,10 @@ public:
   void shift(double shift_x, double shift_y);
   void rotate(double angle);
   void scale(double scale);
+  void applyTransform(double a11, double a12, double a21, double a22,
+                      double sx, double sy);
+  void applyTransformAroundCenterOfMass(double a11, double a12,
+                                        double a21, double a22);
   
   const int    * get_numVerts         () const { return utils::vecPtr(m_numVerts); }
   const double * get_xv               () const { return utils::vecPtr(m_xv);       }
