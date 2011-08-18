@@ -58,6 +58,14 @@ namespace utils{
                            int & vertIndex,
                            double & minX, double & minY, double & minDist
                            );
+  void alignPoly1ToPoly2(dPoly       & poly1,
+                              const dPoly & poly2);
+  void findDistanceFromVertsOfPoly1ToVertsPoly2(// inputs
+                                                const dPoly & poly1,
+                                                const dPoly & poly2,
+                                                // outputs
+                                                std::vector<segDist> & distVec
+                                                );
 
 
   void setUpViewBox(// inputs

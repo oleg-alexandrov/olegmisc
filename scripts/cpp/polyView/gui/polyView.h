@@ -66,6 +66,7 @@ public slots:
 
   // Transform menu
   void enforce45();
+  void backupPolysForUndo(bool resetViewOnUndo);
 
   // Options menu
   void setLineWidth();
@@ -86,6 +87,7 @@ public slots:
   void align_rotate270();
   void align_flip_against_y_axis();
   void align_flip_against_x_axis();
+  void performAlignmentOfClosePolys();
   
 protected:
 

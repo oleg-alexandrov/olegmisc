@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <vector>
 #include <cassert>
+#include <cfloat> // defines DBL_MAX
 #include "kdTree.h"
 #include "baseUtils.h"
 #include "geomUtils.h"
@@ -24,7 +25,7 @@ void kdTree::reset(){
 }
 
 
-Node * kdTree::getNewNode(){
+utils::Node * kdTree::getNewNode(){
   // Get a node from the pool
   Node * ptr = vecPtr(m_nodePool) + m_freeNodeIndex;
   assert( m_freeNodeIndex < (int)m_nodePool.size() );
@@ -32,9 +33,24 @@ Node * kdTree::getNewNode(){
   return ptr;  
 }
 
+void kdTree::formTreeOfPoints(int numPts, const double * xv, const double * yv){
+  
+  vector<PointWithId> Pts;
+  Pts.resize(numPts);
+  for (int s = 0; s < numPts; s++){
+    Pts[s] = PointWithId(xv[s], yv[s], s);
+  }
+  
+  formTreeOfPoints(// Pts will be reordered but otherwise
+                   // unchanged inside this function
+                   Pts
+                   );
+  return;
+}
+
 void kdTree::formTreeOfPoints(// Pts will be reordered but otherwise
                               // unchanged inside this function
-                              std::vector<Point> & Pts 
+                              std::vector<utils::PointWithId> & Pts 
                               ){
 
   reset();
@@ -47,8 +63,8 @@ void kdTree::formTreeOfPoints(// Pts will be reordered but otherwise
 }
 
 
-void kdTree::formTreeOfPointsInternal(Point * Pts, int numPts, bool isLeftRightSplit,
-                                      Node *&  root){
+void kdTree::formTreeOfPointsInternal(utils::PointWithId * Pts, int numPts, bool isLeftRightSplit,
+                                      utils::Node *&  root){
 
   // To do: Implement this without recursion.
   // To do: No need to store the point P in the tree. Store just a pointer to P
@@ -89,7 +105,7 @@ void kdTree::formTreeOfPointsInternal(Point * Pts, int numPts, bool isLeftRightS
 }
 
 void kdTree::getPointsInBox(double xl, double yl, double xh, double yh, // input box
-                            std::vector<Point> & outPts){
+                            std::vector<utils::PointWithId> & outPts){
 
   outPts.clear();
   if (xl > xh || yl > yh) return;
@@ -101,15 +117,15 @@ void kdTree::getPointsInBox(double xl, double yl, double xh, double yh, // input
 
 void kdTree::getPointsInBoxInternal(//Inputs
                                     double xl, double yl, double xh, double yh,
-                                    Node * root,
+                                    utils::Node * root,
                                     // Outputs
-                                    std::vector<Point> & outPts){
+                                    std::vector<utils::PointWithId> & outPts){
 
   // To do: Can this be done without recursion?
   
   if (root == NULL) return;
 
-  const Point & P = root->P; // alias
+  const PointWithId & P = root->P; // alias
   
   if (xl <= P.x && P.x <= xh && yl <= P.y && P.y <= yh) outPts.push_back(P);
   
@@ -121,5 +137,93 @@ void kdTree::getPointsInBoxInternal(//Inputs
     if (yh >= P.y) getPointsInBoxInternal(xl, yl, xh, yh, root->right, outPts);
   }
     
+  return;
+}
+
+void kdTree::findClosestVertexToPoint(// inputs
+                                      double x0, double y0,
+                                      // outputs
+                                      utils::PointWithId & closestVertex,
+                                      double & closestDist
+                                      ){
+
+  // Fast searching for the closest vertex in the tree to a given
+  // point. We assume that the tree of vertices is formed by now. The
+  // idea is the following: putting the vertices in a tree creates a
+  // hierarchical partition of the plane. When searching for the
+  // closest vertex through the regions in this partition, search
+  // first the regions closest to the point, and skip altogether the
+  // regions which are too far.
+
+  // This function returns DBL_MAX for the closest distance if there
+  // are no vertices to search.
+  
+  closestDist = DBL_MAX;
+
+  if (m_root == NULL) return;
+    
+  findClosestVertexToPointInternal(x0, y0, m_root,            // inputs 
+                                   closestVertex, closestDist // outputs
+                                   );
+
+
+  return;
+}
+
+void kdTree::findClosestVertexToPointInternal(// inputs
+                                              double x0, double y0,
+                                              utils::Node * root,
+                                              // outputs
+                                              utils::PointWithId & closestVertex,
+                                              double & closestDist
+                                              ){
+
+  // Find the distance from the input point to the vertex at the root
+  // node. Decide if first to visit the left or right subtree from the
+  // root depending on which looks more promising.
+  
+  assert (root != NULL);
+  
+  const PointWithId & P = root->P; // alias
+
+  double dist = distance(x0, y0, P.x, P.y);
+  
+  if (dist < closestDist){
+    closestVertex = P;
+    closestDist   = dist;
+  }
+
+  // Unify the left-right and down-up cases to avoid duplicating code.
+  double lx0 = x0, ly0 = y0, rootX = P.x, rootY = P.y;
+  if (!root->isLeftRightSplit){ // down-up split
+    swap(lx0,   ly0);
+    swap(rootX, rootY);
+  }
+  
+  if (lx0 <= rootX){
+    // Search the entire left subtree first
+    if (root->left != NULL)
+      findClosestVertexToPointInternal(x0, y0, root->left,        // inputs 
+                                       closestVertex, closestDist // outputs
+                                       );
+    // Don't go right unless there's any chance on improving what we already found
+    bool bad = (root->right == NULL || lx0 + closestDist <= rootX);
+    if (!bad) findClosestVertexToPointInternal(x0, y0, root->right,       // inputs 
+                                               closestVertex, closestDist // outputs
+                                               );
+  }else{
+    // Search the entire right subtree first
+    if (root->right != NULL)
+      findClosestVertexToPointInternal(x0, y0, root->right,       // inputs 
+                                       closestVertex, closestDist // outputs
+                                       );
+    // Don't go left unless there's any chance on improving what we already found
+    bool bad = (root->left == NULL || rootX + closestDist <= lx0);
+    if (!bad) findClosestVertexToPointInternal(x0, y0, root->left,        // inputs 
+                                               closestVertex, closestDist // outputs
+                                               );
+    
+  }
+  
   return;
 }
