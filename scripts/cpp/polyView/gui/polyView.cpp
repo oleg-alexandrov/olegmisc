@@ -526,7 +526,7 @@ void polyView::mousePressEvent( QMouseEvent *E){
 #endif
 
   m_rubberBand = m_emptyRubberBand;
-  m_movingVertsOrPolysNow =  ( m_editMode && isAltLeftMouse(E) && !m_createPoly );
+  m_movingVertsOrPolysNow = ( m_editMode && isShiftLeftMouse(E) && !m_createPoly );
   if (m_movingVertsOrPolysNow){
 
     // So that we can undo later
@@ -620,7 +620,8 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
   m_rubberBand = m_emptyRubberBand;
   updateRubberBand(m_rubberBand);
 
-  if ( E->modifiers() & Qt::ShiftModifier ){
+  if ( ( E->modifiers() & Qt::AltModifier ) &&
+       ( E->modifiers() & Qt::ShiftModifier ) ){
     // To do: consolidate this with the other call to this function.
     // See if can pass the relevant variables as input arguments.
     pixelToWorldCoords(m_mouseRelX, m_mouseRelY, m_menuX, m_menuY); 
@@ -674,9 +675,9 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
   return;
 }
 
-bool polyView::isAltLeftMouse(QMouseEvent * E){
+bool polyView::isShiftLeftMouse(QMouseEvent * E){
   // This does not work in mouseReleaseEvent. 
-  return ( E->buttons() & Qt::LeftButton  ) && ( E->modifiers() & Qt::AltModifier );
+  return ( E->buttons() & Qt::LeftButton  ) && ( E->modifiers() & Qt::ShiftModifier );
 }
 
 void polyView::wheelEvent(QWheelEvent *E){
@@ -764,12 +765,12 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
 
   if (m_editMode){
 
-    menu.insertItem("Move vertices (Alt-Mouse)", this,
+    menu.insertItem("Move vertices (Shift-Mouse)", this,
                     SLOT(turnOnMoveVertices()), 0, id);
     menu.setItemChecked(id, m_moveVertices);
     id++;
 
-    menu.insertItem("Move polygons (Alt-Mouse)", this,
+    menu.insertItem("Move polygons (Shift-Mouse)", this,
                     SLOT(turnOnMovePolys()), 0, id);
     menu.setItemChecked(id, m_movePolys);
     id++;
@@ -783,7 +784,7 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
   menu.insertItem("Create arbitrary polygon", this,
                   SLOT(createArbitraryPoly()));
   
-  menu.insertItem("Delete polygon (Shift-Mouse)", this, SLOT(deletePoly()));
+  menu.insertItem("Delete polygon (Alt-Shift-Mouse)", this, SLOT(deletePoly()));
   
   menu.insertItem("Save mark at point", this, SLOT(saveMark()));
   
