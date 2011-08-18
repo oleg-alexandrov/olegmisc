@@ -9,6 +9,7 @@
 #include "dPoly.h"
 #include "polyUtils.h"
 #include "geomUtils.h"
+#include "kdTree.h"
 #include "dTree.h"
 
 using namespace std;
@@ -90,6 +91,76 @@ void utils::findClosestPolyEdge(// inputs
     }
     
   }
+
+  return;
+}
+
+void utils::alignPoly1ToPoly2(dPoly       & poly1,
+                              const dPoly & poly2){
+
+  // Find the closest pair of vertices from poly1 to poly2. Shift poly1
+  // so that the first vertex is on top of the second one.
+  vector<segDist> distVec;
+
+  findDistanceFromVertsOfPoly1ToVertsPoly2(// inputs
+                                           poly1, poly2,  
+                                           // outputs
+                                           distVec
+                                           );
+  int len = distVec.size();
+  if (len == 0) return; // one of the polygons is empty
+    
+  segDist S = distVec[len -1]; // this corresponds to shortest distance
+  poly1.shift(S.endx - S.begx, S.endy - S.begy);
+
+  return;
+}
+
+void utils::findDistanceFromVertsOfPoly1ToVertsPoly2(// inputs
+                                                     const dPoly & poly1,
+                                                     const dPoly & poly2,
+                                                     // outputs
+                                                     std::vector<segDist> & distVec
+                                                     ){
+  
+  // Given two sets of polygons, for each vertex in the first set of
+  // polygons find the distance to the closest vertex in the second
+  // set of polygons, and the segment with the smallest distance. Sort
+  // these segments in decreasing value of their lengths.
+
+  // The complexity of this algorithm is roughly
+  // size(poly1)*log(size(poly2)).
+  
+  distVec.clear();
+
+  const double * x1 = poly1.get_xv();
+  const double * y1 = poly1.get_yv();
+  int numVerts1     = poly1.get_totalNumVerts();
+  const double * x2 = poly2.get_xv();
+  const double * y2 = poly2.get_yv();
+  int numVerts2     = poly2.get_totalNumVerts();
+
+  if (numVerts1 == 0 || numVerts2 == 0) return; // no vertices
+
+  // Put the edges of the second polygon in a tree for fast access
+  kdTree T;
+  T.formTreeOfPoints(numVerts2, x2, y2); 
+
+  for (int t = 0; t < numVerts1; t++){
+
+    double x = x1[t], y = y1[t];
+    double closestDist;
+    PointWithId closestPt;
+    T.findClosestVertexToPoint(// inputs
+                               x, y,  
+                               // outputs
+                               closestPt, closestDist
+                               );
+    distVec.push_back(segDist(x, y, closestPt.x, closestPt.y, closestDist));
+    
+  }
+
+  sort(distVec.begin(), distVec.end(), segDistGreaterThan);
 
   return;
 }
