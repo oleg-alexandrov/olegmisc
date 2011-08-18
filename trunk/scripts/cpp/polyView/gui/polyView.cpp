@@ -130,7 +130,7 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   m_nonSnappedPoints.clear();
   m_smallLen = 2; // Used for plotting the points
 
-  // For edit vertices mode
+  // Edit mode
   m_editMode                = false;
   m_moveVertices            = false;
   m_movePolys               = false;
@@ -138,6 +138,9 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   m_polyVecIndex            = -1;
   m_polyIndexInCurrPoly     = -1;
   m_vertIndexInCurrPoly     = -1;
+
+  // Align mode
+  m_alignMode = false;
   
   resetTransformSettings();
 
@@ -520,12 +523,24 @@ void polyView::mousePressEvent( QMouseEvent *E){
   const QPoint Q = E->pos();
   m_mousePrsX = Q.x();
   m_mousePrsY = Q.y();
+
 #if 0
   cout << "Mouse pressed at "
        << m_mousePrsX << ' ' << m_mousePrsY << endl;
 #endif
 
+  pixelToWorldCoords(m_mousePrsX, m_mousePrsY,              // inputs
+                     m_mousePressWorldX, m_mousePressWorldY // outputs
+                     ); 
+
   m_rubberBand = m_emptyRubberBand;
+  
+  m_aligningPolysNow =  ( m_alignMode && isShiftLeftMouse(E) && !m_createPoly );
+  if (m_aligningPolysNow){
+    assert(m_polyVec.size() >= 2);
+    m_polyBeforeShift = m_polyVec[0];
+  }
+  
   m_movingVertsOrPolysNow = ( m_editMode && isShiftLeftMouse(E) && !m_createPoly );
   if (m_movingVertsOrPolysNow){
 
@@ -535,11 +550,10 @@ void polyView::mousePressEvent( QMouseEvent *E){
     m_actions.push_back(m_polyChanged);
     m_resetViewOnUndo.push_back(false);
 
-    pixelToWorldCoords(m_mousePrsX, m_mousePrsY, m_mouseStartX, m_mouseStartY); 
     double min_x, min_y, min_dist;
     if (m_moveVertices){
       findClosestPolyVertex(// inputs
-                            m_mouseStartX, m_mouseStartY, m_polyVec,
+                            m_mousePressWorldX, m_mousePressWorldY, m_polyVec,
                             // outputs
                             m_polyVecIndex,
                             m_polyIndexInCurrPoly,
@@ -548,7 +562,7 @@ void polyView::mousePressEvent( QMouseEvent *E){
                             );
     }else if (m_movePolys){
       findClosestPolyEdge(// inputs
-                          m_mouseStartX, m_mouseStartY, m_polyVec,  
+                          m_mousePressWorldX, m_mousePressWorldY, m_polyVec,  
                           // outputs
                           m_polyVecIndex,
                           m_polyIndexInCurrPoly,
@@ -570,9 +584,19 @@ void polyView::mouseMoveEvent( QMouseEvent *E){
   int x = Q.x();
   int y = Q.y();
 
+  double wx, wy;
+  pixelToWorldCoords(x, y, wx, wy);
+  
+  if (m_aligningPolysNow){
+    m_polyVec[0] = m_polyBeforeShift;
+    m_polyVec[0].shift(wx - m_mousePressWorldX, 
+                       wy - m_mousePressWorldY 
+                       );
+    refreshPixmap(); // To do: Need to update just a small region, not the whole screen
+    return;
+  }
+  
   if (m_movingVertsOrPolysNow){
-    double wx, wy;
-    pixelToWorldCoords(x, y, wx, wy);
     if (m_polyVecIndex        < 0 ||
         m_polyIndexInCurrPoly < 0 ||
         m_vertIndexInCurrPoly < 0) return;
@@ -584,8 +608,8 @@ void polyView::mouseMoveEvent( QMouseEvent *E){
     }else if (m_movePolys && m_polyVecIndex >= 0){
       m_polyVec[m_polyVecIndex] = m_polyBeforeShift;
       m_polyVec[m_polyVecIndex].shiftOnePoly(m_polyIndexInCurrPoly,
-                                             wx - m_mouseStartX, 
-                                             wy - m_mouseStartY 
+                                             wx - m_mousePressWorldX, 
+                                             wy - m_mousePressWorldY 
                                              );
     }
     refreshPixmap(); // To do: Need to update just a small region, not the whole screen
@@ -613,7 +637,10 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
        << m_mouseRelX << ' ' << m_mouseRelY << endl;
 #endif
 
-  if (m_movingVertsOrPolysNow) refreshPixmap();
+  if (m_aligningPolysNow || m_movingVertsOrPolysNow){
+    refreshPixmap();
+    return;
+  }
 
   // Wipe the rubberband
   updateRubberBand(m_rubberBand); 
@@ -642,16 +669,14 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
   // Any selection smaller than 'tol' number of pixels will be ignored
   // as perhaps the user moved the mouse unintentionally between press
   // and release.
-  if       (!m_movingVertsOrPolysNow        &&
-            m_mouseRelX > m_mousePrsX + tol &&
+  if       (m_mouseRelX > m_mousePrsX + tol &&
             m_mouseRelY > m_mousePrsY + tol){
     
     m_zoomToMouseSelection = true; // Will zoom to the region selected with the mouse
     refreshPixmap(); 
     return;
     
-  }else if (!m_movingVertsOrPolysNow        &&
-            m_mouseRelX + tol < m_mousePrsX &&
+  }else if (m_mouseRelX + tol < m_mousePrsX &&
             m_mouseRelY + tol < m_mousePrsY ){
     
     zoomOut();
@@ -758,11 +783,12 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
 
   int id = 1;
 
-  menu.insertItem("Edit vertices mode", this,
-                  SLOT(toggleEditVerticesMode()), 0, id);
-  menu.setItemChecked(id, m_editMode);
-  id++;
-
+  if (!m_alignMode){
+    menu.insertItem("Edit mode", this, SLOT(toggleEditMode()), 0, id);
+    menu.setItemChecked(id, m_editMode);
+    id++;
+  }
+  
   if (m_editMode){
 
     menu.insertItem("Move vertices (Shift-Mouse)", this,
@@ -777,6 +803,13 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
     
     menu.insertItem("Insert vertex on edge", this, SLOT(insertVertex()));
     menu.insertItem("Delete vertex",         this, SLOT(deleteVertex()));
+    
+  }else{
+  
+    menu.insertItem("Align mode", this, SLOT(toggleAlignMode()), 0, id);
+    menu.setItemChecked(id, m_alignMode);
+    id++;
+    
   }
   
   menu.insertItem("Create 45-degree integer polygon", this,
@@ -1601,23 +1634,47 @@ void polyView::plotDistBwPolyClips( QPainter *paint ){
   return;
 }
 
-void polyView::toggleEditVerticesMode(){
+void polyView::toggleEditMode(){
   
-  if (!m_editMode){
+  m_editMode = !m_editMode;
 
-    m_moveVertices = true;
-    m_movePolys    = false;
+  if (m_editMode){
+    m_alignMode               = false;
+    m_moveVertices            = true;
+    m_movePolys               = false;
     m_toggleShowPointsEdgesBk = m_toggleShowPointsEdges;
     m_toggleShowPointsEdges   = m_showPointsEdges;
-    
   }else{
-    m_moveVertices = false;
-    m_movePolys    = false;
+    m_moveVertices          = false;
+    m_movePolys             = false;
     m_toggleShowPointsEdges = m_toggleShowPointsEdgesBk;
   }
-  m_editMode = !m_editMode;
+  
   refreshPixmap();
+  return;
 }
+
+void polyView::toggleAlignMode(){
+  
+  m_alignMode = !m_alignMode;
+
+  if (m_alignMode){
+    
+    if (m_polyVec.size() < 2){
+      popUp("Must have two polygon files to align");
+      m_alignMode = false;
+      return;
+    }
+
+    m_editMode = false;
+    
+  }else{
+  }
+  
+  refreshPixmap();
+  return;
+}
+
 
 void polyView::turnOnMoveVertices(){
   if (!m_editMode) return;

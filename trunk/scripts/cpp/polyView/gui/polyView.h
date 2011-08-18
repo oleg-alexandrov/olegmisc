@@ -74,7 +74,8 @@ public slots:
   // Right-click menu
   void saveMark();
   void toggleNmScale();
-  void toggleEditVerticesMode();
+  void toggleEditMode();
+  void toggleAlignMode();
   void turnOnMoveVertices();
   void turnOnMovePolys();
   void insertVertex();
@@ -252,7 +253,7 @@ private:
   chooseFilesDlg        m_chooseFilesDlg;
   std::set<std::string> m_filesNotToShow;
 
-  // Edit vertices mode
+  // Edit mode
   bool   m_editMode;
   bool   m_moveVertices;
   bool   m_movePolys;
@@ -261,8 +262,12 @@ private:
   int    m_polyVecIndex;
   int    m_polyIndexInCurrPoly;
   int    m_vertIndexInCurrPoly;
-  double m_mouseStartX, m_mouseStartY;
+  double m_mousePressWorldX, m_mousePressWorldY;
   dPoly  m_polyBeforeShift;
+
+  // Align mode (align one file with another file via linear transform)
+  bool m_alignMode;
+  bool m_aligningPolysNow;
   
 };
 
