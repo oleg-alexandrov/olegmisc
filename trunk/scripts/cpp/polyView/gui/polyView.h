@@ -81,7 +81,12 @@ public slots:
   void insertVertex();
   void deleteVertex();
   void deletePoly();
-
+  void align_rotate90();
+  void align_rotate180();
+  void align_rotate270();
+  void align_flip_against_y_axis();
+  void align_flip_against_x_axis();
+  
 protected:
 
   void paintEvent(QPaintEvent *);
