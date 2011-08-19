@@ -268,6 +268,7 @@ private:
   bool   m_moveVertices;
   bool   m_movePolys;
   bool   m_movingVertsOrPolysNow;
+  bool   m_deletingPolyNow;
   int    m_toggleShowPointsEdgesBk;
   int    m_polyVecIndex;
   int    m_polyIndexInCurrPoly;
