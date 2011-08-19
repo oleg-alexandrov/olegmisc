@@ -537,8 +537,9 @@ void polyView::mousePressEvent( QMouseEvent *E){
 
   m_rubberBand = m_emptyRubberBand;
   
-  m_aligningPolysNow =  ( m_alignMode && isShiftLeftMouse(E) && !m_createPoly );
+  m_aligningPolysNow = ( m_alignMode && isShiftLeftMouse(E) && !m_createPoly );
   if (m_aligningPolysNow){
+    backupPolysForUndo(false);
     assert(m_polyVec.size() >= 1);
     m_polyBeforeShift = m_polyVec[0];
   }
@@ -1702,8 +1703,8 @@ void polyView::toggleAlignMode(){
 
   if (m_alignMode){
     
-    if (m_polyVec.size() != 2){
-      popUp("Must have exactly two polygon files to align");
+    if (m_polyVec.size() < 2){
+      popUp("Must have two polygon files to align");
       m_alignMode = false;
       return;
     }
@@ -1755,7 +1756,7 @@ void polyView::align_flip_against_x_axis(){
 void polyView::performAlignmentOfClosePolys(){
   assert(m_alignMode);
   backupPolysForUndo(false);
-  assert(m_polyVec.size() == 2);
+  assert(m_polyVec.size() >= 2);
   utils::alignPoly1ToPoly2(m_polyVec[0], m_polyVec[1]);
   refreshPixmap();
 }
