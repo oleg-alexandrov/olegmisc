@@ -82,6 +82,8 @@ public slots:
   void insertVertex();
   void deleteVertex();
   void deletePoly();
+  void copyPoly();
+  void pastePoly();
   void align_rotate90();
   void align_rotate180();
   void align_rotate270();
@@ -133,6 +135,7 @@ private:
                     const std::vector<double> & polyY,
                     QPainter * paint);
   void addPolyVert(int px, int py);
+  void appendToPolyVec(const dPoly & P);
   double pixelToWorldDist(int pd);
   void createHighlightWithPixelInputs(int pxll, int pyll, int pxur, int pyur
                                       );
@@ -271,7 +274,9 @@ private:
   int    m_vertIndexInCurrPoly;
   double m_mousePressWorldX, m_mousePressWorldY;
   dPoly  m_polyBeforeShift;
-
+  dPoly  m_copiedPoly;
+  double m_copyPosX, m_copyPosY;
+  
   // Align mode (align one file with another file via linear transform)
   bool m_alignMode;
   bool m_aligningPolysNow;

@@ -138,7 +138,9 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   m_polyVecIndex            = -1;
   m_polyIndexInCurrPoly     = -1;
   m_vertIndexInCurrPoly     = -1;
-
+  m_copyPosX                = 0.0;
+  m_copyPosY                = 0.0;
+  
   // Align mode
   m_alignMode = false;
   
@@ -799,6 +801,11 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
     
     menu.insertItem("Insert vertex on edge", this, SLOT(insertVertex()));
     menu.insertItem("Delete vertex",         this, SLOT(deleteVertex()));
+    menu.insertItem("Copy polygon",          this, SLOT(copyPoly()));
+    menu.insertItem("Paste polygon",         this, SLOT(pastePoly()));
+    menu.insertItem("Delete polygon (Alt-Shift-Mouse)", this, SLOT(deletePoly()));
+  
+    
     menu.addSeparator();
     
   }else{
@@ -817,6 +824,7 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
     menu.insertItem("Flip against y axis", this, SLOT(align_flip_against_y_axis()));
     menu.insertItem("Guess alignment", this,
                     SLOT(performAlignmentOfClosePolys()));
+
     menu.addSeparator();
   }
   
@@ -824,8 +832,6 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
                   SLOT(create45DegreeIntPoly()));
   menu.insertItem("Create arbitrary polygon", this,
                   SLOT(createArbitraryPoly()));
-  
-  menu.insertItem("Delete polygon (Alt-Shift-Mouse)", this, SLOT(deletePoly()));
   
   menu.insertItem("Save mark at point", this, SLOT(saveMark()));
   
@@ -839,6 +845,45 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
 
   return;
 }
+
+void polyView::copyPoly(){
+
+  if (!m_editMode) return;
+    
+  m_copyPosX = m_menuX;
+  m_copyPosY = m_menuY;
+
+  double min_x, min_y, min_dist;
+  int polyVecIndex, polyIndexInCurrPoly, vertIndexInCurrPoly;
+  findClosestPolyEdge(// inputs
+                      m_copyPosX, m_copyPosY, m_polyVec,  
+                      // outputs
+                      polyVecIndex,
+                      polyIndexInCurrPoly,
+                      vertIndexInCurrPoly,
+                      min_x, min_y, min_dist
+                      );
+  if (polyVecIndex < 0 || polyIndexInCurrPoly < 0) return;
+  
+  m_polyVec[polyVecIndex].extractOnePoly(polyIndexInCurrPoly,  // input
+                                         m_copiedPoly          // output
+                                         );
+  
+  return;
+}
+
+void polyView::pastePoly(){
+
+  if (!m_editMode) return;
+
+  dPoly P = m_copiedPoly;
+  P.shift(m_menuX - m_copyPosX, m_menuY - m_copyPosY);
+  appendToPolyVec(P);
+  refreshPixmap();
+
+  return;
+}
+
 
 void polyView::refreshPixmap(){
 
@@ -868,8 +913,8 @@ void polyView::paintEvent(QPaintEvent *){
   if (m_firstPaintEvent){
     // This will be called the very first time the display is
     // initialized. There must be a better way.
-    refreshPixmap();
     m_firstPaintEvent = false;
+    refreshPixmap();
   }
   
   QStylePainter paint(this);
@@ -1179,23 +1224,9 @@ void polyView::addPolyVert(int px, int py){
   P.reset();
   P.appendPolygon(pSize, vecPtr(m_currPolyX), vecPtr(m_currPolyY),
                   isPolyClosed, color, layer);
-      
-  backupPolysForUndo(false);
 
-  // Append the new polygon to the list of polygons. If we have several
-  // clips already, append it to the last clip. If we have no clips,
-  // create a new clip.
-  if (m_polyVec.size() == 0){
+  appendToPolyVec(P);
 
-    m_polyVec.push_back(P);
-    m_polyOptionsVec.push_back(m_prefs);
-    string fileName = "poly" + num2str(m_polyVec.size() - 1) + ".xg";
-    m_polyOptionsVec.back().polyFileName = fileName;
-      
-  }else{
-    m_polyVec.back().appendPolygons(P);
-  }
-    
   // Reset
   m_createPoly = false;
   m_currPolyX.clear();
@@ -1203,6 +1234,25 @@ void polyView::addPolyVert(int px, int py){
   setStandardCursor();
   refreshPixmap();
     
+  return;
+}
+
+void polyView::appendToPolyVec(const dPoly & P){
+
+  backupPolysForUndo(false);
+
+  // Append the new polygon to the list of polygons. If we have several
+  // clips already, append it to the last clip. If we have no clips,
+  // create a new clip.
+  if (m_polyVec.size() == 0){
+    m_polyVec.push_back(P);
+    m_polyOptionsVec.push_back(m_prefs);
+    string fileName = "poly" + num2str(m_polyVec.size() - 1) + ".xg";
+    m_polyOptionsVec.back().polyFileName = fileName;
+  }else{
+    m_polyVec.back().appendPolygons(P);
+  }
+
   return;
 }
 
@@ -1808,6 +1858,8 @@ void polyView::deleteVertex(){
 
 void polyView::deletePoly(){
 
+  if (!m_editMode) return;
+    
   if (m_polyVec.size() == 0) return;
   
   backupPolysForUndo(false);
