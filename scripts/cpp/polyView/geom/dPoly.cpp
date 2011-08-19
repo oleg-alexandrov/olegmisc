@@ -77,7 +77,7 @@ void dPoly::bdBoxes(std::vector<double> & xll, std::vector<double> & yll,
   return;
 };
 
-void dPoly::centerOfMass(double & mx, double & my) const{
+void dPoly::bdBoxCenter(double & mx, double & my) const{
 
   double xll, yll, xur, yur;
   bdBox(xll, yll, xur, yur);
@@ -87,7 +87,6 @@ void dPoly::centerOfMass(double & mx, double & my) const{
 
   return;
 }
-
 
 void dPoly::setPolygon(int numVerts,
                        const double * xv,
@@ -390,7 +389,7 @@ void dPoly::applyTransformAroundCenterOfMass(double a11, double a12,
   if (m_totalNumVerts == 0) return;
     
   double mx, my;
-  centerOfMass(mx, my);
+  bdBoxCenter(mx, my);
   applyTransform(a11, a12, a21, a22, mx - a11*mx - a12*my, my - a21*mx - a22*my);
   
   return;
@@ -722,6 +721,27 @@ void dPoly::shiftOnePoly(int polyIndex, double shift_x, double shift_y){
   
   m_vertIndexAnno.clear();
 
+  return;
+}
+
+void dPoly::extractOnePoly(int polyIndex, // input
+                           dPoly & poly   // output
+                           ){
+
+  assert(0 <= polyIndex && polyIndex < m_numPolys);
+
+  int start = 0;
+  for (int pIter = 0; pIter < polyIndex; pIter++){
+    start += m_numVerts[pIter]; 
+  }
+
+  poly.setPolygon(m_numVerts[polyIndex],
+                  vecPtr(m_xv) + start, vecPtr(m_yv) + start,
+                  m_isPolyClosed[polyIndex],
+                  m_colors[polyIndex],
+                  m_layers[polyIndex]
+                  );
+  
   return;
 }
 
