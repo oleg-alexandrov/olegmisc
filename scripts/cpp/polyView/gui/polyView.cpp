@@ -536,7 +536,11 @@ void polyView::mousePressEvent( QMouseEvent *E){
                      ); 
 
   m_rubberBand = m_emptyRubberBand;
-  
+
+  // This must happen before m_movingVertsOrPolysNow is declared.
+  m_deletingPolyNow = ( m_editMode && ( E->modifiers() & Qt::AltModifier ) &&
+                        ( E->modifiers() & Qt::ShiftModifier ) );
+
   m_aligningPolysNow = ( m_alignMode && isShiftLeftMouse(E) && !m_createPoly );
   if (m_aligningPolysNow){
     backupPolysForUndo(false);
@@ -544,7 +548,8 @@ void polyView::mousePressEvent( QMouseEvent *E){
     m_polyBeforeShift = m_polyVec[0];
   }
   
-  m_movingVertsOrPolysNow = ( m_editMode && isShiftLeftMouse(E) && !m_createPoly );
+  m_movingVertsOrPolysNow = ( m_editMode && isShiftLeftMouse(E) &&
+                              !m_createPoly && ! m_deletingPolyNow);
   if (m_movingVertsOrPolysNow){
 
     backupPolysForUndo(false);
@@ -636,6 +641,14 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
        << m_mouseRelX << ' ' << m_mouseRelY << endl;
 #endif
 
+  if ( m_editMode && m_deletingPolyNow ){
+    // To do: consolidate this with the other call to this function.
+    // See if can pass the relevant variables as input arguments.
+    pixelToWorldCoords(m_mouseRelX, m_mouseRelY, m_menuX, m_menuY); 
+    deletePoly();
+    return;
+  }
+
   if (m_aligningPolysNow || m_movingVertsOrPolysNow){
     refreshPixmap();
     return;
@@ -645,15 +658,6 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
   updateRubberBand(m_rubberBand); 
   m_rubberBand = m_emptyRubberBand;
   updateRubberBand(m_rubberBand);
-
-  if ( ( E->modifiers() & Qt::AltModifier ) &&
-       ( E->modifiers() & Qt::ShiftModifier ) ){
-    // To do: consolidate this with the other call to this function.
-    // See if can pass the relevant variables as input arguments.
-    pixelToWorldCoords(m_mouseRelX, m_mouseRelY, m_menuX, m_menuY); 
-    deletePoly();
-    return;
-  }
 
   if ( E->modifiers() & Qt::ControlModifier ){
     // Draw a  highlight with control + left mouse button
