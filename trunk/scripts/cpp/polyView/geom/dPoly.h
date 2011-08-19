@@ -29,7 +29,7 @@ public:
                 );
   
   void writePoly(std::string filename, std::string defaultColor = "yellow");
-  void centerOfMass(double & mx, double & my) const;
+  void bdBoxCenter(double & mx, double & my) const;
   
   void appendPolygon(int numVerts,
                      const double * xv,
@@ -130,6 +130,9 @@ public:
   void eraseVertex(int polyIndex, int vertIndex);
   void changeVertexValue(int polyIndex, int vertIndex, double x, double y);
   void shiftOnePoly(int polyIndex, double shift_x, double shift_y);
+  void extractOnePoly(int polyIndex, // input
+                      dPoly & poly   // output
+                      );
   void sortFromLargestToSmallest();
 
   void sortBySizeAndMaybeAddBigContainingRect(// inputs
