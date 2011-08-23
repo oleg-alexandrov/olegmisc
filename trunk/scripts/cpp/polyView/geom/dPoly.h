@@ -133,6 +133,7 @@ public:
   void extractOnePoly(int polyIndex, // input
                       dPoly & poly   // output
                       );
+  void reverseOnePoly(int polyIndex);
   void sortFromLargestToSmallest();
 
   void sortBySizeAndMaybeAddBigContainingRect(// inputs

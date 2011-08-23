@@ -745,6 +745,21 @@ void dPoly::extractOnePoly(int polyIndex, // input
   return;
 }
 
+void dPoly::reverseOnePoly(int polyIndex){
+
+  assert(0 <= polyIndex && polyIndex < m_numPolys);
+
+  int start = 0;
+  for (int pIter = 0; pIter < polyIndex; pIter++){
+    start += m_numVerts[pIter]; 
+  }
+
+  reverse(vecPtr(m_xv) + start, vecPtr(m_xv) + start + m_numVerts[polyIndex]);
+  reverse(vecPtr(m_yv) + start, vecPtr(m_yv) + start + m_numVerts[polyIndex]);
+  
+  return;
+}
+
 namespace dPoly_local_functions{
   struct ptAndIndex{
     dPoint point;
