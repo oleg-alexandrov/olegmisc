@@ -84,6 +84,7 @@ public slots:
   void deletePoly();
   void copyPoly();
   void pastePoly();
+  void reversePoly();
   void align_rotate90();
   void align_rotate180();
   void align_rotate270();
@@ -145,7 +146,7 @@ private:
                                      );
 
   void printCurrCoords(const Qt::ButtonState & state, // input
-                       int & currX, int  & currY  // in-out
+                       int & currX, int  & currY      // in-out
                        );
   bool readOnePoly(// inputs
                    std::string   & filename,

@@ -808,9 +808,9 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
     menu.insertItem("Delete vertex",         this, SLOT(deleteVertex()));
     menu.insertItem("Copy polygon",          this, SLOT(copyPoly()));
     menu.insertItem("Paste polygon",         this, SLOT(pastePoly()));
+    menu.insertItem("Reverse orientation",   this, SLOT(reversePoly()));
     menu.insertItem("Delete polygon (Alt-Shift-Mouse)", this, SLOT(deletePoly()));
-  
-    
+      
     menu.addSeparator();
     
   }else{
@@ -889,6 +889,33 @@ void polyView::pastePoly(){
   return;
 }
 
+void polyView::reversePoly(){
+
+  if (!m_editMode) return;
+    
+  m_copyPosX = m_menuX;
+  m_copyPosY = m_menuY;
+
+  double min_x, min_y, min_dist;
+  int polyVecIndex, polyIndexInCurrPoly, vertIndexInCurrPoly;
+  findClosestPolyEdge(// inputs
+                      m_copyPosX, m_copyPosY, m_polyVec,  
+                      // outputs
+                      polyVecIndex,
+                      polyIndexInCurrPoly,
+                      vertIndexInCurrPoly,
+                      min_x, min_y, min_dist
+                      );
+  if (polyVecIndex < 0 || polyIndexInCurrPoly < 0) return;
+  
+  backupPolysForUndo(false);
+
+  m_polyVec[polyVecIndex].reverseOnePoly(polyIndexInCurrPoly);
+
+  refreshPixmap();
+  
+  return;
+}
 
 void polyView::refreshPixmap(){
 
@@ -1320,7 +1347,7 @@ void polyView::createHighlightWithRealInputs(double xll, double yll,
 }
 
 void polyView::printCurrCoords(const Qt::ButtonState & state, // input
-                               int & currX, int  & currY  // in-out
+                               int & currX, int  & currY      // in-out
                                ){
   
   // Snap or not the current point to the closest polygon vertex
