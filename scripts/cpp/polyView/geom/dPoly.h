@@ -129,7 +129,7 @@ public:
                     double x, double y);
   void eraseVertex(int polyIndex, int vertIndex);
   void changeVertexValue(int polyIndex, int vertIndex, double x, double y);
-  void changeEdgeValue(int polyIndex, int vertIndex, double x, double y);
+  void shiftEdge(int polyIndex, int vertIndex, double shift_x, double shift_y);
   void shiftOnePoly(int polyIndex, double shift_x, double shift_y);
   void extractOnePoly(int polyIndex, // input
                       dPoly & poly   // output
