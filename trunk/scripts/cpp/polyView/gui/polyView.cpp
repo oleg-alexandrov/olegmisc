@@ -610,17 +610,20 @@ void polyView::mouseMoveEvent( QMouseEvent *E){
                                                   m_vertIndexInCurrPoly,
                                                   wx, wy
                                                   );
-    }else if (m_moveEdges){
-      m_polyVec[m_polyVecIndex].changeEdgeValue(m_polyIndexInCurrPoly,
-                                                m_vertIndexInCurrPoly,
-                                                wx, wy
-                                                );
-    }else if (m_movePolys && m_polyVecIndex >= 0){
+    }else if ( (m_moveEdges || m_movePolys) && m_polyVecIndex >= 0){
       m_polyVec[m_polyVecIndex] = m_polyBeforeShift;
-      m_polyVec[m_polyVecIndex].shiftOnePoly(m_polyIndexInCurrPoly,
-                                             wx - m_mousePressWorldX, 
-                                             wy - m_mousePressWorldY 
-                                             );
+      if (m_moveEdges){
+        m_polyVec[m_polyVecIndex].shiftEdge(m_polyIndexInCurrPoly,
+                                            m_vertIndexInCurrPoly,
+                                            wx - m_mousePressWorldX, 
+                                            wy - m_mousePressWorldY 
+                                            );
+      }else if (m_movePolys){
+        m_polyVec[m_polyVecIndex].shiftOnePoly(m_polyIndexInCurrPoly,
+                                               wx - m_mousePressWorldX, 
+                                               wy - m_mousePressWorldY 
+                                               );
+      }
     }
     refreshPixmap(); // To do: Need to update just a small region, not the whole screen
     return;
