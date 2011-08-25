@@ -705,6 +705,34 @@ void dPoly::changeVertexValue(int polyIndex, int vertIndex, double x, double y){
   return;
 }
 
+void dPoly::changeEdgeValue(int polyIndex, int vertIndex, double x, double y){
+
+  assert(0 <= polyIndex && polyIndex < m_numPolys);
+  assert(0 <= vertIndex && vertIndex < m_numVerts[polyIndex]);
+  
+  int start = 0;
+  for (int pIter = 0; pIter < polyIndex; pIter++){
+    start += m_numVerts[pIter]; 
+  }
+
+  double shiftx = x - m_xv[start + vertIndex];
+  double shifty = y - m_yv[start + vertIndex];
+
+  // Beginning point of the edge
+  m_xv[start + vertIndex] = x;
+  m_yv[start + vertIndex] = y;
+
+  m_vertIndexAnno.clear();
+
+  // End point of the edge
+  if (m_numVerts[polyIndex] <= 1) return;
+  int vertIndexEnd = (vertIndex + 1)%m_numVerts[polyIndex];
+  m_xv[start + vertIndexEnd] += shiftx;
+  m_yv[start + vertIndexEnd] += shifty;
+
+  return;
+}
+
 void dPoly::shiftOnePoly(int polyIndex, double shift_x, double shift_y){
 
   assert(0 <= polyIndex && polyIndex < m_numPolys);

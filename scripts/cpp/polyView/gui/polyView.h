@@ -78,6 +78,7 @@ public slots:
   void toggleEditMode();
   void toggleAlignMode();
   void turnOnMoveVertices();
+  void turnOnMoveEdges();
   void turnOnMovePolys();
   void insertVertex();
   void deleteVertex();
@@ -267,6 +268,7 @@ private:
   // Edit mode
   bool   m_editMode;
   bool   m_moveVertices;
+  bool   m_moveEdges;
   bool   m_movePolys;
   bool   m_movingVertsOrPolysNow;
   bool   m_deletingPolyNow;
