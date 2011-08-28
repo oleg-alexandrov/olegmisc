@@ -3,6 +3,8 @@
 dpkg-deb --build debian
 mv debian.deb polyView_0.5.deb
 
+# Notes to self:
+
 # Zip the debian directory:
 # tar czfv debian.tgz debian
 
