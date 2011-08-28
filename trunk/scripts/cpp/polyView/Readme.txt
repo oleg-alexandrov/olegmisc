@@ -2,8 +2,8 @@ The polyView documentation is at
 
 https://sites.google.com/site/olegalexandrov/polyview
 
-To compile polyView from source, the Qt development libraries need to
-be installed. The can can be obtained in Ubuntu by typing
+To compile polyView from source, the Qt 4 development libraries need to
+be installed. They can can be obtained in Ubuntu by typing
 
 apt-get install qmake
 
