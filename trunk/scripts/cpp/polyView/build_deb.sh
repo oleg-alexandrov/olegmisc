@@ -3,6 +3,9 @@
 dpkg-deb --build debian
 mv debian.deb polyView_0.5.deb
 
+# Zip the debian directory:
+# tar czfv debian.tgz debian
+
 # Install (need to be root)
 # dpkg -i ./polyView_0.5.deb
 
