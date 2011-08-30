@@ -126,7 +126,21 @@ namespace utils{
                       double xl2, double yl2, double xh2, double yh2
                       );
 
-  
+
+  struct linTrans{
+    // Linear transform
+    double a11, a12, a21, a22, sx, sy;
+    linTrans(){
+      a11 = a12 = a21 = a22 = sx = sy = 0.0;
+    }
+    void reset(){
+      *this = linTrans();
+    }
+    void print(){
+      std::cout << "transform " << a11 << ' ' << a12 << ' '
+                << a21 << ' ' << a22 << ' ' << sx << ' ' << sy << std::endl;
+    }
+  };
 }
   
 

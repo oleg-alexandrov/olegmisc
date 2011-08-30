@@ -96,7 +96,9 @@ void utils::findClosestPolyEdge(// inputs
 }
 
 void utils::alignPoly1ToPoly2(dPoly       & poly1,
-                              const dPoly & poly2){
+                              const dPoly & poly2,
+                              utils::linTrans & T // save the applied transform
+                              ){
 
   // Find the closest pair of vertices from poly1 to poly2. Shift poly1
   // so that the first vertex is on top of the second one.
@@ -111,7 +113,7 @@ void utils::alignPoly1ToPoly2(dPoly       & poly1,
   if (len == 0) return; // one of the polygons is empty
     
   segDist S = distVec[len -1]; // this corresponds to shortest distance
-  poly1.shift(S.endx - S.begx, S.endy - S.begy);
+  poly1.applyTransform(0, 0, 0, 0, S.endx - S.begx, S.endy - S.begy, T);
 
   return;
 }

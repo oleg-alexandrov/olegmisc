@@ -61,9 +61,13 @@ public:
   void rotate(double angle);
   void scale(double scale);
   void applyTransform(double a11, double a12, double a21, double a22,
-                      double sx, double sy);
-  void applyTransformAroundCenterOfMass(double a11, double a12,
-                                        double a21, double a22);
+                      double sx, double sy,
+                      utils::linTrans & T // save the transform here
+                      );
+  void applyTransformAroundBdBoxCenter(double a11, double a12,
+                                       double a21, double a22,
+                                       utils::linTrans & T 
+                                       );
   
   const int    * get_numVerts         () const { return utils::vecPtr(m_numVerts); }
   const double * get_xv               () const { return utils::vecPtr(m_xv);       }

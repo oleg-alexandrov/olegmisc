@@ -354,10 +354,15 @@ void dPoly::scale(double scale){
 }
 
 void dPoly::applyTransform(double a11, double a12, double a21, double a22,
-                           double sx, double sy){
+                           double sx, double sy,
+                           utils::linTrans & T // save the transform here
+                           ){
   
 
   // To do: Need to integrate the several very similar transform functions
+
+  // Save the transform before applying it
+  T.a11 = a11; T.a12 = a12; T.a21 = a21; T.a22 = a22; T.sx = sx; T.sy = sy;
   
   for (int i = 0; i < (int)m_xv.size(); i++){
     double tmpx = a11*m_xv[i] + a12*m_yv[i] + sx;
@@ -383,14 +388,18 @@ void dPoly::applyTransform(double a11, double a12, double a21, double a22,
 }
 
 
-void dPoly::applyTransformAroundCenterOfMass(double a11, double a12,
-                                             double a21, double a22){
+void dPoly::applyTransformAroundBdBoxCenter(double a11, double a12,
+                                            double a21, double a22,
+                                            utils::linTrans & T 
+                                            ){
 
   if (m_totalNumVerts == 0) return;
     
   double mx, my;
   bdBoxCenter(mx, my);
-  applyTransform(a11, a12, a21, a22, mx - a11*mx - a12*my, my - a21*mx - a22*my);
+  applyTransform(a11, a12, a21, a22, mx - a11*mx - a12*my, my - a21*mx - a22*my,
+                 T
+                 );
   
   return;
 }
