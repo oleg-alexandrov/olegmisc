@@ -59,7 +59,9 @@ namespace utils{
                            double & minX, double & minY, double & minDist
                            );
   void alignPoly1ToPoly2(dPoly       & poly1,
-                              const dPoly & poly2);
+                         const dPoly & poly2,
+                         utils::linTrans & T // save the applied transform
+                         );
   void findDistanceFromVertsOfPoly1ToVertsPoly2(// inputs
                                                 const dPoly & poly1,
                                                 const dPoly & poly2,
