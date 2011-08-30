@@ -547,6 +547,7 @@ void polyView::mousePressEvent( QMouseEvent *E){
     backupPolysForUndo(false);
     assert(m_polyVec.size() >= 1);
     m_polyBeforeShift = m_polyVec[0];
+    m_T.reset();
   }
   
   m_movingVertsOrPolysNow = ( m_editMode && isShiftLeftMouse(E) &&
@@ -594,9 +595,11 @@ void polyView::mouseMoveEvent( QMouseEvent *E){
   
   if (m_aligningPolysNow){
     m_polyVec[0] = m_polyBeforeShift;
-    m_polyVec[0].shift(wx - m_mousePressWorldX, 
-                       wy - m_mousePressWorldY 
-                       );
+    m_polyVec[0].applyTransform(1, 0, 0, 1,
+                                wx - m_mousePressWorldX, 
+                                wy - m_mousePressWorldY,
+                                m_T
+                                );
     refreshPixmap(); // To do: Need to update just a small region, not the whole screen
     return;
   }
@@ -658,6 +661,8 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
     return;
   }
 
+  if (m_aligningPolysNow) m_T.print();
+  
   if (m_aligningPolysNow || m_movingVertsOrPolysNow){
     refreshPixmap();
     return;
@@ -1195,6 +1200,32 @@ void polyView::scalePolys(std::vector<double> & scale){
     m_polyVec[vi].scale(scale[0]);
   }
   resetView();
+  
+  return;
+}
+
+void polyView::transformPolys(std::vector<double> & M){
+
+  if (M.size() < 6){
+    popUp("Invalid linear transform");
+    return;
+  }
+
+  bool resetViewOnUndo = !m_alignMode;
+  
+  backupPolysForUndo(resetViewOnUndo);
+
+  int end = m_polyVec.size();
+  if (m_alignMode) end = min(end, 1);
+    
+  for (int vi = 0; vi < end; vi++){
+    m_polyVec[vi].applyTransform(M[0], M[1], M[2], M[3], M[4], M[5], m_T);
+  }
+  
+  m_T.print();
+
+  if (resetViewOnUndo) resetView();
+  else                 refreshPixmap();
   
   return;
 }
@@ -1757,8 +1788,7 @@ void polyView::toggleAlignMode(){
     }
 
     m_editMode = false;
-    
-  }else{
+    m_totalT.reset();
   }
   
   refreshPixmap();
@@ -1768,35 +1798,40 @@ void polyView::toggleAlignMode(){
 void polyView::align_rotate90(){
   assert(m_alignMode);
   backupPolysForUndo(false);
-  m_polyVec[0].applyTransformAroundCenterOfMass(0, -1, 1, 0);
+  m_polyVec[0].applyTransformAroundBdBoxCenter(0, -1, 1, 0, m_T);
+  m_T.print();
   refreshPixmap();
 }
 
 void polyView::align_rotate180(){
   assert(m_alignMode);
   backupPolysForUndo(false);
-  m_polyVec[0].applyTransformAroundCenterOfMass(-1, 0, 0, -1);
+  m_polyVec[0].applyTransformAroundBdBoxCenter(-1, 0, 0, -1, m_T);
+  m_T.print();
   refreshPixmap();
 }
 
 void polyView::align_rotate270(){
   assert(m_alignMode);
   backupPolysForUndo(false);
-  m_polyVec[0].applyTransformAroundCenterOfMass(0, 1, -1, 0);
+  m_polyVec[0].applyTransformAroundBdBoxCenter(0, 1, -1, 0, m_T);
+  m_T.print();
   refreshPixmap();
 }
 
 void polyView::align_flip_against_y_axis(){
   assert(m_alignMode);
   backupPolysForUndo(false);
-  m_polyVec[0].applyTransformAroundCenterOfMass(-1, 0, 0, 1);
+  m_polyVec[0].applyTransformAroundBdBoxCenter(-1, 0, 0, 1, m_T);
+  m_T.print();
   refreshPixmap();
 }
 
 void polyView::align_flip_against_x_axis(){
   assert(m_alignMode);
   backupPolysForUndo(false);
-  m_polyVec[0].applyTransformAroundCenterOfMass(1, 0, 0, -1);
+  m_polyVec[0].applyTransformAroundBdBoxCenter(1, 0, 0, -1, m_T);
+  m_T.print();
   refreshPixmap();
 }
 
@@ -1804,7 +1839,8 @@ void polyView::performAlignmentOfClosePolys(){
   assert(m_alignMode);
   backupPolysForUndo(false);
   assert(m_polyVec.size() >= 2);
-  utils::alignPoly1ToPoly2(m_polyVec[0], m_polyVec[1]);
+  utils::alignPoly1ToPoly2(m_polyVec[0], m_polyVec[1], m_T);
+  m_T.print();
   refreshPixmap();
 }
 
@@ -2515,6 +2551,13 @@ void polyView::runCmd(std::string cmd){
         return;
       }
       cerr << "Invalid scale command: " << cmd << endl;
+      return;
+    }else if (cmdName == "transform"){
+      if (vals.size() >= 6){
+        transformPolys(vals);
+        return;
+      }
+      cerr << "Invalid transform command: " << cmd << endl;
       return;
     }
     
