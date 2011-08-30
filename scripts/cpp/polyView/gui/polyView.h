@@ -125,6 +125,7 @@ private:
   void shiftPolys(std::vector<double> & shifts);
   void rotatePolys(std::vector<double> & angle);
   void scalePolys(std::vector<double> & scale);
+  void transformPolys(std::vector<double> & M);
   void drawMark(int x0, int y0, QColor color, int lineWidth,
                 QPainter * paint);
   void setupDisplayOrder(// Inputs
@@ -284,6 +285,7 @@ private:
   // Align mode (align one file with another file via linear transform)
   bool m_alignMode;
   bool m_aligningPolysNow;
+  utils::linTrans m_T, m_totalT;
   
 };
 
