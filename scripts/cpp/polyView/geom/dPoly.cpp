@@ -11,6 +11,8 @@
 using namespace std;
 using namespace utils;
 
+// A double precision polygon class
+
 void dPoly::reset(){
   m_isPointCloud  = false;
   m_numPolys      = 0;
