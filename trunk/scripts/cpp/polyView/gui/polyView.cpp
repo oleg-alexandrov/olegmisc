@@ -600,7 +600,7 @@ void polyView::mouseMoveEvent( QMouseEvent *E){
                                 wy - m_mousePressWorldY,
                                 m_T
                                 );
-    refreshPixmap(); // To do: Need to update just a small region, not the whole screen
+    refreshPixmap();
     return;
   }
   
@@ -661,7 +661,10 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
     return;
   }
 
-  if (m_aligningPolysNow) m_T.print();
+  if (m_aligningPolysNow){
+    m_T.print();
+    m_totalT = composeTransforms(m_T, m_totalT);
+  }
   
   if (m_aligningPolysNow || m_movingVertsOrPolysNow){
     refreshPixmap();
@@ -1221,6 +1224,8 @@ void polyView::transformPolys(std::vector<double> & M){
   for (int vi = 0; vi < end; vi++){
     m_polyVec[vi].applyTransform(M[0], M[1], M[2], M[3], M[4], M[5], m_T);
   }
+
+  if (m_alignMode) m_totalT = composeTransforms(m_T, m_totalT);
   
   m_T.print();
 
@@ -1789,6 +1794,10 @@ void polyView::toggleAlignMode(){
 
     m_editMode = false;
     m_totalT.reset();
+  }else{
+    cout << "\nCombined transform:" << endl;
+    m_totalT.print();
+    cout << endl;
   }
   
   refreshPixmap();
@@ -1800,6 +1809,7 @@ void polyView::align_rotate90(){
   backupPolysForUndo(false);
   m_polyVec[0].applyTransformAroundBdBoxCenter(0, -1, 1, 0, m_T);
   m_T.print();
+  m_totalT = composeTransforms(m_T, m_totalT);
   refreshPixmap();
 }
 
@@ -1808,6 +1818,7 @@ void polyView::align_rotate180(){
   backupPolysForUndo(false);
   m_polyVec[0].applyTransformAroundBdBoxCenter(-1, 0, 0, -1, m_T);
   m_T.print();
+  m_totalT = composeTransforms(m_T, m_totalT);
   refreshPixmap();
 }
 
@@ -1816,6 +1827,7 @@ void polyView::align_rotate270(){
   backupPolysForUndo(false);
   m_polyVec[0].applyTransformAroundBdBoxCenter(0, 1, -1, 0, m_T);
   m_T.print();
+  m_totalT = composeTransforms(m_T, m_totalT);
   refreshPixmap();
 }
 
@@ -1824,6 +1836,7 @@ void polyView::align_flip_against_y_axis(){
   backupPolysForUndo(false);
   m_polyVec[0].applyTransformAroundBdBoxCenter(-1, 0, 0, 1, m_T);
   m_T.print();
+  m_totalT = composeTransforms(m_T, m_totalT);
   refreshPixmap();
 }
 
@@ -1832,6 +1845,7 @@ void polyView::align_flip_against_x_axis(){
   backupPolysForUndo(false);
   m_polyVec[0].applyTransformAroundBdBoxCenter(1, 0, 0, -1, m_T);
   m_T.print();
+  m_totalT = composeTransforms(m_T, m_totalT);
   refreshPixmap();
 }
 
@@ -1841,6 +1855,7 @@ void polyView::performAlignmentOfClosePolys(){
   assert(m_polyVec.size() >= 2);
   utils::alignPoly1ToPoly2(m_polyVec[0], m_polyVec[1], m_T);
   m_T.print();
+  m_totalT = composeTransforms(m_T, m_totalT);
   refreshPixmap();
 }
 
