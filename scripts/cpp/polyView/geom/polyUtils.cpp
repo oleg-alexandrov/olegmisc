@@ -113,7 +113,7 @@ void utils::alignPoly1ToPoly2(dPoly       & poly1,
   if (len == 0) return; // one of the polygons is empty
     
   segDist S = distVec[len -1]; // this corresponds to shortest distance
-  poly1.applyTransform(0, 0, 0, 0, S.endx - S.begx, S.endy - S.begy, T);
+  poly1.applyTransform(1, 0, 0, 1, S.endx - S.begx, S.endy - S.begy, T);
 
   return;
 }
