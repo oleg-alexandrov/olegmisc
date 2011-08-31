@@ -131,7 +131,8 @@ namespace utils{
     // Linear transform
     double a11, a12, a21, a22, sx, sy;
     linTrans(){
-      a11 = a12 = a21 = a22 = sx = sy = 0.0;
+      a11 = a22 = 1.0;
+      a21 = a12 = sx = sy = 0.0;
     }
     void reset(){
       *this = linTrans();
@@ -141,6 +142,8 @@ namespace utils{
                 << a21 << ' ' << a22 << ' ' << sx << ' ' << sy << std::endl;
     }
   };
+
+  utils::linTrans composeTransforms(utils::linTrans P, utils::linTrans Q);
 }
   
 

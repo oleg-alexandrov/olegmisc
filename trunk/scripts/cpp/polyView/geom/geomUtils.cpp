@@ -354,3 +354,18 @@ bool utils::boxesIntersect(double xl1, double yl1, double xh1, double yh1,
   
 }
 
+utils::linTrans utils::composeTransforms(utils::linTrans P, utils::linTrans Q){
+
+  linTrans R;
+  
+  R.a11 = P.a11*Q.a11 + P.a12*Q.a21;
+  R.a12 = P.a11*Q.a12 + P.a12*Q.a22;
+  R.a21 = P.a21*Q.a11 + P.a22*Q.a21;
+  R.a22 = P.a21*Q.a12 + P.a22*Q.a22;
+
+  R.sx = P.a11*Q.sx + P.a12*Q.sy + P.sx;
+  R.sy = P.a21*Q.sx + P.a22*Q.sy + P.sy;
+
+  return R;
+}
+
