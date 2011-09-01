@@ -2056,7 +2056,8 @@ void polyView::cutToHlt(){
   // Cut to the last highlight
   int numH = m_highlights.size();
   if ( numH == 0){
-    cout << "No highlights" << endl;
+    cout << "No highlights to cut polygons to. "
+         << "Create one with Control-Mouse" << endl;
     return;
   }
   
