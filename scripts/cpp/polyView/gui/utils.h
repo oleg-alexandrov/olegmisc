@@ -20,12 +20,16 @@ struct polyOptions{
   bool            plotAsPoints;
   bool            isPolyFilled;
   closedPolyInfo  isPolyClosed;
+  bool            useCmdLineColor;
   int             fontSize;
   int             lineWidth;
-  bool            useCmdLineColor;
+  bool            isGridOn;
+  int             gridSize;
+  int             gridWidth;
   std::string     bgColor;
   std::string     fgColor;
   std::string     cmdLineColor;
+  std::string     gridColor;
   std::string     polyFileName;
   
   polyOptions(){
@@ -35,9 +39,13 @@ struct polyOptions{
     fontSize        = 10; 
     lineWidth       = 1;
     useCmdLineColor = false;
+    isGridOn        = false;
+    gridWidth       = 1;
+    gridSize        = -1;
     bgColor         = "black";
     fgColor         = "white";
     cmdLineColor    = "green";
+    gridColor       = "green";
     polyFileName    = "unnamed.xg";
   }
   

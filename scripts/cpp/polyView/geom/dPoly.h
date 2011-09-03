@@ -87,6 +87,8 @@ public:
   
   void set_pointCloud(const std::vector<dPoint> & P, std::string color,
                       std::string layer);
+  void buildGrid(double xl, double yl, double xh, double yh,
+                 double gridSize, std::string gridColor);
   // Annotations
   void get_annotations (std::vector<anno> & annotations) const;
   void get_layerAnno(std::vector<anno> & annotations) const;

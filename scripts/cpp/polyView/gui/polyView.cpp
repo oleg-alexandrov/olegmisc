@@ -153,11 +153,7 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   return;
 }
 
-void polyView::displayData( QPainter *paint ){
-
-  // To do: this function needs modularization and some cleanup.
-
-  assert( m_polyVec.size() == m_polyOptionsVec.size() );
+void polyView::setupViewingWindow(){
 
   // Dimensions of the plotting window in pixels exluding any window
   // frame/menu bar/status bar
@@ -169,8 +165,6 @@ void polyView::displayData( QPainter *paint ){
   //cout << "geom is: " << m_screenXll << ' ' << m_screenYll << ' '
   //     << m_screenWidX << ' ' << m_screenWidY << endl;
   
-  m_screenRatio = double(m_screenWidY)/double(m_screenWidX);
-
   if (m_resetView){
     setUpViewBox(// inputs
                  m_polyVec,
@@ -181,8 +175,11 @@ void polyView::displayData( QPainter *paint ){
   }
 
   //  This is necessary when the screen is resized
-  expandBoxToGivenRatio(m_screenRatio,                               // input
-                        m_viewXll, m_viewYll, m_viewWidX, m_viewWidY // in/out
+  m_screenRatio = double(m_screenWidY)/double(m_screenWidX);
+  expandBoxToGivenRatio(// Inputs
+                        m_screenRatio,
+                        // Inputs-outputs
+                        m_viewXll, m_viewYll, m_viewWidX, m_viewWidY
                         );
 
   // Create the new view
@@ -234,21 +231,49 @@ void polyView::displayData( QPainter *paint ){
   // The two ratios below will always be the same. Take the maximum
   // for robustness to floating point errors.
   m_pixelSize = max(m_viewWidX/m_screenWidX, m_viewWidY/m_screenWidY);
+
+  return;
+}
+
+void polyView::displayData( QPainter *paint ){
+
+  setupViewingWindow(); // Must happen before anything else
   
-  // Use a grid to not draw text too densely as that's slow
+  // This vector is used for sparsing out text on screen
   vector< vector<int> > textOnScreenGrid; 
-  initTextOnScreenGrid(textOnScreenGrid);
+
+  // Build the grid if the user wants to
+  if (m_prefs.isGridOn && m_prefs.gridSize > 0 &&
+      m_prefs.gridWidth > 0){
+    dPoly grid;
+    bool plotPoints = false, plotEdges = true, plotFilled = false;
+    bool showAnno = false;
+    int drawVertIndex = 0;
+    textOnScreenGrid.clear(); // (this is text grid, not line grid)
+    grid.buildGrid(m_viewXll,  m_viewYll,
+                   m_viewXll + m_viewWidX,
+                   m_viewYll + m_viewWidY,
+                   m_prefs.gridSize, m_prefs.gridColor
+                   );
+    plotDPoly(plotPoints, plotEdges, plotFilled, showAnno,
+              m_prefs.gridWidth,  
+              drawVertIndex,   
+              textOnScreenGrid,
+              paint,  
+              grid
+              );
+  }
+  
   
   // Plot the polygons
-
-  // Will draw a vertex with a shape dependent on this index
-  int drawVertIndex = -1; 
-  
   setupDisplayOrder(m_polyVec.size(),                    //inputs
                     m_changeDisplayOrder, m_polyVecOrder // inputs-outputs
                     );
-  
-  // Draw the polygons
+  // Will draw a vertex with a shape dependent on this index
+  int drawVertIndex = -1; 
+  // Use a grid to not draw text too densely as that's slow
+  initTextOnScreenGrid(textOnScreenGrid);
+  assert( m_polyVec.size() == m_polyOptionsVec.size() );
   for (int vi  = 0; vi < (int)m_polyVec.size(); vi++){
 
     int vecIter = m_polyVecOrder[vi];
@@ -271,8 +296,8 @@ void polyView::displayData( QPainter *paint ){
 
     bool showAnno = true;
     plotDPoly(plotPoints, plotEdges, plotFilled, showAnno, lineWidth,  
-              drawVertIndex,    // 0 is a good choice here
-              textOnScreenGrid, // empty grid is fine here  
+              drawVertIndex,   
+              textOnScreenGrid,
               paint,  
               m_polyVec[vecIter]
               );
@@ -282,12 +307,14 @@ void polyView::displayData( QPainter *paint ){
   // Plot the highlights
   bool plotPoints = false, plotEdges = true, plotFilled = false;
   drawVertIndex = 0;
+  textOnScreenGrid.clear();
   for (int h = 0; h < (int)m_highlights.size(); h++){
     m_highlights[h].set_color(m_prefs.fgColor.c_str());
     bool showAnno = false;
-    plotDPoly(plotPoints, plotEdges, plotFilled, showAnno, m_prefs.lineWidth,  
-              drawVertIndex,    // 0 is a good choice here
-              textOnScreenGrid, // empty grid is fine here  
+    plotDPoly(plotPoints, plotEdges, plotFilled, showAnno,
+              m_prefs.lineWidth,  
+              drawVertIndex,    
+              textOnScreenGrid, 
               paint,  
               m_highlights[h]
               );
@@ -302,7 +329,8 @@ void polyView::displayData( QPainter *paint ){
     worldToPixelCoords(m_markX[0], m_markY[0], // inputs
                        x0, y0                  // outputs
                        );
-    drawMark(x0, y0, QColor(m_prefs.fgColor.c_str()), m_prefs.lineWidth, paint);
+    drawMark(x0, y0, QColor(m_prefs.fgColor.c_str()),
+             m_prefs.lineWidth, paint);
   }
 
   // If in diff mode
@@ -1029,7 +1057,8 @@ bool polyView::getStringFromGui(std::string title, std::string description,
   return ok;
 }
 
-bool polyView::getRealValuesFromGui(std::string title, std::string description,
+bool polyView::getRealValuesFromGui(std::string title,
+                                    std::string description,
                                     std::vector<double> & values){
 
   values.clear();
@@ -1049,8 +1078,10 @@ bool polyView::getRealValuesFromGui(std::string title, std::string description,
 void polyView::setLineWidth(){
 
   vector<double> linewidth;
-  if ( getRealValuesFromGui("Line width", "Enter line width", linewidth) &&
-       !linewidth.empty() && linewidth[0] >= 1.0 ){
+  if ( !getRealValuesFromGui("Line width", "Enter line width",
+                             linewidth) ) return;
+  
+  if ( !linewidth.empty() && linewidth[0] >= 1.0 ){
 
     int lw = (int) round(linewidth[0]);
 
@@ -1063,6 +1094,44 @@ void polyView::setLineWidth(){
   
   }else{
     popUp("The line width must be a positive integer");
+  }
+  return;
+}
+
+void polyView::setGridWidth(){
+
+  vector<double> gridWidth;
+  if ( !getRealValuesFromGui("Grid linewidth", "Enter grid linewidth",
+                             gridWidth) ) return;
+  
+  if (!gridWidth.empty() && gridWidth[0] >= 1.0 ){
+    
+    int gw = (int) round(gridWidth[0]);
+    m_prefs.gridWidth = gw;
+    
+    refreshPixmap();
+  
+  }else{
+    popUp("The grid linewidth must be a positive integer");
+  }
+  return;
+}
+
+void polyView::setGridSize(){
+
+  vector<double> gridSize;
+  if ( !getRealValuesFromGui("Grid size", "Enter grid size",
+                             gridSize)) return;
+         
+  if ( !gridSize.empty() && gridSize[0] > 0 ){
+    
+    double gs = gridSize[0];
+    m_prefs.gridSize = gs;
+    
+    refreshPixmap();
+    
+  }else{
+    popUp("The grid size must be positive");
   }
   return;
 }
@@ -1606,6 +1675,11 @@ void polyView::toggleLayerAnno(){
 
 void polyView::toggleFilled(){
   m_showFilledPolys = !m_showFilledPolys;
+  refreshPixmap();
+}
+
+void polyView::toggleShowGrid(){
+  m_prefs.isGridOn = !m_prefs.isGridOn;
   refreshPixmap();
 }
 

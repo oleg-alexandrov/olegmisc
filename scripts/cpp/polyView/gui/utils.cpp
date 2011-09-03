@@ -16,6 +16,8 @@ void utils::printUsage(std::string progName){
        << "[ -lw | -lineWidth 2 ] "
        << "[ -p | -points ] [ -cp | -closedPoly ] [ -nc | -nonClosedPoly ] "
        << "[ -f | -filledPoly ] [ -nf | -nonFilledPoly ] "
+       << "[ -grid on | off ] [ -gridSize 10 ] [ -gridWidth 1 ] "
+       << "[ -gridColor green ] "
        << "file_1.xg ... file_N.xg " << endl;
 }
 
@@ -128,7 +130,8 @@ void utils::parseCmdOptions(//inputs
       continue;
     }
 
-    if ( (strcmp(currArg, "-fs") == 0 || strcmp(currArg, "-fontsize") == 0 )
+    if ( (strcmp(currArg, "-fs"      ) == 0 ||
+          strcmp(currArg, "-fontsize") == 0 )
          &&
          argIter < argc - 1
          ){
@@ -138,7 +141,8 @@ void utils::parseCmdOptions(//inputs
       continue;
     }
 
-    if ( (strcmp(currArg, "-lw") == 0 || strcmp(currArg, "-linewidth") == 0 )
+    if ( (strcmp(currArg, "-lw"       ) == 0 ||
+          strcmp(currArg, "-linewidth") == 0 )
          &&
          argIter < argc - 1
          ){
@@ -148,7 +152,43 @@ void utils::parseCmdOptions(//inputs
       continue;
     }
 
-    if ( (strcmp(currArg, "-c") == 0 || strcmp(currArg, "-color") == 0 )
+    if ( strcmp(currArg, "-gridsize") == 0 &&
+         argIter < argc - 1
+         ){
+      double gs = atof(argv[argIter + 1]);
+      if (gs > 0) opt.gridSize = gs;
+      argIter++;
+      continue;
+    }
+
+    if ( strcmp(currArg, "-gridwidth") == 0  &&
+         argIter < argc - 1
+         ){
+      int gw = (int)round(atof(argv[argIter + 1]));
+      if (gw > 0) opt.gridWidth = gw;
+      argIter++;
+      continue;
+    }
+
+    if ( strcmp(currArg, "-gridcolor") == 0  &&
+         argIter < argc - 1         
+         ){
+      opt.gridColor = argv[argIter + 1];
+      argIter++;
+      continue;
+    }
+
+    if ( strcmp(currArg, "-grid") == 0  &&
+         argIter < argc - 1             &&
+         strcmp(argv[argIter + 1], "on") == 0 
+         ){
+      opt.isGridOn = true;
+      argIter++;
+      continue;
+    }
+
+    if ( (strcmp(currArg, "-c"    ) == 0 ||
+          strcmp(currArg, "-color") == 0 )
          && argIter < argc - 1){
       opt.useCmdLineColor = true;
       opt.cmdLineColor    = argv[argIter + 1];
