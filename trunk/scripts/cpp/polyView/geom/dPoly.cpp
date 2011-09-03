@@ -1224,3 +1224,40 @@ void dPoly::set_pointCloud(const std::vector<dPoint> & P, std::string color,
 
   return;
 }
+
+void dPoly::buildGrid(double xl, double yl, double xh, double yh,
+                      double gridSize, std::string gridColor){
+
+  reset();
+  
+  if (gridSize <= 0){
+    cerr << "Must have positive grid size." << endl;
+    return;
+  }
+
+  xl = gridSize*floor(xl/gridSize); xh = gridSize*ceil(xh/gridSize);
+  yl = gridSize*floor(yl/gridSize); yh = gridSize*ceil(yh/gridSize);
+
+  int nx = (int)ceil((xh - xl)/gridSize);
+  int ny = (int)ceil((yh - yl)/gridSize);
+
+  string layer = "";
+  bool isPolyClosed = true;
+  
+  for (int i = 0; i <= nx; i++){
+    // Build vertical lines from left to right
+    appendRectangle(xl + i*gridSize, yl, xl + i*gridSize, yh,  
+                    isPolyClosed,  
+                    gridColor, layer
+                    );
+  }
+  for (int i = 0; i <= ny; i++){
+    // Build horizontal lines from bottom to top
+    appendRectangle(xl, yl + i*gridSize, xh, yl + i*gridSize,   
+                    isPolyClosed,  
+                    gridColor, layer
+                    );
+  }
+
+  return;
+}

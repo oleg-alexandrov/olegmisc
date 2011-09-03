@@ -50,6 +50,7 @@ public slots:
   void changeOrder();
   void toggleAnno();
   void toggleFilled();
+  void toggleShowGrid();
   void toggleShowPolyDiff();
   void plotNextDiff();
   void plotPrevDiff();
@@ -70,6 +71,8 @@ public slots:
 
   // Options menu
   void setLineWidth();
+  void setGridWidth();
+  void setGridSize();
   void setBgColor();
 
   // Right-click menu
@@ -116,6 +119,7 @@ private slots:
  void showFilesChosenByUser();
   
 private:
+  void setupViewingWindow();
   void readAllPolys();
   void refreshPixmap();
   void printCmd(std::string cmd, const std::vector<double> & vals);

@@ -204,6 +204,12 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
   transform->insertItem("Scale polygons", m_poly, SLOT(scalePolys()),
                         Qt::CTRL+Qt::Key_X);
 
+  Q3PopupMenu* grid = new Q3PopupMenu( menu );
+  menu->insertItem("&Grid", grid);
+  grid->insertItem("Toggle poly grid", m_poly, SLOT(toggleShowGrid()), Qt::Key_G);
+  grid->insertItem("Set grid size", m_poly, SLOT(setGridSize()));
+  grid->insertItem("Set grid linewidth", m_poly, SLOT(setGridWidth()));
+
   Q3PopupMenu* diff = new Q3PopupMenu( menu );
   menu->insertItem("&Diff", diff);
   diff->insertItem("Toggle show poly diff", m_poly, SLOT(toggleShowPolyDiff()), Qt::Key_D);
