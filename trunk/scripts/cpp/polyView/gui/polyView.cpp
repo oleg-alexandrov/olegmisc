@@ -243,8 +243,11 @@ void polyView::displayData( QPainter *paint ){
   vector< vector<int> > textOnScreenGrid; 
 
   // Build the grid if the user wants to
-  if (m_prefs.isGridOn && m_prefs.gridSize > 0 &&
-      m_prefs.gridWidth > 0){
+  if (m_prefs.isGridOn && m_prefs.gridWidth > 0){
+
+    if (m_prefs.gridSize <= 0)
+      m_prefs.gridSize = calcGrid(m_viewWidX, m_viewWidY);
+    
     dPoly grid;
     bool plotPoints = false, plotEdges = true, plotFilled = false;
     bool showAnno = false;
@@ -1043,33 +1046,62 @@ void polyView::popUp(std::string msg){
 }
 
 bool polyView::getStringFromGui(std::string title, std::string description,
-                                std::string & data // output
+                                std::string inputStr,
+                                std::string & outputStr // output
                                 ){
 
-  data = "";
+  outputStr = "";
 
   bool ok = false;
   QString text = QInputDialog::getText(title.c_str(), description.c_str(),
-                                       QLineEdit::Normal, QString::null, &ok, this );
+                                       QLineEdit::Normal, inputStr.c_str(),
+                                       &ok, this );
 
-  if (ok) data = text.toStdString();
+  if (ok) outputStr = text.toStdString();
 
   return ok;
 }
 
 bool polyView::getRealValuesFromGui(std::string title,
                                     std::string description,
+                                    const std::vector<double> & inputVec,
                                     std::vector<double> & values){
 
   values.clear();
-  string data;
-  bool ok = getStringFromGui(title, description,
-                             data // output
+  
+  string outputStr;
+
+  ostringstream oss;
+  oss.precision(16);
+  int len = (int)inputVec.size();
+  for (int s = 0; s < len - 1; s++) oss << inputVec[s] << " ";
+  if (len > 0) oss << inputVec[len - 1];
+  string inputStr = oss.str();
+
+  bool ok = getStringFromGui(title, description, inputStr,
+                             outputStr
                              );
   
-  data = replaceAll(data, ",", " ");
-  istringstream ts(data);
+  outputStr = replaceAll(outputStr, ",", " ");
+  istringstream ts(outputStr);
   double val;
+  while (ts >> val) values.push_back(val);
+
+  return ok;
+}
+
+bool polyView::getStringVectorFromGui(std::string title,
+                                      std::string description,
+                                      std::vector<std::string> & values){
+
+  values.clear();
+  string inputStr, outputStr;
+  bool ok = getStringFromGui(title, description, inputStr,
+                             outputStr // output
+                             );
+  
+  istringstream ts(outputStr);
+  string val;
   while (ts >> val) values.push_back(val);
 
   return ok;
@@ -1077,13 +1109,13 @@ bool polyView::getRealValuesFromGui(std::string title,
 
 void polyView::setLineWidth(){
 
-  vector<double> linewidth;
-  if ( !getRealValuesFromGui("Line width", "Enter line width",
-                             linewidth) ) return;
+  vector<double> inputVec, lineWidth;
+  if ( !getRealValuesFromGui("Line width", "Enter line width", inputVec,
+                             lineWidth) ) return;
   
-  if ( !linewidth.empty() && linewidth[0] >= 1.0 ){
+  if ( !lineWidth.empty() && lineWidth[0] >= 1.0 ){
 
-    int lw = (int) round(linewidth[0]);
+    int lw = (int) round(lineWidth[0]);
 
     for (int polyIter = 0; polyIter < (int)m_polyOptionsVec.size(); polyIter++){
       m_polyOptionsVec[polyIter].lineWidth = lw;
@@ -1100,9 +1132,9 @@ void polyView::setLineWidth(){
 
 void polyView::setGridWidth(){
 
-  vector<double> gridWidth;
+  vector<double> inputVec, gridWidth;
   if ( !getRealValuesFromGui("Grid linewidth", "Enter grid linewidth",
-                             gridWidth) ) return;
+                             inputVec, gridWidth) ) return;
   
   if (!gridWidth.empty() && gridWidth[0] >= 1.0 ){
     
@@ -1119,8 +1151,13 @@ void polyView::setGridWidth(){
 
 void polyView::setGridSize(){
 
-  vector<double> gridSize;
-  if ( !getRealValuesFromGui("Grid size", "Enter grid size",
+  vector<double> inputVec, gridSize;
+
+  // Pass to the GUI the current grid size if set
+  inputVec.clear();
+  if (m_prefs.gridSize > 0) inputVec.push_back(m_prefs.gridSize);
+
+  if ( !getRealValuesFromGui("Grid size", "Enter grid size", inputVec,
                              gridSize)) return;
          
   if ( !gridSize.empty() && gridSize[0] > 0 ){
@@ -1136,16 +1173,32 @@ void polyView::setGridSize(){
   return;
 }
 
+void polyView::setGridColor(){
+
+  vector<string> values;
+  if (!getStringVectorFromGui("Grid", "Enter grid color",
+                              values)) return;
+
+  string gridColor = "";
+  if (values.size() > 0) gridColor = values[0];
+  if ( QColor(gridColor.c_str()) != QColor::Invalid){
+    m_prefs.gridColor = gridColor;
+    refreshPixmap();
+  }else{
+    popUp("Invalid grid color");
+  }
+  return;
+}
+
 void polyView::setBgColor(){
 
-  string data = "";
-  bool ok = getStringFromGui("Background", "Enter background",
-                             data // output
-                             );
+  vector<string> values;
+  if (!getStringVectorFromGui("Background", "Enter background color",
+                              values)) return;
 
-  istringstream in(data);
   string bgColor = "";
-  if (ok && in >> bgColor && QColor(bgColor.c_str()) != QColor::Invalid){
+  if (values.size() > 0) bgColor = values[0];
+  if ( QColor(bgColor.c_str()) != QColor::Invalid){
     m_prefs.bgColor = bgColor;
     setBgFgColorsFromPrefs();
     refreshPixmap();
@@ -1194,8 +1247,10 @@ void polyView::setBgFgColorsFromPrefs(){
 
 void polyView::shiftPolys(){
 
-  vector<double> shifts;
-  if ( getRealValuesFromGui("Translate polygons", "Enter shift_x and shift_y", shifts) ){
+  vector<double> inputVec, shifts;
+  if ( getRealValuesFromGui("Translate polygons", "Enter shift_x and shift_y",
+                            inputVec,
+                            shifts) ){
     shiftPolys(shifts);
   }
   return;
@@ -1203,8 +1258,11 @@ void polyView::shiftPolys(){
 
 void polyView::rotatePolys(){
 
-  vector<double> angle;
-  if ( getRealValuesFromGui("Rotate polygons", "Enter rotation angle in degrees", angle) ){
+  vector<double> inputVec, angle;
+  if ( getRealValuesFromGui("Rotate polygons",
+                            "Enter rotation angle in degrees",
+                            inputVec,
+                            angle) ){
     rotatePolys(angle);
   }
   return;
@@ -1212,8 +1270,10 @@ void polyView::rotatePolys(){
 
 void polyView::scalePolys(){
 
-  vector<double> scale;
-  if ( getRealValuesFromGui("Scale polygons", "Enter scale factor", scale) ){
+  vector<double> inputVec, scale;
+  if ( getRealValuesFromGui("Scale polygons", "Enter scale factor",
+                            inputVec,
+                            scale) ){
     scalePolys(scale);
   }
   return;
@@ -2175,6 +2235,32 @@ void polyView::enforce45(){
   return;
 }
 
+void polyView::enforce45AndSnapToGrid(){
+  
+  // Enforce that polygon vertices are on grid that the angles are 45x. 
+
+  if (!m_prefs.isGridOn){
+    popUp("Must have the grid on to snap to grid");
+    return;
+  }
+
+  if (m_prefs.gridSize <= 0){
+    popUp("Error: expecting positive grid size");
+    return;
+  }
+  
+  backupPolysForUndo(false);
+
+  for (int vecIter = 0; vecIter < (int)m_polyVec.size(); vecIter++){
+    m_polyVec[vecIter].scale(1.0/m_prefs.gridSize);
+    m_polyVec[vecIter].enforce45();
+    m_polyVec[vecIter].scale(m_prefs.gridSize);
+  }
+
+  refreshPixmap();
+  return;
+}
+
 void polyView::backupPolysForUndo(bool resetViewOnUndo){
   // So that we can undo later
   m_polyVecStack.push_back(m_polyVec);
@@ -2658,3 +2744,23 @@ void polyView::runCmd(std::string cmd){
   return;
 }
 
+double polyView::calcGrid(double widx, double widy){
+
+  double grid = max(widx, widy)/50;
+
+  if (grid <= 0){
+    cout << "Warning: non-positive width and height" << endl;
+    return 1.0;
+  }
+
+  // Values bigger than 1 are snapped to grid of 1, bigger than 2^n
+  // to grid of 2^n.
+  int k = (int)round( log(grid)/log(2) );
+  double v;
+  if (k >= 0) v = round( pow(2.0, k) );
+  else        v = 1.0/round( pow(2.0, -k) );
+  grid = v*round(grid/v);
+
+  return grid;
+}
+  
