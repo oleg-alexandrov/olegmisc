@@ -24,7 +24,7 @@ struct polyOptions{
   int             fontSize;
   int             lineWidth;
   bool            isGridOn;
-  int             gridSize;
+  double          gridSize;
   int             gridWidth;
   std::string     bgColor;
   std::string     fgColor;

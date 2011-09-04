@@ -188,14 +188,14 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
   menu->insertItem("&Edit", edit);
   edit->insertItem("Undo",             m_poly, SLOT(undoLast()), Qt::Key_Z);
   edit->insertItem("Cut to highlight", m_poly, SLOT(cutToHlt()), Qt::Key_C);
-  edit->insertItem("Create poly with int vertices and 45x angles",
+  edit->insertItem("Create poly with int vertices and 45x deg angles",
                    m_poly, SLOT(create45DegreeIntPoly()), Qt::Key_N);
   edit->insertItem("Create arbitrary polygon",
                    m_poly, SLOT(createArbitraryPoly()), Qt::CTRL+Qt::Key_N);
 
   Q3PopupMenu* transform = new Q3PopupMenu( menu );
   menu->insertItem("&Transform", transform);
-  transform->insertItem("Enforce int vertices and 45x angles", m_poly, SLOT(enforce45()),
+  transform->insertItem("Enforce int vertices and 45x deg angles", m_poly, SLOT(enforce45()),
                         Qt::CTRL+Qt::Key_4);
   transform->insertItem("Translate polygons", m_poly, SLOT(shiftPolys()),
                         Qt::CTRL+Qt::Key_T);
@@ -207,8 +207,10 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
   Q3PopupMenu* grid = new Q3PopupMenu( menu );
   menu->insertItem("&Grid", grid);
   grid->insertItem("Toggle poly grid", m_poly, SLOT(toggleShowGrid()), Qt::Key_G);
+  grid->insertItem("Enforce 45x deg angles and snap to grid", m_poly, SLOT(enforce45AndSnapToGrid()));
   grid->insertItem("Set grid size", m_poly, SLOT(setGridSize()));
   grid->insertItem("Set grid linewidth", m_poly, SLOT(setGridWidth()));
+  grid->insertItem("Set grid color", m_poly, SLOT(setGridColor()));
 
   Q3PopupMenu* diff = new Q3PopupMenu( menu );
   menu->insertItem("&Diff", diff);
@@ -219,7 +221,7 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
   Q3PopupMenu* options = new Q3PopupMenu( menu );
   menu->insertItem("&Options", options);
   options->insertItem("Set line width", m_poly, SLOT(setLineWidth()));
-  options->insertItem("Set background", m_poly, SLOT(setBgColor()));
+  options->insertItem("Set background color", m_poly, SLOT(setBgColor()));
 
   Q3PopupMenu* help = new Q3PopupMenu( menu );
   menu->insertItem("&Help", help);

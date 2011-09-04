@@ -25,6 +25,7 @@ public:
     polyView(QWidget *parent, const cmdLineOptions & options);
   
   void runCmd(std::string cmd);
+  double calcGrid(double widx, double widy);
   
 public slots:
 
@@ -48,6 +49,9 @@ public slots:
   void shiftDown();
   void resetView();
   void changeOrder();
+  bool getStringVectorFromGui(std::string title,
+                              std::string description,
+                              std::vector<std::string> & values);
   void toggleAnno();
   void toggleFilled();
   void toggleShowGrid();
@@ -67,12 +71,14 @@ public slots:
 
   // Transform menu
   void enforce45();
+  void enforce45AndSnapToGrid();
   void backupPolysForUndo(bool resetViewOnUndo);
 
   // Options menu
   void setLineWidth();
   void setGridWidth();
   void setGridSize();
+  void setGridColor();
   void setBgColor();
 
   // Right-click menu
@@ -102,9 +108,12 @@ protected:
   void resizeEvent(QResizeEvent*);
   void popUp(std::string msg);
   bool getStringFromGui(std::string title, std::string description,
-                        std::string & data // output
+                        std::string inputStr,
+                        std::string & outputStr // output
                         );
-  bool getRealValuesFromGui(std::string title, std::string description,
+  bool getRealValuesFromGui(std::string title,
+                            std::string description,
+                            const std::vector<double> & inputVec,
                             std::vector<double> & values);
   void setBgFgColorsFromPrefs();
   void mousePressEvent( QMouseEvent *E);
