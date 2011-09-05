@@ -85,10 +85,6 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   m_showPoints            = 3;
   m_toggleShowPointsEdges = m_showEdges;
 
-  // These are constants
-  m_polyChanged  = 1;
-  m_createHlt    = 2;
-  
   m_createPoly                = false;
   m_snapPolyTo45DegreeIntGrid = false;
   m_currPolyX.clear(); m_currPolyY.clear();
@@ -114,9 +110,10 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   // Used for undo
   m_polyVecStack.clear();
   m_polyOptionsVecStack.clear();
-  m_actions.clear();
-  m_resetViewOnUndo.clear();
-  
+  m_highlightsStack.clear();
+  m_resetViewStack.clear();
+  m_posInUndoStack = -1;
+
   // Show poly diff mode
   m_polyDiffMode = false;
   m_polyVecBk.clear();
@@ -147,7 +144,7 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   
   resetTransformSettings();
 
-  // This statement must be the last
+  // This statement must be towards the end
   readAllPolys(); // To do: avoid global variables here
 
   return;
@@ -575,7 +572,6 @@ void polyView::mousePressEvent( QMouseEvent *E){
 
   m_aligningPolysNow = ( m_alignMode && isShiftLeftMouse(E) && !m_createPoly );
   if (m_aligningPolysNow){
-    backupPolysForUndo(false);
     assert(m_polyVec.size() >= 1);
     m_polyBeforeShift = m_polyVec[0];
     m_T.reset();
@@ -584,8 +580,6 @@ void polyView::mousePressEvent( QMouseEvent *E){
   m_movingVertsOrPolysNow = ( m_editMode && isShiftLeftMouse(E) &&
                               !m_createPoly && ! m_deletingPolyNow);
   if (m_movingVertsOrPolysNow){
-
-    backupPolysForUndo(false);
 
     double min_x, min_y, min_dist;
     if (m_moveVertices){
@@ -698,6 +692,7 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
   }
   
   if (m_aligningPolysNow || m_movingVertsOrPolysNow){
+    saveDataForUndo(false);
     refreshPixmap();
     return;
   }
@@ -961,10 +956,9 @@ void polyView::reversePoly(){
                       );
   if (polyVecIndex < 0 || polyIndexInCurrPoly < 0) return;
   
-  backupPolysForUndo(false);
-
   m_polyVec[polyVecIndex].reverseOnePoly(polyIndexInCurrPoly);
 
+  saveDataForUndo(false);
   refreshPixmap();
   
   return;
@@ -1287,12 +1281,12 @@ void polyView::shiftPolys(std::vector<double> & shifts){
   }
   shifts.resize(2);
   
-  backupPolysForUndo(true);
-  
   printCmd("shift", shifts);
   for (int vi  = 0; vi < (int)m_polyVec.size(); vi++){
     m_polyVec[vi].shift(shifts[0], shifts[1]);
   }
+
+  saveDataForUndo(true);
   resetView();
   
   return;
@@ -1306,12 +1300,12 @@ void polyView::rotatePolys(std::vector<double> & angle){
   }
   angle.resize(1);
   
-  backupPolysForUndo(true);
-
   printCmd("rotate", angle);
   for (int vi  = 0; vi < (int)m_polyVec.size(); vi++){
     m_polyVec[vi].rotate(angle[0]);
   }
+
+  saveDataForUndo(true);
   resetView();
   
   return;
@@ -1325,12 +1319,12 @@ void polyView::scalePolys(std::vector<double> & scale){
   }
   scale.resize(1);
   
-  backupPolysForUndo(true);
-
   printCmd("scale", scale);
   for (int vi  = 0; vi < (int)m_polyVec.size(); vi++){
     m_polyVec[vi].scale(scale[0]);
   }
+
+  saveDataForUndo(true);
   resetView();
   
   return;
@@ -1345,8 +1339,6 @@ void polyView::transformPolys(std::vector<double> & M){
 
   bool resetViewOnUndo = !m_alignMode;
   
-  backupPolysForUndo(resetViewOnUndo);
-
   int end = m_polyVec.size();
   if (m_alignMode) end = min(end, 1);
     
@@ -1357,6 +1349,8 @@ void polyView::transformPolys(std::vector<double> & M){
   if (m_alignMode) m_totalT = composeTransforms(m_T, m_totalT);
   
   m_T.print();
+
+  saveDataForUndo(resetViewOnUndo);
 
   if (resetViewOnUndo) resetView();
   else                 refreshPixmap();
@@ -1450,8 +1444,6 @@ void polyView::addPolyVert(int px, int py){
 
 void polyView::appendToPolyVec(const dPoly & P){
 
-  backupPolysForUndo(false);
-
   // Append the new polygon to the list of polygons. If we have several
   // clips already, append it to the last clip. If we have no clips,
   // create a new clip.
@@ -1463,6 +1455,8 @@ void polyView::appendToPolyVec(const dPoly & P){
   }else{
     m_polyVec.back().appendPolygons(P);
   }
+
+  saveDataForUndo(false);
 
   return;
 }
@@ -1520,7 +1514,7 @@ void polyView::createHighlightWithRealInputs(double xll, double yll,
   R.setRectangle(min(xll, xur), min(yll, yur), max(xll, xur), max(yll, yur),
                  isPolyClosed, color, layer);
   m_highlights.push_back(R);
-  m_actions.push_back(m_createHlt);
+  saveDataForUndo(false);
   
   return;
 }
@@ -1940,56 +1934,56 @@ void polyView::toggleAlignMode(){
 
 void polyView::align_rotate90(){
   assert(m_alignMode);
-  backupPolysForUndo(false);
   m_polyVec[0].applyTransformAroundBdBoxCenter(0, -1, 1, 0, m_T);
   m_T.print();
   m_totalT = composeTransforms(m_T, m_totalT);
+  saveDataForUndo(false);
   refreshPixmap();
 }
 
 void polyView::align_rotate180(){
   assert(m_alignMode);
-  backupPolysForUndo(false);
   m_polyVec[0].applyTransformAroundBdBoxCenter(-1, 0, 0, -1, m_T);
   m_T.print();
   m_totalT = composeTransforms(m_T, m_totalT);
+  saveDataForUndo(false);
   refreshPixmap();
 }
 
 void polyView::align_rotate270(){
   assert(m_alignMode);
-  backupPolysForUndo(false);
   m_polyVec[0].applyTransformAroundBdBoxCenter(0, 1, -1, 0, m_T);
   m_T.print();
   m_totalT = composeTransforms(m_T, m_totalT);
+  saveDataForUndo(false);
   refreshPixmap();
 }
 
 void polyView::align_flip_against_y_axis(){
   assert(m_alignMode);
-  backupPolysForUndo(false);
   m_polyVec[0].applyTransformAroundBdBoxCenter(-1, 0, 0, 1, m_T);
   m_T.print();
   m_totalT = composeTransforms(m_T, m_totalT);
+  saveDataForUndo(false);
   refreshPixmap();
 }
 
 void polyView::align_flip_against_x_axis(){
   assert(m_alignMode);
-  backupPolysForUndo(false);
   m_polyVec[0].applyTransformAroundBdBoxCenter(1, 0, 0, -1, m_T);
   m_T.print();
   m_totalT = composeTransforms(m_T, m_totalT);
+  saveDataForUndo(false);
   refreshPixmap();
 }
 
 void polyView::performAlignmentOfClosePolys(){
   assert(m_alignMode);
-  backupPolysForUndo(false);
   assert(m_polyVec.size() >= 2);
-  utils::alignPoly1ToPoly2(m_polyVec[0], m_polyVec[1], m_T);
+  alignPoly1ToPoly2(m_polyVec[0], m_polyVec[1], m_T);
   m_T.print();
   m_totalT = composeTransforms(m_T, m_totalT);
+  saveDataForUndo(false);
   refreshPixmap();
 }
 
@@ -2056,14 +2050,13 @@ void polyView::insertVertex(){
       m_polyIndexInCurrPoly < 0 ||
       m_vertIndexInCurrPoly < 0) return;
   
-  backupPolysForUndo(false);
-
   // Need +1 below as we insert AFTER current vertex.
   m_polyVec[m_polyVecIndex].insertVertex(m_polyIndexInCurrPoly,
                                          m_vertIndexInCurrPoly + 1,
                                          min_x, min_y
                                          );
   
+  saveDataForUndo(false);
   refreshPixmap();
   return;
 }
@@ -2088,13 +2081,13 @@ void polyView::deleteVertex(){
       m_polyIndexInCurrPoly < 0 ||
       m_vertIndexInCurrPoly < 0) return;
   
-  backupPolysForUndo(false);
-
   m_polyVec[m_polyVecIndex].eraseVertex(m_polyIndexInCurrPoly,
                                         m_vertIndexInCurrPoly
                                         );
   
+  saveDataForUndo(false);
   refreshPixmap();
+
   return;
 }
 
@@ -2104,8 +2097,6 @@ void polyView::deletePoly(){
     
   if (m_polyVec.size() == 0) return;
   
-  backupPolysForUndo(false);
-
   int minVecIndex, minPolyIndex, minVertIndex;
   double minX = DBL_MAX, minY = DBL_MAX, minDist = DBL_MAX;
   findClosestPolyEdge(// inputs
@@ -2120,6 +2111,7 @@ void polyView::deletePoly(){
     m_polyVec[minVecIndex].erasePoly(minPolyIndex);
   }
 
+  saveDataForUndo(false);
   refreshPixmap();
   
   return;
@@ -2191,12 +2183,10 @@ void polyView::cutToHlt(){
   int numH = m_highlights.size();
   if ( numH == 0){
     cout << "No highlights to cut polygons to. "
-         << "Create one with Control-Mouse" << endl;
+         << "Create one with Control-Mouse." << endl;
     return;
   }
   
-  backupPolysForUndo(false);
-
   dPoly H = m_highlights[numH - 1];
   assert(H.get_totalNumVerts() == 4);
   double xl, yl, xh, yh;
@@ -2215,7 +2205,9 @@ void polyView::cutToHlt(){
 
   m_highlights.resize(numH - 1);
   
+  saveDataForUndo(false);
   refreshPixmap();
+
   return;
 }
 
@@ -2225,13 +2217,13 @@ void polyView::enforce45(){
 
   printCmd("enforce45");
     
-  backupPolysForUndo(false);
-
   for (int vecIter = 0; vecIter < (int)m_polyVec.size(); vecIter++){
     m_polyVec[vecIter].enforce45();
   }
 
+  saveDataForUndo(false);
   refreshPixmap();
+
   return;
 }
 
@@ -2249,65 +2241,59 @@ void polyView::enforce45AndSnapToGrid(){
     return;
   }
   
-  backupPolysForUndo(false);
-
   for (int vecIter = 0; vecIter < (int)m_polyVec.size(); vecIter++){
     m_polyVec[vecIter].scale(1.0/m_prefs.gridSize);
     m_polyVec[vecIter].enforce45();
     m_polyVec[vecIter].scale(m_prefs.gridSize);
   }
 
+  saveDataForUndo(false);
   refreshPixmap();
+
   return;
 }
 
-void polyView::backupPolysForUndo(bool resetViewOnUndo){
-  // So that we can undo later
+void polyView::saveDataForUndo(bool resetViewOnUndo){
+
+  // Save the current geometry and other data. This must
+  // be called AFTER each event which changes any data
+  // which we would like to undo later.
+
+  m_posInUndoStack++;
+  assert(m_posInUndoStack >= 0);
+
+  m_polyVecStack.resize(m_posInUndoStack);
   m_polyVecStack.push_back(m_polyVec);
-  m_polyOptionsVecStack.push_back(m_polyOptionsVec); 
-  m_actions.push_back(m_polyChanged);
-  m_resetViewOnUndo.push_back(resetViewOnUndo);
+  
+  m_polyOptionsVecStack.resize(m_posInUndoStack);
+  m_polyOptionsVecStack.push_back(m_polyOptionsVec);
+
+  m_highlightsStack.resize(m_posInUndoStack);
+  m_highlightsStack.push_back(m_highlights);
+
+  m_resetViewStack.resize(m_posInUndoStack);
+  m_resetViewStack.push_back(resetViewOnUndo);
+
+  return;
 }
 
 void polyView::undoLast(){
 
-  int numActions = m_actions.size();
-  if (numActions == 0){
+  if (m_posInUndoStack <= 0){
     cout << "No actions to undo" << endl;
     return;
   }
 
-  int lastAction = m_actions[numActions - 1];
-  m_actions.resize(numActions - 1);
+  m_posInUndoStack--;
 
-  if (lastAction == m_createHlt){
+  m_polyVec            = m_polyVecStack[m_posInUndoStack];
+  m_polyOptionsVec     = m_polyOptionsVecStack[m_posInUndoStack];
+  m_highlights         = m_highlightsStack[m_posInUndoStack];
+  bool resetViewOnUndo = m_resetViewStack[m_posInUndoStack];
 
-    int numH = m_highlights.size();
-    if (numH == 0){
-      cout << "No highlights to undo" << endl;
-      return;
-    }
-    m_highlights.resize(numH - 1);
-    refreshPixmap();
-    
-  }else if (lastAction == m_polyChanged){
+  if (resetViewOnUndo) resetView();
+  else                 refreshPixmap();
   
-    int numCopies = m_polyVecStack.size();
-    if (numCopies == 0){
-      cout << "No poly operations to undo" << endl;
-      return;
-    }
-
-    m_polyVec        = m_polyVecStack.back();        m_polyVecStack.pop_back();
-    m_polyOptionsVec = m_polyOptionsVecStack.back(); m_polyOptionsVecStack.pop_back();
-
-    bool resetViewOnUndo = m_resetViewOnUndo[numCopies - 1];
-    m_resetViewOnUndo.resize(numCopies - 1);
-    if (resetViewOnUndo) resetView();
-
-    refreshPixmap();
-  }
-
   return;
 }
 
@@ -2345,6 +2331,8 @@ void polyView::readAllPolys(){
     popUp("Warning: Could not read file" + suffix + ":" + missingFiles);
   }
   
+  saveDataForUndo(false);
+
   return;
 }
 
@@ -2416,6 +2404,7 @@ void polyView::openPoly(){
   }
   m_polyVec.push_back(poly);
 
+  saveDataForUndo(false);
   resetView();
   
   return;

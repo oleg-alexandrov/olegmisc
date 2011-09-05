@@ -72,7 +72,7 @@ public slots:
   // Transform menu
   void enforce45();
   void enforce45AndSnapToGrid();
-  void backupPolysForUndo(bool resetViewOnUndo);
+  void saveDataForUndo(bool resetViewOnUndo);
 
   // Options menu
   void setLineWidth();
@@ -215,11 +215,11 @@ private:
   polyOptions m_prefs;                       // options for future polygons
 
   // Used for undo
-  std::vector< std::vector<dPoly> > m_polyVecStack;
+  int m_posInUndoStack;
+  std::vector< std::vector<dPoly> >       m_polyVecStack;
   std::vector< std::vector<polyOptions> > m_polyOptionsVecStack;
-  
-  std::vector<int> m_actions;
-  std::vector<char> m_resetViewOnUndo;
+  std::vector< std::vector<dPoly> >       m_highlightsStack;
+  std::vector<char>                       m_resetViewStack;
 
   bool m_resetView;
   bool m_prevClickExists;
@@ -239,8 +239,6 @@ private:
   bool m_showFilledPolys;
   
   std::vector<dPoly> m_highlights;
-
-  int m_polyChanged, m_createHlt;
 
   int m_showEdges, m_showPoints, m_showPointsEdges, m_toggleShowPointsEdges;
   bool m_changeDisplayOrder, m_showVertIndexAnno, m_showLayerAnno;
