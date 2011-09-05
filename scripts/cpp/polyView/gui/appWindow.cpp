@@ -186,7 +186,9 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
 
   Q3PopupMenu* edit = new Q3PopupMenu( menu );
   menu->insertItem("&Edit", edit);
-  edit->insertItem("Undo",             m_poly, SLOT(undoLast()), Qt::Key_Z);
+  edit->insertItem("Undo",  m_poly, SLOT(undo()), Qt::Key_Z);
+  edit->insertItem("Redo",  m_poly, SLOT(redo()), Qt::ALT + Qt::Key_Z);
+  
   edit->insertItem("Cut to highlight", m_poly, SLOT(cutToHlt()), Qt::Key_C);
   edit->insertItem("Create poly with int vertices and 45x deg angles",
                    m_poly, SLOT(create45DegreeIntPoly()), Qt::Key_N);
