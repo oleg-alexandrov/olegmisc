@@ -1488,7 +1488,8 @@ void polyView::drawPolyLine(const std::vector<double> & polyX,
   return;
 }
 
-void polyView::createHighlightWithPixelInputs(int pxll, int pyll, int pxur, int pyur
+void polyView::createHighlightWithPixelInputs(int pxll, int pyll,
+                                              int pxur, int pyur
                                               ){
   
   double xll, yll, xur, yur;
@@ -2259,6 +2260,9 @@ void polyView::saveDataForUndo(bool resetViewOnUndo){
   // be called AFTER each event which changes any data
   // which we would like to undo later.
 
+  // The functions saveDataForUndo and restoreDataAtUndoPos
+  // are very intimately related.
+  
   m_posInUndoStack++;
   assert(m_posInUndoStack >= 0);
 
@@ -2277,15 +2281,14 @@ void polyView::saveDataForUndo(bool resetViewOnUndo){
   return;
 }
 
-void polyView::undoLast(){
+void polyView::restoreDataAtUndoPos(){
+  
+  // The functions saveDataForUndo and restoreDataAtUndoPos
+  // are very intimately related.
 
-  if (m_posInUndoStack <= 0){
-    cout << "No actions to undo" << endl;
-    return;
-  }
-
-  m_posInUndoStack--;
-
+  assert(m_posInUndoStack >= 0  &&
+         m_posInUndoStack < (int)m_polyVecStack.size());
+  
   m_polyVec            = m_polyVecStack[m_posInUndoStack];
   m_polyOptionsVec     = m_polyOptionsVecStack[m_posInUndoStack];
   m_highlights         = m_highlightsStack[m_posInUndoStack];
@@ -2296,6 +2299,31 @@ void polyView::undoLast(){
   
   return;
 }
+
+void polyView::undo(){
+
+  if (m_posInUndoStack <= 0){
+    cout << "No actions to undo" << endl;
+    return;
+  }
+
+  m_posInUndoStack--;
+  restoreDataAtUndoPos();
+  return;
+}
+
+void polyView::redo(){
+
+  if (m_posInUndoStack + 1 >= (int)m_polyVecStack.size()){
+    cout << "No actions to redo" << endl;
+    return;
+  }
+
+  m_posInUndoStack++;
+  restoreDataAtUndoPos();
+  return;
+}
+
 
 void polyView::readAllPolys(){
 

@@ -64,7 +64,8 @@ public slots:
   void toggleLayerAnno();
 
   // Edit menu
-  void undoLast();
+  void undo();
+  void redo();
   void cutToHlt();
   void create45DegreeIntPoly();
   void createArbitraryPoly();
@@ -72,7 +73,6 @@ public slots:
   // Transform menu
   void enforce45();
   void enforce45AndSnapToGrid();
-  void saveDataForUndo(bool resetViewOnUndo);
 
   // Options menu
   void setLineWidth();
@@ -153,7 +153,8 @@ private:
   void addPolyVert(int px, int py);
   void appendToPolyVec(const dPoly & P);
   double pixelToWorldDist(int pd);
-  void createHighlightWithPixelInputs(int pxll, int pyll, int pxur, int pyur
+  void createHighlightWithPixelInputs(int pxll, int pyll,
+                                      int pxur, int pyur
                                       );
   
   void createHighlightWithRealInputs(double xll, double yll,
@@ -200,6 +201,9 @@ private:
   void setPolyDrawCursor();
   
   void plotDistBwPolyClips( QPainter *paint );
+
+  void saveDataForUndo(bool resetViewOnUndo);
+  void restoreDataAtUndoPos();
   
   double m_zoomFactor, m_shiftX, m_shiftY;
   int m_mousePrsX,  m_mousePrsY, m_mouseRelX,  m_mouseRelY;
