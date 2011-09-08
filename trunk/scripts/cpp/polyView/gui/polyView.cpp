@@ -2289,13 +2289,9 @@ void polyView::restoreDataAtUndoPos(){
   assert(m_posInUndoStack >= 0  &&
          m_posInUndoStack < (int)m_polyVecStack.size());
   
-  m_polyVec            = m_polyVecStack[m_posInUndoStack];
-  m_polyOptionsVec     = m_polyOptionsVecStack[m_posInUndoStack];
-  m_highlights         = m_highlightsStack[m_posInUndoStack];
-  bool resetViewOnUndo = m_resetViewStack[m_posInUndoStack];
-
-  if (resetViewOnUndo) resetView();
-  else                 refreshPixmap();
+  m_polyVec        = m_polyVecStack[m_posInUndoStack];
+  m_polyOptionsVec = m_polyOptionsVecStack[m_posInUndoStack];
+  m_highlights     = m_highlightsStack[m_posInUndoStack];
   
   return;
 }
@@ -2309,6 +2305,11 @@ void polyView::undo(){
 
   m_posInUndoStack--;
   restoreDataAtUndoPos();
+
+  bool resetViewOnUndo = m_resetViewStack[m_posInUndoStack + 1];
+  if (resetViewOnUndo) resetView();
+  else                 refreshPixmap();
+
   return;
 }
 
@@ -2321,6 +2322,11 @@ void polyView::redo(){
 
   m_posInUndoStack++;
   restoreDataAtUndoPos();
+
+  bool resetViewOnUndo = m_resetViewStack[m_posInUndoStack];
+  if (resetViewOnUndo) resetView();
+  else                 refreshPixmap();
+  
   return;
 }
 
