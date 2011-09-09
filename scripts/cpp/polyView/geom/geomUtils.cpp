@@ -7,6 +7,7 @@
 #include <cassert>
 #include "baseUtils.h"
 #include "geomUtils.h"
+#include "edgeUtils.h"
 
 using namespace std;
 using namespace utils;
@@ -367,5 +368,68 @@ utils::linTrans utils::composeTransforms(utils::linTrans P, utils::linTrans Q){
   R.sy = P.a21*Q.sx + P.a22*Q.sy + P.sy;
 
   return R;
+}
+
+bool utils::mergePolys(int an,
+                       const double * ax_in, const double * ay_in,
+                       int bn,
+                       const double * bx_in, const double * by_in,
+                       std::vector<double> & mergedX,
+                       std::vector<double> & mergedY 
+                       ){
+
+  // Merge two polygons. This function is INCOMPLETE and BUGGY.
+  // To be finished.
+  
+  mergedX.clear();
+  mergedY.clear();
+
+  // Copy the pointers to non-constant pointers so what we can swap
+  // them.
+  double* ax = (double*)ax_in; double* ay = (double*)ay_in;
+  double* bx = (double*)bx_in; double* by = (double*)by_in;
+  
+  bool mergeWasSuccessful = false;
+  
+  int i = 0, in = 0, j = 0, jn = 0;
+  double sx = ax[i], sy = ay[i];
+
+  while(1){
+
+    mergedX.push_back(ax[i]);
+    mergedY.push_back(ay[i]);
+
+    bool foundIntersection = false;
+    double x, y;
+
+    in = (i + 1)% an;
+    for (j = 0; j < bn; j++){
+      jn = (j + 1) % bn;
+      if (edgesIntersect(ax[i], ay[i], ax[in], ay[in],
+                         bx[j], by[j], bx[jn], by[jn],
+                         x, y)){
+        foundIntersection  = true;
+        mergeWasSuccessful = true;
+        break;
+      }
+    }
+    
+    if (!foundIntersection){
+      i = in;
+      if (sx == ax[i] && sy == ay[i]) break;
+      continue;
+    }
+
+    mergedX.push_back(x);
+    mergedY.push_back(y);
+    swap(ax, bx);
+    swap(ay, by);
+    swap(an, bn);
+
+    i = jn;
+    if (sx == ax[i] && sy == ay[i]) break;
+  }
+
+  return mergeWasSuccessful;
 }
 

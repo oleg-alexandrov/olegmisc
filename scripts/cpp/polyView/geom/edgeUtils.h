@@ -16,6 +16,15 @@ namespace utils {
                                     double begx, double endx,
                                     double yval
                                     );
+  bool edgesIntersect(// Input: first edge
+                      double ax0, double ay0,
+                      double ax1, double ay1,
+                      // Input: second edge
+                      double bx0, double by0,
+                      double bx1, double by1,
+                      // Output: intersection if it exists
+                      double & x, double & y
+                      );
   void cutEdge(double x0, double y0, double x1, double y1,
                double nx, double ny, double H,
                double & cutx, double & cuty);

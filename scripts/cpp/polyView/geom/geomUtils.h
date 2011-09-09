@@ -127,6 +127,14 @@ namespace utils{
                       );
 
 
+  bool mergePolys(int an,
+                  const double * ax_in, const double * ay_in,
+                  int bn,
+                  const double * bx_in, const double * by_in,
+                  std::vector<double> & mergedX,
+                  std::vector<double> & mergedY 
+                  );
+
   struct linTrans{
     // Linear transform
     double a11, a12, a21, a22, sx, sy;
@@ -142,8 +150,9 @@ namespace utils{
                 << a21 << ' ' << a22 << ' ' << sx << ' ' << sy << std::endl;
     }
   };
-
+  
   utils::linTrans composeTransforms(utils::linTrans P, utils::linTrans Q);
+
 }
   
 
