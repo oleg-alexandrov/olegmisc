@@ -74,6 +74,44 @@ bool utils::edgeIntersectsHorizontalEdge(// Input: arbitrary edge
   return true;
 }
 
+bool utils::edgesIntersect(// Input: first edge
+                           double ax0, double ay0,
+                           double ax1, double ay1,
+                           // Input: second edge
+                           double bx0, double by0,
+                           double bx1, double by1,
+                           // Output: intersection if it exists
+                           double & x, double & y
+                           ){
+
+  // See if two arbitrary edges intersect. This code does NOT treat
+  // all cases and can give incorrect results. To be fixed.
+
+  for (int count = 0; count < 2; count++){
+    // See if the points (bx0, by0) and (bx1, by1) are on different
+    // sides of the edge (ax0, ay0), (ax1, ay1).
+    double det0 = (bx0 - ax0)*(ay1 - ay0) - (by0 - ay0)*(ax1 - ax0);
+    double det1 = (bx1 - ax0)*(ay1 - ay0) - (by1 - ay0)*(ax1 - ax0);
+    
+    if (det0 > 0.0 && det1 > 0.0) return false;
+    if (det0 < 0.0 && det1 < 0.0) return false;
+
+    if (count == 0){
+      swap(ax0, bx0); swap(ay0, by0);
+      swap(ax1, bx1); swap(ay1, by1);
+      continue;
+    }
+
+    double t = 0.0;
+    if (det0 != det1) t = -det0/(det1 - det0);
+    x = (1 - t)*bx0 + t*bx1;
+    y = (1 - t)*by0 + t*by1;
+    return true;
+  }
+  
+  return true;
+}
+
 void utils::cutEdge(double x0, double y0, double x1, double y1,
                     double nx, double ny, double H,
                     double & cutx, double & cuty){
