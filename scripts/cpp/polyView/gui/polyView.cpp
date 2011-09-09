@@ -2778,7 +2778,7 @@ double polyView::calcGrid(double widx, double widy){
 
   // Values bigger than 1 are snapped to grid of 1, bigger than 2^n
   // to grid of 2^n.
-  int k = (int)round( log(grid)/log(2) );
+  int k = (int)round( log(grid)/log(2.0) );
   double v;
   if (k >= 0) v = round( pow(2.0, k) );
   else        v = 1.0/round( pow(2.0, -k) );
