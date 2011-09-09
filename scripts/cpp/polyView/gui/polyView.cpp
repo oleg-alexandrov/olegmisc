@@ -2787,3 +2787,44 @@ double polyView::calcGrid(double widx, double widy){
   return grid;
 }
   
+void polyView::mergePolys(){
+
+  // Highly buggy and incomplete function. Work in progress.
+  dPoly poly;
+  poly.reset();
+  
+  for (int s = 0; s < (int)m_polyVec.size(); s++){
+    poly.appendPolygons(m_polyVec[s]);
+  }
+
+  int numPolys         = poly.get_numPolys();
+  const int * numVerts = poly.get_numVerts();
+
+  if (numPolys <= 1) return;
+    
+  vector<double> mx, my;
+  bool success = utils::mergePolys(numVerts[0],
+                                   poly.get_xv(),
+                                   poly.get_yv(),  
+                                   numVerts[1],
+                                   poly.get_xv() + numVerts[0],
+                                   poly.get_yv() + numVerts[0],
+                                   mx, my
+                                   );
+  if (!success) return;
+  
+  bool isPolyClosed = true;
+  string color = (poly.get_colors())[0];
+  string layer = (poly.get_layers())[0];
+
+  m_polyVec[0].setPolygon(mx.size(), vecPtr(mx), vecPtr(my),
+                          isPolyClosed, color, layer
+                          );
+  
+  m_polyVec.resize(1);
+  m_polyOptionsVec.resize(1);
+  saveDataForUndo(false);
+
+  refreshPixmap();
+  return;
+}  
