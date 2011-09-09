@@ -194,6 +194,8 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
                    m_poly, SLOT(create45DegreeIntPoly()), Qt::Key_N);
   edit->insertItem("Create arbitrary polygon",
                    m_poly, SLOT(createArbitraryPoly()), Qt::CTRL+Qt::Key_N);
+  edit->insertItem("Merge polygons (buggy)",
+                   m_poly, SLOT(mergePolys()), Qt::CTRL+Qt::Key_M);
 
   Q3PopupMenu* transform = new Q3PopupMenu( menu );
   menu->insertItem("&Transform", transform);

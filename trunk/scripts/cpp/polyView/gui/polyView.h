@@ -25,7 +25,6 @@ public:
     polyView(QWidget *parent, const cmdLineOptions & options);
   
   void runCmd(std::string cmd);
-  double calcGrid(double widx, double widy);
   
 public slots:
 
@@ -69,6 +68,7 @@ public slots:
   void cutToHlt();
   void create45DegreeIntPoly();
   void createArbitraryPoly();
+  void mergePolys();
 
   // Transform menu
   void enforce45();
@@ -204,7 +204,8 @@ private:
 
   void saveDataForUndo(bool resetViewOnUndo);
   void restoreDataAtUndoPos();
-  
+  double calcGrid(double widx, double widy);
+
   double m_zoomFactor, m_shiftX, m_shiftY;
   int m_mousePrsX,  m_mousePrsY, m_mouseRelX,  m_mouseRelY;
   int m_screenXll,  m_screenYll, m_screenWidX, m_screenWidY;
