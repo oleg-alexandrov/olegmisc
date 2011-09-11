@@ -2129,18 +2129,24 @@ void polyView::saveMark(){
     ifstream mark(markFile.c_str());
     if (!mark) break;
   }
-  
+
+  plotMark(m_menuX, m_menuY);
+
   cout << "Saving the mark to " << markFile << endl;
   ofstream mark(markFile.c_str());
   mark << "color = white" << endl;
   mark << m_menuX << ' ' << m_menuY << endl;
   mark << "NEXT" << endl;
   mark.close();
+  return;
+}
 
-  // Plot the mark
-  m_markX.resize(1); m_markX[0] = m_menuX;
-  m_markY.resize(1); m_markY[0] = m_menuY;
+void polyView::plotMark(double x, double y){
+  cout << "mark " << x << ' ' << y << endl;
+  m_markX.resize(1); m_markX[0] = x;
+  m_markY.resize(1); m_markY[0] = y;
   refreshPixmap();
+  return;
 }
 
 void polyView::toggleNmScale(){
@@ -2757,6 +2763,13 @@ void polyView::runCmd(std::string cmd){
         return;
       }
       cerr << "Invalid transform command: " << cmd << endl;
+      return;
+    }else if (cmdName == "mark"){
+      if (vals.size() >= 2){
+        plotMark(vals[0], vals[1]);
+        return;
+      }
+      cerr << "Invalid mark command: " << cmd << endl;
       return;
     }
     

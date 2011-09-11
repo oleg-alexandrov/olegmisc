@@ -83,6 +83,7 @@ public slots:
 
   // Right-click menu
   void saveMark();
+  void plotMark(double x, double y);
   void toggleNmScale();
   void toggleEditMode();
   void toggleAlignMode();
