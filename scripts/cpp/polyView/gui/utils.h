@@ -45,7 +45,7 @@ struct polyOptions{
     bgColor         = "black";
     fgColor         = "white";
     cmdLineColor    = "green";
-    gridColor       = "green";
+    gridColor       = "white";
     polyFileName    = "unnamed.xg";
   }
   
