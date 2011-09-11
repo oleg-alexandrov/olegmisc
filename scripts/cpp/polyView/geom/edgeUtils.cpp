@@ -74,6 +74,41 @@ bool utils::edgeIntersectsHorizontalEdge(// Input: arbitrary edge
   return true;
 }
 
+bool utils::isPointOnEdge(double x0, double y0, double x1, double y1,
+                          double x, double y){
+  double dist1 = distance(x0, y0, x1, y1);
+  double dist2 = distance(x0, y0, x,  y);
+  double dist3 = distance(x,  y,  x1, y1);
+  double tol = 1e-12;
+  return(dist2 + dist3 <= (1+tol)*dist1);
+}
+
+bool utils::collinearEdgesIntersect(// Input: first edge
+                                    double ax0, double ay0,
+                                    double ax1, double ay1,
+                                    // Input: second edge
+                                    double bx0, double by0,
+                                    double bx1, double by1,
+                                    // Output: intersection
+                                    // if it exists
+                                    double & x, double & y
+                                    ){
+  for (int t = 0; t < 2; t++){
+    if (isPointOnEdge(ax0, ay0, ax1, ay1, bx0, by0)){
+      x = bx0; y = by0;
+      return true;
+    }
+    if (isPointOnEdge(ax0, ay0, ax1, ay1, bx1, by1)){
+      x = bx1; y = by1;
+      return true;
+    }
+    swap(ax0, bx0); swap(ay0, by0);
+    swap(ax1, bx1); swap(ay1, by1);
+  }
+  
+  return false;
+}
+
 bool utils::edgesIntersect(// Input: first edge
                            double ax0, double ay0,
                            double ax1, double ay1,
@@ -102,8 +137,19 @@ bool utils::edgesIntersect(// Input: first edge
       continue;
     }
 
-    double t = 0.0;
-    if (det0 != det1) t = -det0/(det1 - det0);
+    if (det0 == det1){
+      return collinearEdgesIntersect(// Input: first edge
+                                     ax0, ay0, ax1, ay1,  
+                                     // Input: second edge
+                                     bx0, by0, bx1, by1,  
+                                     // Output: intersection
+                                     // if it exists
+                                     x, y
+                                     );
+    }
+    
+    double t = -det0/(det1 - det0);
+    
     x = (1 - t)*bx0 + t*bx1;
     y = (1 - t)*by0 + t*by1;
     return true;

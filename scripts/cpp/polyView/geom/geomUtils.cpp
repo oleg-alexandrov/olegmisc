@@ -407,9 +407,9 @@ bool utils::mergePolys(int an,
     // is closest to the start of the current edge of poly A.
     // Care is taken of situations when there is more than one
     // such edge.
-    // Make initial minDistA big on purpose by some value.
     in = (i + 1)% an;
     j  = 0;
+    // Make initial minDistA big on purpose by some value.
     double minDistA = 2.0*distance(ax[i], ay[i], ax[in], ay[in]) + 1.0;
     double minDistB_beg = -1.0, maxDistB_end = -1.0;
     for (int jl = 0; jl < bn; jl++){
@@ -428,7 +428,7 @@ bool utils::mergePolys(int an,
         if (distA < minDistA                                   ||
             (distA == minDistA && distB_beg < minDistB_beg)    ||
             (distA == minDistA && distB_beg == minDistB_beg
-             && maxDistB_end >= distB_end ) 
+             && distB_end >= maxDistB_end ) 
             ){
           minDistA = distA;
           minDistB_beg = distB_beg;
@@ -437,7 +437,7 @@ bool utils::mergePolys(int an,
         }
       }
     }
-    
+
     if (!foundIntersection){
       i = in;
       if (sx == ax[i] && sy == ay[i]) break;
