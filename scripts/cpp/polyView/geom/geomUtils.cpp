@@ -402,13 +402,16 @@ bool utils::mergePolys(int an,
     bool foundIntersection = false;
     double x = 0.0, y = 0.0;
 
-    // Of all edges intersecting the current edge (if any)
-    // find the one for which the intersection point
-    // is closest to the start of the current edge.
-    // Make initial minDist big on purpose by some value.
+    // Of all edges of poly B intersecting the current edge (if any)
+    // of poly A find the one for which the intersection point
+    // is closest to the start of the current edge of poly A.
+    // Care is taken of situations when there is more than one
+    // such edge.
+    // Make initial minDistA big on purpose by some value.
     in = (i + 1)% an;
     j  = 0;
-    double minDist = 2.0*distance(ax[i], ay[i], ax[in], ay[in]) + 1.0;
+    double minDistA = 2.0*distance(ax[i], ay[i], ax[in], ay[in]) + 1.0;
+    double minDistB_beg = -1.0, maxDistB_end = -1.0;
     for (int jl = 0; jl < bn; jl++){
       int jnl = (jl + 1) % bn;
       double xl, yl;
@@ -417,9 +420,19 @@ bool utils::mergePolys(int an,
                          xl, yl)){
         foundIntersection  = true;
         mergeWasSuccessful = true;
-        double dist = distance(ax[i], ay[i], xl, yl);
-        if (dist <= minDist){
-          minDist = dist;
+        double distA     = distance(ax[i],  ay[i],  xl, yl);
+        double distB_beg = distance(bx[jl], by[jl], xl, yl);
+        double distB_end = distance(xl, yl, bx[jnl], by[jnl]);
+        if (minDistB_beg < 0.0) minDistB_beg = distB_beg;
+        if (maxDistB_end < 0.0) maxDistB_end = distB_end;
+        if (distA < minDistA                                   ||
+            (distA == minDistA && distB_beg < minDistB_beg)    ||
+            (distA == minDistA && distB_beg == minDistB_beg
+             && maxDistB_end >= distB_end ) 
+            ){
+          minDistA = distA;
+          minDistB_beg = distB_beg;
+          maxDistB_end = distB_end;
           j = jl; jn = jnl; x = xl; y = yl;
         }
       }
