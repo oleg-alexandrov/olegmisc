@@ -400,17 +400,28 @@ bool utils::mergePolys(int an,
     mergedY.push_back(ay[i]);
 
     bool foundIntersection = false;
-    double x, y;
+    double x = 0.0, y = 0.0;
 
+    // Of all edges intersecting the current edge (if any)
+    // find the one for which the intersection point
+    // is closest to the start of the current edge.
+    // Make initial minDist big on purpose by some value.
     in = (i + 1)% an;
-    for (j = 0; j < bn; j++){
-      jn = (j + 1) % bn;
+    j  = 0;
+    double minDist = 2.0*distance(ax[i], ay[i], ax[in], ay[in]) + 1.0;
+    for (int jl = 0; jl < bn; jl++){
+      int jnl = (jl + 1) % bn;
+      double xl, yl;
       if (edgesIntersect(ax[i], ay[i], ax[in], ay[in],
-                         bx[j], by[j], bx[jn], by[jn],
-                         x, y)){
+                         bx[jl], by[jl], bx[jnl], by[jnl],
+                         xl, yl)){
         foundIntersection  = true;
         mergeWasSuccessful = true;
-        break;
+        double dist = distance(ax[i], ay[i], xl, yl);
+        if (dist <= minDist){
+          minDist = dist;
+          j = jl; jn = jnl; x = xl; y = yl;
+        }
       }
     }
     
