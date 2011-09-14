@@ -384,6 +384,9 @@ bool utils::mergePolys(int an,
   mergedX.clear();
   mergedY.clear();
 
+  // The tol value needs careful thinking
+  double tol = 1e-12;
+  
   // Copy the pointers to non-constant pointers so what we can swap
   // them.
   double* ax = (double*)ax_in; double* ay = (double*)ay_in;
@@ -393,11 +396,11 @@ bool utils::mergePolys(int an,
   
   int i = 0, in = 0, j = 0, jn = 0;
   double sx = ax[i], sy = ay[i];
-
+  double currX = ax[i], currY = ay[i];
+  mergedX.push_back(currX);
+  mergedY.push_back(currY);
   while(1){
 
-    mergedX.push_back(ax[i]);
-    mergedY.push_back(ay[i]);
 
     bool foundIntersection = false;
     double x = 0.0, y = 0.0;
@@ -410,17 +413,20 @@ bool utils::mergePolys(int an,
     in = (i + 1)% an;
     j  = 0;
     // Make initial minDistA big on purpose by some value.
-    double minDistA = 2.0*distance(ax[i], ay[i], ax[in], ay[in]) + 1.0;
+    double minDistA = 2.0*distance(currX, currY, ax[in], ay[in]) + 1.0;
     double minDistB_beg = -1.0, maxDistB_end = -1.0;
     for (int jl = 0; jl < bn; jl++){
       int jnl = (jl + 1) % bn;
       double xl, yl;
-      if (edgesIntersect(ax[i], ay[i], ax[in], ay[in],
+      if (edgesIntersect(currX, currY, ax[in], ay[in],
                          bx[jl], by[jl], bx[jnl], by[jnl],
-                         xl, yl)){
+                         xl, yl) &&
+          isPointOnEdge(currX, currY, ax[in], ay[in], xl, yl) &&
+          (abs(currX - xl) > tol || abs(currY - yl) > tol)
+          ){
         foundIntersection  = true;
         mergeWasSuccessful = true;
-        double distA     = distance(ax[i],  ay[i],  xl, yl);
+        double distA     = distance(currX,  currY,  xl, yl);
         double distB_beg = distance(bx[jl], by[jl], xl, yl);
         double distB_end = distance(xl, yl, bx[jnl], by[jnl]);
         if (minDistB_beg < 0.0) minDistB_beg = distB_beg;
@@ -441,16 +447,21 @@ bool utils::mergePolys(int an,
     if (!foundIntersection){
       i = in;
       if (sx == ax[i] && sy == ay[i]) break;
+      currX = ax[i]; currY = ay[i];
+      mergedX.push_back(currX);
+      mergedY.push_back(currY);
       continue;
     }
 
-    mergedX.push_back(x);
-    mergedY.push_back(y);
+    currX = x;
+    currY = y;
+    mergedX.push_back(currX);
+    mergedY.push_back(currY);
     swap(ax, bx);
     swap(ay, by);
     swap(an, bn);
 
-    i = jn;
+    i = j;
     if (sx == ax[i] && sy == ay[i]) break;
   }
 
