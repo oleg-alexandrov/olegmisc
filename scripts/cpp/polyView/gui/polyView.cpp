@@ -97,7 +97,7 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   m_mouseRelX = 0; m_mouseRelY = 0;
   
   // Points closer than this are in some situations considered equal
-  m_pixelTol = 5;
+  m_pixelTol = 10;
   
   m_useNmScale  = false;
   m_nmScale     = 1.0;
