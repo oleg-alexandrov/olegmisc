@@ -189,9 +189,10 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
   edit->insertItem("Undo",  m_poly, SLOT(undo()), Qt::Key_Z);
   edit->insertItem("Redo",  m_poly, SLOT(redo()), Qt::ALT + Qt::Key_Z);
   
-  edit->insertItem("Cut to highlight", m_poly, SLOT(cutToHlt()), Qt::Key_C);
   edit->insertItem("Create poly with int vertices and 45x deg angles",
                    m_poly, SLOT(create45DegreeIntPoly()), Qt::Key_N);
+  edit->insertItem("Enforce int vertices and 45x deg angles", m_poly, SLOT(enforce45()),
+                   Qt::CTRL+Qt::Key_4);
   edit->insertItem("Create arbitrary polygon",
                    m_poly, SLOT(createArbitraryPoly()), Qt::CTRL+Qt::Key_N);
   edit->insertItem("Merge polygons (buggy)",
@@ -199,14 +200,17 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
 
   Q3PopupMenu* transform = new Q3PopupMenu( menu );
   menu->insertItem("&Transform", transform);
-  transform->insertItem("Enforce int vertices and 45x deg angles", m_poly, SLOT(enforce45()),
-                        Qt::CTRL+Qt::Key_4);
   transform->insertItem("Translate polygons", m_poly, SLOT(shiftPolys()),
                         Qt::CTRL+Qt::Key_T);
   transform->insertItem("Rotate polygons", m_poly, SLOT(rotatePolys()),
                         Qt::CTRL+Qt::Key_R);
   transform->insertItem("Scale polygons", m_poly, SLOT(scalePolys()),
                         Qt::CTRL+Qt::Key_X);
+
+  Q3PopupMenu* highlights = new Q3PopupMenu( menu );
+  menu->insertItem("&Highlights", highlights);
+  highlights->insertItem("Cut polys to highlight", m_poly, SLOT(cutToHlt()), Qt::Key_C);
+  highlights->insertItem("Erase polys intersecting highlight", m_poly, SLOT(erasePolysIntersectingHighlight()) );
 
   Q3PopupMenu* grid = new Q3PopupMenu( menu );
   menu->insertItem("&Grid", grid);

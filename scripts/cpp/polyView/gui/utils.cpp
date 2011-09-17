@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <limits>
 #include <cstring>
+#include <algorithm>
 #include "utils.h"
 
 using namespace std;
