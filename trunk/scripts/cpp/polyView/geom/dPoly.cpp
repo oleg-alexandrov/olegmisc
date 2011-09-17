@@ -6,6 +6,7 @@
 #include <cassert>
 #include <cstring>
 #include <string>
+#include <map>
 #include "cutPoly.h"
 #include "dPoly.h"
 using namespace std;
@@ -627,6 +628,8 @@ void dPoly::findClosestPolyEdge(//inputs
 
 void dPoly::erasePoly(int polyIndex){
 
+  // See also the function named eraseMarkedPolys().
+  
   assert(0 <= polyIndex && polyIndex < m_numPolys);
 
   int start = 0;
@@ -1262,3 +1265,75 @@ void dPoly::buildGrid(double xl, double yl, double xh, double yh,
   return;
 }
 
+void dPoly::markPolysIntersectingBox(// Inputs
+                                     double xll, double yll,
+                                     double xur, double yur,
+                                     // Outputs
+                                     std::map<int, int> & mark
+                                     ){
+
+  mark.clear();
+  
+  dPoly onePoly, clippedPoly;
+  for (int polyIndex = 0; polyIndex < m_numPolys; polyIndex++){
+    extractOnePoly(polyIndex, // input
+                   onePoly    // output
+                   );
+    onePoly.clipPoly(xll, yll, xur, yur, // inputs
+                     clippedPoly         // outputs
+                     );
+    if (clippedPoly.get_totalNumVerts() == 0) continue;
+    mark[polyIndex] = 1;
+  }
+  
+  return;
+}
+
+void dPoly::eraseMarkedPolys(// Inputs
+                             std::map<int, int> & mark
+                             ){
+
+  // Erase the polygons matching the given mark. 
+  // See also the function named erasePoly().
+  
+  vector<char> dmark, imark;
+  dmark.assign(m_totalNumVerts, 0);
+  imark.assign(m_numPolys, 0);
+
+  int start = 0;
+  for (int pIter = 0; pIter < m_numPolys; pIter++){
+    if (pIter > 0) start += m_numVerts[pIter - 1];
+    if (mark.find(pIter) == mark.end()) continue;
+
+    imark[pIter] = 1;
+    for (int vIter = 0; vIter < m_numVerts[pIter]; vIter++) dmark[start + vIter] = 1;
+  }
+  
+  eraseMarkedElements(m_xv, dmark);
+  eraseMarkedElements(m_yv, dmark);
+
+  eraseMarkedElements(m_isPolyClosed,  imark);
+  eraseMarkedElements(m_colors,        imark);
+  eraseMarkedElements(m_layers,        imark);
+  eraseMarkedElements(m_numVerts,      imark);
+
+
+  m_totalNumVerts = m_xv.size();
+  m_numPolys      = m_numVerts.size();
+  
+  m_vertIndexAnno.clear();
+  m_layerAnno.clear();
+
+  return;
+}
+
+void dPoly::erasePolysIntersectingBox(double xll, double yll, double xur, double yur){
+
+  map<int, int> mark;
+  markPolysIntersectingBox(xll, yll, xur, yur, // Inputs 
+                           mark                // Outputs
+                           );
+  eraseMarkedPolys(mark);
+  
+  return;
+}

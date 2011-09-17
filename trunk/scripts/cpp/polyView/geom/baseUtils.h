@@ -39,6 +39,20 @@ namespace utils{
     return 0;
   }
 
+  template<class T>
+  void eraseMarkedElements(std::vector<T> & vals, const std::vector<char> & marks){
+
+    assert(vals.size() == marks.size());
+    int n = 0;
+    for (int i = 0; i < (int)vals.size(); i++){
+      if (marks[i]) continue;
+      vals[n] = vals[i];
+      n++;
+    }
+
+    vals.resize(n);
+  }
+  
 }
 
 #endif

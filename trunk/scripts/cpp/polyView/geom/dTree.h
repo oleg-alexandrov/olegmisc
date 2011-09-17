@@ -2,6 +2,7 @@
 #define DTREE_H
 
 #include <vector>
+#include <algorithm>
 #include <cfloat> // defines DBL_MAX
 #include "geomUtils.h"
 
