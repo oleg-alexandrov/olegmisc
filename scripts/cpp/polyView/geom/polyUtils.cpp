@@ -5,6 +5,7 @@
 #include <cfloat>
 #include <cstring>
 #include <cassert>
+#include <algorithm>
 #include "edgeUtils.h"
 #include "dPoly.h"
 #include "polyUtils.h"

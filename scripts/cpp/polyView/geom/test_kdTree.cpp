@@ -3,6 +3,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <cassert>
+#include <algorithm>
 #include <limits>
 #include "kdTree.h"
 #include "dPoly.h"

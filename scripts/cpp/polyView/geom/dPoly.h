@@ -2,11 +2,10 @@
 #define DPOLY_H
 
 #include <vector>
-#include <algorithm>
-#include <cfloat> // defines DBL_MAX
-#include <vector>
+#include <map>
 #include "baseUtils.h"
 #include "geomUtils.h"
+
 
 // A class holding a set of polygons in double precision
 class dPoly{
@@ -82,6 +81,10 @@ public:
 
   void set_isPolyClosed(bool isPolyClosed);
   
+  void eraseMarkedPolys(// Inputs
+                        std::map<int, int> & mark
+                        );
+  void erasePolysIntersectingBox(double xll, double yll, double xur, double yur);
   void set_isPointCloud(bool isPointCloud){ m_isPointCloud = isPointCloud; }
   bool isPointCloud() { return m_isPointCloud;}
   
@@ -89,6 +92,12 @@ public:
                       std::string layer);
   void buildGrid(double xl, double yl, double xh, double yh,
                  double gridSize, std::string gridColor);
+  void markPolysIntersectingBox(// Inputs
+                                double xll, double yll,
+                                double xur, double yur,
+                                // Outputs
+                                std::map<int, int> & mark
+                                );
   // Annotations
   void get_annotations (std::vector<anno> & annotations) const;
   void get_layerAnno(std::vector<anno> & annotations) const;
