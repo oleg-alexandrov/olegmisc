@@ -2189,8 +2189,7 @@ void polyView::cutToHlt(){
   // Cut to the last highlight
   int numH = m_highlights.size();
   if ( numH == 0){
-    cout << "No highlights to cut polygons to. "
-         << "Create one with Control-Mouse." << endl;
+    popUp("No highlights are present. Create one with Control-Mouse.");
     return;
   }
   
@@ -2734,6 +2733,19 @@ void polyView::runCmd(std::string cmd){
       }
       cerr << "Invalid clip command: " << cmd << endl;
       return;
+
+    }else if (cmdName == "erasePolysInHlt"){
+      
+      if (vals.size() >= 4){
+        double xll = vals[0], yll = vals[1], widx = vals[2], widy = vals[3];
+        if (xll + widx > xll && yll + widy > yll){
+          createHighlightWithRealInputs(xll, yll, xll + widx, yll + widy);
+          erasePolysIntersectingHighlight();
+          return;
+        }
+      }
+      cerr << "Invalid command: " << cmd << endl;
+      return;
       
     }else if (cmdName == "shift"){
       if (vals.size() >= 2){
@@ -2841,3 +2853,30 @@ void polyView::mergePolys(){
   refreshPixmap();
   return;
 }  
+
+void polyView::erasePolysIntersectingHighlight(){
+  
+  // Erase polys intersecting last highlight
+  int numH = m_highlights.size();
+  if ( numH == 0){
+    popUp("No highlights are present. Create one with Control-Mouse.");
+    return;
+  }
+  
+  dPoly H = m_highlights[numH - 1];
+  assert(H.get_totalNumVerts() == 4);
+  double xl, yl, xh, yh;
+  H.bdBox(xl, yl, xh, yh);
+  printCmd( "erasePolysInHlt", xl, yl, xh - xl, yh - yl );
+    
+  for (int vecIter = 0; vecIter < (int)m_polyVec.size(); vecIter++){
+    m_polyVec[vecIter].erasePolysIntersectingBox(xl, yl, xh, yh);
+  }
+  
+  m_highlights.resize(numH - 1);
+  
+  saveDataForUndo(false);
+  refreshPixmap();
+
+  return;
+}

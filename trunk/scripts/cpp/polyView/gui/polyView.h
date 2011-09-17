@@ -65,7 +65,6 @@ public slots:
   // Edit menu
   void undo();
   void redo();
-  void cutToHlt();
   void create45DegreeIntPoly();
   void createArbitraryPoly();
   void mergePolys();
@@ -73,6 +72,10 @@ public slots:
   // Transform menu
   void enforce45();
   void enforce45AndSnapToGrid();
+
+  // Highlights menu
+  void cutToHlt();
+  void erasePolysIntersectingHighlight();
 
   // Options menu
   void setLineWidth();
