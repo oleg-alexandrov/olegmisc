@@ -3,6 +3,7 @@ bool getLine(ifstream &, std::string &);
 bool isDigit(const char);
 bool isHeap(const int *, int);
 bool isInList(node *, int);
+double eval(int);
 double eval_expr(const char *, int, int);
 double myfun(int);
 double myfun2(int);
