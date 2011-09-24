@@ -7,6 +7,7 @@ double eval(int);
 double eval_expr(const char *, int, int);
 double myfun(int);
 double myfun2(int);
+double val(const double *);
 endif for(int q = 0; q < n;);
 endif for(int s = 0; s < n;);
 int addOne(int);
