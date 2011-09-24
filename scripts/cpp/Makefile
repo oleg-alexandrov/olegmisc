@@ -2,6 +2,7 @@ CPP = g++ -O3 -Wall
 CC = gcc -O3
 FC = g77 -O3
 XTRA_OBJ=
+LIBS = -lboost_filesystem-mt
 
 #start: the lines between start and end will be updated every time hdr is run.
 
@@ -15,6 +16,9 @@ atoi: atoi.o $(OBJ1) $(HDR)
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 biggestDim: biggestDim.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
+boost_fs: boost_fs.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
 breadth: breadth.o $(OBJ1) $(HDR) 
