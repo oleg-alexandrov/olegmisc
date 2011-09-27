@@ -52,14 +52,14 @@ Return
 
 ; F3 to launch or switch to FireFox
 F3::
-IfWinExist ahk_class MozillaUIWindowClass
+IfWinExist ahk_class MozillaWindowClass
 {
   WinActivate
 }
 Else
 {
   Run "C:\Program Files\Mozilla Firefox\firefox.exe"
-  WinWait ahk_class MozillaUIWindowClass
+  WinWait ahk_class MozillaWindowClass
   WinActivate
 }
 Return
@@ -81,7 +81,7 @@ Return
   ; Firefox bindings
   !h::Send {Browser_Home}   ; Go to the home page with alt-h
   !g::Send ^lgm{Enter}      ; Go to gmail with         alt-g
-  !n::Send ^ln{Enter}       ; Strip NYT stuff with     alt-n
+  !n::Send ^lnn{Enter}       ; Strip NYT stuff with     alt-n
   Return
 }
 

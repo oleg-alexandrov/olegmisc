@@ -24,8 +24,8 @@ MAIN:{
   }
   my $numRows = min( scalar(@val1), scalar(@val2) );
   
-  my ($max_err, $max_row, $max_col) = (0, 0, 0);
-
+  my ($max_abs_err, $max_rel_err, $max_row, $max_col) = (0, 0, 0, 0);
+  
   for (my $row = 0; $row < $numRows; $row++){
     
     my @l1 = split(/(,|\s+)/, $val1[$row]);
@@ -45,8 +45,11 @@ MAIN:{
         $col_num++;
         
         my $err = abs( $l1[$col] - $l2[$col] );
-        if ($err > $max_err){
-          $max_err = $err;
+        my $rel_err = $err/min($l1[$col], $l2[$col]);
+        #print "xxx $rel_err $l1[$col] $l2[$col] \n";
+        if ($err > $max_abs_err){
+          $max_abs_err = $err;
+          $max_rel_err = $rel_err;
           $max_col = $col_num;
           $max_row = $row;
         }
@@ -62,10 +65,9 @@ MAIN:{
     
   }
 
-  print "Max err is $max_err at line " . ($max_row + 1)
-     .                  " and column " . ($max_col + 1) 
-        #.               " in files $file1 $file2"
-        . "\n";
+  print "Max abs err is $max_abs_err at line " . ($max_row + 1)
+     .                  " and column " . ($max_col + 1) . "\n";
+  print "At that location, max rel err is $max_rel_err\n";
   
   #print "Lines:\n";
   #print $val1[$max_row] . "\n";

@@ -4,20 +4,20 @@
 
 # Usage: cvs_rec topDirName
 
-if [ "$#" -ne "1" ]; then
+if [ "$#" == "0" ]; then
   echo "Usage: $(basename $0) topDirName"
   exit 1;
 fi
 
-topDirName=$1
-
-# First remove the "CVS" subdirectories  
-cvsDirs=$( find $topDirName -name CVS )
-for cvsDir in $cvsDirs; do
-    rm -rfv $cvsDir
-done
-
-files=$( find $topDirName | grep -v CVS )
-for file in $files; do
-  cvs add $file
+for dirName in $*; do 
+    # First remove the "CVS" subdirectories  
+    cvsDirs=$( find $dirName -name CVS )
+    for cvsDir in $cvsDirs; do
+        rm -rfv $cvsDir
+    done
+    
+    files=$( find $dirName | grep -v CVS )
+    for file in $files; do
+        cvs add $file
+    done
 done
