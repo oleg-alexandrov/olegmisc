@@ -1168,20 +1168,22 @@ bool dPoly::read_pol_or_cnt_format(std::string filename,
   if (type == "pol" && !(fh >> tmp >> tmp >> tmp >> tmp) ) return false;
 
   while (1){
-   
+
     int numVerts = 0;
    
     if (type == "pol"){
      if (! (fh >> tmp >> numVerts) ) return true;  // no more vertices
      if (! (fh >> tmp >> tmp) )      return false; // invalid format
     }else{
-     if (! (fh >> numVerts) ) return true;         // no more vertices
+      string line;
+      if (!getline(fh, line)) return true;
+      if (!line.empty() && line[0] == '#') continue;
+      numVerts = int(atof(line.c_str()));
     }
     
     m_numPolys++;
     m_numVerts.push_back(numVerts);
     m_totalNumVerts += numVerts;
-    m_isPolyClosed.push_back(true);
     m_colors.push_back(color);
     m_layers.push_back(layer);
   
@@ -1202,7 +1204,10 @@ bool dPoly::read_pol_or_cnt_format(std::string filename,
 	m_yv.pop_back();
 	m_totalNumVerts--;
         m_numVerts[m_numVerts.size() - 1]--;
-     }
+        m_isPolyClosed.push_back(true);
+    }else{
+      m_isPolyClosed.push_back(false);
+    }
   }
 
    return true;
