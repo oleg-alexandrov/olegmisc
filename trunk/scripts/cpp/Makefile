@@ -21,6 +21,9 @@ biggestDim: biggestDim.o $(OBJ1) $(HDR)
 boost_fs: boost_fs.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
+boostPtr: boostPtr.o $(OBJ1) $(HDR) 
+	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
+
 breadth: breadth.o $(OBJ1) $(HDR) 
 	$(CPP)  -o $@ $@.o $(OBJ1)  $(LIBS)
 
