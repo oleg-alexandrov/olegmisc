@@ -167,13 +167,13 @@ bool polyView::eventFilter(QObject *obj, QEvent *E){
 
     const QPoint Q = H->pos(); // mouse point position
     int x = Q.x();
-    int y = Q.y() - 20; // A hack as Qt does not give this number correctly
+    int y = Q.y() - 25; // A hack as Qt does not give this number correctly
     double wx, wy;
     pixelToWorldCoords(x, y, wx, wy);
 
     // We are forced to do things via the "bk" hack since we cannot do
     // a paint event from the current function, so need to call
-    // refreshPixmap to repaint the screen.
+    // refreshPixmap() to repaint the screen.
     vector<double> polyX_bk = m_currPolyX;
     vector<double> polyY_bk = m_currPolyY;
     m_currPolyX.push_back(wx);
@@ -749,7 +749,7 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
     return;
   }
 
-  int tol = 5; 
+  int tol = 10; 
   // Any selection smaller than 'tol' number of pixels will be ignored
   // as perhaps the user moved the mouse unintentionally between press
   // and release.
@@ -1033,9 +1033,11 @@ void polyView::paintEvent(QPaintEvent *){
     // This will be called the very first time the display is
     // initialized. There must be a better way.
     m_firstPaintEvent = false;
-    refreshPixmap();
+    refreshPixmap(); // Create m_pixmap which we will use as cache
   }
-  
+
+  // Note that we draw from the cached pixmap, instead of redrawing
+  // the image from scratch.
   QStylePainter paint(this);
   paint.drawPixmap(0, 0, m_pixmap);
 
@@ -1073,6 +1075,7 @@ void polyView::drawPolyBeingPlotted(const std::vector<double> & polyX,
   assert(polyX.size() == polyY.size());
   
   // Draw the current polygon being plotted
+  paint->setPen( QPen(QColor((m_prefs.fgColor).c_str()), m_prefs.lineWidth) );
   paint->setBrush( Qt::NoBrush );
   drawPolyLine(polyX, polyY, paint);
   
@@ -1082,8 +1085,7 @@ void polyView::drawPolyBeingPlotted(const std::vector<double> & polyX,
   worldToPixelCoords(polyX[0], polyY[0], // inputs
                      px, py // outputs
                      );
-  string color = m_prefs.fgColor;
-  paint->setPen( QPen(QColor(color.c_str()), m_prefs.lineWidth) );
+  paint->setPen( QPen(QColor((m_prefs.fgColor).c_str()), m_prefs.lineWidth) );
   paint->setBrush( Qt::NoBrush );
   paint->drawRect(px - m_pixelTol, py - m_pixelTol,
                   2*m_pixelTol, 2*m_pixelTol
