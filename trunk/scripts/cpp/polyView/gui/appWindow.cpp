@@ -31,7 +31,8 @@ appWindow::appWindow(QWidget* parent, std::string progName,
   resize(windowWidX, windowWidY);
 
   createMenusAndMainWidget(options);
-
+  installEventFilter(m_poly);
+  
   // Command line
   m_cmdLine = new cmdLine(this);
   m_cmdLine->setAlignment(Qt::AlignLeft);
@@ -69,7 +70,7 @@ bool appWindow::eventFilter(QObject *obj, QEvent *event){
       if (m_cmdLine->hasFocus() && m_poly != NULL) m_poly->setFocus();
     }
   }
-  
+
   if (obj == m_poly) {
     // Avoid repainting on these events
     if (event->type() == QEvent::FocusIn          ||
@@ -80,7 +81,7 @@ bool appWindow::eventFilter(QObject *obj, QEvent *event){
       return true;
     }
   }
-
+  
   //cout << "Other event: " << (int)event->type() << endl;
   return QWidget::eventFilter(obj, event);
 }
@@ -209,6 +210,7 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
 
   Q3PopupMenu* highlights = new Q3PopupMenu( menu );
   menu->insertItem("&Highlights", highlights);
+  highlights->insertItem("Create highlight", m_poly, SLOT(createHlt()));
   highlights->insertItem("Cut polys to highlight", m_poly, SLOT(cutToHlt()), Qt::Key_C);
   highlights->insertItem("Erase polys intersecting highlight", m_poly, SLOT(erasePolysIntersectingHighlight()) );
 
