@@ -1,16 +1,15 @@
 #ifndef POLYVIEW_H
 #define POLYVIEW_H
 
-#include <qwidget.h>
-#include <qpixmap.h>
-#include <qevent.h>
-//Added by qt3to4:
-#include <QContextMenuEvent>
 #include <Q3PointArray>
-#include <QWheelEvent>
-#include <QPaintEvent>
-#include <QMouseEvent>
+#include <QContextMenuEvent>
+#include <QEvent>
 #include <QKeyEvent>
+#include <QMouseEvent>
+#include <QPaintEvent>
+#include <QPixmap>
+#include <QWheelEvent>
+#include <QWidget>
 #include <vector>
 #include "utils.h"
 #include "../geom/dPoly.h"
@@ -20,10 +19,9 @@
 class cmdLineOptions;
 
 class polyView : public QWidget{
-    Q_OBJECT
+  Q_OBJECT
 public:
-    polyView(QWidget *parent, const cmdLineOptions & options);
-  
+  polyView(QWidget *parent, const cmdLineOptions & options);
   void runCmd(std::string cmd);
   
 public slots:
@@ -74,6 +72,7 @@ public slots:
   void enforce45AndSnapToGrid();
 
   // Highlights menu
+  void createHlt();
   void cutToHlt();
   void erasePolysIntersectingHighlight();
 
@@ -109,6 +108,9 @@ public slots:
 protected:
 
   void paintEvent(QPaintEvent *);
+  void drawPolyBeingPlotted(const std::vector<double> & polyX,
+                            const std::vector<double> & polyY,
+                            QPainter * paint);
   void resizeEvent(QResizeEvent*);
   void popUp(std::string msg);
   bool getStringFromGui(std::string title, std::string description,
@@ -120,6 +122,7 @@ protected:
                             const std::vector<double> & inputVec,
                             std::vector<double> & values);
   void setBgFgColorsFromPrefs();
+  bool eventFilter(QObject *obj, QEvent *E);
   void mousePressEvent( QMouseEvent *E);
   void mouseMoveEvent( QMouseEvent *E);
   void keyPressEvent( QKeyEvent *K );

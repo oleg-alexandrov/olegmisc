@@ -1,15 +1,16 @@
-#include <qwidget.h>
-#include <QContextMenuEvent>
-#include <QFileDialog>
-#include <QKeyEvent>
-#include <Q3PopupMenu>
 #include <Q3PointArray>
+#include <Q3PopupMenu>
+#include <QContextMenuEvent>
+#include <QEvent>
+#include <QFileDialog>
+#include <QHoverEvent>
+#include <QKeyEvent>
 #include <QMouseEvent>
 #include <QPaintEvent>
-#include <QWheelEvent>
-#include <QStylePainter>
 #include <QStyleOptionFocusRect>
+#include <QStylePainter>
 #include <QTableWidget>
+#include <QWheelEvent>
 #include <cassert>
 #include <cfloat>    // defines DBL_MAX
 #include <cmath>
@@ -47,6 +48,8 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
                    this,
                    SLOT(showFilesChosenByUser())
                    );
+
+  setAttribute(Qt::WA_Hover); // To be able to do hovering
   
   // Preferences per polygon file. The element in the vector
   // m_polyOptionsVec below is not associated with any polygon
@@ -97,7 +100,7 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   m_mouseRelX = 0; m_mouseRelY = 0;
   
   // Points closer than this are in some situations considered equal
-  m_pixelTol = 10;
+  m_pixelTol = 6;
   
   m_useNmScale  = false;
   m_nmScale     = 1.0;
@@ -148,6 +151,39 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   readAllPolys(); // To do: avoid global variables here
 
   return;
+}
+
+bool polyView::eventFilter(QObject *obj, QEvent *E){
+
+
+  QHoverEvent * H = dynamic_cast<QHoverEvent*>(E);
+  
+  if (H && m_createPoly){
+    
+    // The mouse is hovering and we are creating a new poly. Update
+    // the screen and then draw on top of it the polygon being
+    // plotted, with its last vertex connected to the current mouse
+    // pointer.
+
+    const QPoint Q = H->pos(); // mouse point position
+    int x = Q.x();
+    int y = Q.y() - 20; // A hack as Qt does not give this number correctly
+    double wx, wy;
+    pixelToWorldCoords(x, y, wx, wy);
+
+    // We are forced to do things via the "bk" hack since we cannot do
+    // a paint event from the current function, so need to call
+    // refreshPixmap to repaint the screen.
+    vector<double> polyX_bk = m_currPolyX;
+    vector<double> polyY_bk = m_currPolyY;
+    m_currPolyX.push_back(wx);
+    m_currPolyY.push_back(wy);
+    refreshPixmap();
+    m_currPolyX = polyX_bk;
+    m_currPolyY = polyY_bk;
+  }
+  
+  return QWidget::eventFilter(obj, E);
 }
 
 void polyView::setupViewingWindow(){
@@ -321,7 +357,7 @@ void polyView::displayData( QPainter *paint ){
   }
   
   // This draws the polygon being created if in that mode
-  drawPolyLine(m_currPolyX, m_currPolyY, paint);
+  drawPolyBeingPlotted(m_currPolyX, m_currPolyY, paint);
 
   // Draw the mark if there
   if (m_markX.size() > 0){
@@ -628,11 +664,13 @@ void polyView::mouseMoveEvent( QMouseEvent *E){
     refreshPixmap();
     return;
   }
-  
+
   if (m_movingVertsOrPolysNow){
+
     if (m_polyVecIndex        < 0 ||
         m_polyIndexInCurrPoly < 0 ||
         m_vertIndexInCurrPoly < 0) return;
+    
     if (m_moveVertices){
       m_polyVec[m_polyVecIndex].changeVertexValue(m_polyIndexInCurrPoly,
                                                   m_vertIndexInCurrPoly,
@@ -677,7 +715,7 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
   cout << "Mouse released at "
        << m_mouseRelX << ' ' << m_mouseRelY << endl;
 #endif
-
+    
   if ( m_editMode && m_deletingPolyNow ){
     // To do: consolidate this with the other call to this function.
     // See if can pass the relevant variables as input arguments.
@@ -734,6 +772,8 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
   
     if (m_createPoly){
       addPolyVert(m_mouseRelX, m_mouseRelY);
+      refreshPixmap();
+
       return;
     }
     
@@ -1021,9 +1061,34 @@ void polyView::paintEvent(QPaintEvent *){
                    );
   }
 
-  // Draw the current polygon being plotted
-  drawPolyLine(m_currPolyX, m_currPolyY, &paint);
+  return;
+}
+
+void polyView::drawPolyBeingPlotted(const std::vector<double> & polyX,
+                                    const std::vector<double> & polyY,
+                                    QPainter * paint){
+
+  if (polyX.size() <= 1) return;
+
+  assert(polyX.size() == polyY.size());
   
+  // Draw the current polygon being plotted
+  paint->setBrush( Qt::NoBrush );
+  drawPolyLine(polyX, polyY, paint);
+  
+  // Draw a small rectangle at the start of the polygon to make it easier
+  // to tell where to close the polygon.
+  int px, py;
+  worldToPixelCoords(polyX[0], polyY[0], // inputs
+                     px, py // outputs
+                     );
+  string color = m_prefs.fgColor;
+  paint->setPen( QPen(QColor(color.c_str()), m_prefs.lineWidth) );
+  paint->setBrush( Qt::NoBrush );
+  paint->drawRect(px - m_pixelTol, py - m_pixelTol,
+                  2*m_pixelTol, 2*m_pixelTol
+                  );
+
   return;
 }
 
@@ -1484,7 +1549,7 @@ void polyView::drawPolyLine(const std::vector<double> & polyX,
             paint,  
             polyLine
             );
-  
+
   return;
 }
 
@@ -1648,7 +1713,8 @@ void polyView::drawOneVertex(int x0, int y0, QColor color, int lineWidth,
   // Use variable size shapes to distinguish better points on top of
   // each other
   int len = 3*(drawVertIndex+1); 
-
+  len = min(len, 8); // limit how big this can get
+  
   paint->setPen( QPen(color, lineWidth) );
 
   int numTypes = 4;
@@ -2181,6 +2247,11 @@ void polyView::toggleNmScale(){
   
   cout << "Using the nm scale factor " << m_nmScale << endl;
 
+  return;
+}
+
+void polyView::createHlt(){
+  popUp("To create a highlight use Control-Mouse.");
   return;
 }
 
