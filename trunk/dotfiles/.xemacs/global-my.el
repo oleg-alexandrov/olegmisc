@@ -210,11 +210,6 @@
   )
 
 
-(defun tetris ()
-  (interactive)
-  (message "function not defined!")
-  )
-
 (defun duplicate-line ()
   "Comments the current line and goes to the next one"
   (interactive)
