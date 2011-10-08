@@ -2,8 +2,12 @@
 if [[ -f ~/.bash_login ]]; then source ~/.bash_login; fi
 if [[ -f ~/.bashrc     ]]; then source ~/.bashrc;     fi
 
-autoload -U compinit promptinit
-compinit; promptinit;
+autoload -U compinit;   compinit
+autoload -U promptinit; promptinit
+
+# Disable completion with these two
+compdef -d svn
+compdef -d make
 
 export HISTFILE=~/.zsh_history
 export HISTSIZE=10000
