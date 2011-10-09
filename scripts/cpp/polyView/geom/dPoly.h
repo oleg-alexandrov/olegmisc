@@ -97,7 +97,7 @@ public:
                                 double xur, double yur,
                                 // Outputs
                                 std::map<int, int> & mark
-                                );
+                                ) const;
   // Annotations
   void get_annotations (std::vector<anno> & annotations) const;
   void get_layerAnno(std::vector<anno> & annotations) const;
@@ -146,9 +146,10 @@ public:
   void changeVertexValue(int polyIndex, int vertIndex, double x, double y);
   void shiftEdge(int polyIndex, int vertIndex, double shift_x, double shift_y);
   void shiftOnePoly(int polyIndex, double shift_x, double shift_y);
+  void shiftMarkedPolys(const std::map<int, int> & mark, double shift_x, double shift_y);
   void extractOnePoly(int polyIndex, // input
                       dPoly & poly   // output
-                      );
+                      ) const;
   void reverseOnePoly(int polyIndex);
   void sortFromLargestToSmallest();
 

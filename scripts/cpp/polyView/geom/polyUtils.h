@@ -5,6 +5,7 @@
 #include <fstream>
 #include <cmath>
 #include <set>
+#include <map>
 #include "dPoly.h"
 #include "geomUtils.h"
 #include "dTree.h"
@@ -74,7 +75,21 @@ namespace utils{
                     const std::vector<dPoly> & polyVec,
                     // outputs
                     double & xll,  double & yll,
-                    double & widx, double & widy);
+                    double & widx, double & widy
+                    );
+  
+  void markPolysInHlts(// Inputs
+                       const std::vector<dPoly> & polyVec,
+                       const std::vector<dPoly> & highlights,
+                       // Outputs
+                       std::map< int, std::map<int, int> > & markedPolyIndices
+                       );
+  void shiftMarkedPolys(// Inputs
+                        std::map< int, std::map<int, int> > & markedPolyIndices,
+                        double shift_x, double shift_y,
+                        // Inputs-outputs
+                        std::vector<dPoly> & polyVec
+                        );
   
 }
   
