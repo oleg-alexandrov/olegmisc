@@ -75,5 +75,6 @@ void rv_str(char *, int);
 void rv_str(char *, int, int);
 void rv_word(char *, int, int);
 void rv_words(char *, int);
+void some_func(T);
 void splitAtPivot(list *, int, list*&, list*&);
 void writeTree(const node *, const char *);
