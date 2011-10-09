@@ -615,10 +615,11 @@ void polyView::mousePressEvent( QMouseEvent *E){
   
   m_movingVertsOrPolysNow = ( m_editMode && isShiftLeftMouse(E) &&
                               !m_createPoly && ! m_deletingPolyNow);
+  m_movingPolysInHlts = false;
   if (m_movingVertsOrPolysNow){
 
     double min_x, min_y, min_dist;
-    if (m_moveVertices){
+    if (m_movingVertsOrPolysNow && m_moveVertices){
       findClosestPolyVertex(// inputs
                             m_mousePressWorldX, m_mousePressWorldY, m_polyVec,
                             // outputs
@@ -627,7 +628,18 @@ void polyView::mousePressEvent( QMouseEvent *E){
                             m_vertIndexInCurrPoly,
                             min_x, min_y, min_dist
                             );
-    }else if (m_moveEdges || m_movePolys){
+    }else if (m_movingVertsOrPolysNow    &&
+              m_movePolys                &&
+              ( m_highlights.size() > 0 || m_selectedPolyIndices.size() > 0 ) ){
+      if (m_highlights.size() > 0){
+        markPolysInHlts(m_polyVec, m_highlights, // Inputs
+                        m_selectedPolyIndices    // Outputs
+                        );
+        m_highlights.clear(); // No need for these anymore
+      }
+      m_polyVecBeforeShift = m_polyVec;
+      m_movingPolysInHlts = true;
+    }else if (m_movingVertsOrPolysNow && ( m_moveEdges || m_movePolys ) ){
       findClosestPolyEdge(// inputs
                           m_mousePressWorldX, m_mousePressWorldY, m_polyVec,  
                           // outputs
@@ -647,24 +659,33 @@ void polyView::mousePressEvent( QMouseEvent *E){
 
 void polyView::mouseMoveEvent( QMouseEvent *E){
 
-  const QPoint Q = E->pos();
-  int x = Q.x();
-  int y = Q.y();
+  QPoint Q = E->pos();
+  int x = Q.x(), y = Q.y();
 
   double wx, wy;
   pixelToWorldCoords(x, y, wx, wy);
+
+  double shift_x = wx - m_mousePressWorldX;
+  double shift_y = wy - m_mousePressWorldY;
   
   if (m_aligningPolysNow){
     m_polyVec[0] = m_polyBeforeShift;
-    m_polyVec[0].applyTransform(1, 0, 0, 1,
-                                wx - m_mousePressWorldX, 
-                                wy - m_mousePressWorldY,
-                                m_T
-                                );
+    m_polyVec[0].applyTransform(1, 0, 0, 1, shift_x, shift_y, m_T);
     refreshPixmap();
     return;
   }
 
+  if (m_movingPolysInHlts){
+    m_polyVec = m_polyVecBeforeShift;
+    shiftMarkedPolys(// Inputs
+                     m_selectedPolyIndices, shift_x, shift_y,
+                     // Inputs-outputs
+                     m_polyVec
+                     );
+    refreshPixmap();
+    return;
+  }
+  
   if (m_movingVertsOrPolysNow){
 
     if (m_polyVecIndex        < 0 ||
@@ -681,13 +702,11 @@ void polyView::mouseMoveEvent( QMouseEvent *E){
       if (m_moveEdges){
         m_polyVec[m_polyVecIndex].shiftEdge(m_polyIndexInCurrPoly,
                                             m_vertIndexInCurrPoly,
-                                            wx - m_mousePressWorldX, 
-                                            wy - m_mousePressWorldY 
+                                            shift_x, shift_y 
                                             );
       }else if (m_movePolys){
         m_polyVec[m_polyVecIndex].shiftOnePoly(m_polyIndexInCurrPoly,
-                                               wx - m_mousePressWorldX, 
-                                               wy - m_mousePressWorldY 
+                                               shift_x, shift_y 
                                                );
       }
     }
@@ -1966,6 +1985,7 @@ void polyView::toggleEditMode(){
     m_movePolys               = false;
     m_toggleShowPointsEdgesBk = m_toggleShowPointsEdges;
     m_toggleShowPointsEdges   = m_showPointsEdges;
+    m_selectedPolyIndices.clear();
   }else{
     m_moveVertices            = false;
     m_moveEdges               = false; 
@@ -2061,6 +2081,7 @@ void polyView::turnOnMoveVertices(){
   m_moveVertices = true;
   m_moveEdges    = false;
   m_movePolys    = false;
+  m_selectedPolyIndices.clear();
 }
 
 void polyView::turnOnMoveEdges(){
@@ -2068,6 +2089,7 @@ void polyView::turnOnMoveEdges(){
   m_moveVertices = false;
   m_moveEdges    = true;
   m_movePolys    = false;
+  m_selectedPolyIndices.clear();
 }
 
 void polyView::turnOnMovePolys(){
@@ -2075,6 +2097,7 @@ void polyView::turnOnMovePolys(){
   m_moveVertices = false;
   m_moveEdges    = false;
   m_movePolys    = true;
+  m_selectedPolyIndices.clear();
 }
 
 void polyView::create45DegreeIntPoly(){

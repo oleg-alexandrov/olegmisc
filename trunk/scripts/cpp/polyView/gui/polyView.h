@@ -11,6 +11,7 @@
 #include <QWheelEvent>
 #include <QWidget>
 #include <vector>
+#include <map>
 #include "utils.h"
 #include "../geom/dPoly.h"
 #include "../geom/geomUtils.h"
@@ -304,6 +305,9 @@ private:
   dPoly  m_polyBeforeShift;
   dPoly  m_copiedPoly;
   double m_copyPosX, m_copyPosY;
+  std::map< int, std::map<int, int> > m_selectedPolyIndices;
+  std::vector<dPoly> m_polyVecBeforeShift;
+  bool m_movingPolysInHlts;
   
   // Align mode (align one file with another file via linear transform)
   bool m_alignMode;
