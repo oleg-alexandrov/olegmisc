@@ -763,9 +763,18 @@ void dPoly::shiftOnePoly(int polyIndex, double shift_x, double shift_y){
   return;
 }
 
+void dPoly::shiftMarkedPolys(const std::map<int, int> & mark, double shift_x, double shift_y){
+
+  for (int pIter = 0; pIter < m_numPolys; pIter++){
+    if (mark.find(pIter) != mark.end()) shiftOnePoly(pIter, shift_x, shift_y);
+  }
+
+  return;
+}
+
 void dPoly::extractOnePoly(int polyIndex, // input
                            dPoly & poly   // output
-                           ){
+                           ) const {
 
   assert(0 <= polyIndex && polyIndex < m_numPolys);
 
@@ -1275,7 +1284,7 @@ void dPoly::markPolysIntersectingBox(// Inputs
                                      double xur, double yur,
                                      // Outputs
                                      std::map<int, int> & mark
-                                     ){
+                                     ) const {
 
   mark.clear();
   

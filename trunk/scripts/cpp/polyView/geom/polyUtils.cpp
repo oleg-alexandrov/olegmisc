@@ -350,7 +350,8 @@ void utils::setUpViewBox(// inputs
                          const std::vector<dPoly> & polyVec,
                          // outputs
                          double & xll,  double & yll,
-                         double & widx, double & widy){
+                         double & widx, double & widy
+                         ){
   
   // Given a set of polygons, set up a box containing these polygons.
 
@@ -388,3 +389,45 @@ void utils::setUpViewBox(// inputs
 }
 
 
+void utils::markPolysInHlts(// Inputs
+                            const std::vector<dPoly> & polyVec,
+                            const std::vector<dPoly> & highlights,
+                            // Outputs
+                            std::map< int, std::map<int, int> > & markedPolyIndices
+                            ){
+  
+  markedPolyIndices.clear();
+
+  for (int s = 0; s < (int)highlights.size(); s++){
+
+    double xll, yll, xur, yur;
+    assert(highlights[s].get_totalNumVerts() == 4);
+    highlights[s].bdBox(xll, yll, xur, yur);
+
+    map<int, int> mark;
+    for (int t = 0; t < (int)polyVec.size(); t++){
+      polyVec[t].markPolysIntersectingBox(xll, yll, xur, yur, // Inputs 
+                                          mark                // Outputs
+                                          );
+      for (map<int, int>::iterator it = mark.begin(); it != mark.end(); it++){
+        markedPolyIndices[t][it->first] = it->second;
+      }
+    }
+  }
+  
+  return;
+}
+
+void utils::shiftMarkedPolys(// Inputs
+                             std::map< int, std::map<int, int> > & markedPolyIndices,
+                             double shift_x, double shift_y,
+                             // Inputs-outputs
+                             std::vector<dPoly> & polyVec
+                             ){
+
+  for (int pIter = 0; pIter < (int)polyVec.size(); pIter++){
+    polyVec[pIter].shiftMarkedPolys(markedPolyIndices[pIter], shift_x, shift_y);
+  }
+
+  return;
+}
