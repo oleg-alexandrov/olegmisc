@@ -150,6 +150,9 @@ public:
   void extractOnePoly(int polyIndex, // input
                       dPoly & poly   // output
                       ) const;
+  void extractMarkedPolys(std::map<int, int> & mark, // input
+                          dPoly & polys              // output
+                          ) const;
   void reverseOnePoly(int polyIndex);
   void sortFromLargestToSmallest();
 
