@@ -291,12 +291,8 @@ void polyView::displayData( QPainter *paint ){
                    m_viewYll + m_viewWidY,
                    m_prefs.gridSize, m_prefs.gridColor
                    );
-    plotDPoly(plotPoints, plotEdges, plotFilled, showAnno,
-              m_prefs.gridWidth,  
-              drawVertIndex,   
-              textOnScreenGrid,
-              paint,  
-              grid
+    plotDPoly(plotPoints, plotEdges, plotFilled, showAnno, m_prefs.gridWidth, 
+              drawVertIndex, textOnScreenGrid, paint, grid
               );
   }
   
@@ -331,12 +327,21 @@ void polyView::displayData( QPainter *paint ){
     if (plotPoints) drawVertIndex++;
 
     bool showAnno = true;
-    plotDPoly(plotPoints, plotEdges, plotFilled, showAnno, lineWidth,  
-              drawVertIndex,   
-              textOnScreenGrid,
-              paint,  
-              m_polyVec[vecIter]
+    plotDPoly(plotPoints, plotEdges, plotFilled, showAnno, lineWidth, 
+              drawVertIndex, textOnScreenGrid, paint, m_polyVec[vecIter]
               );
+    if ( !plotFilled && !m_selectedPolyIndices[vecIter].empty() ){
+      // Plot the selected polys on top with thicker lines
+      dPoly lPolys;
+      int lineWidth2 = 2*lineWidth;
+      m_polyVec[vecIter].extractMarkedPolys(m_selectedPolyIndices[vecIter], // input
+                                            lPolys                          // output
+                                            );
+      plotDPoly(plotPoints, plotEdges, plotFilled, showAnno, lineWidth2, 
+                drawVertIndex, textOnScreenGrid, paint, lPolys
+                );
+    }
+    //m_selectedPolyIndices[vecIter], 
     
   } // End iterating over sets of polygons
 
@@ -347,12 +352,8 @@ void polyView::displayData( QPainter *paint ){
   for (int h = 0; h < (int)m_highlights.size(); h++){
     m_highlights[h].set_color(m_prefs.fgColor.c_str());
     bool showAnno = false;
-    plotDPoly(plotPoints, plotEdges, plotFilled, showAnno,
-              m_prefs.lineWidth,  
-              drawVertIndex,    
-              textOnScreenGrid, 
-              paint,  
-              m_highlights[h]
+    plotDPoly(plotPoints, plotEdges, plotFilled, showAnno, m_prefs.lineWidth, 
+              drawVertIndex, textOnScreenGrid, paint, m_highlights[h]
               );
   }
   
@@ -762,8 +763,7 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
   if ( E->modifiers() & Qt::ControlModifier ){
     // Draw a  highlight with control + left mouse button
     // ending at the current point
-    createHighlightWithPixelInputs(m_mousePrsX, m_mousePrsY,
-                                   m_mouseRelX, m_mouseRelY);
+    createHighlightWithPixelInputs(m_mousePrsX, m_mousePrsY, m_mouseRelX, m_mouseRelY);
     refreshPixmap();
     return;
   }
@@ -1561,22 +1561,16 @@ void polyView::drawPolyLine(const std::vector<double> & polyX,
 
   bool plotPoints = false, plotEdges = true, plotFilled = false;
   int drawVertIndex = 0;
-  vector< vector<int> > textOnScreenGrid;
-  textOnScreenGrid.clear();
+  vector< vector<int> > textOnScreenGrid; textOnScreenGrid.clear();
   bool showAnno = false;
-  plotDPoly(plotPoints, plotEdges, plotFilled, showAnno, m_prefs.lineWidth,  
-            drawVertIndex,    // 0 is a good choice here
-            textOnScreenGrid, // empty grid is fine here  
-            paint,  
-            polyLine
+  plotDPoly(plotPoints, plotEdges, plotFilled, showAnno, m_prefs.lineWidth, 
+            drawVertIndex, textOnScreenGrid, paint, polyLine
             );
 
   return;
 }
 
-void polyView::createHighlightWithPixelInputs(int pxll, int pyll,
-                                              int pxur, int pyur
-                                              ){
+void polyView::createHighlightWithPixelInputs(int pxll, int pyll, int pxur, int pyur){
   
   double xll, yll, xur, yur;
   pixelToWorldCoords(pxll, pyll, // inputs
@@ -1591,9 +1585,7 @@ void polyView::createHighlightWithPixelInputs(int pxll, int pyll,
   return;
 }
 
-void polyView::createHighlightWithRealInputs(double xll, double yll,
-                                             double xur, double yur
-                                             ){
+void polyView::createHighlightWithRealInputs(double xll, double yll, double xur, double yur){
   
   dPoly R;
   bool isPolyClosed = true;
@@ -1601,6 +1593,9 @@ void polyView::createHighlightWithRealInputs(double xll, double yll,
   R.setRectangle(min(xll, xur), min(yll, yur), max(xll, xur), max(yll, yur),
                  isPolyClosed, color, layer);
   m_highlights.push_back(R);
+  markPolysInHlts(m_polyVec, m_highlights, // Inputs
+                  m_selectedPolyIndices    // Outputs
+                  );
   saveDataForUndo(false);
   
   return;
@@ -2306,6 +2301,9 @@ void polyView::cutToHlt(){
   }
 
   m_highlights.resize(numH - 1);
+  markPolysInHlts(m_polyVec, m_highlights, // Inputs
+                  m_selectedPolyIndices    // Outputs
+                  );
   
   saveDataForUndo(false);
   refreshPixmap();
@@ -2393,7 +2391,10 @@ void polyView::restoreDataAtUndoPos(){
   m_polyVec        = m_polyVecStack[m_posInUndoStack];
   m_polyOptionsVec = m_polyOptionsVecStack[m_posInUndoStack];
   m_highlights     = m_highlightsStack[m_posInUndoStack];
-  
+  markPolysInHlts(m_polyVec, m_highlights, // Inputs
+                  m_selectedPolyIndices    // Outputs
+                  );
+
   return;
 }
 
@@ -2970,6 +2971,9 @@ void polyView::erasePolysIntersectingHighlight(){
   }
   
   m_highlights.resize(numH - 1);
+  markPolysInHlts(m_polyVec, m_highlights, // Inputs
+                  m_selectedPolyIndices    // Outputs
+                  );
   
   saveDataForUndo(false);
   refreshPixmap();
