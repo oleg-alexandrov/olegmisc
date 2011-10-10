@@ -161,13 +161,9 @@ private:
   void addPolyVert(int px, int py);
   void appendToPolyVec(const dPoly & P);
   double pixelToWorldDist(int pd);
-  void createHighlightWithPixelInputs(int pxll, int pyll,
-                                      int pxur, int pyur
-                                      );
+  void createHighlightWithPixelInputs(int pxll, int pyll, int pxur, int pyur);
   
-  void createHighlightWithRealInputs(double xll, double yll,
-                                     double xur, double yur
-                                     );
+  void createHighlightWithRealInputs(double xll, double yll, double xur, double yur);
 
   void printCurrCoords(const Qt::ButtonState & state, // input
                        int & currX, int  & currY      // in-out
