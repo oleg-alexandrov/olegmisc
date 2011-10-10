@@ -29,8 +29,7 @@ void dPoly::reset(){
   m_layerAnno.clear();
 }
 
-void dPoly::bdBox(double & xll, double & yll, double & xur, double & yur)
-  const{
+void dPoly::bdBox(double & xll, double & yll, double & xur, double & yur) const{
 
   // The bounding box of all polygons
   
@@ -439,7 +438,7 @@ void dPoly::appendPolygons(const dPoly & poly){
   return;
 }
 
-void dPoly::get_annotations (std::vector<anno> & annotations) const {
+void dPoly::get_annotations (std::vector<anno> & annotations) const{
   annotations =  m_annotations;
 }
 
@@ -544,7 +543,7 @@ void dPoly::findClosestPolyVertex(// inputs
                                   int & vertIndex,
                                   double & min_x, double & min_y,
                                   double & min_dist
-                                  ) const {
+                                  ) const{
 
   // Given a point and a set of polygons, find the polygon vertex
   // closest to the given point. Return the closest vertex and the
@@ -774,7 +773,7 @@ void dPoly::shiftMarkedPolys(const std::map<int, int> & mark, double shift_x, do
 
 void dPoly::extractOnePoly(int polyIndex, // input
                            dPoly & poly   // output
-                           ) const {
+                           ) const{
 
   assert(0 <= polyIndex && polyIndex < m_numPolys);
 
@@ -792,6 +791,24 @@ void dPoly::extractOnePoly(int polyIndex, // input
   
   return;
 }
+
+void dPoly::extractMarkedPolys(std::map<int, int> & mark, // input
+                               dPoly & polys              // output
+                               ) const{
+  
+  polys.reset();
+  for (int pIter = 0; pIter < m_numPolys; pIter++){
+    if (mark.find(pIter) == mark.end()) continue;
+    dPoly lPoly;
+    extractOnePoly(pIter, // input
+                   lPoly  // output
+                   );
+    polys.appendPolygons(lPoly);
+  }
+  
+  return;
+}
+
 
 void dPoly::reverseOnePoly(int polyIndex){
 
@@ -1284,7 +1301,7 @@ void dPoly::markPolysIntersectingBox(// Inputs
                                      double xur, double yur,
                                      // Outputs
                                      std::map<int, int> & mark
-                                     ) const {
+                                     ) const{
 
   mark.clear();
   
@@ -1309,6 +1326,9 @@ void dPoly::eraseMarkedPolys(// Inputs
 
   // Erase the polygons matching the given mark. 
   // See also the function named erasePoly().
+
+  // To do: Rewrite erasePoly() to use this function instead of
+  // re-implementing this logic.
   
   vector<char> dmark, imark;
   dmark.assign(m_totalNumVerts, 0);
@@ -1351,3 +1371,4 @@ void dPoly::erasePolysIntersectingBox(double xll, double yll, double xur, double
   
   return;
 }
+
