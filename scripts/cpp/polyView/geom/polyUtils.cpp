@@ -346,6 +346,26 @@ void utils::findPolyDiff(const dPoly & P, const dPoly & Q, // inputs
   return;
 }
 
+void utils::bdBox(const std::vector<dPoly> & polyVec,
+                  // outputs
+                  double & xll, double & yll,
+                  double & xur, double & yur
+                  ){
+
+  double big = DBL_MAX;
+  xll = big; yll = big; xur = -big; yur = -big;
+  for (int p = 0; p < (int)polyVec.size(); p++){
+    if (polyVec[p].get_totalNumVerts() == 0) continue;
+    double xll0, yll0, xur0, yur0;
+    polyVec[p].bdBox(xll0, yll0, xur0, yur0);
+    xll = min(xll, xll0); xur = max(xur, xur0);
+    yll = min(yll, yll0); yur = max(yur, yur0);
+  }
+  
+  return;
+}
+  
+
 void utils::setUpViewBox(// inputs
                          const std::vector<dPoly> & polyVec,
                          // outputs
@@ -357,16 +377,10 @@ void utils::setUpViewBox(// inputs
 
   double xur, yur; // local variables
   
-  // Start with the poly bounding box
-  double big = DBL_MAX;
-  xll = big; yll = big; xur = -big; yur = -big;
-  for (int p = 0; p < (int)polyVec.size(); p++){
-    double xll0, yll0, xur0, yur0;
-    polyVec[p].bdBox(xll0, yll0, xur0, yur0);
-    xll = min(xll, xll0); xur = max(xur, xur0);
-    yll = min(yll, yll0); yur = max(yur, yur0);
-  }
-
+  bdBox(polyVec,           // inputs 
+        xll, yll, xur, yur // outputs
+        );
+  
   // Treat the case of empty polygons
   if (xur < xll || yur < yll){
     xll = 0.0; yll = 0.0; xur = 1000.0; yur = 1000.0;
@@ -430,4 +444,46 @@ void utils::shiftMarkedPolys(// Inputs
   }
 
   return;
+}
+
+void utils::eraseMarkedPolys(// Inputs
+                               std::map< int, std::map<int, int> > & markedPolyIndices,
+                               // Inputs-outputs
+                               std::vector<dPoly> & polyVec
+                               ){
+  for (int pIter = 0; pIter < (int)polyVec.size(); pIter++){
+    polyVec[pIter].eraseMarkedPolys(markedPolyIndices[pIter]);
+  }
+
+  return;
+}
+
+void utils::extractMarkedPolys(// Inputs
+                               const std::vector<dPoly> & polyVec,
+                               std::map< int, std::map<int, int> > & markedPolyIndices,
+                               // Outputs
+                               std::vector<dPoly> & extractedPolyVec
+                               ){
+
+  int pSize = polyVec.size();
+  extractedPolyVec.resize(pSize);
+  
+  for (int pIter = 0; pIter < pSize; pIter++){
+    polyVec[pIter].extractMarkedPolys(markedPolyIndices[pIter], // input
+                                      extractedPolyVec[pIter]   // output
+                                      );
+  }
+  
+  return;
+}
+
+int utils::getNumElements(std::map< int, std::map<int, int> > & Indices){
+
+  int num = 0;
+  map< int, map<int, int> >::iterator it; 
+  for (it = Indices.begin(); it != Indices.end(); it++){
+    num += (it->second).size();
+  }
+  
+  return num;
 }

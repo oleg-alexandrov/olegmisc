@@ -625,32 +625,13 @@ void dPoly::findClosestPolyEdge(//inputs
   return;
 }
 
-void dPoly::erasePoly(int polyIndex){
+void dPoly::eraseOnePoly(int polyIndex){
 
-  // See also the function named eraseMarkedPolys().
-  
   assert(0 <= polyIndex && polyIndex < m_numPolys);
 
-  int start = 0;
-  for (int pIter = 0; pIter < polyIndex; pIter++){
-    start += m_numVerts[pIter]; 
-  }
-
-  m_xv.erase(m_xv.begin() + start,
-             m_xv.begin() + start + m_numVerts[polyIndex]);
-  
-  m_yv.erase(m_yv.begin() + start,
-             m_yv.begin() + start + m_numVerts[polyIndex]);
-
-  m_totalNumVerts -= m_numVerts[polyIndex];
-  m_numPolys      -= 1;
-  
-  m_isPolyClosed.erase(m_isPolyClosed.begin() + polyIndex);
-  m_colors.erase(m_colors.begin()             + polyIndex);
-  m_layers.erase(m_layers.begin()             + polyIndex);
-  m_numVerts.erase(m_numVerts.begin()         + polyIndex); // better be last
-  m_vertIndexAnno.clear();
-  m_layerAnno.clear();
+  map<int, int> mark;
+  mark[polyIndex] = 1;
+  eraseMarkedPolys(mark);
 
   return;
 }
@@ -1325,10 +1306,7 @@ void dPoly::eraseMarkedPolys(// Inputs
                              ){
 
   // Erase the polygons matching the given mark. 
-  // See also the function named erasePoly().
-
-  // To do: Rewrite erasePoly() to use this function instead of
-  // re-implementing this logic.
+  // See also the function named eraseOnePoly().
   
   vector<char> dmark, imark;
   dmark.assign(m_totalNumVerts, 0);
@@ -1372,3 +1350,24 @@ void dPoly::erasePolysIntersectingBox(double xll, double yll, double xur, double
   return;
 }
 
+void dPoly::appendAndShiftMarkedPolys(// Inputs
+                                      std::map<int, int> & mark,
+                                      double shift_x, double shift_y
+                                      ){
+
+  dPoly polys;
+
+  extractMarkedPolys(mark, // input
+                     polys // output
+                     );
+  polys.shift(shift_x, shift_y);
+  int start = m_numPolys;
+  appendPolygons(polys);
+  int end = m_numPolys;
+
+  // Remove the mark from the original polygons and mark the newly appended polygons.
+  mark.clear();
+  for (int s = start; s < end; s++) mark[s] = 1;
+
+  return;
+}

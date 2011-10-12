@@ -15,6 +15,11 @@ namespace utils{
   void findPolyDiff(const dPoly & P, const dPoly & Q, // inputs
                     std::vector<dPoint> & vP, std::vector<dPoint> & vQ // outputs
                     );
+  void bdBox(const std::vector<dPoly> & polyVec,
+             // outputs
+             double & xll, double & yll,
+             double & xur, double & yur
+             );
   
 
   void findClosestPolyVertex(// inputs
@@ -90,6 +95,18 @@ namespace utils{
                         // Inputs-outputs
                         std::vector<dPoly> & polyVec
                         );
+  void eraseMarkedPolys(// Inputs
+                        std::map< int, std::map<int, int> > & markedPolyIndices,
+                        // Inputs-outputs
+                        std::vector<dPoly> & polyVec
+                        );
+  void extractMarkedPolys(// Inputs
+                          const std::vector<dPoly> & polyVec,
+                          std::map< int, std::map<int, int> > & markedPolyIndices,
+                          // Outputs
+                          std::vector<dPoly> & extractedPolyVec
+                          );
+  int getNumElements(std::map< int, std::map<int, int> > & Indices);
   
 }
   
