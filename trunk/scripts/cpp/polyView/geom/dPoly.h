@@ -85,6 +85,10 @@ public:
                         std::map<int, int> & mark
                         );
   void erasePolysIntersectingBox(double xll, double yll, double xur, double yur);
+  void appendAndShiftMarkedPolys(// Inputs
+                                      std::map<int, int> & mark,
+                                      double shift_x, double shift_y
+                                      );
   void set_isPointCloud(bool isPointCloud){ m_isPointCloud = isPointCloud; }
   bool isPointCloud() { return m_isPointCloud;}
   
@@ -139,7 +143,7 @@ public:
                            double & minX, double & minY, double & minDist
                            ) const;
   
-  void erasePoly(int polyIndex);
+  void eraseOnePoly(int polyIndex);
   void insertVertex(int polyIndex, int vertIndex,
                     double x, double y);
   void eraseVertex(int polyIndex, int vertIndex);
