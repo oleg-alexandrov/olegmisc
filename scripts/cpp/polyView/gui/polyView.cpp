@@ -341,7 +341,6 @@ void polyView::displayData( QPainter *paint ){
                 drawVertIndex, textOnScreenGrid, paint, lPolys
                 );
     }
-    //m_selectedPolyIndices[vecIter], 
     
   } // End iterating over sets of polygons
 
@@ -631,13 +630,8 @@ void polyView::mousePressEvent( QMouseEvent *E){
                             );
     }else if (m_movingVertsOrPolysNow    &&
               m_movePolys                &&
-              ( m_highlights.size() > 0 || m_selectedPolyIndices.size() > 0 ) ){
-      if (m_highlights.size() > 0){
-        markPolysInHlts(m_polyVec, m_highlights, // Inputs
-                        m_selectedPolyIndices    // Outputs
-                        );
-        m_highlights.clear(); // No need for these anymore
-      }
+              ( m_selectedPolyIndices.size() > 0 ) ){
+      m_highlights.clear(); // No need for these anymore
       m_polyVecBeforeShift = m_polyVec;
       m_movingPolysInHlts = true;
     }else if (m_movingVertsOrPolysNow && ( m_moveEdges || m_movePolys ) ){
@@ -1980,7 +1974,6 @@ void polyView::toggleEditMode(){
     m_movePolys               = false;
     m_toggleShowPointsEdgesBk = m_toggleShowPointsEdges;
     m_toggleShowPointsEdges   = m_showPointsEdges;
-    m_selectedPolyIndices.clear();
   }else{
     m_moveVertices            = false;
     m_moveEdges               = false; 
@@ -2076,7 +2069,6 @@ void polyView::turnOnMoveVertices(){
   m_moveVertices = true;
   m_moveEdges    = false;
   m_movePolys    = false;
-  m_selectedPolyIndices.clear();
 }
 
 void polyView::turnOnMoveEdges(){
@@ -2084,7 +2076,6 @@ void polyView::turnOnMoveEdges(){
   m_moveVertices = false;
   m_moveEdges    = true;
   m_movePolys    = false;
-  m_selectedPolyIndices.clear();
 }
 
 void polyView::turnOnMovePolys(){
@@ -2092,7 +2083,6 @@ void polyView::turnOnMovePolys(){
   m_moveVertices = false;
   m_moveEdges    = false;
   m_movePolys    = true;
-  m_selectedPolyIndices.clear();
 }
 
 void polyView::create45DegreeIntPoly(){
