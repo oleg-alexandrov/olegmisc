@@ -1202,7 +1202,7 @@ bool dPoly::read_pol_or_cnt_format(std::string filename,
     }
 
     int l = m_totalNumVerts;
-    if (l > 0 && numVerts >= 2             && 
+    if (l > 0 && numVerts >= 2            && 
         m_xv[l - 1] == m_xv[l - numVerts] && 
         m_yv[l - 1] == m_yv[l - numVerts]
 	){
@@ -1212,9 +1212,13 @@ bool dPoly::read_pol_or_cnt_format(std::string filename,
 	m_totalNumVerts--;
         m_numVerts[m_numVerts.size() - 1]--;
         m_isPolyClosed.push_back(true);
+    }else if (type == "pol"){
+      // pol files are always closed
+      m_isPolyClosed.push_back(true);
     }else{
       m_isPolyClosed.push_back(false);
     }
+    
   }
 
    return true;
