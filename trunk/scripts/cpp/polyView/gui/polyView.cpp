@@ -603,8 +603,10 @@ void polyView::mousePressEvent( QMouseEvent *E){
   m_rubberBand = m_emptyRubberBand;
 
   // This must happen before m_movingVertsOrPolysNow is declared.
-  m_deletingPolyNow = ( m_editMode && ( E->modifiers() & Qt::AltModifier ) &&
-                        ( E->modifiers() & Qt::ShiftModifier ) );
+  m_deletingPolyNow = ( m_editMode                             &&
+                        ( E->modifiers() & Qt::AltModifier   ) &&
+                        ( E->modifiers() & Qt::ShiftModifier )
+                        );
 
   m_aligningPolysNow = ( m_alignMode && isShiftLeftMouse(E) && !m_createPoly );
   if (m_aligningPolysNow){
@@ -630,7 +632,7 @@ void polyView::mousePressEvent( QMouseEvent *E){
                             );
     }else if (m_movingVertsOrPolysNow    &&
               m_movePolys                &&
-              ( m_selectedPolyIndices.size() > 0 ) ){
+              getNumElements(m_selectedPolyIndices) > 0 ){
       m_highlights.clear(); // No need for these anymore
       m_polyVecBeforeShift = m_polyVec;
       m_movingPolysInHlts = true;
@@ -680,7 +682,7 @@ void polyView::mouseMoveEvent( QMouseEvent *E){
     refreshPixmap();
     return;
   }
-  
+
   if (m_movingVertsOrPolysNow){
 
     if (m_polyVecIndex        < 0 ||
@@ -974,6 +976,33 @@ void polyView::copyPoly(){
   m_polyVec[polyVecIndex].extractOnePoly(polyIndexInCurrPoly,  // input
                                          m_copiedPoly          // output
                                          );
+  
+  return;
+}
+
+void polyView::pasteSelectedPolys(){
+
+  extractMarkedPolys(m_polyVec, m_selectedPolyIndices,  // Inputs
+                     m_copiedPolyVec                    // Outputs
+                     );
+
+  double xll, yll, xur, yur;
+  bdBox(m_copiedPolyVec,   // Inputs 
+        xll, yll, xur, yur // Outputs
+        );
+  if (xur < xll || yur < yll) return; // if there are no vertices
+
+  double shift_x = 0.1*(xur - xll);
+  double shift_y = 0.1*(yur - yll);
+
+  for (int s = 0; s < (int)m_polyVec.size(); s++){
+    m_polyVec[s].appendAndShiftMarkedPolys(// Inputs
+                                           m_selectedPolyIndices[s],
+                                           shift_x, shift_y
+                                           );
+  }
+  m_highlights.clear();
+  refreshPixmap();
   
   return;
 }
@@ -2185,7 +2214,7 @@ void polyView::deletePoly(){
                       );
   
   if (minVecIndex >= 0 && minPolyIndex >= 0){
-    m_polyVec[minVecIndex].erasePoly(minPolyIndex);
+    m_polyVec[minVecIndex].eraseOnePoly(minPolyIndex);
   }
 
   saveDataForUndo(false);
@@ -2262,6 +2291,11 @@ void polyView::toggleNmScale(){
 
 void polyView::createHlt(){
   popUp("To create a highlight use Control-Mouse.");
+  return;
+}
+
+void polyView::moveSelectedPolys(){
+  popUp("To move the selected polygons use Shift-Mouse.");
   return;
 }
 
@@ -2827,7 +2861,7 @@ void polyView::runCmd(std::string cmd){
         double xll = vals[0], yll = vals[1], widx = vals[2], widy = vals[3];
         if (xll + widx > xll && yll + widy > yll){
           createHighlightWithRealInputs(xll, yll, xll + widx, yll + widy);
-          erasePolysIntersectingHighlight();
+          eraseSelectedPolys();
           return;
         }
       }
@@ -2941,26 +2975,22 @@ void polyView::mergePolys(){
   return;
 }  
 
-void polyView::erasePolysIntersectingHighlight(){
+void polyView::eraseSelectedPolys(){
   
-  // Erase polys intersecting last highlight
   int numH = m_highlights.size();
   if ( numH == 0){
     popUp("No highlights are present. Create one with Control-Mouse.");
     return;
   }
+
+  eraseMarkedPolys(// Inputs
+                   m_selectedPolyIndices,  
+                   // Inputs-outputs
+                   m_polyVec
+                   );
   
-  dPoly H = m_highlights[numH - 1];
-  assert(H.get_totalNumVerts() == 4);
-  double xl, yl, xh, yh;
-  H.bdBox(xl, yl, xh, yh);
-  printCmd( "erasePolysInHlt", xl, yl, xh - xl, yh - yl );
-    
-  for (int vecIter = 0; vecIter < (int)m_polyVec.size(); vecIter++){
-    m_polyVec[vecIter].erasePolysIntersectingBox(xl, yl, xh, yh);
-  }
+  m_highlights.clear();
   
-  m_highlights.resize(numH - 1);
   markPolysInHlts(m_polyVec, m_highlights, // Inputs
                   m_selectedPolyIndices    // Outputs
                   );
