@@ -208,11 +208,13 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
   transform->insertItem("Scale polygons", m_poly, SLOT(scalePolys()),
                         Qt::CTRL+Qt::Key_X);
 
-  Q3PopupMenu* highlights = new Q3PopupMenu( menu );
-  menu->insertItem("&Highlights", highlights);
-  highlights->insertItem("Create highlight", m_poly, SLOT(createHlt()));
-  highlights->insertItem("Cut polys to highlight", m_poly, SLOT(cutToHlt()), Qt::Key_C);
-  highlights->insertItem("Erase polys intersecting highlight", m_poly, SLOT(erasePolysIntersectingHighlight()) );
+  Q3PopupMenu* selection = new Q3PopupMenu( menu );
+  menu->insertItem("&Selection", selection);
+  selection->insertItem("Create highlight", m_poly, SLOT(createHlt()));
+  selection->insertItem("Cut polys to highlight", m_poly, SLOT(cutToHlt()), Qt::Key_C);
+  selection->insertItem("Delete selected polys",  m_poly, SLOT(eraseSelectedPolys()), Qt::CTRL+Qt::Key_D );
+  selection->insertItem("Paste selected polys",   m_poly, SLOT(pasteSelectedPolys()), Qt::CTRL+Qt::Key_V );
+  selection->insertItem("Move selected polys",    m_poly, SLOT(moveSelectedPolys()));
 
   Q3PopupMenu* grid = new Q3PopupMenu( menu );
   menu->insertItem("&Grid", grid);

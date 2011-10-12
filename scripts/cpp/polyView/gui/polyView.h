@@ -74,8 +74,9 @@ public slots:
 
   // Highlights menu
   void createHlt();
+  void moveSelectedPolys();
   void cutToHlt();
-  void erasePolysIntersectingHighlight();
+  void eraseSelectedPolys();
 
   // Options menu
   void setLineWidth();
@@ -97,6 +98,7 @@ public slots:
   void deleteVertex();
   void deletePoly();
   void copyPoly();
+  void pasteSelectedPolys();
   void pastePoly();
   void reversePoly();
   void align_rotate90();
@@ -303,6 +305,7 @@ private:
   double m_copyPosX, m_copyPosY;
   std::map< int, std::map<int, int> > m_selectedPolyIndices;
   std::vector<dPoly> m_polyVecBeforeShift;
+  std::vector<dPoly> m_copiedPolyVec;
   bool m_movingPolysInHlts;
   
   // Align mode (align one file with another file via linear transform)
