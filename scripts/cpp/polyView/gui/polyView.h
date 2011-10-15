@@ -89,11 +89,10 @@ public slots:
   void saveMark();
   void plotMark(double x, double y);
   void toggleNmScale();
-  void toggleEditMode();
-  void toggleAlignMode();
+  void turnOnMovePolys();
   void turnOnMoveVertices();
   void turnOnMoveEdges();
-  void turnOnMovePolys();
+  void toggleAlignMode();
   void insertVertex();
   void deleteVertex();
   void deletePoly();
@@ -289,11 +288,10 @@ private:
   std::set<std::string> m_filesNotToShow;
 
   // Edit mode
-  bool   m_editMode;
   bool   m_moveVertices;
   bool   m_moveEdges;
   bool   m_movePolys;
-  bool   m_movingVertsOrPolysNow;
+  bool   m_movingVertsOrEdgesOrPolysNow;
   bool   m_deletingPolyNow;
   int    m_toggleShowPointsEdgesBk;
   int    m_polyVecIndex;

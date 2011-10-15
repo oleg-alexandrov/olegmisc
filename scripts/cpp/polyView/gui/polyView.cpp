@@ -83,10 +83,10 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   m_emptyRubberBand = QRect(-10, -10, 0, 0); // off-screen rubberband
   m_rubberBand      = m_emptyRubberBand;
 
-  m_showEdges             = 1;
-  m_showPointsEdges       = 2;
-  m_showPoints            = 3;
-  m_toggleShowPointsEdges = m_showEdges;
+  m_showEdges               = 1;
+  m_showPointsEdges         = 2;
+  m_showPoints              = 3;
+  m_toggleShowPointsEdges   = m_showEdges;
 
   m_createPoly                = false;
   m_snapPolyTo45DegreeIntGrid = false;
@@ -131,10 +131,9 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   m_smallLen = 2; // Used for plotting the points
 
   // Edit mode
-  m_editMode                = false;
   m_moveVertices            = false;
   m_moveEdges               = false;
-  m_movePolys               = false;
+  m_movePolys               = true;
   m_toggleShowPointsEdgesBk = m_showEdges;
   m_polyVecIndex            = -1;
   m_polyIndexInCurrPoly     = -1;
@@ -602,9 +601,8 @@ void polyView::mousePressEvent( QMouseEvent *E){
 
   m_rubberBand = m_emptyRubberBand;
 
-  // This must happen before m_movingVertsOrPolysNow is declared.
-  m_deletingPolyNow = ( m_editMode                             &&
-                        ( E->modifiers() & Qt::AltModifier   ) &&
+  // This must happen before m_movingVertsOrEdgesOrPolysNow is declared.
+  m_deletingPolyNow = ( ( E->modifiers() & Qt::AltModifier   ) &&
                         ( E->modifiers() & Qt::ShiftModifier )
                         );
 
@@ -615,13 +613,15 @@ void polyView::mousePressEvent( QMouseEvent *E){
     m_T.reset();
   }
   
-  m_movingVertsOrPolysNow = ( m_editMode && isShiftLeftMouse(E) &&
-                              !m_createPoly && ! m_deletingPolyNow);
+  m_movingVertsOrEdgesOrPolysNow = ( (m_moveVertices || m_moveEdges || m_movePolys) &&
+                                     isShiftLeftMouse(E)                            &&
+                                     !m_createPoly && !m_deletingPolyNow
+                                     );
   m_movingPolysInHlts = false;
-  if (m_movingVertsOrPolysNow){
+  if (m_movingVertsOrEdgesOrPolysNow){
 
     double min_x, min_y, min_dist;
-    if (m_movingVertsOrPolysNow && m_moveVertices){
+    if (m_moveVertices){
       findClosestPolyVertex(// inputs
                             m_mousePressWorldX, m_mousePressWorldY, m_polyVec,
                             // outputs
@@ -630,13 +630,11 @@ void polyView::mousePressEvent( QMouseEvent *E){
                             m_vertIndexInCurrPoly,
                             min_x, min_y, min_dist
                             );
-    }else if (m_movingVertsOrPolysNow    &&
-              m_movePolys                &&
-              getNumElements(m_selectedPolyIndices) > 0 ){
+    }else if (m_movePolys && getNumElements(m_selectedPolyIndices) > 0 ){
       m_highlights.clear(); // No need for these anymore
       m_polyVecBeforeShift = m_polyVec;
       m_movingPolysInHlts = true;
-    }else if (m_movingVertsOrPolysNow && ( m_moveEdges || m_movePolys ) ){
+    }else if (m_moveEdges || m_movePolys ){
       findClosestPolyEdge(// inputs
                           m_mousePressWorldX, m_mousePressWorldY, m_polyVec,  
                           // outputs
@@ -683,7 +681,7 @@ void polyView::mouseMoveEvent( QMouseEvent *E){
     return;
   }
 
-  if (m_movingVertsOrPolysNow){
+  if (m_movingVertsOrEdgesOrPolysNow){
 
     if (m_polyVecIndex        < 0 ||
         m_polyIndexInCurrPoly < 0 ||
@@ -732,7 +730,7 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
        << m_mouseRelX << ' ' << m_mouseRelY << endl;
 #endif
     
-  if ( m_editMode && m_deletingPolyNow ){
+  if ( m_deletingPolyNow ){
     // To do: consolidate this with the other call to this function.
     // See if can pass the relevant variables as input arguments.
     pixelToWorldCoords(m_mouseRelX, m_mouseRelY, m_menuX, m_menuY); 
@@ -745,7 +743,7 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
     m_totalT = composeTransforms(m_T, m_totalT);
   }
   
-  if (m_aligningPolysNow || m_movingVertsOrPolysNow){
+  if (m_aligningPolysNow || m_movingVertsOrEdgesOrPolysNow){
     saveDataForUndo(false);
     refreshPixmap();
     return;
@@ -884,46 +882,34 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
 
   int id = 1;
 
-  if (!m_alignMode){
-    menu.insertItem("Edit mode", this, SLOT(toggleEditMode()), 0, id);
-    menu.setItemChecked(id, m_editMode);
-    id++;
-  }
+  menu.insertItem("Move polygons (Shift-Mouse)", this,
+                  SLOT(turnOnMovePolys()), 0, id);
+  menu.setItemChecked(id, m_movePolys);
+  id++;
+
+  menu.insertItem("Move vertices (Shift-Mouse)", this,
+                  SLOT(turnOnMoveVertices()), 0, id);
+  menu.setItemChecked(id, m_moveVertices);
+  id++;
   
-  if (m_editMode){
-
-    menu.insertItem("Move vertices (Shift-Mouse)", this,
-                    SLOT(turnOnMoveVertices()), 0, id);
-    menu.setItemChecked(id, m_moveVertices);
-    id++;
-
-    menu.insertItem("Move edges (Shift-Mouse)", this,
-                    SLOT(turnOnMoveEdges()), 0, id);
-    menu.setItemChecked(id, m_moveEdges);
-    id++;
-
-    menu.insertItem("Move polygons (Shift-Mouse)", this,
-                    SLOT(turnOnMovePolys()), 0, id);
-    menu.setItemChecked(id, m_movePolys);
-    id++;
-    
-    menu.insertItem("Insert vertex on edge", this, SLOT(insertVertex()));
-    menu.insertItem("Delete vertex",         this, SLOT(deleteVertex()));
-    menu.insertItem("Copy polygon",          this, SLOT(copyPoly()));
-    menu.insertItem("Paste polygon",         this, SLOT(pastePoly()));
-    menu.insertItem("Reverse orientation",   this, SLOT(reversePoly()));
-    menu.insertItem("Delete polygon (Alt-Shift-Mouse)", this, SLOT(deletePoly()));
+  menu.insertItem("Move edges (Shift-Mouse)", this,
+                  SLOT(turnOnMoveEdges()), 0, id);
+  menu.setItemChecked(id, m_moveEdges);
+  id++;
+  
+  menu.insertItem("Insert vertex on edge", this, SLOT(insertVertex()));
+  menu.insertItem("Delete vertex",         this, SLOT(deleteVertex()));
+  menu.insertItem("Copy polygon",          this, SLOT(copyPoly()));
+  menu.insertItem("Paste polygon",         this, SLOT(pastePoly()));
+  menu.insertItem("Reverse orientation",   this, SLOT(reversePoly()));
+  menu.insertItem("Delete polygon (Alt-Shift-Mouse)", this, SLOT(deletePoly()));
       
-    menu.addSeparator();
+  menu.addSeparator();
     
-  }else{
-  
-    menu.insertItem("Align mode", this, SLOT(toggleAlignMode()), 0, id);
-    menu.setItemChecked(id, m_alignMode);
-    id++;
+  menu.insertItem("Align mode", this, SLOT(toggleAlignMode()), 0, id);
+  menu.setItemChecked(id, m_alignMode);
+  id++;
     
-  }
-
   if (m_alignMode){
     menu.insertItem("Rotate  90 degrees",  this, SLOT(align_rotate90()));
     menu.insertItem("Rotate 180 degrees",  this, SLOT(align_rotate180()));
@@ -943,11 +929,10 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
   
   menu.insertItem("Save mark at point", this, SLOT(saveMark()));
   
-  if (!m_editMode){
-    menu.insertItem("Use nm scale", this, SLOT(toggleNmScale()), 0, id);
-    menu.setItemChecked(id, m_useNmScale);
-    id++;
-  }
+  menu.insertItem("Use nm scale", this, SLOT(toggleNmScale()), 0, id);
+  menu.setItemChecked(id, m_useNmScale);
+  id++;
+  
 
   menu.exec(E->globalPos());
 
@@ -956,8 +941,6 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
 
 void polyView::copyPoly(){
 
-  if (!m_editMode) return;
-    
   m_copyPosX = m_menuX;
   m_copyPosY = m_menuY;
 
@@ -1009,8 +992,6 @@ void polyView::pasteSelectedPolys(){
 
 void polyView::pastePoly(){
 
-  if (!m_editMode) return;
-
   dPoly P = m_copiedPoly;
   P.shift(m_menuX - m_copyPosX, m_menuY - m_copyPosY);
   appendToPolyVec(P);
@@ -1021,8 +1002,6 @@ void polyView::pastePoly(){
 
 void polyView::reversePoly(){
 
-  if (!m_editMode) return;
-    
   m_copyPosX = m_menuX;
   m_copyPosY = m_menuY;
 
@@ -1619,6 +1598,7 @@ void polyView::createHighlightWithRealInputs(double xll, double yll, double xur,
   markPolysInHlts(m_polyVec, m_highlights, // Inputs
                   m_selectedPolyIndices    // Outputs
                   );
+  turnOnMovePolys();
   saveDataForUndo(false);
   
   return;
@@ -1992,22 +1972,45 @@ void polyView::plotDistBwPolyClips( QPainter *paint ){
   return;
 }
 
-void polyView::toggleEditMode(){
-  
-  m_editMode = !m_editMode;
+void polyView::turnOnMovePolys(){
 
-  if (m_editMode){
-    m_alignMode               = false;
-    m_moveVertices            = true;
-    m_moveEdges               = false; 
-    m_movePolys               = false;
+  m_movePolys    = true;
+  m_moveVertices = false;
+  m_moveEdges    = false;
+  m_alignMode    = false;
+  if (m_toggleShowPointsEdges == m_showPointsEdges)
+    m_toggleShowPointsEdges = m_toggleShowPointsEdgesBk;
+  
+  refreshPixmap();
+  return;
+}
+
+void polyView::turnOnMoveVertices(){
+
+  m_movePolys    = false;
+  m_moveVertices = true;
+  m_moveEdges    = false;
+  m_alignMode    = false;
+  
+  if (m_toggleShowPointsEdges != m_showPointsEdges){
     m_toggleShowPointsEdgesBk = m_toggleShowPointsEdges;
     m_toggleShowPointsEdges   = m_showPointsEdges;
-  }else{
-    m_moveVertices            = false;
-    m_moveEdges               = false; 
-    m_movePolys               = false;
-    m_toggleShowPointsEdges   = m_toggleShowPointsEdgesBk;
+  }
+  
+  refreshPixmap();
+  return;
+}
+
+void polyView::turnOnMoveEdges(){
+
+  m_movePolys    = false;
+  m_moveVertices = false;
+  m_moveEdges    = true;
+  m_alignMode    = false;
+  
+  if (m_toggleShowPointsEdges != m_showPointsEdges){
+    m_toggleShowPointsEdgesBk = m_toggleShowPointsEdges;
+    m_toggleShowPointsEdges   = m_showPointsEdges;
   }
   
   refreshPixmap();
@@ -2026,7 +2029,18 @@ void polyView::toggleAlignMode(){
       return;
     }
 
-    m_editMode = false;
+    if (m_toggleShowPointsEdges == m_showPointsEdges)
+      m_toggleShowPointsEdges = m_toggleShowPointsEdgesBk;
+    
+    m_movePolys    = false;
+    m_moveVertices = false;
+    m_moveEdges    = false;
+
+    m_highlights.clear();
+    markPolysInHlts(m_polyVec, m_highlights, // Inputs
+                    m_selectedPolyIndices    // Outputs
+                    );
+    
     m_totalT.reset();
   }else{
     cout << "\nCombined transform:" << endl;
@@ -2093,27 +2107,6 @@ void polyView::performAlignmentOfClosePolys(){
   refreshPixmap();
 }
 
-void polyView::turnOnMoveVertices(){
-  if (!m_editMode) return;
-  m_moveVertices = true;
-  m_moveEdges    = false;
-  m_movePolys    = false;
-}
-
-void polyView::turnOnMoveEdges(){
-  if (!m_editMode) return;
-  m_moveVertices = false;
-  m_moveEdges    = true;
-  m_movePolys    = false;
-}
-
-void polyView::turnOnMovePolys(){
-  if (!m_editMode) return;
-  m_moveVertices = false;
-  m_moveEdges    = false;
-  m_movePolys    = true;
-}
-
 void polyView::create45DegreeIntPoly(){
 
   // This flag will change the behavior of mouseReleaseEvent() so that
@@ -2137,8 +2130,6 @@ void polyView::createArbitraryPoly(){
 }
 
 void polyView::insertVertex(){
-
-  if (!m_editMode) return;
 
   if (m_polyVec.size() == 0) return;
   
@@ -2169,8 +2160,6 @@ void polyView::insertVertex(){
 
 void polyView::deleteVertex(){
 
-  if (!m_editMode) return;
-
   if (m_polyVec.size() == 0) return;
   
   double min_x, min_y, min_dist;
@@ -2199,8 +2188,6 @@ void polyView::deleteVertex(){
 
 void polyView::deletePoly(){
 
-  if (!m_editMode) return;
-    
   if (m_polyVec.size() == 0) return;
   
   int minVecIndex, minPolyIndex, minVertIndex;
