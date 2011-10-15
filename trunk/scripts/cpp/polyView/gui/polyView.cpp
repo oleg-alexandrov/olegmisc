@@ -882,6 +882,35 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
 
   int id = 1;
 
+  menu.insertItem("Save mark at point", this, SLOT(saveMark()));
+  
+  menu.insertItem("Use nm scale", this, SLOT(toggleNmScale()), 0, id);
+  menu.setItemChecked(id, m_useNmScale);
+  id++;
+  
+  menu.insertItem("Create 45-degree integer polygon", this,
+                  SLOT(create45DegreeIntPoly()));
+  menu.insertItem("Create arbitrary polygon", this,
+                  SLOT(createArbitraryPoly()));
+  menu.insertItem("Delete polygon (Alt-Shift-Mouse)", this, SLOT(deletePoly()));
+  menu.addSeparator();
+
+  menu.insertItem("Align mode", this, SLOT(toggleAlignMode()), 0, id);
+  menu.setItemChecked(id, m_alignMode);
+  id++;
+    
+  if (m_alignMode){
+    menu.insertItem("Rotate  90 degrees",  this, SLOT(align_rotate90()));
+    menu.insertItem("Rotate 180 degrees",  this, SLOT(align_rotate180()));
+    menu.insertItem("Rotate 270 degrees",  this, SLOT(align_rotate270()));
+    menu.insertItem("Flip against x axis", this, SLOT(align_flip_against_x_axis()));
+    menu.insertItem("Flip against y axis", this, SLOT(align_flip_against_y_axis()));
+    menu.insertItem("Guess alignment", this,
+                    SLOT(performAlignmentOfClosePolys()));
+  }
+  
+  menu.addSeparator();
+
   menu.insertItem("Move polygons (Shift-Mouse)", this,
                   SLOT(turnOnMovePolys()), 0, id);
   menu.setItemChecked(id, m_movePolys);
@@ -902,38 +931,7 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
   menu.insertItem("Copy polygon",          this, SLOT(copyPoly()));
   menu.insertItem("Paste polygon",         this, SLOT(pastePoly()));
   menu.insertItem("Reverse orientation",   this, SLOT(reversePoly()));
-  menu.insertItem("Delete polygon (Alt-Shift-Mouse)", this, SLOT(deletePoly()));
       
-  menu.addSeparator();
-    
-  menu.insertItem("Align mode", this, SLOT(toggleAlignMode()), 0, id);
-  menu.setItemChecked(id, m_alignMode);
-  id++;
-    
-  if (m_alignMode){
-    menu.insertItem("Rotate  90 degrees",  this, SLOT(align_rotate90()));
-    menu.insertItem("Rotate 180 degrees",  this, SLOT(align_rotate180()));
-    menu.insertItem("Rotate 270 degrees",  this, SLOT(align_rotate270()));
-    menu.insertItem("Flip against x axis", this, SLOT(align_flip_against_x_axis()));
-    menu.insertItem("Flip against y axis", this, SLOT(align_flip_against_y_axis()));
-    menu.insertItem("Guess alignment", this,
-                    SLOT(performAlignmentOfClosePolys()));
-
-    menu.addSeparator();
-  }
-  
-  menu.insertItem("Create 45-degree integer polygon", this,
-                  SLOT(create45DegreeIntPoly()));
-  menu.insertItem("Create arbitrary polygon", this,
-                  SLOT(createArbitraryPoly()));
-  
-  menu.insertItem("Save mark at point", this, SLOT(saveMark()));
-  
-  menu.insertItem("Use nm scale", this, SLOT(toggleNmScale()), 0, id);
-  menu.setItemChecked(id, m_useNmScale);
-  id++;
-  
-
   menu.exec(E->globalPos());
 
   return;
