@@ -68,7 +68,7 @@ Right-click menu
 * Enter align mode (a mode in which, given two polygon files, the 
   second polygon file is kept fixed, while the first one can be 
   interactively shifted using Shift-Mouse and rotated/flipped from 
-  the right-click menu until it aligns to the second one).
+  the right-click menu until it aligns to the second one)
 * Enter move polygons mode (use Shift-Mouse to move a polygon)
 * Enter move vertices mode (use Shift-Mouse to move a vertex)
 * Enter move edges mode (use Shift-Mouse to move an edge)
