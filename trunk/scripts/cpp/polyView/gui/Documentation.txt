@@ -28,16 +28,17 @@ Transform menu
 
 Selection menu
 * Create a highlight (the polygons in the highlight are automatically
-  selected and copied in a buffer)
+  selected and copied to a buffer)
 * Cut the polygons to the current highlight
-* Delete selected polygons
-* Paste selected polygons
-* Move selected polygons (use Shift-Mouse)
+* Delete the selected polygons
+* Paste the selected polygons
+* Move the selected polygons (use Shift-Mouse)
 * Deselect all polygons and delete all highlights
 
 Grid menu
 * Show/hide the grid
-* Enforce that edges have angles multiple of 45 degrees and snap the vertices to grid
+* Enforce that edges have angles multiple of 45 degrees and snap the 
+  vertices to the grid
 * Set the grid size
 * Set the grid linewidth
 * Set the grid color
@@ -47,8 +48,8 @@ Diff menu
   have different colors
 * Enter diff mode (a mode in which two similar polygon files can be 
   compared)
-* Show the next/previous difference between given polygon files 
-  (starting with the largest difference)
+* Show the next/previous difference between given two given polygon 
+  files (starting with the largest difference)
 
 Options menu
 * Set the line width of polygon edges
@@ -57,16 +58,20 @@ Options menu
 Right-click menu
 
 * Save/show mark at point
-* Use nm scale (assuming polygons are at dbu scale)
-* Create a polygon with integer vertices and edge angles multiple of 45 degrees
+* Use the nm scale when printing the coordinates of vertices 
+  (assuming that the polygons are at the dbu scale)
+* Create a polygon with integer vertices and edge angles multiple 
+  of 45 degrees
 * Enforce integer vertices and edge angles multiple of 45 degrees
 * Create a polygon with arbitrary angles
 * Delete the polygon at mouse cursor
-* Enter align mode (a mode in which, given two polygon files, the second polygon file
-  is kept fixed, while the first one can be interactively shifted using Shift-Mouse
-  and rotated/flipped from the right-click menu until it aligns to the second one).
+* Enter align mode (a mode in which, given two polygon files, the 
+  second polygon file is kept fixed, while the first one can be 
+  interactively shifted using Shift-Mouse and rotated/flipped from 
+  the right-click menu until it aligns to the second one).
 * Enter move polygons mode (use Shift-Mouse to move a polygon)
 * Enter move vertices mode (use Shift-Mouse to move a vertex)
+* Enter move edges mode (use Shift-Mouse to move an edge)
 * Insert a vertex on the edge closest to the mouse cursor
 * Delete the vertex closest to the mouse cursor
 * Copy the polygon closest to the mouse cursor
@@ -79,6 +84,8 @@ polyView will open simultaneously all polygon files supplied as inputs
 on the command line. Various command line options can modify how the
 polygons are displayed.
 
+-h | -help                           Show the available command line options
+   
 -geo[metry] (for example 1000x800)   The window size in pixels
 
 -bg | -backgroundColor <color name>  Color of the background (default is black)
@@ -86,7 +93,7 @@ polygons are displayed.
 -c | -color <color name>             All polygons after this option will show
                                      up in the given color
 
--fs | -fontSize <integer>            The text font size
+-fs | -fontSize <integer>            The text font size in pixels
 
 -lw | -lineWidth <integer>           All polygons after this option will show
                                      up with given linewidth
