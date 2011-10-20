@@ -45,7 +45,7 @@ Grid menu
 * Set the grid color
 
 Diff menu
-* Change the colors of polygons so that polygons in different files 
+* Change the colors of polygons so that polygons from different files 
   have different colors
 * Enter diff mode (a mode in which two similar polygon files can be 
   compared)
