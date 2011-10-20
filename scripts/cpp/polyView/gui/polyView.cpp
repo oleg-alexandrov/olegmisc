@@ -2883,7 +2883,7 @@ void polyView::runCmd(std::string cmd){
         double xll = vals[0], yll = vals[1], widx = vals[2], widy = vals[3];
         if (xll + widx > xll && yll + widy > yll){
           createHighlightWithRealInputs(xll, yll, xll + widx, yll + widy);
-          eraseSelectedPolys();
+          deleteSelectedPolys();
           return;
         }
       }
@@ -2997,14 +2997,8 @@ void polyView::mergePolys(){
   return;
 }  
 
-void polyView::eraseSelectedPolys(){
+void polyView::deleteSelectedPolys(){
   
-  int numH = m_highlights.size();
-  if ( numH == 0){
-    popUp("No highlights are present. Create one with Control-Mouse.");
-    return;
-  }
-
   eraseMarkedPolys(// Inputs
                    m_selectedPolyIndices,  
                    // Inputs-outputs

@@ -77,7 +77,7 @@ public slots:
   void createHlt();
   void moveSelectedPolys();
   void cutToHlt();
-  void eraseSelectedPolys();
+  void deleteSelectedPolys();
 
   // Options menu
   void setLineWidth();
