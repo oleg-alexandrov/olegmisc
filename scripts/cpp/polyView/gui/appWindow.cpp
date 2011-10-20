@@ -226,7 +226,7 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
 
   Q3PopupMenu* diff = new Q3PopupMenu( menu );
   menu->insertItem("&Diff", diff);
-  diff->insertItem("Toggle different colors", m_poly, SLOT(toggleDiffererntColors()), Qt::ALT + Qt::Key_D);
+  diff->insertItem("Toggle different colors", m_poly, SLOT(toggleDiffererntColors()), Qt::SHIFT + Qt::Key_D);
   diff->insertItem("Toggle show poly diff", m_poly, SLOT(toggleShowPolyDiff()), Qt::Key_D);
   diff->insertItem("Show next diff", m_poly, SLOT(plotNextDiff()), Qt::Key_K);
   diff->insertItem("Show prev diff", m_poly, SLOT(plotPrevDiff()), Qt::Key_J);
