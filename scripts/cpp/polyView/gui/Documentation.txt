@@ -7,9 +7,9 @@ File menu
 * Overwrite the existing polygons
 
 View menu
-* Choose which files to view and which to hide
+* Choose which files to show/hide
 * Zoom and pan
-* Reset view
+* Reset the view to contain all polygons with a small padding
 * Change the order in which the polygons are displayed
 * Show/hide annotations
 * Show polygons as filled with color
@@ -31,8 +31,8 @@ Selection menu
   selected and copied in a buffer)
 * Cut the polygons to the current highlight
 * Delete selected polygons
-* Paste selected polys
-* Move selected polys (use Shift-Mouse)
+* Paste selected polygons
+* Move selected polygons (use Shift-Mouse)
 * Deselect all polygons and delete all highlights
 
 Grid menu
