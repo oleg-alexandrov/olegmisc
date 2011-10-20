@@ -19,7 +19,8 @@ View menu
 
 Edit menu
 * Undo and redo
-* Create a polygon with integer vertices and edge angles multiple of 45 degrees
+* Create a polygon with integer vertices and edge angles multiple 
+  of 45 degrees
 * Enforce integer vertices and edge angles multiple of 45 degrees
 * Create a polygon with arbitrary angles
 
@@ -56,7 +57,6 @@ Options menu
 * Set the background color
 
 Right-click menu
-
 * Save/show mark at point
 * Use the nm scale when printing the coordinates of vertices 
   (assuming that the polygons are at the dbu scale)
@@ -84,7 +84,8 @@ polyView will open simultaneously all polygon files supplied as inputs
 on the command line. Various command line options can modify how the
 polygons are displayed.
 
--h | -help                           Show the available command line options
+-h | -help                           Show the available command line 
+                                     options
    
 -geo[metry] (for example 1000x800)   The window size in pixels
 
@@ -112,8 +113,8 @@ polygons are displayed.
 -f | -filledPoly                     All polygons after this option will show
                                      up as filled
 
--nf | -nonFilledPoly                 All polygons after this option will not 
-                                     show up as filled
+-nf | -nonFilledPoly                 All polygons after this option will show 
+                                     up as not filled
 
 -grid on | off                       Turn on/off the grid display
 
