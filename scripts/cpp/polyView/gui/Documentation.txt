@@ -118,7 +118,7 @@ polygons are displayed.
 
 -grid on | off                       Turn on/off the grid display
 
--gridSize <integer>                  Grid size in pixels
+-gridSize <integer>                  Grid size
 
 -gridWidth <integer>                 Grid width in pixels
 
