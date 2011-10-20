@@ -1,0 +1,119 @@
+Features of polyView accessible from the GUI
+
+File menu
+* Load a file in addition to existing files
+* Save the polygons as one file
+* Save the polygons as individual files
+* Overwrite the existing polygons
+
+View menu
+* Choose which files to view and which to hide
+* Zoom and pan
+* Reset view
+* Change the order in which the polygons are displayed
+* Show/hide annotations
+* Show polygons as filled with color
+* Show vertices as points
+* Show the index of each vertex
+* Show the layer ids (if present)
+
+Edit menu
+* Undo and redo
+* Create a polygon with integer vertices and edge angles multiple of 45 degrees
+* Enforce integer vertices and edge angles multiple of 45 degrees
+* Create a polygon with arbitrary angles
+
+Transform menu
+* Translate/rotate/scale polygons
+
+Selection menu
+* Create a highlight (the polygons in the highlight are automatically
+  selected and copied in a buffer)
+* Cut the polygons to the current highlight
+* Delete selected polygons
+* Paste selected polys
+* Move selected polys (use Shift-Mouse)
+* Deselect all polygons and delete all highlights
+
+Grid menu
+* Show/hide the grid
+* Enforce that edges have angles multiple of 45 degrees and snap the vertices to grid
+* Set the grid size
+* Set the grid linewidth
+* Set the grid color
+
+Diff menu
+* Change the colors of polygons so that polygons in different files 
+  have different colors
+* Enter diff mode (a mode in which two similar polygon files can be 
+  compared)
+* Show the next/previous difference between given polygon files 
+  (starting with the largest difference)
+
+Options menu
+* Set the line width of polygon edges
+* Set the background color
+
+Right-click menu
+
+* Save/show mark at point
+* Use nm scale (assuming polygons are at dbu scale)
+* Create a polygon with integer vertices and edge angles multiple of 45 degrees
+* Enforce integer vertices and edge angles multiple of 45 degrees
+* Create a polygon with arbitrary angles
+* Delete the polygon at mouse cursor
+* Enter align mode (a mode in which, given two polygon files, the second polygon file
+  is kept fixed, while the first one can be interactively shifted using Shift-Mouse
+  and rotated/flipped from the right-click menu until it aligns to the second one).
+* Enter move polygons mode (use Shift-Mouse to move a polygon)
+* Enter move vertices mode (use Shift-Mouse to move a vertex)
+* Insert a vertex on the edge closest to the mouse cursor
+* Delete the vertex closest to the mouse cursor
+* Copy the polygon closest to the mouse cursor
+* Paste the polygon closest to the mouse cursor
+* Reverse the orientation of the polygon closest to the mouse cursor
+
+Features of polyView accessible from the command line
+
+polyView will open simultaneously all polygon files supplied as inputs
+on the command line. Various command line options can modify how the
+polygons are displayed.
+
+-geo[metry] (for example 1000x800)   The window size in pixels
+
+-bg | -backgroundColor <color name>  Color of the background (default is black)
+
+-c | -color <color name>             All polygons after this option will show
+                                     up in the given color
+
+-fs | -fontSize <integer>            The text font size
+
+-lw | -lineWidth <integer>           All polygons after this option will show
+                                     up with given linewidth
+
+-p | -points                         All polygons after this option will show
+                                     up as points (a subsequent -p option undoes
+                                     the previous one)
+
+-cp | -closedPoly                    All polygons after this option will show 
+                                     up as closed (the last vertex is connected
+                                     to the first vertex)
+
+-nc | -nonClosedPoly                 Interpret the vertices as belonging to a 
+                                     polygonal line rather than to a polygon
+
+-f | -filledPoly                     All polygons after this option will show
+                                     up as filled
+
+-nf | -nonFilledPoly                 All polygons after this option will not 
+                                     show up as filled
+
+-grid on | off                       Turn on/off the grid display
+
+-gridSize <integer>                  Grid size in pixels
+
+-gridWidth <integer>                 Grid width in pixels
+
+-gridColor <color>                   Grid color
+
+
