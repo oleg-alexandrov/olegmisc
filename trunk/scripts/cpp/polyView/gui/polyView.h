@@ -76,6 +76,7 @@ public slots:
   // Highlights menu
   void createHlt();
   void moveSelectedPolys();
+  void deselectPolysDeleteHlts();
   void cutToHlt();
   void deleteSelectedPolys();
 

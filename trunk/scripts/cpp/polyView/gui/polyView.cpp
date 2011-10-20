@@ -2167,6 +2167,8 @@ void polyView::createArbitraryPoly(){
 void polyView::insertVertex(){
 
   if (m_polyVec.size() == 0) return;
+
+  turnOnMoveVertices();
   
   double min_x, min_y, min_dist;
   findClosestPolyEdge(// inputs
@@ -2197,6 +2199,8 @@ void polyView::deleteVertex(){
 
   if (m_polyVec.size() == 0) return;
   
+  turnOnMoveVertices();
+
   double min_x, min_y, min_dist;
   findClosestPolyVertex(// inputs
                         m_menuX, m_menuY, m_polyVec,
@@ -2318,6 +2322,18 @@ void polyView::createHlt(){
 
 void polyView::moveSelectedPolys(){
   popUp("To move the selected polygons use Shift-Mouse.");
+  return;
+}
+
+void polyView::deselectPolysDeleteHlts(){
+  m_highlights.clear();
+
+  markPolysInHlts(m_polyVec, m_highlights, // Inputs
+                  m_selectedPolyIndices    // Outputs
+                  );
+  
+  saveDataForUndo(false);
+  refreshPixmap();
   return;
 }
 
