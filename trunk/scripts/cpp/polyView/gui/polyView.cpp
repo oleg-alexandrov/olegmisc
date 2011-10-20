@@ -118,7 +118,8 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   m_posInUndoStack = -1;
 
   // Show poly diff mode
-  m_polyDiffMode = false;
+  m_diffColorsMode = false;
+  m_polyDiffMode   = false;
   m_polyVecBk.clear();
   m_polyOptionsVecBk.clear();
   m_distVec.clear(); // distances b/w polys to diff
@@ -1818,6 +1819,42 @@ void polyView::toggleFilled(){
 
 void polyView::toggleShowGrid(){
   m_prefs.isGridOn = !m_prefs.isGridOn;
+  refreshPixmap();
+}
+
+void polyView::toggleDiffererntColors(){
+
+  // Color the polys in different colors to distinguish them better
+  
+  if (m_diffColorsMode){
+    // Turn off diff mode
+    m_diffColorsMode      = false;
+    m_polyVec           = m_polyVecBk;
+    m_polyOptionsVec    = m_polyOptionsVecBk;
+
+    refreshPixmap();
+    return;
+  }
+
+  assert( m_polyVec.size() == m_polyOptionsVec.size() );
+  
+  m_diffColorsMode = true;
+
+  string colors[] = {"red", "blue", "yellow", "white", "green", "cyan", "magenta"};
+  int numColors = sizeof(colors)/sizeof(string);
+
+  // Back up the current settings before entering poly diff mode
+  // to be able to restore them later.
+  m_polyVecBk        = m_polyVec;
+  m_polyOptionsVecBk = m_polyOptionsVec;
+
+  cout << "Changing the polygons colors" << endl;
+  for (int pIter = 0; pIter < (int)m_polyVec.size(); pIter++){
+    string color = colors[pIter % numColors];
+    m_polyVec[pIter].set_color(color);
+    cout << color << "\t" << m_polyOptionsVec[pIter].polyFileName << endl;
+  }
+  
   refreshPixmap();
 }
 
