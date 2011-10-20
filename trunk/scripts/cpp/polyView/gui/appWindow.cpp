@@ -212,7 +212,7 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
   menu->insertItem("&Selection", selection);
   selection->insertItem("Create highlight", m_poly, SLOT(createHlt()));
   selection->insertItem("Cut polys to highlight", m_poly, SLOT(cutToHlt()), Qt::Key_C);
-  selection->insertItem("Delete selected polys",  m_poly, SLOT(eraseSelectedPolys()), Qt::CTRL+Qt::Key_D );
+  selection->insertItem("Delete selected polys",  m_poly, SLOT(deleteSelectedPolys()), Qt::CTRL+Qt::Key_D );
   selection->insertItem("Paste selected polys",   m_poly, SLOT(pasteSelectedPolys()), Qt::CTRL+Qt::Key_V );
   selection->insertItem("Move selected polys",    m_poly, SLOT(moveSelectedPolys()));
 
