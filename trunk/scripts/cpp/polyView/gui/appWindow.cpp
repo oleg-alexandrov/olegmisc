@@ -240,12 +240,18 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
 
   Q3PopupMenu* help = new Q3PopupMenu( menu );
   menu->insertItem("&Help", help);
-  help->insertItem("About", this, SLOT(help()));
+  help->insertItem("Show documentation", this, SLOT(showDoc()));
+  help->insertItem("About", this, SLOT(about()));
 
   return;
 }
 
-void appWindow::help(){
+void appWindow::showDoc(){
+  utils::showDoc();
+  return;
+}
+
+void appWindow::about(){
 
   string aboutStr = string("About ") + m_progName;
   static QMessageBox* about

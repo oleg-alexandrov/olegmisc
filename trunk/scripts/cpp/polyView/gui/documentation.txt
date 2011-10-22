@@ -124,4 +124,3 @@ polygons are displayed.
 
 -gridColor <color>                   Grid color
 
-
