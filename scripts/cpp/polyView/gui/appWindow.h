@@ -28,17 +28,16 @@ public:
             );
   ~appWindow();
   
-public slots:
-  void help();
-
 protected:
   bool eventFilter(QObject *obj, QEvent *event);
 
 private slots:
   void createMenusAndMainWidget(const cmdLineOptions & opt);
+  void showDoc();
+  void about();
   void procCmdLine();
-  void shiftUp ();
-  void shiftDown ();
+  void shiftUp();
+  void shiftDown();
   void forceQuit();
   
 private:
