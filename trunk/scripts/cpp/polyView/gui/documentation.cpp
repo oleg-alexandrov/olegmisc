@@ -8,10 +8,14 @@
 #include "utils.h"
 using namespace std;
 
-void utils::showDoc(){
+std::string utils::getDocText(){
 
   // Begin auto-generated text
-char docText[] ="Features of polyView accessible from the GUI\n"
+char docText[] ="This document describes the features of polyView accessible from\n"
+"the GUI and from the command line.\n"
+"\n"
+"1. Features of polyView accessible from the GUI\n"
+"   --------------------------------------------\n"
 "\n"
 "File menu\n"
 "* Load a file in addition to existing files\n"
@@ -66,7 +70,7 @@ char docText[] ="Features of polyView accessible from the GUI\n"
 "  files (starting with the largest difference)\n"
 "\n"
 "Options menu\n"
-"* Set the line width of polygon edges\n"
+"* Set the linewidth of polygon edges\n"
 "* Set the background color\n"
 "\n"
 "Right-click menu\n"
@@ -91,7 +95,8 @@ char docText[] ="Features of polyView accessible from the GUI\n"
 "* Paste the polygon closest to the mouse cursor\n"
 "* Reverse the orientation of the polygon closest to the mouse cursor\n"
 "\n"
-"Features of polyView accessible from the command line\n"
+"2. Features of polyView accessible from the command line\n"
+"   -----------------------------------------------------\n"
 "\n"
 "polyView will open simultaneously all polygon files supplied as inputs\n"
 "on the command line. Various command line options can modify how the\n"
@@ -137,10 +142,11 @@ char docText[] ="Features of polyView accessible from the GUI\n"
 "\n"
 "-gridColor <color>                   Grid color\n";
   // End auto-generated text
-  cout << docText << endl;
-  
-  return;
+ return docText;
 }
+
+
+
 
 
 
