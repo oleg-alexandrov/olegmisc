@@ -57,7 +57,7 @@ struct cmdLineOptions{
 
 namespace utils{
 
-  void showDoc();
+  std::string getDocText();
   
   void extractWindowDims(// inputs
                          int numArgs, char ** args,

@@ -1,7 +1,11 @@
-Features of polyView accessible from the GUI
+This document describes the features of polyView accessible from
+the GUI and from the command line.
+
+1. Features of polyView accessible from the GUI
+   --------------------------------------------
 
 File menu
-* Load a file in addition to existing files
+* Load a polygon file in addition to existing files
 * Save the polygons as one file
 * Save the polygons as individual files
 * Overwrite the existing polygons
@@ -53,7 +57,7 @@ Diff menu
   files (starting with the largest difference)
 
 Options menu
-* Set the line width of polygon edges
+* Set the linewidth of polygon edges
 * Set the background color
 
 Right-click menu
@@ -78,7 +82,8 @@ Right-click menu
 * Paste the polygon closest to the mouse cursor
 * Reverse the orientation of the polygon closest to the mouse cursor
 
-Features of polyView accessible from the command line
+2. Features of polyView accessible from the command line
+   -----------------------------------------------------
 
 polyView will open simultaneously all polygon files supplied as inputs
 on the command line. Various command line options can modify how the

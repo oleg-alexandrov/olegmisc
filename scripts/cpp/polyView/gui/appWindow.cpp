@@ -8,6 +8,7 @@
 #include <qlayout.h>
 #include <QMenu>
 #include <QEvent>
+#include <QTextEdit>
 #include <cstdlib>
 #include <iostream>
 #include <cmath>
@@ -247,7 +248,8 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
 }
 
 void appWindow::showDoc(){
-  utils::showDoc();
+  m_docWindow.setText(utils::getDocText());
+  m_docWindow.show();
   return;
 }
 
@@ -264,5 +266,24 @@ void appWindow::about(){
   return;
 }
 
+docWindow::docWindow(QWidget *){
+  resize(800, 800);
+  m_textArea = new QTextEdit (this); 
+  setCentralWidget (m_textArea); 
+}
 
+docWindow::~docWindow(){
+  delete m_textArea;
+  m_textArea = NULL;
+}
 
+void docWindow::setText(const std::string & docText){
+  m_textArea->clear();
+  m_textArea->setAcceptRichText(false);
+  m_textArea->setTextFormat(Qt::PlainText);
+  m_textArea->setReadOnly(true);
+  m_textArea->setCurrentFont(QFont("Monospace", 10)); 
+  m_textArea->insertPlainText(docText.c_str());
+  m_textArea->moveCursor(QTextCursor::Start);
+  return;
+}

@@ -9,6 +9,7 @@
 class polyView;
 class QCloseEvent;
 class cmdLineOptions;
+class QTextEdit;
 
 class cmdLine : public QLineEdit {
   Q_OBJECT
@@ -16,6 +17,17 @@ class cmdLine : public QLineEdit {
 public:
   cmdLine(QWidget* parent);
   virtual ~cmdLine();
+};
+
+class docWindow: public QMainWindow{
+  Q_OBJECT
+
+public:
+  docWindow(QWidget * parent = NULL);
+  virtual ~docWindow();
+  void setText(const std::string & docText);
+private:
+  QTextEdit * m_textArea;
 };
 
 class appWindow : public QMainWindow {
@@ -49,7 +61,7 @@ private:
   std::string      m_progName;
   std::vector<std::string> m_cmdHist;
   int m_histPos;
-
+  docWindow m_docWindow;
 };
 
 
