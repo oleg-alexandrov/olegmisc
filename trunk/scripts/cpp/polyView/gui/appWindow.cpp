@@ -250,6 +250,7 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
 
 void appWindow::showDoc(){
   m_docWindow.setText(utils::getDocText());
+  m_docWindow.setCaption(this->caption()); // Borrow the caption from the parent
   m_docWindow.show();
   return;
 }
