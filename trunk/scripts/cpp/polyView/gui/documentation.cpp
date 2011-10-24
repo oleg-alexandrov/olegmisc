@@ -11,19 +11,20 @@ using namespace std;
 std::string utils::getDocText(){
 
   // Begin auto-generated text
-  char docText[] =
-"<img src=\":xsample.png\">"    
+char docText[] ="<center><a href=\":pvLogo.png?attredirects=0\" imageanchor=\"1\"><img alt=\"polyView logo\" src=\":pvLogo.png\" border=\"0\"></a></center>\n"
 "<br>\n"
 "<br>\n"
-"<h1>PolyView</h1>\n"
-" is a free and open source software program for Linux designed to quickly load and\n"
+"<b>PolyView</b> is a free and open source software program for Linux designed to quickly load and\n"
 " visualize multiple sets of polygon files from the command line. It can\n"
 "zoom and pan, show polygons as edges, points, and filled, display text\n"
 "labels, print the coordinates of vertices and measure distances,\n"
 "change the order in which polygons are displayed, choose which polygons\n"
 "to show/hide, etc.<br>\n"
 "<br>\n"
-"PolyView can also do basic polygon editing, such as creating/deleting/moving individual polygons and polygon sets, adding/removing/modifying vertices, as well as wholesale changes on the entire set of currently open polygons, such as cutting them to a given box or applying shift/scale/rotation\n"
+"PolyView can also do basic polygon editing,\n"
+"such as creating/deleting/moving individual polygons and polygon sets, adding/removing/modifying vertices, as well as\n"
+"wholesale changes on the entire set of currently open polygons, such as\n"
+"cutting them to a given box or applying shift/scale/rotation\n"
 "transformations.<br>\n"
 "<br>\n"
 "PolyView accepts a lengthy list of command line arguments, and the view can be also manipulated interactively from the GUI once the polygons are loaded. A complete list of features and functions is shown below.<br>\n"
@@ -42,6 +43,7 @@ std::string utils::getDocText(){
 "<li>Dragging the mouse while keeping the Control key pressed creates a highlight which can be used to cut the polygons to highlight or paste/move/delete them. <br>\n"
 "</li></ul>\n"
 "<h4>\n"
+"\n"
 "File menu\n"
 "</h4>\n"
 "<ul>\n"
@@ -53,9 +55,9 @@ std::string utils::getDocText(){
 "</li>\n"
 "<li> Overwrite the existing polygons&nbsp; <br>\n"
 "</li>\n"
+"\n"
 "</ul>\n"
 "<h4>View menu</h4>\n"
-"\n"
 "<ul>\n"
 "\n"
 "<li> Choose which files to show/hide\n"
@@ -207,9 +209,8 @@ std::string utils::getDocText(){
 "</td>\n"
 "</tr>\n"
 "<tr>\n"
-"<td>-geo[metry] (for example 1000x800)   </td>\n"
-"<td> The window size in pixels\n"
-"\n"
+"<td>-geo[metry] &lt;width&gt;x&lt;height&gt;   </td>\n"
+"<td> The window size in pixels (for example, 800x800)\n"
 "</td>\n"
 "</tr>\n"
 "<tr>\n"
@@ -301,12 +302,19 @@ std::string utils::getDocText(){
 "</tr>\n"
 "</tbody>\n"
 "</table>\n"
-"Author's contact information: oleg.alexandrov at gmail.com<br>\n"
+"<b>Author:</b> Oleg Alexandrov &lt;<a href=\"mailto:oleg.alexandrov@gmail.com\">oleg.alexandrov@gmail.com</a>&gt;<br>\n"
 "<br>\n"
+"\n"
 "</div>\n";
   // End auto-generated text
  return docText;
 }
+
+
+
+
+
+
 
 
 
