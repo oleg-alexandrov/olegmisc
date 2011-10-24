@@ -279,21 +279,17 @@ docWindow::~docWindow(){
 }
 
 void docWindow::setText(const std::string & docText){
+
+  QImage img(":/pvLogo.png");
+  m_textArea->document()->addResource(QTextDocument::ImageResource, QUrl("pvLogo.png" ), img);
+
   m_textArea->clear();
   m_textArea->setAcceptRichText(false);
   m_textArea->setTextFormat(Qt::PlainText);
   m_textArea->setReadOnly(true);
   m_textArea->setCurrentFont(QFont("Monospace", 10)); 
 
-  QString html;
-  QImage img(":/pvLogo.png"); // todo: generate image in memory
-  m_textArea->document()->addResource(QTextDocument::ImageResource, QUrl("pvLogo.png" ), img);
-  html.append("<p><img src=\":pvLogo.png\"></p>");
-  
-  m_textArea->setHtml(html);
-
-  
-  //m_textArea->insertHtml(docText.c_str());
+  m_textArea->insertHtml(docText.c_str());
   m_textArea->moveCursor(QTextCursor::Start);
   return;
 }
