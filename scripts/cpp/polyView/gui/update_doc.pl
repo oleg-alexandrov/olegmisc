@@ -7,7 +7,7 @@ MAIN:{
   # Take the documentation from a text file and insert it into a C++
   # file to be compiled and embedded with the executable.
   
-  my $txtDocFile = "documentation.txt";
+  my $txtDocFile = "documentation.html";
   my $cppDocFile = "documentation.cpp";
 
   open(FILE, "<$txtDocFile");

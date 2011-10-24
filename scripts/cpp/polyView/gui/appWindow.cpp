@@ -9,6 +9,7 @@
 #include <QMenu>
 #include <QEvent>
 #include <QTextEdit>
+#include <QUrl>
 #include <cstdlib>
 #include <iostream>
 #include <cmath>
@@ -283,7 +284,16 @@ void docWindow::setText(const std::string & docText){
   m_textArea->setTextFormat(Qt::PlainText);
   m_textArea->setReadOnly(true);
   m_textArea->setCurrentFont(QFont("Monospace", 10)); 
-  m_textArea->insertHtml(docText.c_str());
+
+  QString html;
+  QImage img(":/pvLogo.png"); // todo: generate image in memory
+  m_textArea->document()->addResource(QTextDocument::ImageResource, QUrl("pvLogo.png" ), img);
+  html.append("<p><img src=\":pvLogo.png\"></p>");
+  
+  m_textArea->setHtml(html);
+
+  
+  //m_textArea->insertHtml(docText.c_str());
   m_textArea->moveCursor(QTextCursor::Start);
   return;
 }
