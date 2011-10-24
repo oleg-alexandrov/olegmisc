@@ -283,7 +283,7 @@ void docWindow::setText(const std::string & docText){
   m_textArea->setTextFormat(Qt::PlainText);
   m_textArea->setReadOnly(true);
   m_textArea->setCurrentFont(QFont("Monospace", 10)); 
-  m_textArea->insertPlainText(docText.c_str());
+  m_textArea->insertHtml(docText.c_str());
   m_textArea->moveCursor(QTextCursor::Start);
   return;
 }
