@@ -269,7 +269,7 @@ void appWindow::about(){
 }
 
 docWindow::docWindow(QWidget *){
-  resize(800, 800);
+  resize(900, 800);
   m_textArea = new QTextEdit (this); 
   setCentralWidget (m_textArea); 
 }
