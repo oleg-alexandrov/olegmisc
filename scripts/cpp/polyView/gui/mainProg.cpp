@@ -26,7 +26,7 @@ int main(int argc, char** argv){
                   );
   
   QApplication app(argc, argv);
-  string progName = "polyView";
+  string progName = "PolyView";
   
   appWindow m(NULL, progName, options, windowWidX, windowWidY);
   m.setCaption(progName.c_str());
