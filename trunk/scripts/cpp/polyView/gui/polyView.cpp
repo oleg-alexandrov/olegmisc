@@ -139,8 +139,6 @@ polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(par
   m_polyVecIndex            = -1;
   m_polyIndexInCurrPoly     = -1;
   m_vertIndexInCurrPoly     = -1;
-  m_copyPosX                = 0.0;
-  m_copyPosY                = 0.0;
   
   // Align mode
   m_alignMode = false;
@@ -731,10 +729,11 @@ void polyView::mouseReleaseEvent ( QMouseEvent * E ){
        << m_mouseRelX << ' ' << m_mouseRelY << endl;
 #endif
     
+  pixelToWorldCoords(m_mouseRelX, m_mouseRelY, m_menuX, m_menuY);
+  
   if ( m_deletingPolyNow ){
     // To do: consolidate this with the other call to this function.
     // See if can pass the relevant variables as input arguments.
-    pixelToWorldCoords(m_mouseRelX, m_mouseRelY, m_menuX, m_menuY); 
     deletePoly();
     return;
   }
@@ -940,13 +939,10 @@ void polyView::contextMenuEvent(QContextMenuEvent *E){
 
 void polyView::copyPoly(){
 
-  m_copyPosX = m_menuX;
-  m_copyPosY = m_menuY;
-
   double min_x, min_y, min_dist;
   int polyVecIndex, polyIndexInCurrPoly, vertIndexInCurrPoly;
   findClosestPolyEdge(// inputs
-                      m_copyPosX, m_copyPosY, m_polyVec,  
+                      m_menuX, m_menuY, m_polyVec,  
                       // outputs
                       polyVecIndex,
                       polyIndexInCurrPoly,
@@ -955,9 +951,14 @@ void polyView::copyPoly(){
                       );
   if (polyVecIndex < 0 || polyIndexInCurrPoly < 0) return;
   
-  m_polyVec[polyVecIndex].extractOnePoly(polyIndexInCurrPoly,  // input
-                                         m_copiedPoly          // output
-                                         );
+  m_selectedPolyIndices.clear();
+  m_selectedPolyIndices[polyVecIndex][polyIndexInCurrPoly] = 1;
+
+  extractMarkedPolys(m_polyVec, m_selectedPolyIndices,  // Inputs
+                     m_copiedPolyVec                    // Outputs
+                     );
+
+  refreshPixmap();
   
   return;
 }
@@ -990,24 +991,16 @@ void polyView::pasteSelectedPolys(){
 }
 
 void polyView::pastePoly(){
-
-  dPoly P = m_copiedPoly;
-  P.shift(m_menuX - m_copyPosX, m_menuY - m_copyPosY);
-  appendToPolyVec(P);
-  refreshPixmap();
-
+  pasteSelectedPolys();
   return;
 }
 
 void polyView::reversePoly(){
 
-  m_copyPosX = m_menuX;
-  m_copyPosY = m_menuY;
-
   double min_x, min_y, min_dist;
   int polyVecIndex, polyIndexInCurrPoly, vertIndexInCurrPoly;
   findClosestPolyEdge(// inputs
-                      m_copyPosX, m_copyPosY, m_polyVec,  
+                      m_menuX, m_menuY, m_polyVec,  
                       // outputs
                       polyVecIndex,
                       polyIndexInCurrPoly,
