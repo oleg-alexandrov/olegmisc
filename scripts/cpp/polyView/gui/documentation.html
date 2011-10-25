@@ -2,17 +2,9 @@
 <div align="left">
 <br>
 <br>
-<b>PolyView</b> is a free and open source software program for Linux designed to quickly load and visualize multiple sets of polygon files from the command line. It can
-zoom and pan, show polygons as edges, points, and filled, display text
-labels, print the coordinates of vertices and measure distances,
-change the order in which polygons are displayed, choose which polygons
-to show/hide, etc.<br>
+<b>PolyView</b> is a free and open source software program for Linux designed to quickly load and visualize multiple sets of polygon files from the command line. It can zoom and pan, show polygons as edges, points, and filled, display text labels, print the coordinates of vertices and measure distances, change the order in which polygons are displayed, choose which polygons to show/hide, etc.<br>
 <br>
-PolyView can also do basic polygon editing,
-such as creating/deleting/moving individual polygons and polygon sets, adding/removing/modifying vertices, as well as
-wholesale changes on the entire set of currently open polygons, such as
-cutting them to a given box or applying shift/scale/rotation
-transformations.<br>
+PolyView can also do basic polygon editing, such as creating/deleting/moving individual polygons and polygon sets, adding/removing/modifying vertices, as well as wholesale changes on the entire set of currently open polygons, such as cutting them to a given box or applying shift/scale/rotation transformations.<br>
 <br>
 PolyView accepts a lengthy list of command line arguments, and the view can be also manipulated interactively from the GUI once the polygons are loaded. A complete list of features and functions is shown below.<br>
 <br>
@@ -30,11 +22,7 @@ PolyView is implemented in C++ using Qt 4. Its source code is freely available u
 </ul>
 
 <h4>Command box</h4>
-<ul><li>Many GUI operations (such as zoom) echo 
-their action as a command in the terminal used to start PolyView. That 
-command can be pasted in the command box at the bottom of the PolyView 
-GUI to reproduce the original operation. This provides a basic level of 
-scripting and reproducibility.</li></ul>
+<ul><li>Many GUI operations (such as zoom) echo their action as a command in the terminal used to start PolyView. That command can be pasted in the command box at the bottom of the PolyView GUI to reproduce the original operation. This provides a basic level of scripting and reproducibility.</li></ul>
 <h4>File menu</h4>
 
 <ul>
@@ -74,8 +62,7 @@ scripting and reproducibility.</li></ul>
 <ul>
 <li> Undo and redo
 </li>
-<li> Create a polygon with integer vertices and edge angles multiple 
-  of 45 degrees
+<li> Create a polygon with integer vertices and edge angles multiple of 45 degrees
 </li>
 <li> Enforce integer vertices and edge angles multiple of 45 degrees
 </li>
@@ -93,8 +80,7 @@ scripting and reproducibility.</li></ul>
 <h4>Selection menu
 </h4>
 <ul>
-<li> Create a highlight (the polygons in the highlight are automatically
-  selected and copied to a buffer)
+<li> Create a highlight (the polygons in the highlight are automatically selected and copied to a buffer)
 </li>
 <li> Cut the polygons to the current highlight
 </li>
@@ -113,8 +99,7 @@ scripting and reproducibility.</li></ul>
 <ul>
 <li> Show/hide the grid
 </li>
-<li> Enforce that all polygon edges have angles multiple of 45 degrees and snap the 
-  vertices to the grid
+<li> Enforce that all polygon edges have angles multiple of 45 degrees and snap the vertices to the grid
 </li>
 <li> Set the grid size
 </li>
@@ -126,14 +111,11 @@ scripting and reproducibility.</li></ul>
 <h4> Diff menu</h4>
 
 <ul>
-<li> Change the colors of polygons so that polygons from different files 
-  have different colors
+<li> Change the colors of polygons so that polygons from different files have different colors
 </li>
-<li> Enter diff mode (a mode in which two similar polygon files can be 
-  compared)
+<li> Enter diff mode (a mode in which two similar polygon files can be compared)
 </li>
-<li> Show the next/previous difference between given two given polygon 
-  files (starting with the largest difference)
+<li> Show the next/previous difference between given two given polygon files (starting with the largest difference)
 </li>
 </ul>
 
@@ -153,8 +135,7 @@ scripting and reproducibility.</li></ul>
 <li> Use the nm scale when printing the coordinates of vertices 
   (assuming that the polygons are at the dbu scale)
 </li>
-<li> Create a polygon with integer vertices and edge angles multiple 
-  of 45 degrees
+<li> Create a polygon with integer vertices and edge angles multiple of 45 degrees
 </li>
 <li> Enforce integer vertices and edge angles multiple of 45 degrees
 </li>
@@ -162,10 +143,7 @@ scripting and reproducibility.</li></ul>
 </li>
 <li> Delete the polygon at mouse cursor
 </li>
-<li> Enter align mode (a mode in which, given two polygon files, the 
-  second polygon file is kept fixed, while the first one can be 
-  interactively translated using Shift-Mouse and rotated/flipped from 
-  the right-click menu until it aligns to the second one)
+<li> Enter align mode (a mode in which, given two polygon files, the second polygon file is kept fixed, while the first one can be interactively translated using Shift-Mouse and rotated/flipped from the right-click menu until it aligns to the second one)
 </li>
 <li> Enter move polygons mode (use Shift-Mouse to move a polygon; if some polygons are selected using a highlight, then all selected polygons will be moved)
 </li>
@@ -185,104 +163,81 @@ scripting and reproducibility.</li></ul>
 </li></ul>
 
 <h3>Features of PolyView accessible from the command line</h3>
-
-PolyView will open simultaneously all polygon files supplied as inputs
-on the command line. Various command line options can modify how the
-polygons are displayed.
+PolyView will open simultaneously all polygon files supplied as inputs on the command line. Various command line options can modify how the polygons are displayed.
 <br>
 <br>
 <table>
 <tbody>
 <tr>
-<td>-h | -help   </td>
-<td>                        Show the available command line 
-                                     options
-   
-</td>
+<td>-h | -help</td>
+<td>Show the available command line options</td>
 </tr>
 <tr>
-<td>-geo[metry] &lt;width&gt;x&lt;height&gt;   </td>
-<td> The window size in pixels (for example, 800x800)
-</td>
+<td>-geo[metry] &lt;width&gt;x&lt;height&gt;</td>
+<td>The window size in pixels (for example, 800x800)</td>
 </tr>
 <tr>
 <td>-bg | -backgroundColor&lt;color&gt;</td>
-<td> Color of the background (the default is black)
+<td>Color of the background (the default is black)
 
 </td>
 </tr>
 <tr>
 <td>-c | -color&lt;color&gt;</td>
-<td>          All polygons after this option will show
-                                     up in the given color(the default is to use the colors specified in the polygon files)
+<td>All polygons after this option will show up in the given color(the default is to use the colors specified in the polygon files)
 </td>
 </tr>
 <tr>
 <td>-fs | -fontSize&lt;integer&gt;</td>
-<td>         The text font size in pixels
-
+<td>The text font size in pixels
 </td>
 </tr>
 <tr>
 <td>-lw | -lineWidth&lt;integer&gt;</td>
-<td>        All polygons after this option will show
-                                     up with given linewidth
-
+<td>All polygons after this option will show up with given linewidth
 </td>
 </tr>
 <tr>
 <td>-p | -points   </td>
-<td>All polygons after this option will show up as vertices rather than edges (a subsequent -p option undoes this behavior)
-
-</td>
+<td>All polygons after this option will show up as vertices rather than edges (a subsequent -p option undoes this behavior)</td>
 </tr>
 <tr>
 <td>-cp | -closedPoly   </td>
-<td>                 All polygons after this option will show 
-                                     up as closed (the last vertex is connected
-                                     to the first one)</td>
+<td>All polygons after this option will show up as closed (the last vertex is connected to the first one)</td>
 </tr>
 <tr>
 <td>-nc | -nonClosedPoly   </td>
-<td>              Interpret the polygons after this option as polygonal lines (the last vertex is not connected to the first one)
-
+<td>Interpret the polygons after this option as polygonal lines (the last vertex is not connected to the first one)
 </td>
 </tr>
 <tr>
 <td>-f | -filledPoly   </td>
-<td>                  All polygons after this option will show
-                                     up as filled
-
+<td>All polygons after this option will show up as filled
 </td>
 </tr>
 <tr>
 <td>-nf | -nonFilledPoly   </td>
-<td>              All polygons after this option will show 
-                                     up as not filled
-
+<td>All polygons after this option will show up as not filled
 </td>
 </tr>
 <tr>
 <td>-grid on | off   </td>
-<td>                    Turn on/off the grid display
-
+<td>Turn on/off the grid display
 </td>
 </tr>
 <tr>
 <td>-gridSize&lt;integer&gt;</td>
-<td>               Grid size
-
+<td>Grid size
 </td>
 </tr>
 <tr>
 <td>-gridWidth&lt;integer&gt;</td>
-<td>              Grid width in pixels
-
+<td>Grid width in pixels
 </td>
 </tr>
 <tr>
 <td>-gridColor&lt;color&gt;</td>
-<td>                Grid color<br>
+<td>Grid color<br>
 <br>
 </td>
 </tr>
@@ -291,5 +246,4 @@ polygons are displayed.
 <b>Author:</b> Oleg Alexandrov &lt;<a href="mailto:oleg.alexandrov@gmail.com">oleg.alexandrov@gmail.com</a>&gt;
 </div>
 </div>
-
 Updated: October 24, 2011
