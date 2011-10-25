@@ -303,8 +303,6 @@ private:
   int    m_vertIndexInCurrPoly;
   double m_mousePressWorldX, m_mousePressWorldY;
   dPoly  m_polyBeforeShift;
-  dPoly  m_copiedPoly;
-  double m_copyPosX, m_copyPosY;
   std::map< int, std::map<int, int> > m_selectedPolyIndices;
   std::vector<dPoly> m_polyVecBeforeShift;
   std::vector<dPoly> m_copiedPolyVec;
