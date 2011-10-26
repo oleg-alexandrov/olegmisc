@@ -357,6 +357,8 @@ bool utils::boxesIntersect(double xl1, double yl1, double xh1, double yh1,
 
 utils::linTrans utils::composeTransforms(utils::linTrans P, utils::linTrans Q){
 
+  // Composition of two transforms
+  
   linTrans R;
   
   R.a11 = P.a11*Q.a11 + P.a12*Q.a21;
@@ -368,6 +370,20 @@ utils::linTrans utils::composeTransforms(utils::linTrans P, utils::linTrans Q){
   R.sy = P.a21*Q.sx + P.a22*Q.sy + P.sy;
 
   return R;
+}
+
+utils::linTrans utils::transAroundPt(const utils::matrix2 & M, dPoint P){
+
+  // Find the linear transformation which applies a given matrix
+  // transform around the current point (for example, rotation around
+  // the current point).
+  
+  linTrans T;
+  T.a11 = M.a11; T.a12 = M.a12;
+  T.a21 = M.a21; T.a22 = M.a22;
+  T.sx = P.x - M.a11*P.x - M.a12*P.y;
+  T.sy = P.y - M.a21*P.x - M.a22*P.y;
+  return T;
 }
 
 bool utils::mergePolys(int an,
