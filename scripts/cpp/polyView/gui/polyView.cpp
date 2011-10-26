@@ -963,6 +963,37 @@ void polyView::copyPoly(){
   return;
 }
 
+void polyView::rotateSelectedPolys(){
+
+  vector<double> inputVec, angle;
+  inputVec.clear();
+  if ( ! getRealValuesFromGui(// Inputs
+                              "Rotate selected polygons",
+                              "Enter rotation angle in degrees",
+                              inputVec,
+                              // Outputs
+                              angle)
+       ) return;
+
+  if (angle.size() < 1){
+    popUp("Invalid rotation angle");
+    return;
+  }
+  
+  rotateMarkedPolysAroundCtr(// Inputs
+                             m_selectedPolyIndices,  
+                             angle[0],  
+                             // Inputs-outputs
+                             m_polyVec
+                             );
+
+  m_highlights.clear();
+  
+  refreshPixmap();
+  
+  return;
+}
+
 void polyView::pasteSelectedPolys(){
 
   extractMarkedPolys(m_polyVec, m_selectedPolyIndices,  // Inputs
@@ -1136,10 +1167,13 @@ bool polyView::getStringFromGui(std::string title, std::string description,
   return ok;
 }
 
-bool polyView::getRealValuesFromGui(std::string title,
+bool polyView::getRealValuesFromGui(// Inputs
+                                    std::string title,
                                     std::string description,
                                     const std::vector<double> & inputVec,
-                                    std::vector<double> & values){
+                                    // Outputs
+                                    std::vector<double> & values
+                                    ){
 
   values.clear();
   

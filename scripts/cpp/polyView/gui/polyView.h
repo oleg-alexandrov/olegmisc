@@ -99,6 +99,7 @@ public slots:
   void deleteVertex();
   void deletePoly();
   void copyPoly();
+  void rotateSelectedPolys();
   void pasteSelectedPolys();
   void pastePoly();
   void reversePoly();
@@ -121,10 +122,13 @@ protected:
                         std::string inputStr,
                         std::string & outputStr // output
                         );
-  bool getRealValuesFromGui(std::string title,
+  bool getRealValuesFromGui(// Inputs
+                            std::string title,
                             std::string description,
                             const std::vector<double> & inputVec,
-                            std::vector<double> & values);
+                            // Outputs
+                            std::vector<double> & values
+                            );
   void setBgFgColorsFromPrefs();
   bool eventFilter(QObject *obj, QEvent *E);
   void mousePressEvent( QMouseEvent *E);
