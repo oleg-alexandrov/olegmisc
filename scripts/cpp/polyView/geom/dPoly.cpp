@@ -355,6 +355,34 @@ void dPoly::scale(double scale){
   return;
 }
 
+void dPoly::transformMarkedPolys(std::map<int, int> & mark, const utils::linTrans & T){
+  
+  int start = 0;
+  for (int pIter = 0; pIter < m_numPolys; pIter++){
+    if (pIter > 0) start += m_numVerts[pIter - 1];
+    if (mark.find(pIter) == mark.end()) continue;
+    
+    for (int vIter = 0; vIter < m_numVerts[pIter]; vIter++){
+      int i = start + vIter;
+      double tmpx = T.a11*m_xv[i] + T.a12*m_yv[i] + T.sx;
+      double tmpy = T.a21*m_xv[i] + T.a22*m_yv[i] + T.sy;
+      m_xv[i] = tmpx;
+      m_yv[i] = tmpy;
+    }
+    
+  }
+  
+  m_vertIndexAnno.clear();
+  
+  return;
+}
+
+void dPoly::transformMarkedPolysAroundPt(std::map<int, int> & mark, const utils::matrix2 & M, dPoint P){
+  linTrans T = transAroundPt(M, P);
+  transformMarkedPolys(mark, T);
+  return;
+}
+
 void dPoly::applyTransform(double a11, double a12, double a21, double a22,
                            double sx, double sy,
                            utils::linTrans & T // save the transform here

@@ -446,6 +446,62 @@ void utils::shiftMarkedPolys(// Inputs
   return;
 }
 
+void utils::rotateMarkedPolysAroundCtr(// Inputs
+                                       std::map< int, std::map<int, int> > & markedPolyIndices,
+                                       double angle,
+                                       // Inputs-outputs
+                                       std::vector<dPoly> & polyVec
+                                       ){
+
+  double a = angle*M_PI/180.0, c = cos(a), s= sin(a);
+  
+  if (angle == round(angle) && int(angle)%90 == 0 ){
+    // The special case of angle multiple of 90 degrees
+    c = round(c), s = round(s);
+  }
+
+  matrix2 M;
+  M.a11 = c; M.a12 = -s; M.a21 = s; M.a22 = c;
+  transformMarkedPolysAroundCtr(// Inputs
+                                markedPolyIndices, M,  
+                                // Inputs-outputs
+                                polyVec
+                                );
+  return;  
+}
+
+void utils::transformMarkedPolysAroundCtr(// Inputs
+                                         std::map< int, std::map<int, int> > & markedPolyIndices,
+                                         const utils::matrix2 & M,
+                                         // Inputs-outputs
+                                         std::vector<dPoly> & polyVec
+                                         ){
+
+  if (getNumElements(markedPolyIndices) == 0) return;
+
+  vector<dPoly> extractedPolyVec;
+  extractMarkedPolys(// Inputs
+                     polyVec, markedPolyIndices,  
+                     // Outputs
+                     extractedPolyVec
+                     );
+  
+  // Find the center of the bounding box of the marked polygons
+  double xll, yll, xur, yur;
+  bdBox(extractedPolyVec,   // inputs 
+        xll, yll, xur, yur  // outputs
+        );
+  dPoint P;
+  P.x = (xll + xur)/2.0;
+  P.y = (yll + yur)/2.0;
+    
+  for (int pIter = 0; pIter < (int)polyVec.size(); pIter++){
+    polyVec[pIter].transformMarkedPolysAroundPt(markedPolyIndices[pIter], M, P);
+  }
+
+  return;
+}
+
 void utils::eraseMarkedPolys(// Inputs
                                std::map< int, std::map<int, int> > & markedPolyIndices,
                                // Inputs-outputs

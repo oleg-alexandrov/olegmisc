@@ -89,12 +89,27 @@ namespace utils{
                        // Outputs
                        std::map< int, std::map<int, int> > & markedPolyIndices
                        );
+
   void shiftMarkedPolys(// Inputs
                         std::map< int, std::map<int, int> > & markedPolyIndices,
                         double shift_x, double shift_y,
                         // Inputs-outputs
                         std::vector<dPoly> & polyVec
                         );
+  void rotateMarkedPolysAroundCtr(// Inputs
+                                  std::map< int, std::map<int, int> > & markedPolyIndices,
+                                  double angle,
+                                  // Inputs-outputs
+                                  std::vector<dPoly> & polyVec
+                                  );
+  
+  void transformMarkedPolysAroundCtr(// Inputs
+                                     std::map< int, std::map<int, int> > & markedPolyIndices,
+                                     const utils::matrix2 & M,
+                                     // Inputs-outputs
+                                     std::vector<dPoly> & polyVec
+                                     );
+  
   void eraseMarkedPolys(// Inputs
                         std::map< int, std::map<int, int> > & markedPolyIndices,
                         // Inputs-outputs

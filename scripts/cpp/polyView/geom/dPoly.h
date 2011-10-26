@@ -59,6 +59,8 @@ public:
   void shift(double shift_x, double shift_y);
   void rotate(double angle);
   void scale(double scale);
+  void transformMarkedPolys(std::map<int, int> & mark, const utils::linTrans & T);
+  void transformMarkedPolysAroundPt(std::map<int, int> & mark, const utils::matrix2 & M, dPoint P);
   void applyTransform(double a11, double a12, double a21, double a22,
                       double sx, double sy,
                       utils::linTrans & T // save the transform here
@@ -86,9 +88,9 @@ public:
                         );
   void erasePolysIntersectingBox(double xll, double yll, double xur, double yur);
   void appendAndShiftMarkedPolys(// Inputs
-                                      std::map<int, int> & mark,
-                                      double shift_x, double shift_y
-                                      );
+                                 std::map<int, int> & mark,
+                                 double shift_x, double shift_y
+                                 );
   void set_isPointCloud(bool isPointCloud){ m_isPointCloud = isPointCloud; }
   bool isPointCloud() { return m_isPointCloud;}
   

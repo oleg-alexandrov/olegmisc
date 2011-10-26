@@ -153,6 +153,23 @@ namespace utils{
   
   utils::linTrans composeTransforms(utils::linTrans P, utils::linTrans Q);
 
+  struct matrix2{
+    // A 2x2 matrix
+    double a11, a12, a21, a22;
+    matrix2(){
+      a11 = a22 = 1.0;
+      a21 = a12 = 0.0;
+    }
+    void reset(){
+      *this = matrix2();
+    }
+    void print(){
+      std::cout << "matrix " << a11 << ' ' << a12 << ' ' << a21 << ' ' << a22 << std::endl;
+    }
+  };
+  
+  utils::linTrans transAroundPt(const utils::matrix2 & M, dPoint P);
+  
 }
   
 
