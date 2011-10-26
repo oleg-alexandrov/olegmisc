@@ -152,6 +152,7 @@ private:
   void printCmd(std::string cmd);
   void shiftPolys(std::vector<double> & shifts);
   void rotatePolys(std::vector<double> & angle);
+  void rotateSelectedPolys(std::vector<double> & angle);
   void scalePolys(std::vector<double> & scale);
   void transformPolys(std::vector<double> & M);
   void drawMark(int x0, int y0, QColor color, int lineWidth,

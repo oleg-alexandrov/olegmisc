@@ -963,6 +963,7 @@ void polyView::copyPoly(){
   return;
 }
 
+
 void polyView::rotateSelectedPolys(){
 
   vector<double> inputVec, angle;
@@ -975,11 +976,23 @@ void polyView::rotateSelectedPolys(){
                               angle)
        ) return;
 
+  rotateSelectedPolys(angle);
+
+  return;
+}
+
+void polyView::rotateSelectedPolys(std::vector<double> & angle){
+  
   if (angle.size() < 1){
     popUp("Invalid rotation angle");
     return;
   }
   
+  if (getNumElements(m_selectedPolyIndices) == 0){
+    popUp("No polygons are selected");
+    return;
+  }
+
   rotateMarkedPolysAroundCtr(// Inputs
                              m_selectedPolyIndices,  
                              angle[0],  
@@ -987,8 +1000,9 @@ void polyView::rotateSelectedPolys(){
                              m_polyVec
                              );
 
+  printCmd("rotate_selected", angle);
+
   m_highlights.clear();
-  
   refreshPixmap();
   
   return;
@@ -2961,6 +2975,13 @@ void polyView::runCmd(std::string cmd){
         return;
       }
       cerr << "Invalid transform command: " << cmd << endl;
+      return;
+    }else if (cmdName == "rotate_selected"){
+      if (vals.size() >= 1){
+        rotateSelectedPolys(vals);
+        return;
+      }
+      cerr << "Invalid rotate command: " << cmd << endl;
       return;
     }else if (cmdName == "mark"){
       if (vals.size() >= 2){
