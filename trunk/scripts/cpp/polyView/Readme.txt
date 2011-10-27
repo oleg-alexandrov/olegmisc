@@ -1,8 +1,8 @@
-polyView is a free polygon viewer. The polyView documentation is at
+PolyView is a free polygon viewer. The PolyView documentation is at
 
 https://sites.google.com/site/olegalexandrov/polyview
 
-To compile polyView from source, the Qt 4 development libraries need to
+To compile PolyView from source, the Qt 4 development libraries need to
 be installed. They can can be obtained in Ubuntu by typing
 
 apt-get install qmake
@@ -10,7 +10,7 @@ apt-get install qmake
 The next steps are:
 
 cd gui
-qmake polyView.pro 
+qmake polyview.pro 
 make
 
 The 'qmake' command will generate a makefile which whill be used by
