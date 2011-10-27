@@ -34,7 +34,7 @@ public slots:
   void overwriteMultiplePolys();
   void saveAsMultiplePolys();
   void writeMultiplePolys(bool overwrite);
-  void shiftPolys();
+  void translatePolys();
   void rotatePolys();
   void scalePolys();
 
@@ -99,9 +99,10 @@ public slots:
   void deleteVertex();
   void deletePoly();
   void copyPoly();
-  void transformSelectedPolys();
+  void translateSelectedPolys();
   void rotateSelectedPolys();
   void scaleSelectedPolys();
+  void transformSelectedPolys();
   void pasteSelectedPolys();
   void pastePoly();
   void reversePoly();
@@ -152,11 +153,12 @@ private:
   void printCmd(std::string cmd, double xll, double yll,
                 double widX, double widY);
   void printCmd(std::string cmd);
-  void shiftPolys(std::vector<double> & shifts);
+  void translatePolys(std::vector<double> & shiftVec);
   void rotatePolys(std::vector<double> & angle);
-  void transformSelectedPolys(std::vector<double> & T);
+  void translateSelectedPolys(std::vector<double> & shiftVec);
   void rotateSelectedPolys(std::vector<double> & angle);
   void scaleSelectedPolys(std::vector<double> & scale);
+  void transformSelectedPolys(std::vector<double> & T);
   void scalePolys(std::vector<double> & scale);
   void transformPolys(std::vector<double> & M);
   void drawMark(int x0, int y0, QColor color, int lineWidth,
