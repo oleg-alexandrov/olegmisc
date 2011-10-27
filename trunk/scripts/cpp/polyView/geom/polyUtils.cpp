@@ -446,6 +446,24 @@ void utils::shiftMarkedPolys(// Inputs
   return;
 }
 
+void utils::scaleMarkedPolysAroundCtr(// Inputs
+                                       std::map< int, std::map<int, int> > & markedPolyIndices,
+                                       double scale,
+                                       // Inputs-outputs
+                                       std::vector<dPoly> & polyVec
+                                       ){
+
+  matrix2 M;
+  M.a11 = scale; M.a12 = 0.0; M.a21 = 0.0; M.a22 = scale;
+  transformMarkedPolysAroundCtr(// Inputs
+                                markedPolyIndices, M,  
+                                // Inputs-outputs
+                                polyVec
+                                );
+  
+  return;  
+}
+
 void utils::rotateMarkedPolysAroundCtr(// Inputs
                                        std::map< int, std::map<int, int> > & markedPolyIndices,
                                        double angle,

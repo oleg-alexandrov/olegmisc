@@ -96,6 +96,12 @@ namespace utils{
                         // Inputs-outputs
                         std::vector<dPoly> & polyVec
                         );
+  void scaleMarkedPolysAroundCtr(// Inputs
+                                       std::map< int, std::map<int, int> > & markedPolyIndices,
+                                       double scale,
+                                       // Inputs-outputs
+                                       std::vector<dPoly> & polyVec
+                                       );
   void rotateMarkedPolysAroundCtr(// Inputs
                                   std::map< int, std::map<int, int> > & markedPolyIndices,
                                   double angle,
