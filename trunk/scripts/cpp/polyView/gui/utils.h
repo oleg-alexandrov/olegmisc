@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include "../geom/dPoly.h"
+#include "../geom/polyUtils.h"
 
 enum closedPolyInfo{
   // If an array of points as read from file has the first vertex equal to the last
