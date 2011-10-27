@@ -963,6 +963,52 @@ void polyView::copyPoly(){
   return;
 }
 
+void polyView::transformSelectedPolys(){
+
+  vector<double> inputVec, T;
+  inputVec.clear();
+  if ( ! getRealValuesFromGui(// Inputs
+                              "Transform selected polygons",
+                              "Enter transform matrix a11 a12 a21 a22",
+                              inputVec,
+                              // Outputs
+                              T
+                              )
+       ) return;
+
+  transformSelectedPolys(T);
+
+  return;
+}
+
+void polyView::transformSelectedPolys(std::vector<double> & T){
+  
+  if (T.size() < 4){
+    popUp("Invalid transform matrix");
+    return;
+  }
+  
+  if (getNumElements(m_selectedPolyIndices) == 0){
+    popUp("No polygons are selected");
+    return;
+  }
+
+  matrix2 M;
+  M.a11 = T[0]; M.a12 = T[1]; M.a21 = T[2]; M.a22 = T[3];
+  transformMarkedPolysAroundCtr(// Inputs
+                                m_selectedPolyIndices, M,
+                                // Inputs-outputs
+                                m_polyVec
+                                );
+
+  printCmd("transform_selected", T);
+
+  m_highlights.clear();
+  saveDataForUndo(false);
+  refreshPixmap();
+  
+  return;
+}
 
 void polyView::rotateSelectedPolys(){
 
@@ -973,7 +1019,8 @@ void polyView::rotateSelectedPolys(){
                               "Enter rotation angle in degrees",
                               inputVec,
                               // Outputs
-                              angle)
+                              angle
+                              )
        ) return;
 
   rotateSelectedPolys(angle);
@@ -1003,6 +1050,53 @@ void polyView::rotateSelectedPolys(std::vector<double> & angle){
   printCmd("rotate_selected", angle);
 
   m_highlights.clear();
+  saveDataForUndo(false);
+  refreshPixmap();
+  
+  return;
+}
+
+void polyView::scaleSelectedPolys(){
+
+  vector<double> inputVec, scale;
+  inputVec.clear();
+  if ( ! getRealValuesFromGui(// Inputs
+                              "Scale selected polygons",
+                              "Enter scale",
+                              inputVec,
+                              // Outputs
+                              scale
+                              )
+       ) return;
+
+  scaleSelectedPolys(scale);
+
+  return;
+}
+
+void polyView::scaleSelectedPolys(std::vector<double> & scale){
+  
+  if (scale.size() < 1){
+    popUp("Invalid scale value");
+    return;
+  }
+  
+  if (getNumElements(m_selectedPolyIndices) == 0){
+    popUp("No polygons are selected");
+    return;
+  }
+
+  scaleMarkedPolysAroundCtr(// Inputs
+                             m_selectedPolyIndices,  
+                             scale[0],  
+                             // Inputs-outputs
+                             m_polyVec
+                             );
+
+  printCmd("scale_selected", scale);
+
+  m_highlights.clear();
+  saveDataForUndo(false);
   refreshPixmap();
   
   return;
@@ -1030,6 +1124,7 @@ void polyView::pasteSelectedPolys(){
                                            );
   }
   m_highlights.clear();
+  saveDataForUndo(false);
   refreshPixmap();
   
   return;
@@ -2980,12 +3075,26 @@ void polyView::runCmd(std::string cmd){
       }
       cerr << "Invalid transform command: " << cmd << endl;
       return;
+    }else if (cmdName == "transform_selected"){
+      if (vals.size() >= 1){
+        transformSelectedPolys(vals);
+        return;
+      }
+      cerr << "Invalid transform command: " << cmd << endl;
+      return;
     }else if (cmdName == "rotate_selected"){
       if (vals.size() >= 1){
         rotateSelectedPolys(vals);
         return;
       }
       cerr << "Invalid rotate command: " << cmd << endl;
+      return;
+    }else if (cmdName == "scale_selected"){
+      if (vals.size() >= 1){
+        scaleSelectedPolys(vals);
+        return;
+      }
+      cerr << "Invalid scale command: " << cmd << endl;
       return;
     }else if (cmdName == "mark"){
       if (vals.size() >= 2){
