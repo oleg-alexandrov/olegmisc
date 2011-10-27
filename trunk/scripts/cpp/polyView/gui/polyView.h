@@ -33,7 +33,7 @@ public slots:
   void saveOnePoly();
   void overwriteMultiplePolys();
   void saveAsMultiplePolys();
-  void saveMultiplePoly(bool overwrite);
+  void writeMultiplePolys(bool overwrite);
   void shiftPolys();
   void rotatePolys();
   void scalePolys();

@@ -221,9 +221,7 @@ std::string utils::inFileToOutFile(const std::string & inFile){
   for (int s = (int)inFile.length() - 1; s >= 0; s--){
 
     string currChar = inFile.substr(s, 1);
-    if ( currChar == "/"){
-      break; // strip path
-    }else if (currChar == "." && lastDot){
+    if (currChar == "." && lastDot){
       outFile = string("_out") + currChar + outFile;
       lastDot = false;
     }else{
