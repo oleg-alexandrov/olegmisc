@@ -159,9 +159,9 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
   setCentralWidget(m_poly);
 
   file->insertItem("Open", m_poly, SLOT(openPoly()), Qt::CTRL+Qt::Key_O);
-  file->insertItem("Save as one file", m_poly, SLOT(saveOnePoly()),
+  file->insertItem("Save as a combined file", m_poly, SLOT(saveOnePoly()),
                    Qt::CTRL+Qt::Key_S);
-  file->insertItem("Save as multiple files", m_poly,
+  file->insertItem("Save as individual files", m_poly,
                    SLOT(saveAsMultiplePolys()), Qt::ALT+Qt::Key_S);
   file->insertItem("Overwrite current files", m_poly,
                    SLOT(overwriteMultiplePolys()), Qt::CTRL+Qt::Key_W);

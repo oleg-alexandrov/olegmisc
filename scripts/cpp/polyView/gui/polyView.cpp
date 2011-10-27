@@ -2612,7 +2612,7 @@ void polyView::openPoly(){
   QString s = QFileDialog::getOpenFileName(QDir::currentDirPath(),
                                            "(*.xg *.ly* *.pol)",
                                            this,
-                                           "open file dialog"
+                                           "Open file dialog"
                                            "Choose a file"
                                            );
 
@@ -2687,7 +2687,11 @@ bool polyView::readOnePoly(// inputs
   
 void polyView::saveOnePoly(){
 
-  string fileName = "out_poly.xg";
+  QString s = QFileDialog::getSaveFileName(this,  "Save as one file", "savedPoly.xg", "(*.xg)"
+                                           );
+  if (s.length() == 0) return;
+  
+  string fileName = s.toStdString();
 
   dPoly poly;
 
@@ -2696,22 +2700,22 @@ void polyView::saveOnePoly(){
   }
 
   poly.writePoly(fileName);
-  cout << "Polygon saved to " << fileName << endl;
+  cout << "Polygons saved to " << fileName << endl;
 
   return;
 }
 
 void polyView::overwriteMultiplePolys(){
   bool overwrite = true;
-  saveMultiplePoly(overwrite);
+  writeMultiplePolys(overwrite);
 }
 
 void polyView::saveAsMultiplePolys(){
   bool overwrite = false;
-  saveMultiplePoly(overwrite);
+  writeMultiplePolys(overwrite);
 }
 
-void polyView::saveMultiplePoly(bool overwrite){
+void polyView::writeMultiplePolys(bool overwrite){
 
   string allFiles = "";
   for (int polyIter = 0; polyIter < (int)m_polyVec.size(); polyIter++){
