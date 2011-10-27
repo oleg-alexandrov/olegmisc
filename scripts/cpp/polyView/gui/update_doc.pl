@@ -18,6 +18,11 @@ MAIN:{
   $preProcDocText =~ s/\"[^\"]*?pvLogo.png/\":pvLogo.png/g;
   $preProcDocText =~ s/Updated:.*?$//sg;
 
+  # Other minor
+  #$preProcDocText =~ s/\s*\<br\>\s*\<br\>(^|\n).*?source code.*?\n/\n/g;
+  #$preProcDocText =~ s/(^|\n).*?mailto:.*?\n/\n/g;
+  #$preProcDocText =~ s/free and open source software program for Linux/program/g; 
+
   my $docText = "";
   foreach my $line ( split("\n", $preProcDocText)  ){
     $line =~ s/\"/\\\"/g; # Escape any quotes
