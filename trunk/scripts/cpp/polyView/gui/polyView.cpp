@@ -1835,13 +1835,13 @@ void polyView::printCurrCoords(const Qt::ButtonState & state, // input
     // Save the point to plot. Call update to paint the point.
     m_snappedPoints.push_back(QPoint(currX, currY));
     update(currX - len, currY - len, 2*len, 2*len);
-
+    
   }else if (state == ( (int)Qt::LeftButton | (int)Qt::AltModifier )
             ||
             state == ((int)Qt::MidButton)
             ){
       
-    // Don't snap with the shift-left button or the middle button.
+    // Don't snap with the alt-left button or the middle button.
     
     // Save the point to plot. Call update to paint the point.
     m_nonSnappedPoints.push_back(QPoint(currX, currY));
