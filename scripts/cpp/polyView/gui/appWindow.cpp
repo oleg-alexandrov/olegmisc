@@ -150,7 +150,7 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
   
   QMenuBar* menu = menuBar();
   Q3PopupMenu* file = new Q3PopupMenu( menu );
-  menu->insertItem("&File", file);
+  menu->insertItem("File", file);
 
   // Central widget
   m_poly = new polyView (this, opt);
@@ -168,7 +168,7 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
   file->insertItem("Exit", this, SLOT(forceQuit()), Qt::Key_Q);
 
   Q3PopupMenu* view = new Q3PopupMenu( menu );
-  menu->insertItem("&View", view);
+  menu->insertItem("View", view);
   //view->insertSeparator();
   view->insertItem("Choose files to view", m_poly, SLOT(chooseFilesToShow()));
   view->insertItem("Zoom out",             m_poly, SLOT(zoomOut()),      Qt::Key_Minus);
@@ -188,7 +188,7 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
   view->insertItem("Toggle show layers", m_poly, SLOT(toggleLayerAnno()), Qt::Key_L);
 
   Q3PopupMenu* edit = new Q3PopupMenu( menu );
-  menu->insertItem("&Edit", edit);
+  menu->insertItem("Edit", edit);
   edit->insertItem("Undo",  m_poly, SLOT(undo()), Qt::Key_Z);
   edit->insertItem("Redo",  m_poly, SLOT(redo()), Qt::ALT + Qt::Key_Z);
   
@@ -202,7 +202,7 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
                    m_poly, SLOT(mergePolys()), Qt::CTRL+Qt::Key_M);
 
   Q3PopupMenu* transform = new Q3PopupMenu( menu );
-  menu->insertItem("&Transform", transform);
+  menu->insertItem("Transform", transform);
   transform->insertItem("Translate polygons", m_poly, SLOT(shiftPolys()),
                         Qt::CTRL+Qt::Key_T);
   transform->insertItem("Rotate polygons", m_poly, SLOT(rotatePolys()),
@@ -211,18 +211,25 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
                         Qt::CTRL+Qt::Key_X);
 
   Q3PopupMenu* selection = new Q3PopupMenu( menu );
-  menu->insertItem("&Selection", selection);
+  menu->insertItem("Selection", selection);
   selection->insertItem("Create highlight", m_poly, SLOT(createHlt()));
-  selection->insertItem("Cut polys to highlight", m_poly, SLOT(cutToHlt()), Qt::Key_C);
-  selection->insertItem("Delete selected polys",  m_poly, SLOT(deleteSelectedPolys()), Qt::CTRL+Qt::Key_D );
-  selection->insertItem("Paste selected polys",   m_poly, SLOT(pasteSelectedPolys()), Qt::CTRL+Qt::Key_V );
-  selection->insertItem("Rotate selected polys",   m_poly, SLOT(rotateSelectedPolys()) );
-  selection->insertItem("Move selected polys",    m_poly, SLOT(moveSelectedPolys()));
-  selection->insertItem("Deselect polys/delete highlights",  m_poly,
+  selection->insertItem("Cut polygons to highlight",
+                        m_poly, SLOT(cutToHlt()), Qt::Key_C);
+  selection->insertItem("Delete selected polygons",
+                        m_poly, SLOT(deleteSelectedPolys()), Qt::CTRL+Qt::Key_D);
+  selection->insertItem("Paste selected polygons",
+                        m_poly, SLOT(pasteSelectedPolys()), Qt::CTRL+Qt::Key_V);
+  selection->insertItem("Move selected polygons",
+                        m_poly, SLOT(moveSelectedPolys()));
+  selection->insertItem("Deselect polygons/delete highlights",  m_poly,
                         SLOT(deselectPolysDeleteHlts()));
+  selection->addSeparator();
+  selection->insertItem("Rotate selected polygons",    m_poly, SLOT(rotateSelectedPolys()) );
+  selection->insertItem("Scale selected polygons",     m_poly, SLOT(scaleSelectedPolys()) );
+  selection->insertItem("Transform selected polygons", m_poly, SLOT(transformSelectedPolys()) );
 
   Q3PopupMenu* grid = new Q3PopupMenu( menu );
-  menu->insertItem("&Grid", grid);
+  menu->insertItem("Grid", grid);
   grid->insertItem("Toggle poly grid", m_poly, SLOT(toggleShowGrid()), Qt::Key_G);
   grid->insertItem("Enforce 45x deg angles and snap to grid", m_poly, SLOT(enforce45AndSnapToGrid()));
   grid->insertItem("Set grid size", m_poly, SLOT(setGridSize()));
@@ -230,19 +237,19 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
   grid->insertItem("Set grid color", m_poly, SLOT(setGridColor()));
 
   Q3PopupMenu* diff = new Q3PopupMenu( menu );
-  menu->insertItem("&Diff", diff);
+  menu->insertItem("Diff", diff);
   diff->insertItem("Toggle different colors", m_poly, SLOT(toggleDiffererntColors()), Qt::SHIFT + Qt::Key_D);
   diff->insertItem("Toggle show poly diff", m_poly, SLOT(toggleShowPolyDiff()), Qt::Key_D);
   diff->insertItem("Show next diff", m_poly, SLOT(plotNextDiff()), Qt::Key_K);
   diff->insertItem("Show prev diff", m_poly, SLOT(plotPrevDiff()), Qt::Key_J);
 
   Q3PopupMenu* options = new Q3PopupMenu( menu );
-  menu->insertItem("&Options", options);
+  menu->insertItem("Options", options);
   options->insertItem("Set line width", m_poly, SLOT(setLineWidth()));
   options->insertItem("Set background color", m_poly, SLOT(setBgColor()));
 
   Q3PopupMenu* help = new Q3PopupMenu( menu );
-  menu->insertItem("&Help", help);
+  menu->insertItem("Help", help);
   help->insertItem("Show documentation", this, SLOT(showDoc()));
   help->insertItem("About", this, SLOT(about()));
 
