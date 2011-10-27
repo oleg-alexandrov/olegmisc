@@ -203,7 +203,7 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
 
   Q3PopupMenu* transform = new Q3PopupMenu( menu );
   menu->insertItem("Transform", transform);
-  transform->insertItem("Translate polygons", m_poly, SLOT(shiftPolys()),
+  transform->insertItem("Translate polygons", m_poly, SLOT(translatePolys()),
                         Qt::CTRL+Qt::Key_T);
   transform->insertItem("Rotate polygons", m_poly, SLOT(rotatePolys()),
                         Qt::CTRL+Qt::Key_R);
@@ -224,6 +224,7 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
   selection->insertItem("Deselect polygons/delete highlights",  m_poly,
                         SLOT(deselectPolysDeleteHlts()));
   selection->addSeparator();
+  selection->insertItem("Translate selected polygons", m_poly, SLOT(translateSelectedPolys()) );
   selection->insertItem("Rotate selected polygons",    m_poly, SLOT(rotateSelectedPolys()) );
   selection->insertItem("Scale selected polygons",     m_poly, SLOT(scaleSelectedPolys()) );
   selection->insertItem("Transform selected polygons", m_poly, SLOT(transformSelectedPolys()) );

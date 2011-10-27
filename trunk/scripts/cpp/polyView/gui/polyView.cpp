@@ -963,45 +963,45 @@ void polyView::copyPoly(){
   return;
 }
 
-void polyView::transformSelectedPolys(){
+void polyView::translateSelectedPolys(){
 
-  vector<double> inputVec, T;
+  vector<double> inputVec, shiftVec;
   inputVec.clear();
   if ( ! getRealValuesFromGui(// Inputs
-                              "Transform selected polygons",
-                              "Enter transform matrix a11 a12 a21 a22",
-                              inputVec,
+                              "Translate selected polygons",
+                              "Enter shift_x shift_y", inputVec,
                               // Outputs
-                              T
+                              shiftVec
                               )
        ) return;
 
-  transformSelectedPolys(T);
+  translateSelectedPolys(shiftVec);
 
   return;
 }
 
-void polyView::transformSelectedPolys(std::vector<double> & T){
+void polyView::translateSelectedPolys(std::vector<double> & shiftVec){
   
-  if (T.size() < 4){
-    popUp("Invalid transform matrix");
+  if (shiftVec.size() < 2){
+    popUp("Invalid translate vector");
     return;
   }
+  shiftVec.resize(2);
   
   if (getNumElements(m_selectedPolyIndices) == 0){
     popUp("No polygons are selected");
     return;
   }
 
-  matrix2 M;
-  M.a11 = T[0]; M.a12 = T[1]; M.a21 = T[2]; M.a22 = T[3];
-  transformMarkedPolysAroundCtr(// Inputs
-                                m_selectedPolyIndices, M,
-                                // Inputs-outputs
-                                m_polyVec
-                                );
+  shiftMarkedPolys(// Inputs
+                   m_selectedPolyIndices,
+                   shiftVec[0], shiftVec[1],  
+                   // Inputs-outputs
+                   m_polyVec
+                   );
 
-  printCmd("transform_selected", T);
+
+  printCmd("translate_selected", shiftVec);
 
   m_highlights.clear();
   saveDataForUndo(false);
@@ -1034,6 +1034,7 @@ void polyView::rotateSelectedPolys(std::vector<double> & angle){
     popUp("Invalid rotation angle");
     return;
   }
+  angle.resize(1);
   
   if (getNumElements(m_selectedPolyIndices) == 0){
     popUp("No polygons are selected");
@@ -1061,8 +1062,7 @@ void polyView::scaleSelectedPolys(){
   vector<double> inputVec, scale;
   inputVec.clear();
   if ( ! getRealValuesFromGui(// Inputs
-                              "Scale selected polygons",
-                              "Enter scale",
+                              "Scale selected polygons", "Enter scale",
                               inputVec,
                               // Outputs
                               scale
@@ -1080,6 +1080,7 @@ void polyView::scaleSelectedPolys(std::vector<double> & scale){
     popUp("Invalid scale value");
     return;
   }
+  scale.resize(1);
   
   if (getNumElements(m_selectedPolyIndices) == 0){
     popUp("No polygons are selected");
@@ -1094,6 +1095,54 @@ void polyView::scaleSelectedPolys(std::vector<double> & scale){
                              );
 
   printCmd("scale_selected", scale);
+
+  m_highlights.clear();
+  saveDataForUndo(false);
+  refreshPixmap();
+  
+  return;
+}
+
+void polyView::transformSelectedPolys(){
+
+  vector<double> inputVec, T;
+  inputVec.clear();
+  if ( ! getRealValuesFromGui(// Inputs
+                              "Transform selected polygons",
+                              "Enter transform matrix a11 a12 a21 a22",
+                              inputVec,
+                              // Outputs
+                              T
+                              )
+       ) return;
+
+  transformSelectedPolys(T);
+
+  return;
+}
+
+void polyView::transformSelectedPolys(std::vector<double> & T){
+  
+  if (T.size() < 4){
+    popUp("Invalid transform matrix");
+    return;
+  }
+  T.resize(4);
+  
+  if (getNumElements(m_selectedPolyIndices) == 0){
+    popUp("No polygons are selected");
+    return;
+  }
+
+  matrix2 M;
+  M.a11 = T[0]; M.a12 = T[1]; M.a21 = T[2]; M.a22 = T[3];
+  transformMarkedPolysAroundCtr(// Inputs
+                                m_selectedPolyIndices, M,
+                                // Inputs-outputs
+                                m_polyVec
+                                );
+
+  printCmd("transform_selected", T);
 
   m_highlights.clear();
   saveDataForUndo(false);
@@ -1462,13 +1511,13 @@ void polyView::setBgFgColorsFromPrefs(){
 }
 
 
-void polyView::shiftPolys(){
+void polyView::translatePolys(){
 
-  vector<double> inputVec, shifts;
+  vector<double> inputVec, shiftVec;
   if ( getRealValuesFromGui("Translate polygons", "Enter shift_x and shift_y",
                             inputVec,
-                            shifts) ){
-    shiftPolys(shifts);
+                            shiftVec) ){
+    translatePolys(shiftVec);
   }
   return;
 }
@@ -1496,17 +1545,17 @@ void polyView::scalePolys(){
   return;
 }
 
-void polyView::shiftPolys(std::vector<double> & shifts){
+void polyView::translatePolys(std::vector<double> & shiftVec){
 
-  if (shifts.size() < 2){
+  if (shiftVec.size() < 2){
     popUp("Invalid shift_x and shift_y values");
     return;
   }
-  shifts.resize(2);
+  shiftVec.resize(2);
   
-  printCmd("shift", shifts);
+  printCmd("translate", shiftVec);
   for (int vi  = 0; vi < (int)m_polyVec.size(); vi++){
-    m_polyVec[vi].shift(shifts[0], shifts[1]);
+    m_polyVec[vi].shift(shiftVec[0], shiftVec[1]);
   }
 
   saveDataForUndo(true);
@@ -3046,12 +3095,12 @@ void polyView::runCmd(std::string cmd){
       cerr << "Invalid command: " << cmd << endl;
       return;
       
-    }else if (cmdName == "shift"){
+    }else if (cmdName == "translate"){
       if (vals.size() >= 2){
-        shiftPolys(vals);
+        translatePolys(vals);
         return;
       }
-      cerr << "Invalid shift command: " << cmd << endl;
+      cerr << "Invalid translate command: " << cmd << endl;
       return;
       
     }else if (cmdName == "rotate"){
@@ -3075,12 +3124,12 @@ void polyView::runCmd(std::string cmd){
       }
       cerr << "Invalid transform command: " << cmd << endl;
       return;
-    }else if (cmdName == "transform_selected"){
-      if (vals.size() >= 1){
-        transformSelectedPolys(vals);
+    }else if (cmdName == "translate_selected"){
+      if (vals.size() >= 2){
+        translateSelectedPolys(vals);
         return;
       }
-      cerr << "Invalid transform command: " << cmd << endl;
+      cerr << "Invalid translate command: " << cmd << endl;
       return;
     }else if (cmdName == "rotate_selected"){
       if (vals.size() >= 1){
@@ -3095,6 +3144,13 @@ void polyView::runCmd(std::string cmd){
         return;
       }
       cerr << "Invalid scale command: " << cmd << endl;
+      return;
+    }else if (cmdName == "transform_selected"){
+      if (vals.size() >= 4){
+        transformSelectedPolys(vals);
+        return;
+      }
+      cerr << "Invalid transform command: " << cmd << endl;
       return;
     }else if (cmdName == "mark"){
       if (vals.size() >= 2){
