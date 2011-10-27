@@ -1836,7 +1836,7 @@ void polyView::printCurrCoords(const Qt::ButtonState & state, // input
     m_snappedPoints.push_back(QPoint(currX, currY));
     update(currX - len, currY - len, 2*len, 2*len);
 
-  }else if (state == ( (int)Qt::LeftButton | (int)Qt::ShiftModifier )
+  }else if (state == ( (int)Qt::LeftButton | (int)Qt::AltModifier )
             ||
             state == ((int)Qt::MidButton)
             ){
