@@ -13,7 +13,6 @@
 #include <vector>
 #include <map>
 #include "utils.h"
-#include "../geom/polyUtils.h"
 #include "chooseFilesDlg.h"
 
 class cmdLineOptions;
