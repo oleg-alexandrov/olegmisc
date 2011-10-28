@@ -19,10 +19,13 @@ MAIN:{
   $preProcDocText =~ s/Updated:.*?$//sg;
 
   # Other minor
-  #$preProcDocText =~ s/\s*\<br\>\s*\<br\>(^|\n).*?source code.*?\n/\n/g;
-  #$preProcDocText =~ s/(^|\n).*?mailto:.*?\n/\n/g;
-  #$preProcDocText =~ s/free and open source software program for Linux/program/g; 
-
+  my $local = 0;
+  if ($local){
+    $preProcDocText =~ s/\s*\<br\>\s*\<br\>(^|\n).*?source code.*?\n/\n/g;
+    $preProcDocText =~ s/(^|\n).*?mailto:.*?\n/\n/g;
+    $preProcDocText =~ s/free and open source software program for Linux/program/g; 
+  }
+  
   my $docText = "";
   foreach my $line ( split("\n", $preProcDocText)  ){
     $line =~ s/\"/\\\"/g; # Escape any quotes
@@ -42,6 +45,22 @@ MAIN:{
   open(FILE, ">$cppDocFile");
   print FILE $text;
   close(FILE);
+
+  if ($local){
+    my $appFile = "appWindow.cpp";
+    open(FILE, "<$appFile"); $text = join("", <FILE>); close(FILE);
+    $text =~ s!\/*(help-\>insertItem\(\"About)!\/\/$1!g;
+    open(FILE, ">$appFile");
+    print FILE $text;
+    close(FILE);
+    
+    my $utilsFile = "utils.h";
+    open(FILE, "<$utilsFile"); $text = join("", <FILE>); close(FILE);
+    $text =~ s!\.\.\/geom!libpolyview\/src!g;
+    open(FILE, ">$utilsFile");
+    print FILE $text;
+    close(FILE);
+  }
   
 }
 

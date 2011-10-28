@@ -51,7 +51,7 @@ public slots:
   void toggleAnno();
   void toggleFilled();
   void toggleShowGrid();
-  void toggleDiffererntColors();
+  void toggleDifferentColors();
   void toggleShowPolyDiff();
   void plotNextDiff();
   void plotPrevDiff();

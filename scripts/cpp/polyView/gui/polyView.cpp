@@ -2006,7 +2006,7 @@ void polyView::toggleShowGrid(){
   refreshPixmap();
 }
 
-void polyView::toggleDiffererntColors(){
+void polyView::toggleDifferentColors(){
 
   // Color the polys in different colors to distinguish them better
   
