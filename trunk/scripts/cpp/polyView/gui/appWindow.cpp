@@ -170,7 +170,7 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
   Q3PopupMenu* view = new Q3PopupMenu( menu );
   menu->insertItem("View", view);
   //view->insertSeparator();
-  view->insertItem("Choose files to hide/show", m_poly, SLOT(chooseFilesToShow()));
+  view->insertItem("Select files to hide/show", m_poly, SLOT(chooseFilesToShow()));
   view->insertItem("Zoom out",             m_poly, SLOT(zoomOut()),      Qt::Key_Minus);
   view->insertItem("Zoom in",              m_poly, SLOT(zoomIn()),       Qt::Key_Equal);
   view->insertItem("Move left",            m_poly, SLOT(shiftLeft()),    Qt::Key_Left);
@@ -239,7 +239,7 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
 
   Q3PopupMenu* diff = new Q3PopupMenu( menu );
   menu->insertItem("Diff", diff);
-  diff->insertItem("Toggle different colors", m_poly, SLOT(toggleDiffererntColors()), Qt::SHIFT + Qt::Key_D);
+  diff->insertItem("Toggle different colors", m_poly, SLOT(toggleDifferentColors()), Qt::SHIFT + Qt::Key_D);
   diff->insertItem("Toggle show poly diff", m_poly, SLOT(toggleShowPolyDiff()), Qt::Key_D);
   diff->insertItem("Show next diff", m_poly, SLOT(plotNextDiff()), Qt::Key_K);
   diff->insertItem("Show prev diff", m_poly, SLOT(plotPrevDiff()), Qt::Key_J);
@@ -291,15 +291,13 @@ docWindow::~docWindow(){
 void docWindow::setText(const std::string & docText){
 
   QImage img(":/pvLogo.png");
-  m_textArea->document()->addResource(QTextDocument::ImageResource, QUrl("pvLogo.png" ), img);
-
+  m_textArea->document()->addResource(QTextDocument::ImageResource,
+                                      QUrl("pvLogo.png" ), img);
   m_textArea->clear();
-  m_textArea->setAcceptRichText(false);
-  m_textArea->setTextFormat(Qt::PlainText);
   m_textArea->setReadOnly(true);
   m_textArea->setCurrentFont(QFont("Monospace", 10)); 
-
   m_textArea->insertHtml(docText.c_str());
   m_textArea->moveCursor(QTextCursor::Start);
+  
   return;
 }

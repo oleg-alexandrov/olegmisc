@@ -15,7 +15,7 @@ char docText[] ="<div align=\"center\"><a href=\":pvLogo.png?attredirects=0\" im
 "<div align=\"left\">\n"
 "<br>\n"
 "<br>\n"
-"<b>PolyView</b> is a free and open source software program for Linux designed to quickly load and visualize multiple sets of polygon files from the command line. It can zoom and pan, show polygons as edges, points, and filled, display text labels, print the coordinates of vertices and measure distances, change the order in which polygons are displayed, choose which polygons to hide/show, etc.<br>\n"
+"<b>PolyView</b> is a free and open source software program for Linux designed to quickly load and visualize multiple sets of polygon files from the command line. It can zoom and pan, show polygons as edges, points, and filled, display text labels, print the coordinates of vertices and measure distances, change the order in which polygons are displayed, choose which polygons to show, etc.<br>\n"
 "<br>\n"
 "PolyView can also do basic polygon editing, such as creating/deleting/moving/rotating/scaling polygons, adding/removing/modifying vertices, as well as cutting polygons to a box.<br>\n"
 "<br>\n"
