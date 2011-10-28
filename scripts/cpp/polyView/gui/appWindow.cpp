@@ -14,6 +14,7 @@
 #include <iostream>
 #include <cmath>
 #include "appWindow.h"
+#include "chooseFilesDlg.h"
 #include "polyView.h"
 #include "utils.h"
 
@@ -170,7 +171,7 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
   Q3PopupMenu* view = new Q3PopupMenu( menu );
   menu->insertItem("View", view);
   //view->insertSeparator();
-  view->insertItem("Select files to hide/show", m_poly, SLOT(chooseFilesToShow()));
+  view->insertItem(chooseFilesDlg::selectFilesTag(), m_poly, SLOT(chooseFilesToShow()));
   view->insertItem("Zoom out",             m_poly, SLOT(zoomOut()),      Qt::Key_Minus);
   view->insertItem("Zoom in",              m_poly, SLOT(zoomIn()),       Qt::Key_Equal);
   view->insertItem("Move left",            m_poly, SLOT(shiftLeft()),    Qt::Key_Left);
