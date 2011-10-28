@@ -22,7 +22,7 @@ chooseFilesDlg::chooseFilesDlg(QWidget * parent): QDialog(parent){
   vBoxLayout->setAlignment(Qt::AlignLeft);
 
   // Label
-  QLabel * label = new QLabel("Choose files to hide/show", this);
+  QLabel * label = new QLabel(chooseFilesDlg::selectFilesTag(), this);
 
   // The layout having the file names. It will be filled in dynamically later.
   m_filesTable = new QTableWidget();
@@ -43,9 +43,7 @@ chooseFilesDlg::chooseFilesDlg(QWidget * parent): QDialog(parent){
 
 chooseFilesDlg::~chooseFilesDlg(){}
 
-void chooseFilesDlg::chooseFiles(const std::vector<polyOptions> & optionsVec, // In
-                                 std::set<std::string>          & filesToHide // In-out
-                                 ){
+void chooseFilesDlg::chooseFiles(const std::vector<polyOptions> & optionsVec){
 
   // See the top of this file for documentation.
   
@@ -65,8 +63,10 @@ void chooseFilesDlg::chooseFiles(const std::vector<polyOptions> & optionsVec, //
   m_filesTable->setVerticalHeaderLabels(rowNamesList);
 
   QStringList colNamesList; 
-  for (int colIter = 0; colIter < numCols; colIter++) colNamesList << "";
+  for (int colIter = 0; colIter < numCols; colIter++) colNamesList << "Invert selection";
   m_filesTable->setHorizontalHeaderLabels(colNamesList);
+  QTableWidgetItem * hs = m_filesTable->horizontalHeaderItem(0);
+  hs->setBackground(QBrush(QColor("lightgray")));
   
   m_filesTable->setSelectionMode(QTableWidget::MultiSelection);
   string style = string("QTableWidget::indicator:unchecked ")

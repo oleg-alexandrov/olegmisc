@@ -15,11 +15,9 @@ class chooseFilesDlg: public QDialog{
 public:
   chooseFilesDlg(QWidget * parent = NULL);
   ~chooseFilesDlg();
-  void chooseFiles(const std::vector<polyOptions> & optionsVec, // In
-                   std::set<std::string>          & filesToHide // In-out
-                   );
+  void chooseFiles(const std::vector<polyOptions> & optionsVec);
   QTableWidget * getFilesTable(){ return m_filesTable; }
-  
+  static QString selectFilesTag(){ return "Select files to hide/show"; }
 private:
   QTableWidget * m_filesTable;
 

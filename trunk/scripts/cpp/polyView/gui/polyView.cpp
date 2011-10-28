@@ -2719,10 +2719,8 @@ void polyView::readAllPolys(){
 }
 
 void polyView::chooseFilesToShow(){
-  m_chooseFilesDlg.chooseFiles(m_polyOptionsVec, // Input
-                               m_filesToHide     // In-out
-                               );
-  // User's choice is processed in showFilesChosenByUser.
+  m_chooseFilesDlg.chooseFiles(m_polyOptionsVec);
+  // User's choice is processed in showFilesChosenByUser().
   return;
 }
 
