@@ -9,8 +9,8 @@
 #include "utils.h"
 using namespace std;
 
-// Allow the user to choose which files to show or not to show in the GUI.
-
+// Allow the user to choose which files to hide/show in the GUI.
+// User's choice will be processed by polyView::showFilesChosenByUser().
 chooseFilesDlg::chooseFilesDlg(QWidget * parent): QDialog(parent){
 
   setWindowModality(Qt::ApplicationModal); 
@@ -22,7 +22,7 @@ chooseFilesDlg::chooseFilesDlg(QWidget * parent): QDialog(parent){
   vBoxLayout->setAlignment(Qt::AlignLeft);
 
   // Label
-  QLabel * label = new QLabel("Choose files to show", this);
+  QLabel * label = new QLabel("Choose files to hide/show", this);
 
   // The layout having the file names. It will be filled in dynamically later.
   m_filesTable = new QTableWidget();
@@ -43,8 +43,8 @@ chooseFilesDlg::chooseFilesDlg(QWidget * parent): QDialog(parent){
 
 chooseFilesDlg::~chooseFilesDlg(){}
 
-void chooseFilesDlg::chooseFiles(const std::vector<polyOptions> & optionsVec,   // In
-                                 std::set<std::string>          & filesNotToShow// In-out
+void chooseFilesDlg::chooseFiles(const std::vector<polyOptions> & optionsVec, // In
+                                 std::set<std::string>          & filesToHide // In-out
                                  ){
 
   // See the top of this file for documentation.
@@ -53,19 +53,11 @@ void chooseFilesDlg::chooseFiles(const std::vector<polyOptions> & optionsVec,   
   int numCols = 1;
   m_filesTable->setRowCount(numFiles);
   m_filesTable->setColumnCount(numCols);
-  
+
   for (int fileIter = 0; fileIter < numFiles; fileIter++){
-    
-    string fileName        = optionsVec[fileIter].polyFileName;
-    QTableWidgetItem *item = new QTableWidgetItem(fileName.c_str());
-    
-    if (filesNotToShow.find(fileName) != filesNotToShow.end()){
-      item->setCheckState(Qt::Unchecked);
-    }else{
-      item->setCheckState(Qt::Checked);
-    }
-    
-    m_filesTable->setItem(fileIter, numCols - 1, item);
+    string fileName         = optionsVec[fileIter].polyFileName;
+     QTableWidgetItem *item = new QTableWidgetItem(fileName.c_str());
+     m_filesTable->setItem(fileIter, numCols - 1, item);
   }
 
   QStringList rowNamesList;
@@ -76,7 +68,7 @@ void chooseFilesDlg::chooseFiles(const std::vector<polyOptions> & optionsVec,   
   for (int colIter = 0; colIter < numCols; colIter++) colNamesList << "";
   m_filesTable->setHorizontalHeaderLabels(colNamesList);
   
-  m_filesTable->setSelectionMode(QTableWidget::NoSelection);
+  m_filesTable->setSelectionMode(QTableWidget::MultiSelection);
   string style = string("QTableWidget::indicator:unchecked ")
     + "{background-color:white; border: 1px solid black;}";
   m_filesTable->setStyleSheet(style.c_str());

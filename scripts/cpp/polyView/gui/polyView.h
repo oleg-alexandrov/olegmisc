@@ -296,9 +296,9 @@ private:
   int                         m_indexOfDistToPlot;
 
 
-  // Choose which files to show or not in the GUI
+  // Choose which files to hide/show in the GUI
   chooseFilesDlg        m_chooseFilesDlg;
-  std::set<std::string> m_filesNotToShow;
+  std::set<std::string> m_filesToHide;
 
   // Edit mode
   bool   m_moveVertices;

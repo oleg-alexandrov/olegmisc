@@ -41,13 +41,13 @@ using namespace utils;
 
 polyView::polyView(QWidget *parent, const cmdLineOptions & options): QWidget(parent){
 
-  // Choose which files to show in the GUI
+  // Choose which files to hide/show in the GUI
   QObject::connect(m_chooseFilesDlg.getFilesTable(),
-                   SIGNAL(cellClicked(int, int)),
+                   SIGNAL(itemSelectionChanged()),
                    this,
                    SLOT(showFilesChosenByUser())
                    );
-
+    
   setAttribute(Qt::WA_Hover); // To be able to do hovering
   
   // Preferences per polygon file. The element in the vector
@@ -309,7 +309,7 @@ void polyView::displayData( QPainter *paint ){
 
     // Skip the files the user does not want to see
     string fileName = m_polyOptionsVec[vecIter].polyFileName;
-    if (m_filesNotToShow.find(fileName) != m_filesNotToShow.end()) continue;
+    if (m_filesToHide.find(fileName) != m_filesToHide.end()) continue;
       
     int lineWidth = m_polyOptionsVec[vecIter].lineWidth;
 
@@ -2720,7 +2720,7 @@ void polyView::readAllPolys(){
 
 void polyView::chooseFilesToShow(){
   m_chooseFilesDlg.chooseFiles(m_polyOptionsVec, // Input
-                               m_filesNotToShow  // In-out
+                               m_filesToHide     // In-out
                                );
   // User's choice is processed in showFilesChosenByUser.
   return;
@@ -2730,21 +2730,16 @@ void polyView::showFilesChosenByUser(){
   
   // Process user's choice from chooseFilesToShow().
 
+  m_filesToHide.clear();
   QTableWidget * filesTable = m_chooseFilesDlg.getFilesTable();
-  int numFiles = filesTable->rowCount();
-  int numCols  = filesTable->columnCount();
-  
-  for (int fileIter = 0; fileIter < numFiles; fileIter++){
-
-    QTableWidgetItem *item = filesTable->item(fileIter, numCols - 1);
-    bool isChecked  = (item->checkState() != Qt::Unchecked);
+  QList<QTableWidgetItem*> selectedRows = filesTable->selectedItems();
+  QListIterator<QTableWidgetItem*> i(selectedRows);
+  while (i.hasNext()){
+    QTableWidgetItem* item = i.next();
     string fileName = ((item->data(0)).toString()).toStdString();
-    
-    if (!isChecked) m_filesNotToShow.insert(fileName);
-    else            m_filesNotToShow.erase (fileName);
-    
+    m_filesToHide.insert(fileName);
   }
-
+  
   refreshPixmap();
   
   return;
