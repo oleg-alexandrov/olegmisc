@@ -170,7 +170,7 @@ void appWindow::createMenusAndMainWidget(const cmdLineOptions & opt){
   Q3PopupMenu* view = new Q3PopupMenu( menu );
   menu->insertItem("View", view);
   //view->insertSeparator();
-  view->insertItem("Choose files to view", m_poly, SLOT(chooseFilesToShow()));
+  view->insertItem("Choose files to hide/show", m_poly, SLOT(chooseFilesToShow()));
   view->insertItem("Zoom out",             m_poly, SLOT(zoomOut()),      Qt::Key_Minus);
   view->insertItem("Zoom in",              m_poly, SLOT(zoomIn()),       Qt::Key_Equal);
   view->insertItem("Move left",            m_poly, SLOT(shiftLeft()),    Qt::Key_Left);
