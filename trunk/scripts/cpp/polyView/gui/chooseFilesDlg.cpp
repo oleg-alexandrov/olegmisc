@@ -63,12 +63,12 @@ void chooseFilesDlg::chooseFiles(const std::vector<polyOptions> & optionsVec){
   m_filesTable->setVerticalHeaderLabels(rowNamesList);
 
   QStringList colNamesList; 
-  for (int colIter = 0; colIter < numCols; colIter++) colNamesList << "Invert selection";
+  for (int colIter = 0; colIter < numCols; colIter++) colNamesList << "Hide all";
   m_filesTable->setHorizontalHeaderLabels(colNamesList);
   QTableWidgetItem * hs = m_filesTable->horizontalHeaderItem(0);
   hs->setBackground(QBrush(QColor("lightgray")));
   
-  m_filesTable->setSelectionMode(QTableWidget::MultiSelection);
+  m_filesTable->setSelectionMode(QTableWidget::ExtendedSelection);
   string style = string("QTableWidget::indicator:unchecked ")
     + "{background-color:white; border: 1px solid black;}";
   m_filesTable->setStyleSheet(style.c_str());
