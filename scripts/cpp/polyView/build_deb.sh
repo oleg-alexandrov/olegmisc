@@ -1,7 +1,8 @@
 #!/bin/sh
 
+cp -fv gui/polyview debian/usr/bin/
 dpkg-deb --build debian
-mv debian.deb polyView_0.5.deb
+mv -fv debian.deb polyview_0.5.deb
 
 # Notes to self:
 
@@ -9,10 +10,10 @@ mv debian.deb polyView_0.5.deb
 # tar czfv debian.tgz debian
 
 # Install (need to be root)
-# dpkg -i ./polyView_0.5.deb
+# dpkg -i polyView_0.5.deb
 
 # Uninstall
-# dpkg -r polyView
+# dpkg -r polyview
 
 # See what libraries an executable depends on:
 # ldd exeName
