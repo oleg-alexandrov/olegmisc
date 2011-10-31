@@ -1,0 +1,62 @@
+#!/usr/bin/perl
+use strict;		      # 'strict' insists that all variables be declared
+use diagnostics;	      # 'diagnostics' expands the cryptic warnings
+undef $/; # undefines the separator. Can read one whole file in one scalar.
+
+# Run cvs log and strip irrelevant data from its output
+MAIN:{
+  
+  my ($file, @lines, $data, $line, $mark1, $mark2, $sep, $count);
+
+  $file = $ARGV[0];
+  
+  $data = `cvs log $file`;
+
+  @lines = split ("\n", $data); 
+
+  $mark1 = 0;
+  $mark2 = 0;
+  
+  foreach $line (@lines){
+
+    if ($line =~ /^symbolic names:/){
+      $mark1 = 1;
+      next;
+    }
+
+    if ($mark1 == 1){
+
+      if ($line =~ /^\s/){
+        $line = "";
+      }else{
+        $mark1 = 0;
+      }
+
+    }
+    
+    $line = $line . "\n" unless ($line =~ /^\s*$/);
+  }
+
+  $data = join ("", @lines);
+
+  # reverse the order of data
+  $sep = '----------------------------';
+  @lines = split ($sep, $data);
+  
+  $data = "";
+  for ($count=0 ; $count <= $#lines  ; $count++){
+
+    $line = $lines[$#lines - $count];
+    $line =~ s/^\s*//g;
+    $line =~ s/\s*$//g;
+
+    $line = $line . "\n" . $sep . "\n";
+    $data .= $line;
+    
+  }
+
+  $data =~ s/\s*$sep\s*$//g;
+  
+  print "$data\n";
+}
+

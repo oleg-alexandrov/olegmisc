@@ -1,0 +1,240 @@
+#!/usr/bin/perl
+use strict;		      # 'strict' insists that all variables be declared
+use diagnostics;	      # 'diagnostics' expands the cryptic warnings
+undef $/; # undefines the separator. Can read one whole file in one scalar.
+
+# make it easier to keep track of changes in a C++ project.
+MAIN:{
+  
+  if (! -e 'Makefile' ){
+    print "No Makefile, bailing out!\n";
+    exit(0);
+  }
+
+  &update_header_file();
+  &update_makefile();
+}
+sub update_header_file {
+  my $contents="";
+  my @files = (<*.cpp>);
+  my @mains;
+  my $content;
+
+  undef $/;
+  foreach (@files) {
+    s/^\.\///g;
+    next if /\//;
+    open (FILE, "<$_");
+    $content=<FILE>;
+    close(FILE);
+
+    if ($content =~ /main\s*\(/) {
+      s/\..*//g;
+      @mains=(@mains, $_);
+    }
+    $contents = "$contents\n" . "$content";
+  }
+
+  $contents =~ s/\/\/.*?\n/ /g; # remove comments
+
+  # will match a function declaration, like void myfun(double*& x){
+  my @matches = ($contents =~ /(\b\w+\**\s+\w+\s*\(\w+\s*[\*\&]*\s+\w+[^\)]*\))\s*\{/sg);  
+  #my @matches = ($contents =~ /\n(\w+\*?\s+\w+\s*\(\w+\s*[\*\&]*\s+\w+.*?\))\s*\{/sg);
+  #  matches                       double*    myfun(int    *        X.........)   
+  
+  my %DEC;
+  foreach (@matches) {
+    s/\s+/ /g;
+    s/\s*(,|\(|\))\s*/$1/g;
+    s/\s+[^\s,\(]+,/,/g;
+    s/\s+[^\s]*\)/\);/g;
+    s/,/, /g;
+    $DEC{$_}=1;
+  }
+  
+  
+  open (FILE, ">header.h");
+  foreach $_ (sort keys %DEC) {
+    print FILE "$_\n" unless (/int main\(/);
+  }
+  close(FILE); 
+
+}
+ 
+sub update_makefile{
+  my ($contents, $content, %reqs, @matches, %funs, @mains, $match, %main_hash);
+  undef $/;
+
+  my @files = (<*.cpp>);
+  foreach (@files) {
+    
+    open (FILE, "<$_");
+    $content=<FILE>;
+    close(FILE);
+    $content =~ s/\/\/.*?\n/ /g; # remove comments
+    
+    if ($content =~ /main\s*\(/) {
+      @mains=(@mains, $_);    # the main programs
+      $main_hash{$_}=1;
+    }
+    
+    @matches= ($content =~ /([\w_]+)\s*[\(]/g); # match for myfun(...). Will have many false positives
+    $reqs{$_}=join (" ", @matches); # prerequisites of the given code
+    $reqs{$_} =~ s/\s+/ /g;
+    
+    # will match a function declaration, like void myfun(double*& x){
+    @matches = ($content =~ /\s[\w]+[\*]*\s+([\w]+)\s*\(\w+\s*[\*\&]*\s*\w+[^\)]*\)\s*\{/sg);
+    #  matches                       double*    myfun(int    *        X.........)
+    
+    foreach $match (@matches) { # each function will remember in what file it resides
+      next if ($match =~ /main/); # ignore main functions
+      $funs{$match}=$_;
+    }
+  }
+  
+  # filter out the things which are not functions, like if (), and functions which are not
+  # in this directory
+
+  my $scalar;
+  foreach (@files) {
+    @matches=split(' ', $reqs{$_});
+    $reqs{$_}="";
+    foreach $match (@matches) {
+      if (exists $funs{$match} && $reqs{$_} !~ / $match /) {
+	$reqs{$_} = $reqs{$_} . " " . $match . " ";
+      }
+    }
+  }
+
+  # find out the dependencies of each main
+  my ($main, $deps, @cur_files, @cur_reqs, $req, $deps_bk, $i, %deps);
+  foreach $main (@mains) {
+    $deps=" " . $main . " ";
+    $deps_bk="";
+    while ( $deps ne $deps_bk ) { # keep on iterating while we get new dependencies
+      $deps_bk=$deps;
+
+      @cur_files=split(' ', $deps);
+      foreach (@cur_files) {
+	next if /^\s*$/;
+	@cur_reqs=split(' ', $reqs{$_});
+	foreach $req (@cur_reqs) {
+	  next if (exists $main_hash{$funs{$req}}); # ignore mains
+	  $deps = $deps . " " . $funs{$req} . " " unless ($deps =~ / $funs{$req} /);
+	  # add this file as a new requirement
+	}
+      }
+    }
+    $deps{$main}=$deps;
+  }
+
+  # # deal with the Makefile now... 
+  my ($obj, $line, $pad, $maxlength, $body, @rules, %OBJ);
+  foreach $main (@mains) {
+    $obj=""; 
+    $line =""; 
+    $maxlength=60;	      # go to a new line if the line exeeds this limit
+
+    @matches=(split(' ', $deps{$main}), '$(XTRA_OBJ)'); # make this array
+    foreach (@matches) {
+      next if (/^\s*$/);
+      next if ($_ eq $main);
+      s/\..*?$/\.o/g;
+    
+      if (length($line) + length($_) >= $maxlength) {
+	$obj = "$obj $line";
+	$pad = $maxlength - length($line); # calculate the padding length
+	$obj = $obj . " " x $pad; # padding
+	$obj = "$obj \\\n\t";
+	$line = $_;
+      } else {
+	if ($line eq "") {    # just started
+	  $line = "$_";
+	} else {
+	  $line = "$line $_";
+	}
+      }
+    }
+    $obj = "$obj $line";
+
+    $main =~ s/\.cpp//g;
+    if (exists $OBJ{$obj}) {
+      $OBJ{$obj}=$OBJ{$obj} . " $main";
+    } else {
+      $OBJ{$obj}=$main;
+    }
+  }
+
+  my $sub="";
+
+  $i=0;
+  foreach $obj (keys %OBJ) {
+    $i++;
+    $sub = $sub .  "OBJ$i  = $obj\n\n";
+  }
+
+  $i=0;
+  foreach $obj (keys %OBJ) {
+    $i++;
+    @matches=split (' ', $OBJ{$obj});
+    foreach $main (@matches) {
+      $body = "\n" . "$main: $main.o \$(OBJ$i) \$(HDR) \n\t" . '$(CPP)  -o $@ $@.o' . " \$(OBJ$i)  \$(LIBS)";
+      $sub=$sub .  "$body\n";
+    }
+  }
+
+
+  $sub = $sub . "\n" . &header_dependencies(\@files);
+
+  open (FILE, "<Makefile");
+  $line=join("", <FILE>);
+  close(FILE);
+   
+  unless ($line =~ s/(\#start.*?\n).*?(\#end)/$1\n$sub\n$2/s ){
+    print "Can't match start/end tags in Makefile, bailing out!\n";
+    exit(0);
+  }
+  
+  open (FILE, ">Makefile");
+  print FILE "$line";
+  close(FILE);
+   
+}
+
+# force make to recompile .cpp files whose local header files have changed
+sub header_dependencies {
+
+  my ($files, $file, $file_noxt, $text, $line, $header, @headers, %local_headers, @lines, $exist_local_headers, $local_text);
+  $files = shift;
+
+  @lines = <*.h>;
+  foreach $line (@lines){
+    next if ($line eq 'header.h'); # default, don't count
+    $local_headers{$line}=1;
+  }
+
+  
+  $text = "# object files which contain headers must be recompiled when headers change\n";
+  foreach $file (@$files) {
+    $file_noxt=$file; $file_noxt =~ s/\.cpp//g;
+    open(FILE, "<$file"); $line = <FILE>; close(FILE);
+    @headers = ($line =~ /include\s*\"(.*?\.h)\"/g);
+
+    next unless (@headers);
+    $exist_local_headers=0;
+    $local_text="$file_noxt.o: $file_noxt.cpp";
+    foreach $header (@headers){
+      if (exists $local_headers{$header}){
+	$exist_local_headers=1;
+	$local_text = $local_text . " " . $header;
+      }
+    }
+
+    next unless ($exist_local_headers);
+    $local_text = $local_text ."\n\t\$(CPP)  -c  $file_noxt.cpp\n\n";
+    $text = $text . $local_text;
+  }
+
+
+  return $text; 
+}

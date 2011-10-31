@@ -1,0 +1,15 @@
+#!/bin/bash
+
+foo=$1; shift;
+bar=$1; shift;
+
+for file in $*; do
+   
+    if [ -d $file ]; then
+        echo "skipping directory $file";
+    else
+        echo "performing replacement of '$foo' with '$bar' in $file"
+        perl -pi -e "s#$foo#$bar#g" $file;
+    fi;
+
+done;
