@@ -1,0 +1,26 @@
+#!/bin/bash
+
+export XEPATH=$HOME/bin/
+instanceCount=$(ps aux | grep `whoami` | grep xemacs | grep -v 'grep xemacs' | wc -l);
+if [ "$instanceCount" -eq "0" ]; then
+
+  $XEPATH/xemacs -geo 90x32+0+0 &
+  instanceCount="";
+  
+  while [ "$instanceCount" = "" ]; do
+    instanceCount=$(ps aux | grep `whoami` | grep gnuserv | grep -v 'grep gnuserv' | wc -l);
+    echo "waiting for gnuserv";
+    sleep 1;
+  done;
+
+  sleep 1;
+
+else
+  
+  $XEPATH/gnuclient -q $* &
+
+fi
+
+
+
+

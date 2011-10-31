@@ -1,0 +1,40 @@
+#!/usr/bin/perl
+use strict;                   # 'strict' insists that all variables be declared
+use diagnostics;              # 'diagnostics' expands the cryptic warnings
+undef $/; # undefines the separator. Can read one whole file in one scalar.
+
+# Package a command in a form acceptable to gdb
+
+MAIN:{
+
+  if (scalar (@ARGV) <= 0  ){
+    print "Usage: program_name program_arguments\n";
+    exit(0);
+  }
+
+  my $prog_name = shift (@ARGV);
+  my $prog_args  = join (" ", @ARGV);
+
+  my $gdb_file    = "run.gdb";
+  
+  open(FILE, ">$gdb_file");
+  print FILE "run\n";
+  close(FILE);
+
+  # Deal with the pecularities of the build system
+  if ($prog_name !~ /Linux_debug_64/){
+    $prog_name =~ s/^(.*\/)(.*?)$/$1Linux_debug_64\/$2/g;
+  }
+
+  # Run gdb on given program with commands from $gdb_file
+  my $gdb_command = "gdb -x $gdb_file --args $prog_name $prog_args\n";
+
+  print "\n";
+  print "SANDBOX is " . $ENV{SANDBOX_BUILD_DIR} . "\n";
+  print "\n";
+  print "$gdb_command\n";
+  print "\n";
+  system("$gdb_command");
+  
+  
+}
