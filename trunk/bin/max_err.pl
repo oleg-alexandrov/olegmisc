@@ -26,13 +26,13 @@ MAIN:{
   
   my ($max_abs_err, $max_rel_err, $max_row, $max_col) = (0, 0, 0, 0);
   
-  for (my $row = 0; $row < $numRows; $row++){
+  for (my $row_num = 0; $row_num < $numRows; $row_num++){
     
-    my @l1 = split(/(,|\s+)/, $val1[$row]);
-    my @l2 = split(/(,|\s+)/, $val2[$row]);
+    my @l1 = split(/(,|\s+)/, $val1[$row_num]);
+    my @l2 = split(/(,|\s+)/, $val2[$row_num]);
 
     if ( scalar(@l1) != scalar(@l2) ){
-      print "Warning: Row " . ($row + 1) . " does not have the same number "
+      print "Warning: Row " . ($row_num + 1) . " does not have the same number "
          . "of elements in $file1 and $file2.\n";
     }
     my $numlen = min( scalar(@l1), scalar(@l2) );
@@ -45,13 +45,16 @@ MAIN:{
         $col_num++;
         
         my $err = abs( $l1[$col] - $l2[$col] );
-        my $rel_err = $err/min($l1[$col], $l2[$col]);
-        #print "xxx $rel_err $l1[$col] $l2[$col] \n";
+        my $den = min($l1[$col], $l2[$col]);
+        $den = 1 if ($den == 0);
+        my $rel_err = $err/$den;
+        #print "rel_err abs_err data $rel_err $err $l1[$col] $l2[$col] "
+        # . "$row_num $col_num\n";
         if ($err > $max_abs_err){
           $max_abs_err = $err;
           $max_rel_err = $rel_err;
           $max_col = $col_num;
-          $max_row = $row;
+          $max_row = $row_num;
         }
         
         #print "$l1[$col] $l2[$col] $err\n";
@@ -65,8 +68,8 @@ MAIN:{
     
   }
 
-  print "Max abs err is $max_abs_err at line " . ($max_row + 1)
-     .                  " and column " . ($max_col + 1) . "\n";
+  print "Max abs err is $max_abs_err at line " . $max_row
+     .                  " and column " . $max_col . " (count starts from 0)\n";
   print "At that location, max rel err is $max_rel_err\n";
   
   #print "Lines:\n";
