@@ -1,8 +1,8 @@
 ; c++-my.el
 
-(flyspell-prog-mode)     ; turn on `flyspell-mode' for comments and strings
+(flyspell-prog-mode)      ; turn on `flyspell-mode' for comments and strings
 (c-toggle-hungry-state 1) ; delete space hungrily
-(pending-delete-mode 1)   ; delete selected text when any character is touched
+(turn-on-pending-delete)  ; delete selected text when any character is touched
 (imenu-add-menubar-index) ; make a menu listing all functions in the given file
 (setq imenu-max-items 50)
 
@@ -351,6 +351,14 @@ exist, try replacing 'src' with 'include' and vice-versa"
   (newline-and-indent)
   )
 
+(defun c++-delete ()
+  (interactive)
+  (if (mark)
+      (backward-or-forward-delete-char 1)
+    (c-hungry-delete-forward)
+    )
+  )
+
 (local-set-key [(control x) (l)] 'duplicate-line)
 (local-set-key [(=)] 'smart-equal)
 (local-set-key [(\<e)] 'c++-endl)
@@ -381,5 +389,5 @@ exist, try replacing 'src' with 'include' and vice-versa"
 (local-set-key [(meta \[)] 'goto-match-paren)
 (local-set-key [(control meta a)] 'beginning-of-defun)
 (local-set-key [(control meta e)] 'end-of-defun)
-(local-set-key [(delete)] 'c-hungry-delete-forward)
+(local-set-key [(delete)] 'c++-delete)
 (local-set-key [(meta \')] 'smart-forward)
