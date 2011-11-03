@@ -73,6 +73,11 @@ function cdw {
  cd $WORKDIR;
 }
 
+function cvdel {
+    rm -fv $1
+    cvs delete $1
+}
+
 # after the W variable is updated, update the other settings
 function setbuildenv
 {

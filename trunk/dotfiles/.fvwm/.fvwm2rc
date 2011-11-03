@@ -192,6 +192,9 @@ Key Down   A   MC   CursorMove +0 +50
 Key q   A   4   Close
 Key w   A   4   Lower
 
+# Disable Alt-Tab
+Key Tab A M -
+
 # 1.2 Buttons
 # ------------
 # on définit le boutton normal, pressé et inactif.
