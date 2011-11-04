@@ -64,6 +64,14 @@ Else
 }
 Return
 
+; F4 to switch to Word
+F4::
+IfWinExist ahk_class OpusApp
+{
+  WinActivate
+}
+Return
+
 #IfWinActive ahk_class rctrl_renwnd32
 {
   ; Outlook bindings
