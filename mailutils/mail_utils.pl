@@ -83,7 +83,7 @@ sub read_mailbox {
 
     # Wipe the old message id and create a new one.
     my ($header, $body) = &extract_header_body ($mail);
-    $header =~ s/\nMessage-ID:\s+.*?($|\n)/$1/ig;
+    #$header =~ s/\nMessage-ID:\s+.*?($|\n)/$1/ig;
     $header = &add_message_id_if_needed($header);
     $mail   = &combine_header_body($header, $body);
 
