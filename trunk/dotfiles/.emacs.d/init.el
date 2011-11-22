@@ -20,12 +20,6 @@
 ;;start gnuserv.
 ;(gnuserv-start)(setq make-backup-files nil) 
 
-;; The very nifty ido package, that allows one to switch to a buffer by typing
-;; only a few consecutive characters of its name.
-;; It does not work well with multiple windows though.
-;(load-library "ido")
-;(ido-mode t)
-
 ;; history menu
 ;(load-library "mas-file-history")
 ;(setq mas-file-history-menu-title "History")
@@ -40,6 +34,8 @@
 ;;load the redo package
 ;(require 'redo)
 
+(require 'paren)
+(show-paren-mode t)                 ; turn paren-mode on
 
 ;;Saves a history of commands used previously (including other times XEmacs was used). 
 (require `savehist)
@@ -88,10 +84,6 @@
 ;(add-hook 'tcl-mode-hook
           ;(local-set-key [(delete)] 'backward-or-forward-delete-char)
 ;          )
-
-;;to enable control-x to copy, control v to paste,  etc. 
-;(load-library "cua-mode")
-;(CUA-mode 1)
 
 ; no bell
 (setq bell-volume 0)
@@ -224,84 +216,4 @@
   ;; If there is more than one, they won't work right.
  '(blink-cursor-mode nil)
  '(column-number-mode t)
- '(cua-mode t nil (cua-base))
  '(scroll-bar-mode (quote right)))
-(custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
- '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 123 :width normal :foundry "b&h" :family "Luxi Mono"))))
- '(bold-italic ((t (:slant italic :weight bold))))
- '(cperl-array-face ((((type x) (class color) (background light dark)) (:foreground "orangered" :bold t))))
- '(cperl-hash-face ((((class color) (background dark)) (:foreground "Red" :background "black" :bold t :italic nil))))
- '(cperl-nonoverridable-face ((((class color) (background dark)) (:foreground "orange" :family "Courier" :bold t :italic nil))))
- '(cursor ((default (:width condensed)) (nil nil)))
- '(custom-button ((t (:bold t :foreground "#3fdfcf"))))
- '(custom-button-face ((t (:bold t :foreground "#3fdfcf"))) t)
- '(custom-face-tag ((t (:bold nil :italic nil :underline t))))
- '(custom-face-tag-face ((t (:bold nil :italic nil :underline t))) t)
- '(custom-group-tag ((((class color) (background light)) (:underline t :foreground "blue"))))
- '(custom-group-tag-face ((((class color) (background light)) (:underline t :foreground "blue"))) t)
- '(custom-saved ((t (:underline t :foreground "orange"))))
- '(custom-saved-face ((t (:underline t :foreground "orange"))) t)
- '(custom-state ((((class color) (background light)) (:foreground "dark green"))))
- '(custom-state-face ((((class color) (background light)) (:foreground "dark green"))) t)
- '(custom-variable-button ((t (:bold t :underline t :foreground "white"))))
- '(custom-variable-button-face ((t (:bold t :underline t :foreground "white"))) t)
- '(diff-context-face ((((class color) (background light)) (:foreground "yellow"))))
- '(dired-face-boring ((((type x pm mswindows) (class color grayscale) (background light)) (:foreground "red"))))
- '(dired-face-permissions ((t (:foreground "green"))))
- '(flyspell-duplicate-face ((((class color)) (:foreground "OrangeRed"))) t)
- '(flyspell-incorrect-face ((((class color)) (:foreground "OrangeRed"))) t)
- '(font-latex-bold-face ((((class color) (background light)) (:bold t))))
- '(font-latex-italic-face ((nil (:bold nil :italic nil))))
- '(font-latex-math-face ((t (:bold nil :foreground "green3"))))
- '(font-latex-sedate-face ((((class color) (background light)) (:foreground "gold"))))
- '(font-latex-title-1-face ((((class color) (background dark)) (:foreground "yellow" :family "helvetica" :bold t))))
- '(font-latex-title-2-face ((((class color) (background dark)) (:foreground "yellow" :family "helvetica" :bold t))))
- '(font-latex-title-3-face ((((class color) (background dark)) (:foreground "yellow" :family "helvetica" :bold t))))
- '(font-lock-builtin-face ((((class color) (background dark)) (:foreground "red"))))
- '(font-lock-comment-face ((t (:foreground "orange3"))))
- '(font-lock-constant-face ((t (:foreground "green" :weight bold))))
- '(font-lock-doc-string-face ((t (:foreground "green3"))))
- '(font-lock-function-name-face ((t (:foreground "blue" :bold t))))
- '(font-lock-keyword-face ((t (:foreground "gold"))))
- '(font-lock-preprocessor-face ((t (:foreground "red" :family "adobe" :bold t :italic nil))))
- '(font-lock-reference-face ((t (:foreground "green2"))))
- '(font-lock-string-face ((t (:bold nil :foreground "green3"))))
- '(font-lock-type-face ((t (:foreground "#886fff" :bold t))))
- '(font-lock-variable-name-face ((t (:foreground "yellow" :bold t))))
- '(font-lock-warning-face ((((class color) (background light)) (:foreground "Violetred" :bold t))))
- '(font-wikipedia-bold-face (((:bold t))))
- '(gnus-cite-face-7 ((((class color) (background light)) (:foreground "yellow"))))
- '(gnus-header-content-face ((((class color) (background light)) (:foreground "red" :italic t))))
- '(green ((t (:foreground "green"))) t)
- '(highlight ((t (:foreground "red3"))))
- '(hyper-apropos-documentation ((((class color) (background light)) (:foreground "red"))))
- '(info-node ((t (:bold t))))
- '(isearch ((t (:foreground "red"))))
- '(lazy-highlight ((((class color) (min-colors 88) (background light)) (:foreground "red"))))
- '(list-mode-item-selected ((t (:foreground "green"))) t)
- '(message-cited-text ((t (:foreground "green"))))
- '(message-header-contents ((t (:italic nil))))
- '(message-headers ((t (:foreground "blue" :bold t))))
- '(message-highlighted-header-contents ((t (:bold t))))
- '(message-separator-face ((((class color) (background light)) (:foreground "red"))) t)
- '(message-url ((t (:foreground "orange" :bold t))))
- '(mh-show-to-face ((((class color) (background light)) (:foreground "red"))))
- '(minibuffer-prompt ((t (:foreground "royal blue"))))
- '(mutt-header-keyword-face ((((class color) (background dark)) (:foreground "cyan" :bold nil))))
- '(mutt-header-value-face ((((class color) (background dark)) (:foreground "indianred1"))))
- '(mutt-multiply-quoted-text-face ((((class color) (background dark)) (:foreground "gold" :italic nil))))
- '(mutt-quoted-text-face ((((class color) (background dark)) (:foreground "green" :italic nil))))
- '(region ((nil (:background "royalblue"))))
- '(right-margin ((t (:bold nil :italic nil))) t)
- '(secondary-selection ((t (:foreground "white" :background "red"))))
- '(text-cursor ((t (:foreground "black" :background "green"))) t)
- '(underline ((t nil)))
- '(viper-minibuffer-insert-face ((((class color)) (:foreground "white" :background "black"))))
- '(widget-field ((((class grayscale color) (background light)) (:foreground "black" :background "white"))))
- '(widget-field-face ((((class grayscale color) (background light)) (:foreground "black" :background "white"))) t)
- '(x-face ((t (:foreground "gold" :background "black"))))
- '(zmacs-region ((t (:background "RoyalBlue"))) t))
