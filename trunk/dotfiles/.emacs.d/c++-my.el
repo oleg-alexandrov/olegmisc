@@ -363,8 +363,12 @@ exist, try replacing 'src' with 'include' and vice-versa"
 ;(local-set-key [(meta h)] 'update-header-file)
 (local-set-key [(control return)] 'c++-break-line)
 (local-set-key [(delete)] 'c-electric-delete-forward)
+(local-set-key [(control v)] 'yank)
+(local-set-key [(tab)] 'indent-according-to-mode)
 
 (global-unset-key [("\M- ")])
 (global-set-key [("\M- ")] 'dabbrev-expand)
-(local-set-key (kbd "SPC") 'smart-space)
+(local-set-key (kbd "SPC") 'self-insert-command)
+;(local-set-key (kbd "SPC") 'smart-space) 
 (local-set-key (kbd "C-SPC") 'smart-space)
+
