@@ -1,19 +1,3 @@
-(require 'ido)
-(ido-mode t)
-(setq ido-confirm-unique-completion t)
-(setq ido-default-buffer-method 'samewindow)
-(setq ido-use-filename-at-point t)
-(ido-mode t)
-
-;(set-face-background 'ido-first-match "white")
-;(set-face-foreground 'ido-subdir "blue3")
-(icomplete-mode 1)
-
-;;bind keyboard-escape-quit to a sequence of 2 escapes instead of 3 of them.
-;(when (console-on-window-system-p)
-;  (global-set-key '(meta escape) 'keyboard-escape-quit)
-;  (define-key isearch-mode-map '(meta escape) 'isearch-cancel))
-
 (defun isearch-set-initial-string ()
   (remove-hook 'isearch-mode-hook 'isearch-set-initial-string)
   (setq isearch-string isearch-initial-string)
@@ -288,52 +272,6 @@
 ;     (kill-buffer (current-buffer))
 ;     ))
 
-;;;; see another example below with search and replace
-; (defun copy-to-blythe ()
-;   (interactive)
-;   (let ((origin-file (buffer-file-name)))
-;     (let ((destination-file (concat "/u/cedar/h1/afa/aoleg" (nth 1 (split-string origin-file "oalexandrov")) )))
-;       (let ((command (concat "scp " origin-file " aoleg@blythe.math.ucla.edu:" destination-file)))
-;  	(message command)
-;  	(shell-command command)
-;  	(message (concat "Done: " command))
-;  	)
-;       )))
-
-; (defun save-buffer-and-copy-to-blythe ()
-;   (interactive)
-;   (save-buffer)
-;   (copy-to-blythe)
-;   )
-
-
-(defun  copy-to-shc ()
-  (interactive)
-  
-  (let (( my_file (buffer-file-name) )) ; assign to my_file the current file
-					;(replace-string)
-
-    (if (string-match "/home/han/" my_file)
-
-	(let ((my_new_file (replace-match "/shc/data-store01/acm/han/" t "/home/han/" my_file) ))
-	  (let (( my_command (concat "scp " my_file " han@shc.cacr.caltech.edu:" my_new_file )))
-	    (message my_command)
-	    (shell-command my_command)
-	    (message (concat "Done!!! " my_command) )
-	    )
-	  )
-      )
-    
-    )
-  )
-
-(defun call-tkdiff ()
-  (interactive)
-
-  (shell-command (concat "/home/olegalex/bin/call_tkdiff.pl " (buffer-file-name) )  t)
-  
-  )
-
 
 (defun un-define-mode-abbrev (name)
   "Define ABBREV as a mode-specific abbreviation for EXPANSION."
@@ -417,6 +355,17 @@
   (align-regexp start end 
                 (concat "\\(\\s-*\\)" regexp) 1 1 t))
 
+(defun scp-copy ()
+  (interactive)
+  (let ((cmd (concat "scp " (buffer-file-name) " $H5:" 
+                     (replace-regexp-in-string "Users" "home" (buffer-file-name) t) 
+                     )))
+    (shell-command cmd)
+    ;(insert cmd)
+    (message cmd)
+    )
+  )
+
 ;(global-set-key     'button4 'mwheel-down)
 ;(global-set-key     'button5 'mwheel-up)
 (global-set-key [(control \')] 'my-delete-tail)
@@ -424,9 +373,8 @@
 (global-set-key [(control backspace)] 'backward-kill-line)
 (global-set-key [(control delete)] 'kill-line)
 (global-set-key [(control j)] 'my-fill-paragraph-or-region)
-(global-set-key [(tab)] 'indent-according-to-mode)
+;(global-set-key [(tab)] 'indent-according-to-mode)
 (global-set-key (kbd "LFD") 'my-fill-paragraph-or-region)
-
     
 (global-set-key [(control k)] 'kill-all-line)
 (global-set-key [(control l)] 'load-file)
@@ -468,9 +416,15 @@
 (global-set-key [(meta v)] 'revert-buffer)
 (global-set-key [(meta return)] 'new-line-and-indent)
 (global-set-key [(meta l)] 'align-repeat)
+(global-set-key [(control p)] 'scp-copy)
+(global-set-key [(control t)] 'isearch-forward-at-point)
 ;(local-set-key [(meta \[)] 'insert-brackets)
 (global-set-key [(meta \;)] 'insert-semicolon-and-newline)
-(global-set-key [(meta o)] 'ido-switch-buffer)
+(define-key osx-key-mode-map [(home)]       'beginning-of-line)
+(define-key osx-key-mode-map [(end)]        'end-of-line)
+(define-key osx-key-mode-map [C-kp-delete]  'kill-line)
+(define-key osx-key-mode-map [(meta g)] 'goto-line)
+
 ;; terminal keys
 ;(global-set-key "\e[7~" 'beginning-of-line)
 ;(global-set-key "\e[8~" 'end-of-line)
