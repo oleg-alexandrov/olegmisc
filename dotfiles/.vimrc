@@ -34,8 +34,8 @@ map <C-Home> <Esc>1gg
 map! <C-Home> <Esc>1gg
 noremap <C-Home> <Esc>1gg
 
-map  <C-F> <Esc>/
-imap <C-F> <Esc>/
+"map  <C-F> <Esc>/
+"imap <C-F> <Esc>/
 
 " Save and quit with Control-S and Control-Q
 " For this to work need to first insert
@@ -65,11 +65,14 @@ cabbrev nw set wrap nowrap
 cabbrev dw set nowrap wrap 
 cabbrev sp set paste
 cabbrev np set nopaste
-
 cabbrev tf s/true/false/
 cabbrev ft s/false/true/
 
 ab st set shared::job::dbgTrackKaroList                      {0}
+ab co std::cout <<
+ab ,. << std::endl;
+ab ,, << " " <<
+ab ed << std::endl;
 
 " Make the backspace key delete newlines, etc.
 ":set backspace=indent,eol,start
