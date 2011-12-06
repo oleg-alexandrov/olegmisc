@@ -8,7 +8,7 @@ set history=10000
 set filec
 set show-all-if-ambiguous on
 
-#if [ "$SSH_TTY" != "" ] && [ "$DISPLAY" != "" ]; then 
+#if [ 0 ] && [ "$SSH_TTY" != "" ] && [ "$DISPLAY" != "" ]; then 
   
   # Make the backspace behave
   stty erase '^?'
@@ -19,10 +19,10 @@ set show-all-if-ambiguous on
   stty start undef # control q
   
   # Bind the windows key for use in fvwm, if we have a display 
-  if [ "$DISPLAY" != "" ]; then 
-    xmodmap -e "clear mod3"
-    xmodmap -e  "add mod4 = Super_L"
-  fi  
+  #if [ "$DISPLAY" != "" ]; then 
+  #  xmodmap -e "clear mod3"
+  #  xmodmap -e  "add mod4 = Super_L"
+  #fi  
 #fi
 
 ## Pager macros
@@ -51,10 +51,10 @@ fi
 function cdls {
   if [ "$*" ]; then 
      builtin cd "$*"; 
-     ls -a --color;
+     gls -a --color=auto;
      echo $(pwd) > ~/.lastDir 
   else
-      builtin cd; ls -a --color;
+      builtin cd; gls -a --color=auto;
   fi
   proml;
 }
@@ -109,12 +109,13 @@ function a {
 function ald {
 
     # Create an alias to cd to the current directory
-    a $1="cd $(pwd)"
+    dir=$(echo $(pwd) | perl -pi -e 's#'$HOME'#\$HOME#g')
+    a $1="cd $dir" 
 }
 
 function ag {
     # grep through all aliases for given pattern
-    alias | grep -i --colour=auto "$*"
+    alias | grep -i --colour=auto "$*" | perl -pi -e "s#^#a #g"
 }
 
 function eg {
@@ -133,12 +134,12 @@ function un {
 
 function pug {
     # grep through all history for given pattern
-    ps ux | grep -i --color=auto "$*"
+    ps ux | grep -i  "$*"
 }
 
 function hg {
     # grep through all history for given pattern
-    history 1 | grep -i --color=auto "$*"
+    history 1 | grep -i  "$*"
 }
 
 function gr {
@@ -151,6 +152,22 @@ function gr {
 function fe {
  # Find files with given extension
   find . -name \*.$1;
+}
+
+function rh {
+  perl -pi -e "s#$HOME#\\\$HOME/#g" .bash_aliases
+}
+
+function mcd {
+    echo $(pwd) > $HOME/.currDir
+}
+
+function gcd {
+    cd $(cat $HOME/.currDir)
+}
+
+function vp {
+    echo $(pwd)/$1
 }
 
 function v {
@@ -211,15 +228,9 @@ function proml
                  ;;
  esac
 
- if [[ $LOXIM_MODE = "" ]]; then
-   LOX_TAG="";
- else
-   LOX_TAG="LOXIM_MODE=$LOXIM_MODE@$W ";
- fi;
-
 PS1="${TITLEBAR}\
 \n$COLOR2${USER}@\h$COLOR3:$COLOR4\w\
-\nbash$LOX_TAG$COLOR2>$COLOR3>$COLOR1>$COLOR_9 "
+\nbash $COLOR2>$COLOR3>$COLOR1>$COLOR_9 "
 }
 
 # While this is an environment variable, it needs to be set here
@@ -259,13 +270,8 @@ export GDBHISTFILE=$HOME/.gdb_history
 export FVWM_USERDIR=$HOME/.fvwm # needed for fvwm
 
 # More env variables
-if [ -f ~/.bashenv ]; then
-        source ~/.bashenv
-fi
-
-if [ -f ~/.unaliases ]; then
-        source ~/.unaliases
-fi
+if [ -f ~/.bashenv ];   then source ~/.bashenv;   fi
+if [ -f ~/.unaliases ]; then source ~/.unaliases; fi
 
 # Aliases
 if [ -f ~/.base_aliases ]; then source ~/.base_aliases; fi 
