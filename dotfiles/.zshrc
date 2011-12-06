@@ -37,9 +37,13 @@ setopt PUSHD_IGNORE_DUPS
 export WORDCHARS=""; # Make every non-alphanumeric be a word separator
 #export WORDCHARS="*?_-.[]~=/&;!#$%^(){}<>"; # original
 
-eval `dircolors -b`
+#eval `dircolors -b`
 
 zstyle ':completion:*' menu select
+zstyle ':completion:history-words:*:history-words' stop yes
+zstyle ':completion:history-words:*:history-words' list no
+zstyle ':completion:history-words:*' remove-all-dups yes
+zstyle ':completion:history-words:*' menu yes
 
 function expand-command-smartly () {
 
@@ -94,21 +98,29 @@ bindkey  "^R"                history-incremental-search-backward
 bindkey  "^J"                expand-command-smartly
 bindkey  "^H"                describe-key-briefly
 bindkey  "^P"                up-line-or-history
-bindkey  "$terminfo[khome]"  beginning-of-line
-bindkey  "$terminfo[kend]"   end-of-line
+#bindkey  "$terminfo[khome]" beginning-of-line
+#bindkey  "$terminfo[kend]"  end-of-line
+bindkey '^[[H'               beginning-of-line # mac
+bindkey '^[[F'               end-of-line       # mac
 bindkey  "^["                backward-delete-word
 bindkey  "\M-d"              delete-word
 bindkey  "^Z"                undo
 bindkey  "^[d"               delete-word  
 bindkey  "^[[3;5~"           kill-line    
+bindkey  "^K"                kill-line    
 bindkey  "^[f"               forward-word
 bindkey  "^[b"               backward-word
+bindkey "\M-^?"              backward-delete-word
+bindkey " "                  magic-space
+#bindkey '\e[15~' _history-complete-older #F5
+#bindkey '\e[28~' _history-complete-newer #Shift-F5
+bindkey "\M- "               _history-complete-older # completion from history
 
 function reread_aliases {
   if [ -f ~/.unaliases    ]; then source ~/.unaliases;    fi;
   if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi;
 }
-add-zsh-hook preexec reread_aliases
+#add-zsh-hook preexec reread_aliases
 
 # Colors
 autoload -U colors
