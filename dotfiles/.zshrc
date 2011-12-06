@@ -5,9 +5,8 @@ if [[ -f ~/.bashrc     ]]; then source ~/.bashrc;     fi
 autoload -U compinit;   compinit
 autoload -U promptinit; promptinit
 
-# Disable completion with these two
-compdef -d svn
-compdef -d make
+# Disable completion with these as it is too slow
+compdef -d svn make git
 
 export HISTFILE=~/.zsh_history
 export HISTSIZE=10000
