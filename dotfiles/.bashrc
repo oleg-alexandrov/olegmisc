@@ -8,7 +8,7 @@ set history=10000
 set filec
 set show-all-if-ambiguous on
 
-if [ "$SSH_TTY" != "" ] && [ "$DISPLAY" != "" ]; then 
+#if [ "$SSH_TTY" != "" ] && [ "$DISPLAY" != "" ]; then 
   
   # Make the backspace behave
   stty erase '^?'
@@ -23,7 +23,7 @@ if [ "$SSH_TTY" != "" ] && [ "$DISPLAY" != "" ]; then
     xmodmap -e "clear mod3"
     xmodmap -e  "add mod4 = Super_L"
   fi  
-fi
+#fi
 
 ## Pager macros
 function mymore {
@@ -270,3 +270,7 @@ fi
 # Aliases
 if [ -f ~/.base_aliases ]; then source ~/.base_aliases; fi 
 if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi  
+
+if [ -f ~/.bash_aliases ]; then 
+ grep -E -v "(cd|ssh)"  ~/.bash_aliases >  ~/.base_aliases 
+fi
