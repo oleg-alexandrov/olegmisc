@@ -4,7 +4,7 @@ cd $dir1
 files=$(find .)
 cd ..
 for f in $files; do 
-        echo $f
+        echo $dir1/$f $dir2/$f
         if [ ! -f $f ]; then continue; fi;
         cmp $dir1/$f $dir2/$f
 done
