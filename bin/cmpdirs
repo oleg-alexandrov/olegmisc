@@ -1,0 +1,10 @@
+dir1=$1
+dir2=$2
+cd $dir1
+files=$(find .)
+cd ..
+for f in $files; do 
+        echo $f
+        if [ ! -f $f ]; then continue; fi;
+        cmp $dir1/$f $dir2/$f
+done
