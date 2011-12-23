@@ -1,13 +1,15 @@
 #!/usr/bin/perl
 use strict;	   # insist that all variables be declared
 use diagnostics;   # expand the cryptic warnings
-undef $/;          # read one whole file in one scalar
 
 sub conv_to_seconds {
 
-  # Convert 23:34 and 1:23:54 to seconds
+  # Convert 23:34.03 and 1:23:54.13 to seconds
 
   my $time = shift;
+  
+  $time =~ s/(\d)\.\d+/$1/g; # strip fractional part
+
   $time =~ s/[^\d\:\.\+\-]//g;
   
   my @items = split(":", $time);
