@@ -17,6 +17,10 @@
         (cursor-type . bar)
 ))
 
+(global-auto-revert-mode 1)
+(add-hook 'c++-mode-hook 'turn-on-auto-revert-mode)
+(add-hook 'java-mode-hook 'turn-on-auto-revert-mode)
+
 ;;start gnuserv.
 ;(gnuserv-start)(setq make-backup-files nil) 
 
@@ -62,6 +66,9 @@
 ;;some functions and global keys
 (load-library "global-my")
 
+;(load-file "~/.emacs.d/follow-mouse.el")
+;(turn-on-follow-mouse); buggy with Mac Spaces
+
 ; to automatically remove annoying ^M from end of windows files. But this slows things down a bit
 ;;(add-hook 'find-file-hooks 'dos-to-unix) 
 
@@ -70,6 +77,21 @@
 
 ;; switch buffers
 ;(load-library "wcy-swbuff")
+; switch buffers
+(iswitchb-mode 1)
+(setq iswitchb-buffer-ignore '("^ " "^\\*"))
+(setq iswitchb-default-method 'samewindow)
+(setq iswitchb-case t); case insensitive
+(require 'edmacro)
+(defun iswitchb-local-keys ()
+  (mapc (lambda (K)
+          (let* ((key (car K)) (fun (cdr K)))
+            (define-key iswitchb-mode-map (edmacro-parse-keys key) fun)))
+        '(("<right>" . iswitchb-next-match)
+          ("<left>"  . iswitchb-prev-match)
+          ("<up>"    . ignore             )
+          ("<down>"  . ignore             ))))
+(add-hook 'iswitchb-define-mode-map-hook 'iswitchb-local-keys)
 
 ; turn on spelling for source code 
 ;(flyspell-prog-mode)
@@ -93,6 +115,7 @@
 ;; auto-mode-alist
 (setq auto-mode-alist
       (append '(
+		("\\.sh"  . shell-script-mode)
 		("\\.bash"  . shell-script-mode)
 		("\\.aliases"  . shell-script-mode)
 		("\\.C$"  . c++-mode)
@@ -159,6 +182,12 @@
 ;	     ;;my personal latex stuff
 ;	     (load-library "latex-my")
 ;	     ))
+
+;;shell
+(add-hook 'shell-script-mode-hook 
+	  '(lambda()
+	     (load-file "~/.emacs.d/shell-script-my.el")
+	     ))
 
 ;;Fortran
 (add-hook 'fortran-mode-hook 

@@ -37,4 +37,4 @@
 (local-set-key [(return)] 'reindent-then-newline-and-indent)
 (local-set-key [(control x) (control l)] 'local-set-abb)
 (local-set-key [(space)] 'smart-space)
-(local-set-key [(meta c)] 'comment-region)
+;(local-set-key [(meta c)] 'comment-region)
