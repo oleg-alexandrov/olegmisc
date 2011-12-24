@@ -20,9 +20,9 @@
         (isearch-forward regexp-p no-recursive-edit)))))
 
 ;;bind keyboard-escape-quit to a sequence of 2 escapes instead of 3 of them.
-(when (console-on-window-system-p)
-  (global-set-key '(meta escape) 'keyboard-escape-quit)
-  (define-key isearch-mode-map '(meta escape) 'isearch-cancel))
+;; (when (console-on-window-system-p)
+;;   (global-set-key '(meta escape) 'keyboard-escape-quit)
+;;   (define-key isearch-mode-map '(meta escape) 'isearch-cancel))
 
 ;; Filename completion ignores these.
 (setq completion-ignored-extensions
@@ -112,29 +112,29 @@
 ;; Rearrange the modeline so that everything is to the left of the
 ;; long list of minor modes, which is relatively unimportant but takes
 ;; up so much room that anything to the right is obliterated.
-(setq-default
- modeline-format
- (list
-  ""
-  (if (boundp 'modeline-multibyte-status) 'modeline-multibyte-status "")
-  (cons modeline-modified-extent 'modeline-modified)
-  (cons modeline-buffer-id-extent
- 	(list (cons modeline-buffer-id-left-extent
- 		    (cons 15 (list
- 			      (list 'line-number-mode "%l ")
- 			      (list 'column-number-mode "%c ")
- 			      (cons -3 "%p"))))
- 	      (cons modeline-buffer-id-right-extent "%17b")))
-  "   "
-  'global-mode-string
-  "   %[("
-  (cons modeline-minor-mode-extent
- 	(list "" 'mode-name 'minor-mode-alist))
-  (cons modeline-narrowed-extent "%n")
-  'modeline-process
-  ")%]----"
-  "%-"
-  ))
+;; (setq-default
+;;  modeline-format
+;;  (list
+;;   ""
+;;   (if (boundp 'modeline-multibyte-status) 'modeline-multibyte-status "")
+;;   (cons modeline-modified-extent 'modeline-modified)
+;;   (cons modeline-buffer-id-extent
+;;  	(list (cons modeline-buffer-id-left-extent
+;;  		    (cons 15 (list
+;;  			      (list 'line-number-mode "%l ")
+;;  			      (list 'column-number-mode "%c ")
+;;  			      (cons -3 "%p"))))
+;;  	      (cons modeline-buffer-id-right-extent "%17b")))
+;;   "   "
+;;   'global-mode-string
+;;   "   %[("
+;;   (cons modeline-minor-mode-extent
+;;  	(list "" 'mode-name 'minor-mode-alist))
+;;   (cons modeline-narrowed-extent "%n")
+;;   'modeline-process
+;;   ")%]----"
+;;   "%-"
+;;   ))
 
 ;; Get rid of modeline information taking up too much space -- in
 ;; particular, minor modes that are always enabled.
@@ -418,8 +418,8 @@
   )
 
 (global-set-key [(meta m)] 'mark-paragraph-and-align)
-(global-set-key     'button4 'mwheel-down)
-(global-set-key     'button5 'mwheel-up)
+;(global-set-key     'button4 'mwheel-down)
+;(global-set-key     'button5 'mwheel-up)
 (global-set-key [(control \')] 'my-delete-tail)
 (global-set-key [(control b)] 'byte-compile-and-load-file)
 (global-set-key [(control backspace)] 'backward-kill-line)
@@ -470,7 +470,11 @@
 (global-set-key [(meta o)] 'iswitchb-buffer)
 (global-set-key [(meta b)] 'bookmark-jump)
 (global-set-key [(meta p)] 'bookmark-jump)
+(global-set-key [(meta v)] 'find-requested-file)
 (global-set-key [(meta \8)] 'pop-tag-mark)
+(define-key osx-key-mode-map [end] 'end-of-line)
+(define-key osx-key-mode-map [home] 'beginning-of-line)
+
 ;; terminal keys
 ;(global-set-key "\e[7~" 'beginning-of-line)
 ;(global-set-key "\e[8~" 'end-of-line)
@@ -533,6 +537,5 @@
   (goto-line lineno)
   
   )
-(global-set-key [(meta v)] 'find-requested-file)
 
 (global-auto-revert-mode 1)
