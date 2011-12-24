@@ -348,6 +348,20 @@
 ;; instead of half a page.
 (setq scroll-step 1)
 
+(defun goto-match-paren ()
+  "Go to the matching parenthesis if on parenthesis"
+  (interactive)
+  (cond ((looking-at "[\(\{]") (forward-list 1) (backward-char 1))
+        ((looking-at "[\)\}]") (forward-char 1) (backward-list 1))
+        )
+)
+
+(defun mark-paragraph-and-align ()
+  (interactive)
+  (call-interactively 'mark-paragraph)
+  (call-interactively 'align-repeat)
+  )
+
 (defun align-repeat (start end regexp)
   "repeat alignment with respect to 
      the given regular expression"
@@ -357,13 +371,20 @@
 
 (defun scp-copy ()
   (interactive)
-  (let ((cmd (concat "scp " (buffer-file-name) " $H5:" 
-                     (replace-regexp-in-string "Users" "home" (buffer-file-name) t) 
-                     )))
+  (let ((cmd (concat "scp " (buffer-file-name) " oalexan1@byss:" (replace-regexp-in-string "/Users/oalexandrov/" "/home/oalexan1/" (buffer-file-name) t)
+  ;(let ((cmd (concat "scp " (buffer-file-name) " oalexandrov@198.10.124.55:" (replace-regexp-in-string "Users" "home" (buffer-file-name) t)
+                     " >/dev/null 2>&1"
+                     )
+             ))
     (shell-command cmd)
-    ;(insert cmd)
     (message cmd)
     )
+  )
+
+(defun save-and-copy ()
+  (interactive)
+  (save-buffer)
+  (scp-copy)
   )
 
 ;(global-set-key     'button4 'mwheel-down)
@@ -383,7 +404,7 @@
 ;(global-set-key [(control meta right)] 'gse-unbury-buffer)
 (global-set-key [(control o)] 'ido-find-file) ; open a file or create a new file with Control-o
 (global-set-key [(control r)]  'query-replace)
-(global-set-key [(control s)] 'save-buffer) ; save with Control-s
+(global-set-key [(control s)] 'save-and-copy) ; save with Control-s
 (global-set-key [(control space)] 'jump-and-insert-space)
 (global-set-key [(control u)] 'yank)
 (global-set-key [(control x) (control d)] 'my-dummy-function)
@@ -418,12 +439,14 @@
 (global-set-key [(meta l)] 'align-repeat)
 (global-set-key [(control p)] 'scp-copy)
 (global-set-key [(control t)] 'isearch-forward-at-point)
-;(local-set-key [(meta \[)] 'insert-brackets)
+(global-set-key [(control tab)] 'other-window)
+(global-set-key [(meta o)] 'iswitchb-buffer)
 (global-set-key [(meta \;)] 'insert-semicolon-and-newline)
 (define-key osx-key-mode-map [(home)]       'beginning-of-line)
 (define-key osx-key-mode-map [(end)]        'end-of-line)
 (define-key osx-key-mode-map [C-kp-delete]  'kill-line)
 (define-key osx-key-mode-map [(meta g)] 'goto-line)
+(define-key osx-key-mode-map [(control v)] 'yank)
 
 ;; terminal keys
 ;(global-set-key "\e[7~" 'beginning-of-line)
