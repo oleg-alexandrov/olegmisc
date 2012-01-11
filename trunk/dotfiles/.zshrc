@@ -25,7 +25,7 @@ setopt nohup            # don't kill jobs when exiting
 
 setopt CSH_NULL_GLOB    # don't complain if there are no matches
 setopt NULL_GLOB        # don't complain if there are no matches
-setopt GLOB_SUBST       # expand "*" into the list of files
+unsetopt GLOB_SUBST       # expand "*" into the list of files
 setopt AUTO_PUSHD       # make cd push the old directory onto the directory stack
 setopt complete_in_word # complete when the cursor is in the middle of a word
 setopt CSH_JUNKIE_LOOPS # for i in *; echo $i; end

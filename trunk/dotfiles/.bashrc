@@ -132,6 +132,11 @@ function un {
   perl -pi -e "s#^([^\s]+=)#alias \$1#g" ~/.bash_aliases;
 }
 
+function pag {
+    # grep through all history for given pattern
+    ps aux | grep -i  "$*"
+}
+
 function pug {
     # grep through all history for given pattern
     ps ux | grep -i  "$*"
@@ -168,6 +173,10 @@ function gcd {
 
 function vp {
     echo $(pwd)/$1
+}
+
+function st { 
+  grep -n $(ps ux |grep -i lt-reconstruct |grep -v grep | tail -n 1 | awk '{print $15}') imagesList.txt
 }
 
 function v {
@@ -280,3 +289,4 @@ if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi
 if [ -f ~/.bash_aliases ]; then 
  grep -E -v "(cd|ssh)"  ~/.bash_aliases >  ~/.base_aliases 
 fi
+
