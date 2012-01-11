@@ -293,25 +293,32 @@
 ;   )
 
 
-(defun  copy-to-shc ()
+(defun  scp-copy ()
   (interactive)
   
   (let (( my_file (buffer-file-name) )) ; assign to my_file the current file
 					;(replace-string)
 
-    (if (string-match "/home/han/" my_file)
+    (if (string-match "/home/oleg/" my_file)
 
-	(let ((my_new_file (replace-match "/shc/data-store01/acm/han/" t "/home/han/" my_file) ))
-	  (let (( my_command (concat "scp " my_file " han@shc.cacr.caltech.edu:" my_new_file )))
+	(let ((my_new_file (replace-match "/home/oalexan1/" t "/home/oleg/" my_file) ))
+	  (let (( my_command (concat "rsync -avz " my_file " oalexan1@byss:" my_new_file " >/dev/null 2>&1" )))
 	    (message my_command)
 	    (shell-command my_command)
-	    (message (concat "Done!!! " my_command) )
+	    ;(message (concat "Done!!! " my_command) )
 	    )
 	  )
       )
     
     )
   )
+
+(defun save-and-copy ()
+  (interactive)
+  (save-buffer)
+  (scp-copy)
+  )
+
 
 (defun call-tkdiff ()
   (interactive)
@@ -432,7 +439,7 @@
 ;(global-set-key [(control meta right)] 'gse-unbury-buffer)
 (global-set-key [(control o)] 'find-file) 
 (global-set-key [(control r)]  'query-replace)
-(global-set-key [(control s)] 'save-buffer)
+(global-set-key [(control s)] 'save-and-copy)
 (global-set-key [(control space)] 'jump-and-insert-space)
 (global-set-key [(control u)] 'yank)
 (global-set-key [(control x) (v)] 'revert-buffer)

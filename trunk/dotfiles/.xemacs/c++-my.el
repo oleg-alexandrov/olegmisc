@@ -258,16 +258,16 @@
   )
 
 
-(defun swap-cpp-h-aux (filename)
+(defun swap-cc-h-aux (filename)
   (interactive)
   (cond (
-         (string-match "\\.cpp" filename)
+         (string-match "\\.cc" filename)
          (setq filename (replace-match ".h" t t filename))
-         ) ; end of matching .cpp
+         ) ; end of matching .cc
 
         (
          (string-match "\\.h" filename)
-         (setq filename (replace-match ".cpp" t t filename))
+         (setq filename (replace-match ".cc" t t filename))
          ); endp of matching .h
 
         ); end cond
@@ -275,58 +275,24 @@
   filename ; return
   )
 
-(defun swap-src_cpp-incl_h-aux (filename)
-  (interactive)
-  (cond (
-         ; replace src/myfile.cpp with include/myfile.h
-         (string-match "\\(^.*\\/\\)src\\(\\/[^\\/]*\\)\\.cpp" filename)
-         (setq filename (concat (match-string 1 filename) "include" 
-                                (match-string 2 filename) ".h") )
-         ) ; end of matching .cpp
 
-        (
-         (string-match "\\(^.*\\/\\)include\\(\\/[^\\/]*\\)\\.h" filename)
-         (setq filename (concat (match-string 1 filename) "src" 
-                                (match-string 2 filename) ".cpp") )
-         ); endp of matching .h
-
-        ); end cond
-
-  filename ; return
-  )
-
-(defun swap-cpp-h (file-to-swap)
-  "If the currently open file ends in .cpp, open instead the
+(defun swap-cc-h (file-to-swap)
+  "If the currently open file ends in .cc, open instead the
 corresponding .h file, and vice-versa. If the corresponding file does not
 exist, try replacing 'src' with 'include' and vice-versa"
   (interactive)
-  
-  (if (string-match "\\(\\.cpp\\|\\.h\\)$" file-to-swap)
-      
-      ; first attempt, call swap-cpp-h
-      (let ((swapped-file (swap-cpp-h-aux file-to-swap ) ))
-        
-        (if (file-exists-p swapped-file)
-            
-            swapped-file ; attempt succeeded, return current file
-
-          ; attempt failed, try swap-src_cpp-incl_h
-          (let (( swapped-file (swap-src_cpp-incl_h-aux file-to-swap ) ))
-              
-            swapped-file
-            
-            )
-          )
+  (if (string-match "\\(\\.cc\\|\\.h\\)$" file-to-swap)
+      (let ((swapped-file (swap-cc-h-aux file-to-swap ) ))
+        swapped-file ; attempt succeeded, return current file
         ) ; end let
+    file-to-swap ; return the input if failed
     ); end if
-
   ) ; end function
 
-(defun toggle-cpp-h ()
+(defun toggle-cc-h ()
   (interactive)
-
-  (find-file (swap-cpp-h (buffer-file-name)))
-  
+  (message (swap-cc-h (buffer-file-name)))
+  (find-file (swap-cc-h (buffer-file-name)))
   )
 
 (defun update-header-file ()
@@ -371,25 +337,25 @@ exist, try replacing 'src' with 'include' and vice-versa"
 (local-set-key [(control y)] 'yank)
 
 (local-set-key [(meta a)] 'define-mode-abbrev)
- (local-set-key [(meta c)] 'my-comment-region)
- (local-set-key [(meta q)] 'kill-this-buffer)
- (local-set-key [(meta u)] 'uncomment-region)
- (local-set-key [(right)] 'smart-forward)
- (local-set-key [(super return)] 'smart-forward)
- (local-set-key [(down)] 'smart-down)
- (local-set-key [(space)] 'smart-space)
- (local-set-key [(return)] 'reindent-then-newline-and-indent)
- (local-set-key [(meta j)] 'open-spq)
- (local-set-key [(control s)] 'save-buffer)
- ;(local-set-key [(meta \[)] 'c++-brace)
- ;(local-set-key "\e[7~" 'beginning-of-line)
- ;(local-set-key "\e[8~" 'end-of-line)
- (local-set-key [(meta t)] 'toggle-cpp-h)
- (local-set-key [(meta h)] 'update-header-file)
- (local-set-key [(control return)] 'c++-break-line)
- (local-set-key [(meta \[)] 'goto-match-paren)
- (local-set-key [(control meta a)] 'beginning-of-defun)
- (local-set-key [(control meta e)] 'end-of-defun)
- (local-set-key [(delete)] 'c++-delete)
- (local-set-key [(meta \')] 'smart-forward)
- (local-set-key [(tab)] 'indent-according-to-mode)
+(local-set-key [(meta c)] 'my-comment-region)
+(local-set-key [(meta q)] 'kill-this-buffer)
+(local-set-key [(meta u)] 'uncomment-region)
+(local-set-key [(right)] 'smart-forward)
+(local-set-key [(super return)] 'smart-forward)
+(local-set-key [(down)] 'smart-down)
+(local-set-key [(space)] 'smart-space)
+(local-set-key [(return)] 'reindent-then-newline-and-indent)
+(local-set-key [(meta j)] 'open-spq)
+;(local-set-key [(control s)] 'save-and-copy)
+;(local-set-key [(meta \[)] 'c++-brace)
+;(local-set-key "\e[7~" 'beginning-of-line)
+;(local-set-key "\e[8~" 'end-of-line)
+(local-set-key [(meta t)] 'toggle-cc-h)
+(local-set-key [(meta h)] 'update-header-file)
+(local-set-key [(control return)] 'c++-break-line)
+(local-set-key [(meta \[)] 'goto-match-paren)
+(local-set-key [(control meta a)] 'beginning-of-defun)
+(local-set-key [(control meta e)] 'end-of-defun)
+(local-set-key [(delete)] 'c++-delete)
+(local-set-key [(meta \')] 'smart-forward)
+
