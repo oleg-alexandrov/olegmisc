@@ -287,6 +287,6 @@ if [ -f ~/.base_aliases ]; then source ~/.base_aliases; fi
 if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi  
 
 if [ -f ~/.bash_aliases ]; then 
- grep -E -v "(cd|ssh)"  ~/.bash_aliases >  ~/.base_aliases 
+ grep -E -v "(cd|ssh|scp)"  ~/.bash_aliases >  ~/.base_aliases 
 fi
 
