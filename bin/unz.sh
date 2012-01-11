@@ -1,5 +1,5 @@
 #!/bin/sh
-
+ 
 case "$1" in
     *.tar.z|*.tar.gz|*.tgz)  tar xzfv  $1;;
     *.tar)                   tar xfv   $1;;
