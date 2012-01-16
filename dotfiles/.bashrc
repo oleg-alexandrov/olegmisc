@@ -8,7 +8,7 @@ set history=10000
 set filec
 set show-all-if-ambiguous on
 
-#if [ 0 ] && [ "$SSH_TTY" != "" ] && [ "$DISPLAY" != "" ]; then 
+#if [ 0 ] && [ "$SSH_TTY" != "" ] && [ "$DISPLAY" != "" ]; then
   
   # Make the backspace behave
   stty erase '^?'
@@ -177,6 +177,10 @@ function vp {
 
 function st { 
   grep -n $(ps ux |grep -i lt-reconstruct |grep -v grep | tail -n 1 | awk '{print $15}') imagesList.txt
+}
+
+function gse {
+    grep -E -i "(start|end) job" $1 | diff_time.pl
 }
 
 function v {
