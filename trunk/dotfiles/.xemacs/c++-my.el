@@ -291,7 +291,6 @@ exist, try replacing 'src' with 'include' and vice-versa"
 
 (defun toggle-cc-h ()
   (interactive)
-  (message (swap-cc-h (buffer-file-name)))
   (find-file (swap-cc-h (buffer-file-name)))
   )
 
