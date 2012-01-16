@@ -294,3 +294,4 @@ if [ -f ~/.bash_aliases ]; then
  grep -E -v "(cd|ssh|scp)"  ~/.bash_aliases >  ~/.base_aliases 
 fi
 
+ 
