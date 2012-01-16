@@ -1,6 +1,6 @@
 */
 bin/*txt
-gitserver/*
+gitserver*
 .ba*
 .zshrc
 .zsh_colors
@@ -9,6 +9,7 @@ gitserver/*
 .emacs/*
 .xemacs/*
 *.sh
+*.el
 *.pl
 *.py
 *.java
