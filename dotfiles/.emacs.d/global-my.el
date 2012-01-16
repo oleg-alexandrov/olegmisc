@@ -447,6 +447,7 @@
 (define-key osx-key-mode-map [C-kp-delete]  'kill-line)
 (define-key osx-key-mode-map [(meta g)] 'goto-line)
 (define-key osx-key-mode-map [(control v)] 'yank)
+(define-key osx-key-mode-map [(meta t)] 'toggle-cc-h)
 
 ;; terminal keys
 ;(global-set-key "\e[7~" 'beginning-of-line)
