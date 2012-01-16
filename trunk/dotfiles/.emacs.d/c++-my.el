@@ -242,7 +242,6 @@
   (next-line 1)
   )
 
-
 (defun swap-cc-h-aux (filename)
   (interactive)
   (cond (
@@ -261,31 +260,19 @@
   )
 
 (defun swap-cc-h (file-to-swap)
-  "If the currently open file ends in .cc, open instead the
-corresponding .h file, and vice-versa. If the corresponding file does not
-exist, try replacing 'src' with 'include' and vice-versa"
+; If the currently open file ends in .cc, open instead the
+; corresponding .h file, and vice-versa. If the corresponding file does not
+; exist, try replacing 'src' with 'include' and vice-versa.
   (interactive)
-  
   (if (string-match "\\(\\.cc\\|\\.h\\)$" file-to-swap)
-      
-      ; first attempt, call swap-cc-h
       (let ((swapped-file (swap-cc-h-aux file-to-swap ) ))
-        
-        (if (file-exists-p swapped-file)
-            
-            swapped-file ; attempt succeeded, return current file
-
-          ; attempt failed, try swap-src_cc-incl_h
-          (let (( swapped-file (swap-src_cc-incl_h-aux file-to-swap ) ))
-              
-            swapped-file
-            
-            )
-          )
+        swapped-file ; attempt succeeded, return current file
         ) ; end let
+    file-to-swap ; return the input if failed
     ); end if
-
   ) ; end function
+
+(swap-cc-h "file.cc")
 
 (defun toggle-cc-h ()
   (interactive)
@@ -337,16 +324,15 @@ exist, try replacing 'src' with 'include' and vice-versa"
 ;(local-set-key [(meta \[)] 'c++-brace)
 ;(local-set-key "\e[7~" 'beginning-of-line)
 ;(local-set-key "\e[8~" 'end-of-line)
-(local-set-key [("\M-t")] 'toggle-cc-h)
+(local-set-key [("\M- ")] 'toggle-cc-h)
 ;(local-set-key [(meta h)] 'update-header-file)
 (local-set-key [(control return)] 'c++-break-line)
 (local-set-key [(delete)] 'c-electric-delete-forward)
 (local-set-key [(control v)] 'yank)
 (local-set-key [(tab)] 'indent-according-to-mode)
 
-(global-unset-key [("\M- ")])
-(global-set-key [("\M- ")] 'dabbrev-expand)
+(local-unset-key [("\M- ")])
+(local-set-key [("\M- ")] 'dabbrev-expand)
 (local-set-key (kbd "SPC") 'self-insert-command)
-;(local-set-key (kbd "SPC") 'smart-space) 
 (local-set-key (kbd "C-SPC") 'smart-space)
 ;(local-set-key [("\M-m")] 'goto-match-paren)
