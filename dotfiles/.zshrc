@@ -6,7 +6,7 @@ autoload -U compinit;   compinit
 autoload -U promptinit; promptinit
 
 # Disable completion with these as it is too slow
-compdef -d svn make git
+compdef -d svn make git vim
 
 export HISTFILE=~/.zsh_history
 export HISTSIZE=10000
@@ -25,7 +25,7 @@ setopt nohup            # don't kill jobs when exiting
 
 setopt CSH_NULL_GLOB    # don't complain if there are no matches
 setopt NULL_GLOB        # don't complain if there are no matches
-unsetopt GLOB_SUBST       # expand "*" into the list of files
+unsetopt GLOB_SUBST     # expand "*" into the list of files
 setopt AUTO_PUSHD       # make cd push the old directory onto the directory stack
 setopt complete_in_word # complete when the cursor is in the middle of a word
 setopt CSH_JUNKIE_LOOPS # for i in *; echo $i; end
