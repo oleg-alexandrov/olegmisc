@@ -23,24 +23,40 @@
 		".sty" ".mexglx" ".cmd")))
 
 
-;;;; 1999-07-12 Noah Friedman <friedman@splode.com>
-; (defun make-buffer-file-executable-if-script-p ()
-;   "Make file executable according to umask if not already executable.
-; If file already has any execute bits set at all, do not change existing
-; file modes."
-;   (and (save-excursion
-;          (save-restriction
-;            (widen)
-;            (goto-char (point-min))
-;            (save-match-data
-;              (looking-at "^#!"))))
-;        (let* ((current-mode (file-modes (buffer-file-name)))
-;               (add-mode (logand ?\411 (default-file-modes))))
-;          (or (/= (logand ?\411 current-mode) 0)
-;              (zerop add-mode)
-;              (set-file-modes (buffer-file-name)
-;                              (logior current-mode add-mode))))))
-;;(add-hook 'after-save-hook 'make-buffer-file-executable-if-script-p)
+;; Check for shebang magic in file after save, make executable if found.
+(setq my-shebang-patterns 
+      (list "^#!/usr/.*/perl\\(\\( \\)\\|\\( .+ \\)\\)-w *.*" 
+            "^#!/usr/.*/sh"
+	        "^#!/usr/.*/bash"
+	        "^#!/bin/sh"
+	        "^#!/bin/bash"))
+
+(defun make-file-executable-if-script ()
+  (interactive)
+       (if (not (= (shell-command (concat "test -x " (buffer-file-name))) 0))
+           (progn 
+	     ;; This puts message in *Message* twice, but minibuffer
+    	     ;; output looks better.
+	     (message (concat "Wrote " (buffer-file-name)))
+	     (save-excursion
+	       (goto-char (point-min))
+	       ;; Always checks every pattern even after
+	       ;; match.  Inefficient but easy.
+	       (dolist (my-shebang-pat my-shebang-patterns)
+	         (if (looking-at my-shebang-pat)
+		     (if (= (shell-command  
+			     (concat "chmod u+x " (buffer-file-name)))
+			    0)
+		         (message (concat 
+			           "Wrote and made executable " 
+			           (buffer-file-name))))))))
+         ;; This puts message in *Message* twice, but minibuffer output
+         ;; looks better.
+         (message (concat "Wrote " (buffer-file-name))))
+       )
+
+
+(add-hook 'after-save-hook 'make-file-executable-if-script)
 
 (defun dos-to-unix ()
   "Remove those annoying ^M from the end of lines in files imported from Windows"
@@ -371,7 +387,7 @@
 
 (defun scp-copy ()
   (interactive)
-  (let ((cmd (concat "scp " (buffer-file-name) " oalexan1@byss:" (replace-regexp-in-string "/Users/oalexandrov/" "/home/oalexan1/" (buffer-file-name) t)
+  (let ((cmd (concat "rsync -avz " (buffer-file-name) " oalexan1@byss:" (replace-regexp-in-string "/Users/oalexandrov/" "/home/oalexan1/" (buffer-file-name) t)
   ;(let ((cmd (concat "scp " (buffer-file-name) " oalexandrov@198.10.124.55:" (replace-regexp-in-string "Users" "home" (buffer-file-name) t)
                      " >/dev/null 2>&1"
                      )
@@ -384,6 +400,7 @@
 (defun save-and-copy ()
   (interactive)
   (save-buffer)
+  (make-file-executable-if-script)
   (scp-copy)
   )
 
