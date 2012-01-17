@@ -227,7 +227,7 @@
 	     
 	     ))
 
-;Html
+;;Html
 ;(add-hook 'html-mode-hook 'hm--html-mode)
 (add-hook 'html-mode-hook 
 	  '(lambda()
