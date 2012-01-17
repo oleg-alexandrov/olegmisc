@@ -1,5 +1,8 @@
 #!/bin/bash
 
+source ~/.bashenv 
+
+# Copy only files matching the given patterns
 # Copy only files matching the given patterns
 rsync -avz                                     \
     --exclude "Downloads/*"                    \
