@@ -404,6 +404,43 @@
   (scp-copy)
   )
 
+; In a terminal we request that we want to open a certain file
+; by putting its name in ~/.fileToOpen.
+; Here we open the file with that name.
+; If a line number is specified, we go to that line.
+(defun find-requested-file ()
+  (interactive)
+  (find-file "~/.fileToOpen")
+  (switch-to-buffer ".fileToOpen")
+
+                                        ; Find file name
+  (beginning-of-buffer)
+  (beginning-of-line)
+  (setq bf (point))
+  (end-of-line)
+  (setq ef (point))
+  (setq file (buffer-substring bf ef))
+
+  ; Find line number
+  (beginning-of-buffer)
+  (beginning-of-line)
+  (setq lineno 1)
+  (next-line 1)
+  (cond ( (looking-at "line: ")
+          (search-forward "line: ")
+          (setq bl (point))
+          (end-of-line)
+          (setq el (point))
+          (setq lineno (buffer-substring bl el))
+          (setq lineno (string-to-number lineno))
+          )
+        )
+
+  (find-file file)
+  (goto-line lineno)
+  
+  )
+
 ;(global-set-key     'button4 'mwheel-down)
 ;(global-set-key     'button5 'mwheel-up)
 (global-set-key [(control \')] 'my-delete-tail)
@@ -465,6 +502,7 @@
 (define-key osx-key-mode-map [(meta g)] 'goto-line)
 (define-key osx-key-mode-map [(control v)] 'yank)
 (define-key osx-key-mode-map [(meta t)] 'toggle-cc-h)
+(global-set-key [(meta v)] 'find-requested-file)
 
 ;; terminal keys
 ;(global-set-key "\e[7~" 'beginning-of-line)
