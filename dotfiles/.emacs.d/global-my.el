@@ -26,10 +26,12 @@
 ;; Check for shebang magic in file after save, make executable if found.
 (setq my-shebang-patterns 
       (list "^#!/usr/.*/perl\\(\\( \\)\\|\\( .+ \\)\\)-w *.*" 
+            "^#!/usr/bin/perl"
             "^#!/usr/.*/sh"
 	        "^#!/usr/.*/bash"
 	        "^#!/bin/sh"
-	        "^#!/bin/bash"))
+	        "^#!/bin/bash"
+                ))
 
 (defun make-file-executable-if-script ()
   (interactive)
