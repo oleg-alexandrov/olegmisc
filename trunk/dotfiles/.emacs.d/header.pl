@@ -6,7 +6,7 @@ MAIN:{
   
   if (scalar(@ARGV) < 2){
     print "Usage: $0 \n";
-    exit(0);
+    exit(1);
   }
   
   
