@@ -23,3 +23,4 @@ for dir in visionworkbench StereoPipeline; do
         $B:projects/$dir $HOME/projects
 done
  
+ 
