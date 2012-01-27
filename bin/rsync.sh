@@ -22,3 +22,4 @@ for dir in visionworkbench StereoPipeline; do
         --exclude ".libs*"                       \
         $B:projects/$dir $HOME/projects
 done
+ 
