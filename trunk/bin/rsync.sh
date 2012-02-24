@@ -14,14 +14,13 @@ rsync -avz                                     \
     $B: $HOME
 
 # Copy  entire directories
-rsync -avz $B:Documents $HOME
-rsync -avz $B:gitserver $HOME
-
+for dir in Documents gitserver .git; do 
+    rsync -avz $B:$dir $HOME;
+done
 for dir in visionworkbench StereoPipeline; do 
     rsync -avz --exclude "*.o" --exclude ".deps" \
         --exclude ".libs*"                       \
         $B:projects/$dir $HOME/projects
 done
  
- 
- 
+
