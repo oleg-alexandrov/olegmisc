@@ -3,6 +3,11 @@
 dir1=$1
 dir2=$2
 
+if [ ! -d "$dir1" ] || [ ! -d "$dir2" ]; then
+    echo One of $dir1 or $dir2 is missing
+    exit
+fi
+
 cd $dir1
 files1=$(find .)
 cd ../$dir2
