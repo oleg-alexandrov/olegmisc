@@ -16,12 +16,13 @@ MAIN:{
 
   my $home = $ENV{HOME};
   my $dir  = getcwd;
-  $dir =~ s/^.*?(\/home)/$1/g; # hack needed for machine named chip
-
-  if ($dir !~ /^$home(.*?)$/){
+  my $whoami = qx(whoami); $whoami =~ s/\s*$//g;
+  
+  if ($dir !~ /^.*?$whoami\/(.*?)$/){
     print "Error: Expecting $dir to be a subdirectory of $home.\n";
     exit(1);
   }
+
   $dir = $1;
   $dir =~ s/^\/*//g;
   #print "Home and pwd are $home $dir\n";
