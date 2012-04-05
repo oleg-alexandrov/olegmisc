@@ -39,6 +39,9 @@ def expandAliases(aliasName):
 
 def expandCmdLine(cmdLine, cursor):
 
+   # Intelligently replace the current string with another string.
+   # We take into account where the cursor is positioned in the string.
+   
    lineLen = len(cmdLine)
    if cursor < 0:
       cursor = 0
@@ -48,17 +51,35 @@ def expandCmdLine(cmdLine, cursor):
    before = cmdLine[0:cursor]
    after  = cmdLine[cursor:lineLen]
 
-   words    = re.split("\s+", before)
+   #marker = ' xtk45TSfl ';
+   #words = re.sub(r'\b', marker, before).split(marker);
+   words    = re.split(" ", before)
+   #print words
+   
    numWords = len(words)
 
-   if ( numWords == 1 and words[0] == "pl" ) or \
+   if    ( numWords >= 3 and words[numWords-3] == "r"):
+      # Given the input 'hi there r hi ho', will replace it with 'ho there'  
+      fr = words[numWords-2]
+      to = words[numWords-1]
+      for i in range(len(words)):
+         words[i] = re.sub(fr, to, words[i])
+         #print words[i]
+      words[numWords-3] = ""
+      words[numWords-2] = ""
+      words[numWords-1] = ""
+      cmdLine = " ".join(words) + after
+      cmdLine = re.sub('\s*$', '', cmdLine)
+      cursor  = len(cmdLine)
+      
+   elif ( numWords == 1 and words[0] == "pl" ) or \
           ( numWords >= 2 and words[numWords-2] != "a" and words[numWords-1] == "pl" ):
 
       # Expand the string "pl"
       words[numWords-1] = "perl -pi -e \"s###g\""
       cmdLine = " ".join(words) + after
       cursor  = cursor + 13
-
+      
    elif ( numWords >= 2 and words[numWords-2] == "for" ):
       # Expand "for var" into a full for loop.
       var = words[numWords-1]
