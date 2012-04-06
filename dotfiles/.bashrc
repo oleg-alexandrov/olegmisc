@@ -8,23 +8,6 @@ set history=10000
 set filec
 set show-all-if-ambiguous on
 
-#if [ 0 ] && [ "$SSH_TTY" != "" ] && [ "$DISPLAY" != "" ]; then
-  
-  # Make the backspace behave
-  stty erase '^?'
-   
-  # Disable control s and control q, so that I can use them in vim.
-  # stty -a # see what is enabled
-  stty stop  undef # control s
-  stty start undef # control q
-  
-  # Bind the windows key for use in fvwm, if we have a display 
-  #if [ "$DISPLAY" != "" ]; then 
-  #  xmodmap -e "clear mod3"
-  #  xmodmap -e  "add mod4 = Super_L"
-  #fi  
-#fi
-
 ## Pager macros
 function mymore {
 local MORE=more
@@ -183,6 +166,21 @@ function gse {
     grep -E -i "(start|end) job" $1 | diff_time.pl
 }
 
+function sdr {
+
+    # Detach and re-attach to screen number $n,
+    # in the order given by 'screen -ls'
+    n=$1
+    ((n++)) # Skip the first status line
+    id=$(screen -ls | head -n $n | tail -n 1 | awk '{print $1}')
+    echo Will attach to screen $id
+    screen -d -r $id
+}
+
+function tb {
+    remote_copy.pl $* $B
+}
+
 function v {
 
  fs="$HOME/.fileToOpen"
@@ -276,7 +274,7 @@ export HISTCONTROL=ignoredups
 # listing files
 export LC_COLLATE=C # when using ls, put the dotfiles first.
 export LS_COLORS="di=34;1:ln=36;1:ex=32;1:*~=31;1:*.zip=31;01:*.gz=31;01:*.bz2=31;01:*.tgz=31;1:*.gz=31;1:*.jpg=35;01:*.jpeg=35;01:*.gif=35;01:*.bmp=35;01:*.xpm=35;01:*.png=35;01:*.mov=35;01:*.mpg=35;01:*.mpeg=35;01:*.avi=35;01:*.xcf=35;01"
-export FIGNORE=.o:.elc:~:.dvi:.aux:.toc:.bbl:.blg:.thm:.sty:.lof:.lot:.bib:.mexglx:.cmd:.ly2:.box
+export FIGNORE=.o:~:.dvi:.aux:.toc:.bbl:.blg:.thm:.sty:.lof:.lot:.bib:.mexglx:.cmd:.ly2:.box
 
 export GDBHISTFILE=$HOME/.gdb_history
 
