@@ -22,3 +22,21 @@ echo "    voices of things.                    -- A. Grothendieck        "
 # universe that makes sense. But the real universe is always one step
 # beyond logic." -Frank Herbert
 
+#if [ 0 ] && [ "$SSH_TTY" != "" ] && [ "$DISPLAY" != "" ]; then
+
+  # Make the backspace behave
+  stty erase '^?'
+
+  # Disable control s and control q, so that I can use them in vim.
+  # stty -a # see what is enabled
+  stty stop  undef # control s
+  stty start undef # control q
+  
+  # Bind the windows key for use in fvwm, if we have a display 
+  #if [ "$DISPLAY" != "" ]; then 
+  #  xmodmap -e "clear mod3"
+  #  xmodmap -e  "add mod4 = Super_L"
+  #fi  
+#fi
+
+
