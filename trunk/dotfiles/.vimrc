@@ -68,12 +68,6 @@ cabbrev np set nopaste
 cabbrev tf s/true/false/
 cabbrev ft s/false/true/
 
-ab st set shared::job::dbgTrackKaroList                      {0}
-ab co std::cout <<
-ab ,. << std::endl;
-ab ,, << " " <<
-ab ed << std::endl;
-
 " Make the backspace key delete newlines, etc.
 ":set backspace=indent,eol,start
 
