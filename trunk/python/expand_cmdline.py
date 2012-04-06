@@ -73,10 +73,9 @@ def expandCmdLine(cmdLine, cursor):
       cursor  = len(cmdLine)
       
    elif ( numWords == 1 and words[0] == "pl" ) or \
-          ( numWords >= 2 and words[numWords-2] != "a" and words[numWords-1] == "pl" ):
-
+        ( numWords >= 2 and words[numWords-2] != "a" and words[numWords-1][-2:] == "pl" ):
       # Expand the string "pl"
-      words[numWords-1] = "perl -pi -e \"s###g\""
+      words[numWords-1] =  words[numWords-1][:-2] + "perl -pi -e \"s###g\""
       cmdLine = " ".join(words) + after
       cursor  = cursor + 13
       
@@ -90,7 +89,6 @@ def expandCmdLine(cmdLine, cursor):
       cursor  = cursor + 5
       
    elif (numWords == 2 and words[0] == "a"):
-
       # Expand the current alias
       aliasName = words[1]
       cmdLine   = expandAliases(aliasName)
