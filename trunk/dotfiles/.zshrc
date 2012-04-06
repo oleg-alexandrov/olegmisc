@@ -57,7 +57,7 @@ function expand-command-smartly () {
   BUFFER=$($HOME/bin/python/expand_cmdline.py "$BUFFER" $CURSOR)
   CURSOR=$(echo "$BUFFER" | sed -e 's/__sep__.*//') 
   BUFFER=$(echo "$BUFFER" | sed -e 's/^[0-9]*__sep__//') 
-  
+  #zle accept-line
 }
 zle -N expand-command-smartly
 
@@ -115,18 +115,26 @@ bindkey " "                  magic-space
 #bindkey '\e[15~' _history-complete-older #F5
 #bindkey '\e[28~' _history-complete-newer #Shift-F5
 bindkey "\M- "               _history-complete-older # completion from history
+bindkey "\M-/"               _history-complete-older # completion from history
 
 function reread_aliases {
   if [ -f ~/.unaliases    ]; then source ~/.unaliases;    fi;
   if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi;
 }
-#add-zsh-hook preexec reread_aliases
+#add-zsh-hook preexec reread_aliases # older versions of zsh do not support this
+
+function save_curr_cmd {
+    # Copy the current command to byss, so that we can
+    # execute it from other machines
+    #ssh -f byss "echo \"$1\" > ~/.lastCmd" 1>/dev/null 2>&1 
+}
+#add-zsh-hook preexec save_curr_cmd
 
 # Colors
 autoload -U colors
-for cFile in $w/local/share/zsh/4.3.10/functions/colors \
-             /usr/share/zsh/functions/Misc/colors       \
-	     $HOME/.zsh_colors; do
+for cFile in $HOME/.zsh_colors                 \
+    $w/local/share/zsh/4.3.10/functions/colors \
+    /usr/share/zsh/functions/Misc/colors; do
   if [[ -f $cFile ]]; then 
   	source $cFile > /dev/null 2>&1 
 	break
