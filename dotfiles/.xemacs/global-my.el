@@ -311,7 +311,10 @@
     (if (string-match "/home/oleg/" my_file)
 
 	(let ((my_new_file (replace-match "/home/oalexan1/" t "/home/oleg/" my_file) ))
-	  (let (( my_command (concat "rsync -avz " my_file " oalexan1@byss:" my_new_file " >/dev/null 2>&1" )))
+	  (let ((
+                 ;my_command (concat "rsync -avz " my_file " oalexan1@byss:" my_new_file " >/dev/null 2>&1" )
+                 my_command (concat "rsync -avz  -e 'ssh -p 2002 oalexan1@localhost' " my_file " :" my_new_file " >/dev/null 2>&1" )
+                            ))
 	    (message my_command)
 	    (shell-command my_command)
 	    ;(message (concat "Done!!! " my_command) )
