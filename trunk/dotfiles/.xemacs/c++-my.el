@@ -2,7 +2,7 @@
 
 (flyspell-prog-mode)      ; turn on `flyspell-mode' for comments and strings
 (c-toggle-hungry-state 1) ; delete space hungrily
-;(turn-on-pending-delete)  ; delete selected text when any character is touched
+(turn-on-pending-delete)  ; delete selected text when any character is touched
 (imenu-add-menubar-index) ; make a menu listing all functions in the given file
 (setq imenu-max-items 50)
 
