@@ -58,7 +58,25 @@ def expandCmdLine(cmdLine, cursor):
    
    numWords = len(words)
 
-   if    ( numWords >= 3 and words[numWords-3] == "r"):
+   for k in range(numWords):
+
+      if ( words[k] == "foo" ):
+         # Replace foo with someOtherFooBar
+         words[k] = "someOtherFooBar"
+      cmdLine = " ".join(words) + after
+      cursor  = len(cmdLine)
+       
+   if    ( numWords >= 1 and words[numWords-1] == "21"):
+      words[numWords-1] = "2>&1&" # expand '21' into '2>&1&'
+      cmdLine = " ".join(words) + after
+      cursor  = len(cmdLine)
+      
+   elif  ( numWords >= 1 and words[numWords-1] == "rs"):
+      words[numWords-1] = "rsync -avz" # expand 'rs' into 'rsync -avz'
+      cmdLine = " ".join(words) + after
+      cursor  = len(cmdLine)
+      
+   elif  ( numWords >= 3 and words[numWords-3] == "r"):
       # Given the input 'hi there r hi ho', will replace it with 'ho there'  
       fr = words[numWords-2]
       to = words[numWords-1]
@@ -73,9 +91,10 @@ def expandCmdLine(cmdLine, cursor):
       cursor  = len(cmdLine)
       
    elif ( numWords == 1 and words[0] == "pl" ) or \
-        ( numWords >= 2 and words[numWords-2] != "a" and words[numWords-1][-2:] == "pl" ):
+          ( numWords >= 2 and words[numWords-2] != "a" and words[numWords-1] == "pl" ):
+
       # Expand the string "pl"
-      words[numWords-1] =  words[numWords-1][:-2] + "perl -pi -e \"s###g\""
+      words[numWords-1] = "perl -pi -e \"s###g\""
       cmdLine = " ".join(words) + after
       cursor  = cursor + 13
       
@@ -89,6 +108,7 @@ def expandCmdLine(cmdLine, cursor):
       cursor  = cursor + 5
       
    elif (numWords == 2 and words[0] == "a"):
+
       # Expand the current alias
       aliasName = words[1]
       cmdLine   = expandAliases(aliasName)
