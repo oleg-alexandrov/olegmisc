@@ -387,9 +387,10 @@
   (align-regexp start end 
                 (concat "\\(\\s-*\\)" regexp) 1 1 t))
 
+
 (defun scp-copy ()
   (interactive)
-  (let ((cmd (concat "rsync -avz " (buffer-file-name) " oalexan1@byss:" (replace-regexp-in-string "/Users/oalexandrov/" "/home/oalexan1/" (buffer-file-name) t)
+  (let ((cmd (concat "rsync -avz " (buffer-file-name) " oalexan1@byss:" (replace-regexp-in-string "/Users/oalexan1/" "/home/oalexan1/" (buffer-file-name) t)
   ;(let ((cmd (concat "scp " (buffer-file-name) " oalexandrov@198.10.124.55:" (replace-regexp-in-string "Users" "home" (buffer-file-name) t)
                      " >/dev/null 2>&1"
                      )
@@ -504,6 +505,8 @@
 (define-key osx-key-mode-map [(meta g)] 'goto-line)
 (define-key osx-key-mode-map [(control v)] 'yank)
 (define-key osx-key-mode-map [(meta t)] 'toggle-cc-h)
+(define-key osx-key-mode-map [(meta p)] 'bookmark-jump)
+(global-set-key [(meta v)] 'find-requested-file)
 (global-set-key [(meta v)] 'find-requested-file)
 
 ;; terminal keys
@@ -514,7 +517,8 @@
 (global-set-key [("\M- ")] 'dabbrev-expand)
 
 ; A first attempt to make "control z" work as undo. 
-(global-set-key [(control z)] 'undo)
+(define-key osx-key-mode-map [(control z)] 'aquamacs-undo)
+(define-key osx-key-mode-map [(meta z)] 'aquamacs-redo)
 
 ; The above does not work on newer versions of XEmacs. The key
 ; "Control-z" is highjacked by XEmacs for the "zap-up-to-char"

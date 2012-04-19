@@ -1,4 +1,4 @@
-; c++-my.el
+; c++-my.el 
 
 ;(flyspell-prog-mode)      ; turn on `flyspell-mode' for comments and strings
 (c-toggle-hungry-state 1) ; delete space hungrily
@@ -319,7 +319,7 @@
 ;(local-set-key [(down)] 'smart-down)
 ;(local-set-key [(space)] 'smart-space)
 (local-set-key [(return)] 'reindent-then-newline-and-indent)
-;(local-set-key [(meta j)] 'open-spq)
+;(local-set-key [(meta j)] 'open-spq)\
 (local-set-key [(control s)] 'save-and-copy)
 ;(local-set-key [(meta \[)] 'c++-brace)
 ;(local-set-key "\e[7~" 'beginning-of-line)
@@ -335,4 +335,9 @@
 (local-set-key [("\M- ")] 'dabbrev-expand)
 (local-set-key (kbd "SPC") 'self-insert-command)
 (local-set-key (kbd "C-SPC") 'smart-space)
+
+; fix here
+;(define-key osx-key-mode-map [(left)] 'backward-char)
+;(define-key osx-key-mode-map [(right)] 'forward-char)
+
 ;(local-set-key [("\M-m")] 'goto-match-paren)
