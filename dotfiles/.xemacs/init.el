@@ -90,6 +90,8 @@
 ; no bell
 (setq bell-volume 0)
 
+(setq truncate-lines nil)
+
 ;; ------------------- mode specific settings ---------
 
 ;; auto-mode-alist
@@ -158,7 +160,7 @@
 (add-hook 'LaTeX-mode-hook 
 	  '(lambda()
 	     ;; LaTeX toolbar
-	     (load-library "oleg-latex-toolbar")
+	     ;(load-library "oleg-latex-toolbar")
 	     
 	     ;;my personal latex stuff
 	     (load-library "latex-my")
