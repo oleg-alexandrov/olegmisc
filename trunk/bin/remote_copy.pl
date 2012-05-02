@@ -18,7 +18,7 @@ MAIN:{
   my $dir  = getcwd;
   my $whoami = qx(whoami); $whoami =~ s/\s*$//g;
   
-  if ($dir !~ /^.*?$whoami\/(.*?)$/){
+  if ($dir !~ /^.*?$whoami(.*?)$/){
     print "Error: Expecting $dir to be a subdirectory of $home.\n";
     exit(1);
   }
