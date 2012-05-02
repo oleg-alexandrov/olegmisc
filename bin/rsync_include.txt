@@ -8,6 +8,7 @@ gitserver*
 .vimrc
 .vim/*
 .emacs/*
+.emacs
 .xemacs/*
 *.sh
 *.el
