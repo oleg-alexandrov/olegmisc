@@ -26,6 +26,8 @@ xclock -geo -0+0 -brief -d -bg white >/dev/null 2>&1&
 
 vncconfig -nowin&
 
+#xrandr --output VBOX1 --auto --output VBOX0 --auto --right-of VBOX1
+
 if [ -e ~/diverse/fvwm/bin/fvwm ]; then 
     ~/diverse/fvwm/bin/fvwm
 else
