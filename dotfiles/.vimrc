@@ -48,6 +48,10 @@ imap <C-S> <Esc>:wq<CR>
 map  <C-w> <Esc>:w<CR>
 imap <C-w> <Esc>:w<CR>
 
+" Move to other window in vimdiff
+map  <C-p> <Esc>:wincmd w<CR>
+imap <C-p> <Esc>:wincmd w<CR>
+
 map  <C-Q> <Esc>:q<CR>
 imap <C-Q> <Esc>:q<CR>
 
@@ -75,3 +79,6 @@ source ~/.vim/tf.vim
 map <C-i> call ToggleTrueFalse()
 map! <C-T> call ToggleTrueFalse()
 noremap <C-T> call ToggleTrueFalse()
+
+set wrap
+

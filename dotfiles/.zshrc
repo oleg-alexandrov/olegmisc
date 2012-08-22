@@ -90,7 +90,7 @@ bindkey  "^E"                end-of-line
 bindkey  "^D"                delete-char
 bindkey  "^F"                forward-word
 bindkey  "^H"                backward-delete-word
-bindkey  "^O"                expand-or-complete-prefix
+#bindkey  "^O"                expand-or-complete-prefix
 bindkey  '^?'                backward-delete-char
 bindkey  "^[[3~"             delete-char
 bindkey  "^[3;5~"            delete-char
