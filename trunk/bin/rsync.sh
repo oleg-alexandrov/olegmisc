@@ -16,11 +16,11 @@ rsync -avz                                     \
 # Copy  entire directories
 #for dir in Documents gitserver .git .emacs .emacs.d .xemacs; do 
 for dir in Documents gitserver .git; do 
-    rsync -avz --exclude "*.key" $B:$dir $HOME;
+    rsync -avz --exclude "*.key" $B:$dir $HOME
 done
-for dir in visionworkbench StereoPipeline; do 
-    rsync -avz --exclude "*.o" --exclude ".deps" \
-        --exclude ".libs*"                       \
-        $B:projects/$dir $HOME/projects
-done
+# for dir in visionworkbench StereoPipeline PhotometryTK; do 
+#     rsync -avz --exclude "*.o" --exclude "*.a" --exclude "*.a" --exclude ".deps" \
+#         --exclude ".libs*"                       \
+#         $B:projects/$dir $HOME/projects
+# done
  
