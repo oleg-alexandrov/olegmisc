@@ -7,6 +7,9 @@
 
 (setq make-backup-files nil) 
 (setq version-control 'never)
+
+(setq x-select-enable-clipboard t) 
+
 (setq vc-cvs-stay-local nil)
 
 (setq mouse-yank-at-point t)

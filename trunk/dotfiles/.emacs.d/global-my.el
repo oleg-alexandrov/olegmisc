@@ -483,7 +483,8 @@
 (global-set-key [(meta u)] 'un-comment-region)
 (global-set-key [(meta z)] 'redo)
 (global-set-key [(shift space)] 'my-insert-space)
-(global-set-key [(space)] 'smart-space)
+(global-set-key (kbd "SPC") 'smart-space)
+
 (global-set-key [(control \.)] (function (lambda () (interactive) (forward-char 1))))
 (global-set-key [(control \,)] (function (lambda () (interactive) (backward-char 1))))
 (global-set-key [(meta \')]  (function (lambda () (interactive) (insert "\"\"") (backward-char 1))))
