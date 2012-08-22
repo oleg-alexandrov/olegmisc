@@ -1,10 +1,10 @@
 #!/bin/bash
 
-export XEPATH=$HOME/bin/
+#export XEPATH=$HOME/bin/
 instanceCount=$(ps aux | grep `whoami` | grep xemacs | grep -v 'grep xemacs' | wc -l);
 if [ "$instanceCount" -eq "0" ]; then
 
-  $XEPATH/xemacs -geo 90x32+0+0 &
+  xemacs -geo 90x32+0+0 &
   instanceCount="";
   
   while [ "$instanceCount" = "" ]; do
@@ -17,7 +17,7 @@ if [ "$instanceCount" -eq "0" ]; then
 
 else
   
-  $XEPATH/gnuclient -q $* &
+  gnuclient -q $* &
 
 fi
 

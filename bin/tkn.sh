@@ -1,6 +1,10 @@
 #!/bin/bash
 
 # tkdiff of the first several lines
+if [ "$#" -lt 3 ]; then 
+    echo Usage: $0 numLines file1 file2
+    exit
+fi
 
 n=$1
 file1=$2
