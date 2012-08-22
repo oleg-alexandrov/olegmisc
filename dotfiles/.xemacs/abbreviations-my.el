@@ -55,7 +55,7 @@
     ("co2" "std::cout.precision(20);" nil 1)
     ("cout" "std::cout <<  << std::endl;" (lambda nil (interactive) (search-backward " <<") (c-indent-command)) 900)
     ("coute" "std::cout << std::endl;" nil 26)
-    ("coutp" "std::cout.precision();" nil 9)
+    ("coutp" "std::cout.precision();" (lambda nil (interactive) (search-backward ")") (c-indent-command)) 9)
     ("couts" "std::cout << \"\" << std::endl;" (lambda nil (interactive) (setq smart_forward_flag 1) (search-backward "\"") (c-indent-command)) 2016)
     ("else" "else" c-electric-continued-statement 24)
     ("for" "" c++-for 1375)
@@ -376,7 +376,8 @@
     ))
 
 (define-abbrev-table 'python-mode-abbrev-table '(
-    ("print" "print \"\"" (lambda nil (interactive) (search-backward "\"")) 55)
+    ("print" "print()" (lambda nil (interactive) (search-backward "\)")) 55)
+    ("printq" "print(\"\")" (lambda nil (interactive) (search-backward "\"")) 55)
     ))
 
 (define-abbrev-table 'rpm-spec-mode-abbrev-table '(
