@@ -4,8 +4,8 @@ use diagnostics;   # expand the cryptic warnings
 use Cwd;
 MAIN:{
 
-  # Generate and run the command: rsync -avz user@machine:/path/to/currDir/file .
-  # or                            rsync -avz file user@machine:/path/to/currDir
+  # Generate and run the command: rsync -avz user@machine:path/to/currDir/file path/to/currDir/file
+  # or                            rsync -avz dir/file user@machine:/path/to/currDir/dir
   
   # Pass the first several arguments starting with dash to rsync
   my $opts = "";
@@ -36,13 +36,12 @@ MAIN:{
     # copy from current directory on remote machine to same directory on local machine
     my $from = splice(@ARGV, 0, 1);
     foreach my $file (@ARGV){
-      
-      my $outDir = ".";
-      if ($file =~ /^(.*)\//){
-        $outDir = $1;
-        qx(mkdir -p $outDir);
-      }
-      my $cmd = "rsync -avz $opts $from:~/$dir/$file $outDir 2>/dev/null";
+
+      # First create the subdirectory on the local machine
+      my $subDir = get_basename($file);
+      qx(mkdir -p $subDir);
+
+      my $cmd = "rsync -avz $opts $from:~/$dir/$file $subDir 2>/dev/null";
       print "$cmd\n";
       print qx($cmd) . "\n";
     }
@@ -50,7 +49,19 @@ MAIN:{
     # Coopy from current directory on local machine to same directory on remote machine
     my $to = splice @ARGV, $numArgs - 1, 1;
     foreach my $file (@ARGV){
-      my $cmd = "rsync -avz $opts $file $to:~/$dir/ 2>/dev/null";
+
+      my $subDir = get_basename($file);
+      if ($subDir =~ /\//) {
+        # First create the subdirectory on the remote machine
+        my $baseDir = get_base_dir($file);
+        qx(mkdir -p /tmp/$subDir);
+        my $cmd = "rsync -avz /tmp/$baseDir $to:~/$dir/ 2>/dev/null";
+        print "$cmd\n";
+        print qx($cmd) . "\n";
+        print qx(rm -rfv /tmp/$baseDir) . "\n";
+      }
+      
+      my $cmd = "rsync -avz $opts $file $to:~/$dir/$subDir 2>/dev/null";
       print "$cmd\n";
       print qx($cmd) . "\n";
     }
@@ -59,4 +70,32 @@ MAIN:{
     exit(1);
   }
 
+}
+
+sub get_basename{
+
+  # from dir1/dir2/dir3/dir4.txt return dir1/dir2/dir3
+  
+  my $file = shift;
+  
+  my $dir = ".";
+  if ($file =~ /^(.*)\//){
+    $dir = $1;
+  }
+
+  return $dir;
+}
+
+sub get_base_dir{
+
+  # from dir1/dir2/dir3/dir4.txt return dir1
+  
+  my $file = shift;
+  
+  my $dir = ".";
+  if ($file =~ /^(.*?)\//){
+    $dir = $1;
+  }
+
+  return $dir;
 }
