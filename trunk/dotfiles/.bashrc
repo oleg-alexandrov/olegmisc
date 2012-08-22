@@ -34,10 +34,10 @@ fi
 function cdls {
   if [ "$*" ]; then 
      builtin cd "$*"; 
-     gls -a --color=auto;
+     ls -a --color=auto;
      echo $(pwd) > ~/.lastDir 
   else
-      builtin cd; gls -a --color=auto;
+      builtin cd; ls -a --color=auto;
   fi
   proml;
 }
@@ -90,10 +90,10 @@ function a {
 }
 
 function ald {
-
     # Create an alias to cd to the current directory
     dir=$(echo $(pwd) | perl -pi -e 's#'$HOME'#\$HOME#g')
-    a $1="cd $dir" 
+    echo "a $1=\"cd $dir\""
+    a $1="cd $dir"
 }
 
 function ag {
@@ -111,8 +111,10 @@ function un {
     unalias $u 2>/dev/null
     echo "unalias $u 2>/dev/null" >> ~/.unaliases
   done
-  alias > ~/.bash_aliases; 
-  perl -pi -e "s#^([^\s]+=)#alias \$1#g" ~/.bash_aliases;
+  perl -pi -e "s#^alias $u=.*?\n##g" ~/.base_aliases
+  
+  alias > ~/.bash_aliases
+  perl -pi -e "s#^([^\s]+=)#alias \$1#g" ~/.bash_aliases
 }
 
 function pag {
@@ -133,7 +135,7 @@ function hg {
 function gr {
 
   # recursive grep
-  grep -r -i -n -E --colour=auto "$*" .;
+  grep -r -i -n -E --colour=auto $* . --include="*.cc" --include="*.h";
 
 }
 
@@ -181,6 +183,10 @@ function tb {
     remote_copy.pl $* $B
 }
 
+function tl {
+    remote_copy.pl $* $L2
+}
+
 function v {
 
  fs="$HOME/.fileToOpen"
@@ -196,6 +202,10 @@ function v {
 function ovl {
   perl -pi -e "s#\"overwriteLayers\" \"false\"#\"overwriteLayers\" \"true\"#g" $1
   grep  -i --colour=auto overwriteLayers $1
+}
+
+function llt {
+    ls -alh -rtd --color=auto $* | tee /tmp/output_llt.txt
 }
 
 # -<colour opc>--------------------------------
@@ -292,4 +302,9 @@ if [ -f ~/.bash_aliases ]; then
  grep -E -v "(cd|ssh|scp)"  ~/.bash_aliases >  ~/.base_aliases 
 fi
 
- 
+moduleFile=/usr/share/modules/init/bash
+if [ -e $moduleFile ]; then
+    . $moduleFile
+    module load git/1.7.7.4
+fi
+
