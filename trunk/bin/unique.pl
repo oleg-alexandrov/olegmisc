@@ -12,7 +12,6 @@ MAIN:{
     $unique{$line} = 1;
   }
 
-  print "Unique lines in the input:\n";
   foreach my $line (sort {$a cmp $b} keys %unique){
     print $line;
   }
