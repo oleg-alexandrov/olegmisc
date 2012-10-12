@@ -24,11 +24,12 @@ MAIN:{
   foreach my $file (@ARGV){
     $files{$file} = 1;
   }
-  
-  qx(rm -rf tmp; mkdir tmp;);
+
+  my $tmpDir = "tmp_" . $name;
+  qx(rm -rf $tmpDir; mkdir $tmpDir;);
   my $count = 0;
   foreach my $file (keys %files){
-    my $cmd = "~/visionworkbench/src/vw/tools/hillshade -o "
+    my $cmd = "~/projects/visionworkbench/src/vw/tools/hillshade -o "
        . "tmp/hill$count.tif -a 315 -s 0 --nodata-value -32767 "
           .  $file;
     print "$cmd\n";
