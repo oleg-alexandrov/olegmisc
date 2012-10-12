@@ -30,7 +30,7 @@ MAIN:{
   my $count = 0;
   foreach my $file (keys %files){
     my $cmd = "~/projects/visionworkbench/src/vw/tools/hillshade -o "
-       . "tmp/hill$count.tif -a 315 -s 0 --nodata-value -32767 "
+       . "$tmpDir/hill$count.tif -a 315 -s 0 --nodata-value -32767 "
           .  $file;
     print "$cmd\n";
     qx($cmd);
@@ -38,7 +38,7 @@ MAIN:{
   }
 
   print qx(pwd) . "\n";
-  my $cmd = "image2qtree.pl $name tmp/*tif";
+  my $cmd = "image2qtree.pl $name $tmpDir/*tif";
   print "$cmd\n";
   print qx($cmd) . "\n";
 }
