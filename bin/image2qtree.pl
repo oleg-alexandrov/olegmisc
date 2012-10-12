@@ -20,7 +20,7 @@ MAIN:{
   
   my $name  = shift @ARGV;
   my $files = join(" ", @ARGV);
-  my $cmd = "~/visionworkbench/src/vw/tools/image2qtree -m kml $files -o /byss/docroot/oleg/$name";
+  my $cmd = "~/projects/visionworkbench/src/vw/tools/image2qtree -m kml $files -o /byss/docroot/oleg/$name";
   print "$cmd\n";
   print qx($cmd) . "\n";
 
