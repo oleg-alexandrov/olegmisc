@@ -26,7 +26,7 @@ MAIN:{
   }
 
   my $tmpDir = "tmp_" . $name;
-  qx(rm -rf $tmpDir; mkdir $tmpDir;);
+  qx(rm -rf ./$tmpDir; mkdir $tmpDir;);
   my $count = 0;
   foreach my $file (keys %files){
     my $cmd = "~/projects/visionworkbench/src/vw/tools/hillshade -o "
@@ -41,4 +41,6 @@ MAIN:{
   my $cmd = "image2qtree.pl $name $tmpDir/*tif";
   print "$cmd\n";
   print qx($cmd) . "\n";
+  qx(rm -rf ./$tmpDir);
+
 }
