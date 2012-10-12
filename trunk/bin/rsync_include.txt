@@ -1,7 +1,6 @@
 */
 bin/*txt
 gitserver*
-.git*
 .ba*
 .zshrc
 .zsh_colors
@@ -17,10 +16,12 @@ gitserver*
 *.py
 *.java
 *.cpp
+*.hpp
 *.cxx
 *.cc
 *.h
 *.m
-Makefile*
+Makefile.am
 *.plt
 *.am
+*.ac
