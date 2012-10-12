@@ -87,7 +87,7 @@ MAIN:{
      .                  " and column " . $max_col . " (count starts from 0)\n";
   print "At that location, max rel err is $max_rel_err\n";
   
-  print "Lines:\n";
+  print "The corresponding lines with maximum error:\n";
   print $val1[$max_row] . "\n";
   print $val2[$max_row] . "\n";
   

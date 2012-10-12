@@ -39,6 +39,7 @@ MAIN:{
 
       # First create the subdirectory on the local machine
       my $subDir = get_basename($file);
+      print "subdir is $subDir\n";
       qx(mkdir -p $subDir);
 
       my $cmd = "rsync -avz $opts $from:~/$dir/$file $subDir 2>/dev/null";
@@ -51,9 +52,12 @@ MAIN:{
     foreach my $file (@ARGV){
 
       my $subDir = get_basename($file);
+      print "subdir is $subDir\n";
       if ($subDir =~ /\//) {
         # First create the subdirectory on the remote machine
         my $baseDir = get_base_dir($file);
+        print "file is $file\n";
+        print "base dir is $baseDir\n";
         qx(mkdir -p /tmp/$subDir);
         my $cmd = "rsync -avz /tmp/$baseDir $to:~/$dir/ 2>/dev/null";
         print "$cmd\n";
@@ -72,15 +76,31 @@ MAIN:{
 
 }
 
+sub strip_stuff{
+
+  my $file = shift;
+  $file =~ s/^\.\///g; # strip leading ./
+  $file =~ s/^\~\///g; # strip leading ~/
+  $file =~ s/^\/home\w*\/\w*\///g; # from /home/user/someDir get just someDir
+
+  return $file;
+}
+
 sub get_basename{
 
   # from dir1/dir2/dir3/dir4.txt return dir1/dir2/dir3
   
   my $file = shift;
+  $file = strip_stuff($file);
   
   my $dir = ".";
   if ($file =~ /^(.*)\//){
     $dir = $1;
+  }
+
+  if ($dir eq ""){
+    print "ERROR: Could not parse: $file\n";
+    exit(1)
   }
 
   return $dir;
@@ -91,11 +111,17 @@ sub get_base_dir{
   # from dir1/dir2/dir3/dir4.txt return dir1
   
   my $file = shift;
-  
+  $file = strip_stuff($file);
+
   my $dir = ".";
   if ($file =~ /^(.*?)\//){
     $dir = $1;
   }
 
+  if ($dir eq ""){
+    print "ERROR: Could not parse: $file\n";
+    exit(1)
+  }
+  
   return $dir;
 }
