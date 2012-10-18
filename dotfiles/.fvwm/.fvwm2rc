@@ -26,14 +26,25 @@ MenuStyle * MenuFace VGradient 128 1 #2c80A0 1 #1c5572
 
 
 #AddToFunc InitFunction    "I" Module FvwmPager  *
+AddToFunc InitFunction "I" Exec firefox&
 AddToFunc InitFunction "I" Module FvwmCommandS
+AddToFunc InitFunction "I" Exec ssh -N -f byss -L 2002:localhost:22 &
 AddToFunc InitFunction "I" Exec $HOME/bin/fvwm_dual_monitor.pl&
 AddToFunc InitFunction "I" Exec xclock -d -twentyfour -bg black -fg green -brief -geo -0+0&
+AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 102x57+0+1080 --tab 1 --tab 2 -e zsh &
+AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 102x57+970+1080 --tab 1 --tab 2 -e zsh &
+AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 102x57+1920+1080 --tab 1 --tab 2 -e zsh &
+AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 102x57+2890+1080 --tab 1 --tab 2 -e zsh &
+AddToFunc InitFunction "I" Exec xe -geo 208x66+3840+1080 &
+AddToFunc InitFunction "I" Exec xrandr --output VBOX0 --auto --output VBOX1 --auto --right-of VBOX0
+AddToFunc InitFunction "I" Restart # Restart after we forced using two monitors
 
 #AddToFunc RestartFunction "I" Module FvwmPager  *
-AddToFunc RestartFunction "I" Module FvwmCommandS
-AddToFunc RestartFunction "I" Exec $HOME/bin/fvwm_dual_monitor.pl&
-AddToFunc RestartFunction "I" Exec xclock -d -twentyfour -bg black -fg green -brief -geo -0+0&
+#AddToFunc RestartFunction "I" Module FvwmCommandS
+#AddToFunc RestartFunction "I" Exec $HOME/bin/fvwm_dual_monitor.pl&
+#AddToFunc RestartFunction "I" Exec xclock -d -twentyfour -bg black -fg green -brief -geo -0+0&
+# xrandr --output VBOX1 --auto --output VBOX0 --auto --right-of VBOX1
+#xrandr --output VBOX0 --auto --output VBOX1 --auto --right-of VBOX0
 
 #ModulePath $HOME/diverse/fvwm2
 ImagePath $HOME/diverse/icons/:/usr/X11/include/X11/pixmaps/:/usr/X11R6/include/X11/pixmaps:/usr/include/X11/pixmaps/:/home/grad/aoleg/diverse/htmls/icons/
@@ -132,15 +143,15 @@ DesktopName 3 Desk 3
  
 ######################### Keyboard binding###########################
 #Key F1    A   N   Exec /usr/bin/konsole& 
-Key F1    A   C   Exec /usr/bin/gnome-terminal  --geometry 81x40+0+0  -e zsh & 
-Key F1    A   M   Exec /usr/bin/gnome-terminal  --geometry 104x53+0+0 -e zsh & 
+Key F1    A   C   Exec /usr/bin/gnome-terminal  --geometry 81x40+0+0 --tab 1 --tab 2 -e zsh & 
+Key F1    A   M   Exec /usr/bin/gnome-terminal  --geometry 102x57+0+0 --tab 1 --tab 2 -e zsh & 
 #Key F1   A   C   Exec /usr/bin/gnome-terminal --geometry 110x44 -e "$HOME/bin/zsh"& 
 #Key F1    A   M   Exec /usr/bin/xterm  -geo 108x46+0+0  -hc blue  -bdc -fn 8x16 -e zsh&
 #Key F1    A   N   Exec  /m1/aoleg/bin/rxvt & # -geo 140x61+10+10  -hc blue  -bdc -fn 8x16 &
-#Key F2    A   N   Exec  /m1/aoleg/bin/rxvt -fn 8x16 -e mutt &
+Key F2    A   N   Exec  thunderbird& 
 Key F3    A   C   Exec  ~/bin/xe &
-Key F4    A   N   Exec  /usr/bin/firefox&
-Key F4    A   M   Exec  /usr/bin/firefox&
+Key F4    A   C   Exec  firefox&
+Key F5    A   C   Exec  pidgin&
 Key F6    A   N   Exec  mozilla& 
 Key F7    A   N   Exec  /usr/local/bin/mathematica&
 Key F9    A   N   Exec  gnumeric --geometry 1120x993+0+0&
@@ -149,6 +160,7 @@ Key Delete    A   CM   Quit
 Key End    A   CM  Exec /usr/bin/X11/xlock
 
 Key F8   A   C    Move +0 +0
+Key F8   A   M    Move +75 +0
 Key F9   A   C    Move +50 +0 # Move window half a screen to the right
 Key F9   A   M    Move +25 +0
 Key Down A   CMS  Move +0 +100 
@@ -166,8 +178,7 @@ Key Up    A   C   Scroll +0   -100
 Key Down  A   C   Scroll +0   +100
 
 # Pop-up the pager temorarily
-Key Home  A   CM   Module FvwmPager -transient *
-Key End   A   CM   Module FvwmPager -transient *
+Key Insert A   CM   Module FvwmPager -transient *
 
 # Use the left windows key for moving the cursor  
 # Put this in .bashrc: xmodmap -e  "add mod4 = Super_L"
@@ -176,9 +187,9 @@ Key Right  A   MC  CursorMove +25 +0
 Key Up     A   MC   CursorMove +0 -25
 Key Down   A   MC   CursorMove +0 +25
 
-# Win-PageUp and Win-PageDown to move between desks
-Key Next  A  4    GotoDesk +1 0 3
-Key Prior A  4    GotoDesk -1 0 3
+# Move between desks
+Key Home   A   CM   GotoDesk +1 0 3
+Key End    A   CM   GotoDesk -1 0 3
 
 # arrow + shift + meta => move pointer by 1/10 of a page
 Key Left   A   SM   CursorMove -50 +0
@@ -344,7 +355,7 @@ AddToMenu Programs   "+++Programs+++"   Title
 +   ""   Nop
 +   "Xemacs"   Exec exec  ~/bin/xe&
 +   ""   Nop
-+   "Firefox"   Exec exec  /usr/bin/firefox&
++   "Firefox"   Exec exec  firefox&
 +   ""   Nop
 +   "Graphics"   Popup Graphics
 +   ""   Nop   
