@@ -41,6 +41,7 @@ MAIN:{
   my $cmd = "image2qtree.pl $name $tmpDir/*tif";
   print "$cmd\n";
   print qx($cmd) . "\n";
-  qx(rm -rf ./$tmpDir);
+  print "rm -rf ./$tmpDir\n";
+  print qx(rm -rf ./$tmpDir) . "\n";
 
 }
