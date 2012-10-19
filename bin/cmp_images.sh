@@ -6,6 +6,8 @@ if [ "$#" -eq 3 ]; then
     plainDiff=1
 fi
 
+echo The xmls may be cached!
+
 echo $1 > /tmp/img1.txt
 echo $2 > /tmp/img2.txt
 gdalinfo -stats $1 >> /tmp/img1.txt
