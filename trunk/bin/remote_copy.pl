@@ -2,6 +2,7 @@
 use strict;        # insist that all variables be declared
 use diagnostics;   # expand the cryptic warnings
 use Cwd;
+use File::Spec;
 MAIN:{
 
   # Generate and run the command: rsync -avz user@machine:path/to/currDir/file path/to/currDir/file
@@ -19,53 +20,64 @@ MAIN:{
     print "or   : $0 <options> files user\@machine\n";
     exit(1);
   }
-  
-  my $home = $ENV{HOME};
-  my $dir  = getcwd;
-  my $whoami = qx(whoami); $whoami =~ s/\s*$//g;
-  
-  if ($dir !~ /^.*?$whoami(.*?)$/){
-    print "Error: Expecting $dir to be a subdirectory of $home.\n";
-    exit(1);
-  }
-  $dir = $1;
-  $dir =~ s/^\/*//g;
-  #print "Home and pwd are $home $dir\n";
 
+  my $dir  = getcwd;
+  $dir = get_path_in_home_dir($dir);
+  
   if ($ARGV[0] =~ /\@/){ 
-    # copy from current directory on remote machine to same directory on local machine
+
+    # Copy from current directory on remote machine to same directory
+    # on local machine
     my $from = splice(@ARGV, 0, 1);
     foreach my $file (@ARGV){
 
-      # First create the subdirectory on the local machine
-      my $subDir = get_basename($file);
-      print "subdir is $subDir\n";
-      qx(mkdir -p $subDir);
+      # Get the file name relative to home directory
+      if ($file =~ /^\//){
+        # input path is absolute
+        $file = get_path_in_home_dir($file);
+      }else{
+        # input path is relative
+        $file = "$dir/$file";
+      }
 
-      my $cmd = "rsync -avz $opts $from:~/$dir/$file $subDir 2>/dev/null";
+      # Create the destination directory on the local machine
+      my $destDir = $ENV{'HOME'} . "/" . get_dir_path($file);
+      qx(mkdir -p $destDir);
+
+      my $cmd = "rsync -avz $opts $from:$file $destDir 2>/dev/null";
       print "$cmd\n";
       print qx($cmd) . "\n";
     }
+    
   }elsif ($ARGV[$numArgs - 1] =~ /\@/){
-    # Coopy from current directory on local machine to same directory on remote machine
+    # Copy from current directory on local machine to same directory
+    # on remote machine
     my $to = splice @ARGV, $numArgs - 1, 1;
     foreach my $file (@ARGV){
 
-      my $subDir = get_basename($file);
+      my $abs_path = File::Spec->rel2abs($file);
+      my $rel_path = get_path_in_home_dir($abs_path);
+      my $subDir = get_dir_path($rel_path);
       print "subdir is $subDir\n";
-      if ($subDir =~ /\//) {
+      
+      if ($subDir =~ /\// && $subDir ne "./") {
         # First create the subdirectory on the remote machine
-        my $baseDir = get_base_dir($file);
+        my $baseDir = get_base_dir($rel_path);
+        print "file is $file\n";
+        print "base dir is $baseDir\n";
         print "file is $file\n";
         print "base dir is $baseDir\n";
         qx(mkdir -p /tmp/$subDir);
-        my $cmd = "rsync -avz /tmp/$baseDir $to:~/$dir/ 2>/dev/null";
+        my $cmd = "rsync -avz /tmp/$baseDir $to: 2>/dev/null";
         print "$cmd\n";
         print qx($cmd) . "\n";
-        print qx(rm -rfv /tmp/$baseDir) . "\n";
+        if ($baseDir !~ /^\.*\/*$/ && $baseDir !~ /\.\./ ){
+          # Careful with what we wipe
+          print qx(rm -rfv /tmp/$baseDir) . "\n";
+        }
       }
       
-      my $cmd = "rsync -avz $opts $file $to:~/$dir/$subDir 2>/dev/null";
+      my $cmd = "rsync -avz $opts $file $to:~/$subDir 2>/dev/null";
       print "$cmd\n";
       print qx($cmd) . "\n";
     }
@@ -82,11 +94,12 @@ sub strip_stuff{
   $file =~ s/^\.\///g; # strip leading ./
   $file =~ s/^\~\///g; # strip leading ~/
   $file =~ s/^\/home\w*\/\w*\///g; # from /home/user/someDir get just someDir
+  $file =~ s/\/*\.$//g; # strip trailing .
 
   return $file;
 }
 
-sub get_basename{
+sub get_dir_path{
 
   # from dir1/dir2/dir3/dir4.txt return dir1/dir2/dir3
   
@@ -124,4 +137,26 @@ sub get_base_dir{
   }
   
   return $dir;
+}
+
+sub get_path_in_home_dir{
+  
+  # From /home/user/abc/something.txt
+  # return abc/something.txt
+  
+  my $path = shift;
+  my $home = $ENV{HOME};
+  my $whoami = qx(whoami); $whoami =~ s/\s*$//g;
+  if ($path !~ /^.*?$whoami(.*?)$/){
+    print "Error: Expecting $path to be in $home.\n";
+    exit(1);
+  }
+  $path = $1;
+  $path =~ s/^\/*//g;
+
+  if ($path =~ /^\s*$/){
+    $path = ".";
+  }
+  
+  return $path;
 }
