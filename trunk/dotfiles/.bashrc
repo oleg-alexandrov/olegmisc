@@ -10,9 +10,10 @@ set show-all-if-ambiguous on
 
 ## Pager macros
 function mymore {
+#local MORE="/usr/bin/less -e"
 local MORE=more
 
-if [ $# = 1 ]; then
+if [ "$#" = 1 ]; then
     case "$1" in
 	*.tar.z|*.tar.gz|*.tgz)  gunzip -c "$@" | tar tf - | $MORE ;;
 	*.tar.Z) zcat "$@" | tar tf - | $MORE ;;
@@ -92,7 +93,7 @@ function a {
 function ald {
     # Create an alias to cd to the current directory
     dir=$(echo $(pwd) | perl -pi -e 's#'$HOME'#\$HOME#g')
-    echo "a $1=\"cd $dir\""
+    echo "a $1='cd $dir'"
     a $1="cd $dir"
 }
 
@@ -133,10 +134,9 @@ function hg {
 }
 
 function gr {
-
   # recursive grep
-  grep -r -i -n -E --colour=auto $* . --include="*.cc" --include="*.h";
-
+  grep -r -i -n -E --colour=auto $* . --include="*.cc"  --include="*.cpp"  \
+      --include="*.cxx" --include="*.h"  --include="*.hpp";
 }
 
 function fe {
@@ -185,6 +185,10 @@ function tb {
 
 function tl {
     remote_copy.pl $* $L2
+}
+
+function tm {
+    remote_copy.pl $* $M
 }
 
 function v {
