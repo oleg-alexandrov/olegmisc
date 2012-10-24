@@ -6,7 +6,9 @@ if [ "$#" -eq 3 ]; then
     plainDiff=1
 fi
 
-echo The xmls may be cached!
+# Remove cached xmls
+rm -fv "$1.aux.xml"
+rm -fv "$2.aux.xml"
 
 echo $1 > /tmp/img1.txt
 echo $2 > /tmp/img2.txt
