@@ -187,10 +187,6 @@ function tl {
     remote_copy.pl $* $L2
 }
 
-function tm {
-    remote_copy.pl $* $M
-}
-
 function v {
 
  fs="$HOME/.fileToOpen"
