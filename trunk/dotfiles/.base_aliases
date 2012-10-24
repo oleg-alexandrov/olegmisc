@@ -15,7 +15,7 @@ alias cppv='\cp -fv ~/projects/cpp/polyView/gui/polyview ~/bin'
 alias cpu='cat /proc/cpuinfo'
 alias cr='chmod a+w -R'
 alias crl='crontab -l'
-alias crs='file=~/bin/crontab_$(hostname)".txt"; echo "Saving crontab to $file"; crontab -l > $file'
+alias crs='file=~/bin/crontab_$(hostname)".txt"; echo "Saving crontab to $file"; crontab -l > $file; tb $file'
 alias cs=cvs_status.pl
 alias css='cvs status | grep -i status | grep -v "Up-to-date"'
 alias cst='cvs status'
@@ -33,24 +33,27 @@ alias dfm='df --block-size=1M'
 alias dh='du -h'
 alias di=diff
 alias ds='du . | sort -n'
-alias e='export LD_LIBRARY_PATH=""; ~/packages/bin/mutt'
+alias e='export LD_LIBRARY_PATH=""; ~/projects/packages/bin/mutt'
 alias ec=echo
 alias els='export LS_COLORS=""'
 alias f5='~/bin/copy_from.pl $H5 '
 alias fa='~/bin/remote_copy.pl $A '
 alias fb='~/bin/remote_copy.pl $B '
 alias fbc='fb \*.cc \*.h \*.sh'
-alias fbh='fb \*.h'
+alias fbh='fb \*h'
+alias fbm='fb \*.m'
 alias fbp='fb \*.py'
 alias fh='find . -name'
 alias fl='~/bin/remote_copy.pl $L2 '
+alias fm='~/bin/remote_copy.pl $M '
 alias g='grep -n -i -E --colour=auto'
 alias ga='git add'
+alias gaa='git add $(gs | g modified| pc 3)'
+alias gam='git add $(gs | grep modified | pc 3)'
 alias gb='git rebase'
 alias gc='git checkout'
 alias gcl='export LD_LIBRARY_PATH=""; git clone '
 alias gd='git diff'
-alias gdal_translate='$HOME/Downloads/gdal-1.8.1/apps/gdal_translate'
 alias gdt='git difftool'
 alias gf='gfortran -Wall -c'
 alias gfa='git fetch --all'
@@ -63,7 +66,9 @@ alias gn='gnuclient -nw '
 alias gp='export LD_LIBRARY_PATH=""; git push'
 alias gpl='git pull'
 alias gps='git push'
+alias gr='git rm'
 alias gs='git status | more'
+alias gsc='gdal_translate -outsize'
 alias gt='git difftool --tool=tkdiff'
 alias gu='git reset HEAD'
 alias h='/usr/bin/head -n 100'
@@ -71,12 +76,14 @@ alias h5='head -n 5'
 alias hi=history
 alias hp='nohup nice -20'
 alias hs='/usr/bin/head -n 10'
+alias ib=./images_in_box.pl
 alias ipconfig=ifconfig
 alias iq=image2qtree.pl
 alias k9='kill -9 -v'
 alias ka='killall -v -9'
 alias kl=make_kml.pl
 alias km='killall -9 -v matlab; killall -9 -v MATLAB'
+alias kn=kill_by_name.sh
 alias ks='for f in $(ps ux |grep -E "rpc|stereo|run" | pc 2 |grep -v ps | grep -v grep); do kill -9 $f; done'
 alias kv='killall -v Xvnc; killall -v gnome-keyring-daemon'
 alias l='ls -a'
@@ -95,6 +102,7 @@ alias m=mymore
 alias m0='make -j 10'
 alias make='time make'
 alias matlab='matlab -nosplash'
+alias mc='. /usr/libexec/mc/mc-wrapper.sh'
 alias md='mkdir -p'
 alias mdc='make distclean'
 alias me=max_err.pl
@@ -102,7 +110,7 @@ alias mi='make install'
 alias mk='time make'
 alias mkl='pl "s#\/.*\/##g"'
 alias mkt=make_kml_tiles.pl
-alias ml='matlab -nosplash -nodesktop'
+alias ml='matlab -nosplash -nodesktop -nojvm'
 alias more=mymore
 alias mv='\mv -vi'
 alias nano=vim
@@ -121,6 +129,8 @@ alias psmerge='echo ghostscript -dNOPAUSE -sDEVICE=pswrite -dBATCH -sOutputFile=
 alias pso=psort
 alias pu='ps ux'
 alias pucat='ps ux | cat'
+alias pul='ps ux | grep -v grep | grep -E ".libs/.*reconstruct"'
+alias puq='pu |grep qtree'
 alias qd=qdel
 alias qs='qstat -u $(whoami)'
 alias qsd='qstat devel@pbspl3 -u $(whoami)'
@@ -130,8 +140,10 @@ alias rcs='rm -rfv CVS */CVS'
 alias rd=./run.sh
 alias rel='lsb_release -a'
 alias rf='\rm -fv'
+alias rfco='rf core.*'
 alias rfo='rm -fv .#* java.log.* matlab_crash* .*~ *~ *.box *.ly1 *.ly2 *.ly \#* server.slog'
-alias rfox='rm -fv .\#* java.log.* matlab_crash* .*~ *~ *.box *.ly1 *.ly2 *.ly *.xg \#* server.slog .*swp'
+alias rfox='rm -fv .\#* java.log.* matlab_crash* .*~ *~ *.box *.ly1 *.ly2 *.ly *.xg \#* server.slog .*swp ~/.zsh_history.*'
+alias rg='chmod a+w -R albedo_gold_tiles4_sub64; rm -rfv albedo_gold_tiles4_sub64; cp -rfv albedo_$n albedo_gold_tiles4_sub64; chmod a-w -R albedo_gold_tiles4_sub64'
 alias rh='perl -pi -e "s#\/home\w*\/\w+#\\\$HOME#g" ~/.bash_aliases'
 alias rm='\rm -vi'
 alias rmanno='perl -pi -e "s#anno.*?\n##g"'
@@ -160,6 +172,7 @@ alias t='/usr/bin/tail -n 100'
 alias tc='tar czfv'
 alias ti='~/bin/toink.pl'
 alias tk=tkdiff
+alias tk2='~/bin/tkdiff_custom'
 alias tkn=tkn.sh
 alias tks='~/bin/tksort.sh'
 alias ts='/usr/bin/tail -n 10'
@@ -169,15 +182,19 @@ alias unmount='echo "Error: Try the command: umount" 1>&2; false'
 alias unp='. ~/bin/unsetpath'
 alias unz=unz.sh
 alias vd=vimdiff
-alias vg='$w/local/bin/valgrind  --log-file=Log --leak-check=full'
+alias vg='valgrind --leak-check=full --log-file=log.txt --tool=memcheck'
 alias vgp='valgrind --tool=callgrind --dump-instr=yes '
 alias vi=vim
 alias vk='valview --view-log'
 alias vlv='valview --view-log'
+alias vn5='vncviewer FullColor localhost:5001'
 alias vnc='vncserver -geometry 1292x996'
 alias vncbig='vncserver -geometry 2550x1008'
 alias vncbig2='vncserver -geometry 2546x993'
 alias vnw='xvncviewer localhost:9007'
+alias voff='perl -pi -e "s#AM_DEFAULT_VERBOSITY = 1#AM_DEFAULT_VERBOSITY = 0#g" Makefil*'
+alias von='perl -pi -e "s#AM_DEFAULT_VERBOSITY = 0#AM_DEFAULT_VERBOSITY = 1#g" Makefil*'
 alias vr='. ~/bin/vr'
 alias vv=/usr/bin/kcachegrind
+alias which-command=whence
 alias x=exit

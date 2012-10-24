@@ -59,6 +59,10 @@
 
 (add-hook 'after-save-hook 'make-file-executable-if-script)
 
+; Always wrap long lines
+(setq-default truncate-lines t)
+(setq truncate-partial-width-windows nil) ;; for vertically-split windows
+
 (defun dos-to-unix ()
   "Remove those annoying ^M from the end of lines in files imported from Windows"
   (interactive)
