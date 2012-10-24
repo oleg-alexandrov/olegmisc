@@ -45,7 +45,6 @@ alias fbm='fb \*.m'
 alias fbp='fb \*.py'
 alias fh='find . -name'
 alias fl='~/bin/remote_copy.pl $L2 '
-alias fm='~/bin/remote_copy.pl $M '
 alias g='grep -n -i -E --colour=auto'
 alias ga='git add'
 alias gaa='git add $(gs | g modified| pc 3)'
@@ -66,7 +65,6 @@ alias gn='gnuclient -nw '
 alias gp='export LD_LIBRARY_PATH=""; git push'
 alias gpl='git pull'
 alias gps='git push'
-alias gr='git rm'
 alias gs='git status | more'
 alias gsc='gdal_translate -outsize'
 alias gt='git difftool --tool=tkdiff'
@@ -76,7 +74,6 @@ alias h5='head -n 5'
 alias hi=history
 alias hp='nohup nice -20'
 alias hs='/usr/bin/head -n 10'
-alias ib=./images_in_box.pl
 alias ipconfig=ifconfig
 alias iq=image2qtree.pl
 alias k9='kill -9 -v'
@@ -129,7 +126,6 @@ alias psmerge='echo ghostscript -dNOPAUSE -sDEVICE=pswrite -dBATCH -sOutputFile=
 alias pso=psort
 alias pu='ps ux'
 alias pucat='ps ux | cat'
-alias pul='ps ux | grep -v grep | grep -E ".libs/.*reconstruct"'
 alias puq='pu |grep qtree'
 alias qd=qdel
 alias qs='qstat -u $(whoami)'
@@ -143,7 +139,6 @@ alias rf='\rm -fv'
 alias rfco='rf core.*'
 alias rfo='rm -fv .#* java.log.* matlab_crash* .*~ *~ *.box *.ly1 *.ly2 *.ly \#* server.slog'
 alias rfox='rm -fv .\#* java.log.* matlab_crash* .*~ *~ *.box *.ly1 *.ly2 *.ly *.xg \#* server.slog .*swp ~/.zsh_history.*'
-alias rg='chmod a+w -R albedo_gold_tiles4_sub64; rm -rfv albedo_gold_tiles4_sub64; cp -rfv albedo_$n albedo_gold_tiles4_sub64; chmod a-w -R albedo_gold_tiles4_sub64'
 alias rh='perl -pi -e "s#\/home\w*\/\w+#\\\$HOME#g" ~/.bash_aliases'
 alias rm='\rm -vi'
 alias rmanno='perl -pi -e "s#anno.*?\n##g"'
@@ -172,7 +167,6 @@ alias t='/usr/bin/tail -n 100'
 alias tc='tar czfv'
 alias ti='~/bin/toink.pl'
 alias tk=tkdiff
-alias tk2='~/bin/tkdiff_custom'
 alias tkn=tkn.sh
 alias tks='~/bin/tksort.sh'
 alias ts='/usr/bin/tail -n 10'
@@ -187,7 +181,7 @@ alias vgp='valgrind --tool=callgrind --dump-instr=yes '
 alias vi=vim
 alias vk='valview --view-log'
 alias vlv='valview --view-log'
-alias vn5='vncviewer FullColor localhost:5001'
+alias vn5='vncviewer localhost:5002'
 alias vnc='vncserver -geometry 1292x996'
 alias vncbig='vncserver -geometry 2550x1008'
 alias vncbig2='vncserver -geometry 2546x993'
@@ -196,5 +190,4 @@ alias voff='perl -pi -e "s#AM_DEFAULT_VERBOSITY = 1#AM_DEFAULT_VERBOSITY = 0#g" 
 alias von='perl -pi -e "s#AM_DEFAULT_VERBOSITY = 0#AM_DEFAULT_VERBOSITY = 1#g" Makefil*'
 alias vr='. ~/bin/vr'
 alias vv=/usr/bin/kcachegrind
-alias which-command=whence
 alias x=exit
