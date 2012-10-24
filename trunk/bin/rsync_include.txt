@@ -21,7 +21,7 @@ gitserver*
 *.cc
 *.h
 *.m
-*Makefile.am
+Makefile.am
 *.plt
 *.am
 *.ac

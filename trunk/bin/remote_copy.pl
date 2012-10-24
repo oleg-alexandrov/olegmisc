@@ -65,8 +65,6 @@ MAIN:{
         my $baseDir = get_base_dir($rel_path);
         print "file is $file\n";
         print "base dir is $baseDir\n";
-        print "file is $file\n";
-        print "base dir is $baseDir\n";
         qx(mkdir -p /tmp/$subDir);
         my $cmd = "rsync -avz /tmp/$baseDir $to: 2>/dev/null";
         print "$cmd\n";
