@@ -10,6 +10,7 @@ gitserver*
 .emacs.d/*.el
 .emacs
 .xemacs/*.el
+.xemacs/*.bmk
 *.sh
 *.el
 *.pl
@@ -22,7 +23,7 @@ gitserver*
 *.h
 *.m
 *Makefile.am
-*.plt
 *.am
 *.ac
 *.f
+*stereo*.default

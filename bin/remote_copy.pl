@@ -41,7 +41,7 @@ MAIN:{
       }
 
       # Create the destination directory on the local machine
-      my $destDir = $ENV{'HOME'} . "/" . get_dir_path($file);
+      my $destDir = get_home_dir() . "/" . get_dir_path($file);
       qx(mkdir -p $destDir);
 
       my $cmd = "rsync -avz $opts $from:$file $destDir 2>/dev/null";
@@ -59,19 +59,21 @@ MAIN:{
       my $rel_path = get_path_in_home_dir($abs_path);
       my $subDir = get_dir_path($rel_path);
       print "subdir is $subDir\n";
+
+      my $randDir = generate_random_string(10);
       
       if ($subDir =~ /\// && $subDir ne "./") {
         # First create the subdirectory on the remote machine
         my $baseDir = get_base_dir($rel_path);
         print "file is $file\n";
         print "base dir is $baseDir\n";
-        qx(mkdir -p /tmp/$subDir);
-        my $cmd = "rsync -avz /tmp/$baseDir $to: 2>/dev/null";
+        qx(mkdir -p /tmp/$randDir/$subDir);
+        my $cmd = "rsync -avz /tmp/$randDir/$baseDir $to: 2>/dev/null";
         print "$cmd\n";
         print qx($cmd) . "\n";
         if ($baseDir !~ /^\.*\/*$/ && $baseDir !~ /\.\./ ){
           # Careful with what we wipe
-          print qx(rm -rfv /tmp/$baseDir) . "\n";
+          print qx(rm -rfv /tmp/$randDir) . "\n";
         }
       }
       
@@ -143,7 +145,7 @@ sub get_path_in_home_dir{
   # return abc/something.txt
   
   my $path = shift;
-  my $home = $ENV{HOME};
+  my $home = get_home_dir();
   my $whoami = qx(whoami); $whoami =~ s/\s*$//g;
   if ($path !~ /^.*?$whoami(.*?)$/){
     print "Error: Expecting $path to be in $home.\n";
@@ -157,4 +159,31 @@ sub get_path_in_home_dir{
   }
   
   return $path;
+}
+
+sub generate_random_string{
+  
+  my $len=shift;# the length of 
+  # the random string to generate
+  
+  my @chars=('a'..'z','A'..'Z','0'..'9','_');
+  my $random_string;
+  foreach (1..$len){
+    # rand @chars will generate a random 
+    # number between 0 and scalar @chars
+    $random_string.=$chars[rand @chars];
+  }
+  return $random_string;
+}
+
+sub get_home_dir{
+  my $home;
+  my $machine = qx(uname -n);
+  if ($machine =~ /pfe/){
+    $home = "/nobackupnfs1/" . qx(whoami);
+    $home =~ s/\s*$//g;
+  }else{
+    $home = $ENV{'HOME'};
+  }
+  return $home;
 }

@@ -19,6 +19,19 @@ MAIN:{
   }
   
   my $name  = shift @ARGV;
+  if (scalar (@ARGV) == 0){
+    print "ERROR: No input files\n";
+    exit(1);
+  }
+
+  my $first = $ARGV[0];
+  my $target = "earth";
+  my $stats = qx(gdalinfo -stats $first);
+  if ($stats =~/spheroid\s*\[\"moon/i){
+    $target = "moon";
+  }
+  print "Target is $target\n";
+  
   my $files = join(" ", @ARGV);
   my $cmd = "~/projects/visionworkbench/src/vw/tools/image2qtree -m kml $files -o /byss/docroot/oleg/$name";
   print "$cmd\n";
@@ -29,7 +42,7 @@ MAIN:{
   my $text = join("", <FILE>);
   close(FILE);
 
-  $text =~ s!(\<kml)\s+(xmlns)!$1 . " hint=\"target=earth\" " . $2!e; 
+  $text =~ s!(\<kml)\s+(xmlns)!$1 . " hint=\"target=$target\" " . $2!e; 
   $text =~ s!\>([^\<\>]*?\.(?:kml|png))!>https://byss.arc.nasa.gov/oleg/$name/$1!g;
 
   open(FILE, ">$index");
