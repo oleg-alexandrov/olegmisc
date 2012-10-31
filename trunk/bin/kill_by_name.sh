@@ -7,7 +7,8 @@ pids=""
 progName=$(echo $0 | perl -pi -e "s#^.*\/##g")
 
 for name in $*; do
-    local_pids=$(ps ux | grep -i $name | grep -v grep | grep -v $progName | print_col.pl 2)
+    ps ux | grep -i $name | grep -v $progName
+    local_pids=$(ps ux | grep -i $name | grep -v $progName | print_col.pl 2)
     pids="$pids $local_pids"
 done
 

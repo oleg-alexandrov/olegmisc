@@ -4,8 +4,14 @@ echo Running $0 on $(date)
 
 source ~/.bashenv 
 
-HOST=$B
-#HOST=$M
+ORIGIN=$B
+
+machine=$(uname -n |grep -i pfe)
+if [ "$machine" != "" ]; then
+    DEST=/nobackupnfs1/$(whoami)
+else
+    DEST=$HOME
+fi
 
 # Copy only files matching the given patterns
 rsync -avz                                     \
@@ -13,13 +19,14 @@ rsync -avz                                     \
     --exclude ".svn/*"                         \
     --exclude "projects/base_system*"          \
     --exclude "projects/isis*"                 \
-    --include-from=$HOME/bin/rsync_include.txt \
+    --include-from=$DEST/bin/rsync_include.txt \
     --exclude "*"                              \
-    $HOST: $HOME 
+    $ORIGIN: $DEST 
 
 # Copy  entire directories
 #for dir in Documents gitserver .git .emacs .emacs.d .xemacs; do 
 for dir in Documents gitserver; do 
-    rsync -avz --exclude "*.key" $HOST:$dir $HOME
+    rsync -avz --exclude "*.key" $ORIGIN:$dir $DEST
 done
+
 
