@@ -2,7 +2,11 @@
 use strict;        # insist that all variables be declared
 use diagnostics;   # expand the cryptic warnings
 use Cwd;
+use File::Basename;
 use File::Spec;
+use lib dirname(File::Spec->rel2abs($0));
+require 'utils.pl';
+
 MAIN:{
 
   # Generate and run the command: rsync -avz user@machine:path/to/currDir/file path/to/currDir/file
@@ -139,51 +143,3 @@ sub get_base_dir{
   return $dir;
 }
 
-sub get_path_in_home_dir{
-  
-  # From /home/user/abc/something.txt
-  # return abc/something.txt
-  
-  my $path = shift;
-  my $home = get_home_dir();
-  my $whoami = qx(whoami); $whoami =~ s/\s*$//g;
-  if ($path !~ /^.*?$whoami(.*?)$/){
-    print "Error: Expecting $path to be in $home.\n";
-    exit(1);
-  }
-  $path = $1;
-  $path =~ s/^\/*//g;
-
-  if ($path =~ /^\s*$/){
-    $path = ".";
-  }
-  
-  return $path;
-}
-
-sub generate_random_string{
-  
-  my $len=shift;# the length of 
-  # the random string to generate
-  
-  my @chars=('a'..'z','A'..'Z','0'..'9','_');
-  my $random_string;
-  foreach (1..$len){
-    # rand @chars will generate a random 
-    # number between 0 and scalar @chars
-    $random_string.=$chars[rand @chars];
-  }
-  return $random_string;
-}
-
-sub get_home_dir{
-  my $home;
-  my $machine = qx(uname -n);
-  if ($machine =~ /pfe/){
-    $home = "/nobackupnfs1/" . qx(whoami);
-    $home =~ s/\s*$//g;
-  }else{
-    $home = $ENV{'HOME'};
-  }
-  return $home;
-}

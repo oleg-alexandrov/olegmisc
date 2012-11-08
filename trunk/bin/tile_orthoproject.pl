@@ -8,7 +8,7 @@ MAIN:{
   # Break a DEM into tiles, orthoproject on each tile, then combine the results
 
   my $tileSize = 500;
-  my $demPad   = 10;
+  my $pad      = 50;
   my $cmd;
   
   # Separate the options
@@ -62,41 +62,53 @@ MAIN:{
 
       $list = "$list $count";
          
-      my $startX = $x*$tileSize - $demPad;
+      my $startX = $x*$tileSize - $pad;
       $startX = 0 if ($startX < 0);
-      my $widX = $tileSize + 2*$demPad;
+      my $widX = $tileSize + 2*$pad;
       if ($startX + $widX > $sizeX){ $widX = $sizeX - $startX; }
       next if ($widX <= 0);
       
-      my $startY = $y*$tileSize - $demPad;
+      my $startY = $y*$tileSize - $pad;
       $startY = 0 if ($startY < 0);
-      my $widY = $tileSize + 2*$demPad;
+      my $widY = $tileSize + 2*$pad;
       if ($startY + $widY > $sizeY){ $widY = $sizeY - $startY; }
       next if ($widY <= 0);
 
       my $demTile = "$demPref$count.tif";
       my $drgTile = "$drgPref$count.tif";
-      $cmd = "gdal_translate -co compress=lzw -srcwin $startX $startY $widX $widY $dem $demTile";
+      $cmd = "gdal_translate -co compress=lzw -co bigtiff=yes -srcwin $startX $startY $widX $widY $dem $demTile";
       print "$cmd\n";
-      qx($cmd);
+      print qx($cmd) . "\n";
     }
   }
-
-  $cmd = ". isis_setup.sh; echo $list | xargs -d ' ' -P 16 -I \{\} orthoproject $opts $demPref\{\}.tif $cub $drgPref\{\}.tif";
+  
+  my $currDir = getcwd;
+  my $sshOpt = "";
+  $list =~ s/^\s*//g;
+  my $run = "time_run.sh orthoproject $opts $demPref\{\}.tif $cub $drgPref\{\}.tif";
+  if (exists $ENV{'PBS_NODEFILE'}){
+    # Will run on multiple machines
+    $sshOpt = "--sshloginfile " . $ENV{'PBS_NODEFILE'};
+    $cmd = "echo '$list' | perl -pi -e \"s#\\s#\\n#g\" | parallel -u $sshOpt -I \{\} \"cd $currDir; . isis_setup.sh; $run\"";
+  }else{
+    # Will run on one machine
+    $cmd = ". isis_setup.sh; echo '$list' | perl -pi -e \"s#\\s#\\n#g\" | xargs -P 16 -I \{\} $run";
+  }
+  
   print "$cmd\n";
-  qx($cmd);
+  print qx($cmd) . "\n";
   
   $cmd = "gdalbuildvrt -resolution highest $vrt $drgPref*tif";
   print "$cmd\n";
-  qx($cmd);
+  print qx($cmd) . "\n";
 
-  $cmd = "gdal_translate -co compress=lzw $vrt $drg";
+  $cmd = "gdal_translate -co compress=lzw -co bigtiff=yes $vrt $drg";
   print "$cmd\n";
   qx($cmd);
 
-  $cmd = "rm -rfv ./$dir";
-  print "$cmd\n";
-  qx($cmd);
+  #$cmd = "rm -rfv ./$dir";
+  #print "$cmd\n";
+  #print qx($cmd) . "\n";
   
 }
 
