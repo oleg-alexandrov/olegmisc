@@ -2,12 +2,20 @@
 use strict;	   # insist that all variables be declared
 use diagnostics;   # expand the cryptic warnings
 use List::Util qw(min max);
+use File::Basename;
+use File::Spec;
+use Cwd;
+use lib dirname(File::Spec->rel2abs($0));
+require 'utils.pl';
+
 MAIN:{
 
   if ( scalar(@ARGV) < 1 ){
     print "Usage: $0 name files.tif\n";
     exit(1);
   }
+
+  maybe_call_itself_on_remote_host(@ARGV);
 
   if ( scalar(@ARGV) == 1 ){
     # Manufacture an output name out of the input

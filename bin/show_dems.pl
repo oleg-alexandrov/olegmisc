@@ -1,6 +1,11 @@
 #!/usr/bin/perl
 use strict;        # insist that all variables be declared
 use diagnostics;   # expand the cryptic warnings
+use File::Basename;
+use File::Spec;
+use Cwd;
+use lib dirname(File::Spec->rel2abs($0));
+require 'utils.pl';
 
 MAIN:{
   
@@ -8,6 +13,8 @@ MAIN:{
     print "Usage: $0 name dem_files\n";
     exit(0);
   }
+
+  maybe_call_itself_on_remote_host(@ARGV);
 
   if ( scalar(@ARGV) == 1 ){
     # Manufacture an output name out of the input
