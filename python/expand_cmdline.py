@@ -7,7 +7,7 @@ import re # perl-style regular expressions
 
 # Edit the content of the command line as passed from zsh
 
-def expandAliases(aliasName):
+def expandAlias(aliasName):
 
    # Given the name of an alias, return the line showing its definition
    # in the alias file
@@ -35,7 +35,7 @@ def expandAliases(aliasName):
    
    return aliasExpansion
 
-# end expandAliases()
+# end expandAlias()
 
 def expandCmdLine(cmdLine, cursor):
 
@@ -54,7 +54,6 @@ def expandCmdLine(cmdLine, cursor):
    #marker = ' xtk45TSfl ';
    #words = re.sub(r'\b', marker, before).split(marker);
    words    = re.split(" ", before)
-   #print words
    
    numWords = len(words)
 
@@ -66,7 +65,17 @@ def expandCmdLine(cmdLine, cursor):
       cursor  = len(cmdLine)
 
    lWord = words[numWords-1]    
-   if    ( numWords >= 2 and words[numWords-1] == "p"):
+   if    ( numWords >= 2 and words[0] == "hp"):
+      # If the first word is hp, expand the abbrevation
+      # of the second word
+      expansion = expandAlias(words[1])
+      matches = re.match('^.*?\'(.*?)\'', expansion)
+      if matches:
+         words[1] = matches.group(1)
+         cmdLine = " ".join(words) + after
+         cursor  = len(cmdLine)
+      
+   if  ( numWords >= 2 and words[numWords-1] == "p"):
       words[numWords-1] = words[numWords-2] # replace with the preceding word
       cmdLine = " ".join(words) + after
       cursor  = len(cmdLine)
@@ -76,8 +85,10 @@ def expandCmdLine(cmdLine, cursor):
       cmdLine = " ".join(words) + after
       cursor  = len(cmdLine)
       
-   elif  ( numWords >= 1 and words[numWords-1] == "o2"):
-      words[numWords-1] = "> output.txt 2>&1&"
+   elif  ( numWords >= 1 and words[numWords-1][:1] == "o"):
+      # Replace o45 with > output45.txt 2>&1&
+      suff = words[numWords-1][1:]
+      words[numWords-1] = "> output" + suff + ".txt 2>&1&"
       cmdLine = " ".join(words) + after
       cursor  = len(cmdLine)
 
@@ -125,7 +136,7 @@ def expandCmdLine(cmdLine, cursor):
    elif (numWords == 2 and words[0] == "a"):
       # Expand the current alias
       aliasName = words[1]
-      cmdLine   = expandAliases(aliasName)
+      cmdLine   = expandAlias(aliasName)
 
    elif ( numWords >= 1 and lWord >= "1" and lWord <= "9" and len(lWord) == 1):
       # Read the file, paste the last item on specified line from the end.
