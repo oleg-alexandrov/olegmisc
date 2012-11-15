@@ -16,7 +16,12 @@ MAIN:{
   }
 
   my $output = shift @ARGV;
-
+  my $list = join(" ", @ARGV);
+  $list =~ s/^\s*//g;
+  $list =~ s/\s*$//g;
+  $list =~ s/\s+/ /g;
+  @ARGV = split(" ", $list);
+  
   create_combined_kml($output, \@ARGV);
   
 }
