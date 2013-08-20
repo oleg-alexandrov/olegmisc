@@ -5,10 +5,10 @@ use diagnostics;   # expand the cryptic warnings
 MAIN:{
 
   if (scalar(@ARGV) < 1){
-    print "Usage: cat file.txt $0 colNum\n";
+    print "Usage: cat file.txt | $0 colNum\n";
     exit(1);
   }
-  my $colNum = $ARGV[0]; 
+  my $colNum = $ARGV[0];
 
   my %hash;
   foreach my $line (<STDIN>){
