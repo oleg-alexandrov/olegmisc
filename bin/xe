@@ -4,7 +4,13 @@
 instanceCount=$(ps aux | grep `whoami` | grep xemacs | grep -v 'grep xemacs' | wc -l);
 if [ "$instanceCount" -eq "0" ]; then
 
-  xemacs -geo 206x56+0+0 $* &
+  opts=$(echo $* | grep geo)
+  if [ "$opts" != "" ]; then
+    xemacs $opts &
+  else  
+    xemacs -geo 206x56+0+0 $* &
+  fi
+
   instanceCount="";
   
   while [ "$instanceCount" = "" ]; do
