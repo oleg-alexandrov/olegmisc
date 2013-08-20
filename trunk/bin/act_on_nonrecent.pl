@@ -5,7 +5,7 @@ use diagnostics;   # expand the cryptic warnings
 MAIN:{
 
   # Do something on files matching a given pattern which are older than one hour.
-  # Mark the done files, as to not do them again.
+  # Mark the done files, as to not do them again. So delay the action.
   
   if (scalar(@ARGV) < 1){
     print "Usage: $0 pattern\n";
@@ -20,7 +20,15 @@ MAIN:{
     exit(1);
   }
   
-  while (1){
+  my $machine = qx(uname -n);
+  print "Running on machine: $machine\n";
+
+  my $numDays = 5;
+  my $sleep = 10;
+  my $total = $numDays*24*3600/$sleep;
+  for (my $val = 0; $val < $total; $val++){
+    
+    sleep $sleep;
 
     print "Pattern is $pattern\n";
 
@@ -57,7 +65,7 @@ MAIN:{
       my $diff_time = $cur_time - $mod_time;
       print "File: $file modified $diff_time seconds ago.\n";
 
-      if ($diff_time  > 3600){
+      if ($diff_time  > 600){
         my $cmd = "show_dems.pl $file";
         print "$cmd\n";
         print qx($cmd) . "\n";
@@ -77,7 +85,6 @@ MAIN:{
       close(FILE);
     }
     
-    sleep 10;
   }
 
 }

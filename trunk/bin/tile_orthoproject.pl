@@ -5,6 +5,17 @@ use Cwd;
 use File::Spec;
 MAIN:{
 
+  foreach my $val (keys %ENV){
+    print "$val -- $ENV{$val}\n";
+  }
+  
+  my $currDir = getcwd;
+  if ( exists $ENV{'PBS_O_WORKDIR'} ){
+    $currDir = $ENV{'PBS_O_WORKDIR'};
+    chdir $currDir;
+  }
+  print "Will run in directory: " . getcwd . "\n";
+  
   # Break a DEM into tiles, orthoproject on each tile, then combine the results
 
   my $tileSize = 500;
@@ -82,7 +93,6 @@ MAIN:{
     }
   }
   
-  my $currDir = getcwd;
   my $sshOpt = "";
   $list =~ s/^\s*//g;
   my $run = "time_run.sh orthoproject $opts $demPref\{\}.tif $cub $drgPref\{\}.tif";

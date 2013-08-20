@@ -1,3 +1,4 @@
+*/*/.git
 */
 bin/*txt
 gitserver*
@@ -20,6 +21,7 @@ gitserver*
 *.hpp
 *.cxx
 *.cc
+*.tcc
 *.h
 *.m
 *Makefile.am
@@ -27,3 +29,23 @@ gitserver*
 *.ac
 *.f
 *stereo*.default
+*.tex
+*rsync_include.txt
+*.in
+*.c
+*autogen
+*m4
+*.mak
+*.lut
+*.patch
+*.conf
+*README*
+*.wkt
+.git/objects
+*NEWS*
+*whitelist*
+*RELEASEGUIDE*
+*.gitconfig*
+*.map
+*.nonmap
+*CMakeLists.txt

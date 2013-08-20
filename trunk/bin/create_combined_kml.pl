@@ -23,5 +23,4 @@ MAIN:{
   @ARGV = split(" ", $list);
   
   create_combined_kml($output, \@ARGV);
-  
 }
