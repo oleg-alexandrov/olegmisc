@@ -49,3 +49,5 @@ gitserver*
 *.map
 *.nonmap
 *CMakeLists.txt
+*AUTHORS*
+*INSTALL*

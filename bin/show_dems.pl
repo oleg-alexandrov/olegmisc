@@ -42,14 +42,15 @@ MAIN:{
        . "$tmpDir/hill$count.tif -s 0 "
           .  $file;
     print "$cmd\n";
-    qx($cmd 2>&1 | grep -v Warn);
+    qx($cmd);
     $count++;
   }
 
+  print qx(pwd) . "\n";
   $cmd = "image2qtree.pl $name $tmpDir/*tif";
   print "$cmd\n";
   print qx($cmd) . "\n";
-  #print "rm -rf ./$tmpDir\n";
-  qx(rm -rf ./$tmpDir);
+  print "rm -rf ./$tmpDir\n";
+  print qx(rm -rf ./$tmpDir) . "\n";
 
 }

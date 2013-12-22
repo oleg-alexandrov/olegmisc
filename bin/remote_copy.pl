@@ -63,35 +63,21 @@ MAIN:{
       my $abs_path = File::Spec->rel2abs($file);
       my $rel_path = get_path_in_home_dir($abs_path);
       my $subDir = get_dir_path($rel_path);
-      print "subdir is $subDir\n";
-
       my $randDir = generate_random_string(10);
 
+      # Ensure that $subDir exists on remote machine
+      if ($subDir =~ /\// && $subDir ne "./") {
+        my $res = qx(ssh $to mkdir -p $subDir 2>&1);
+        my $exitStatus = ($? >> 8);
+        if ($exitStatus != 0){
+          print "Failed: $res\n";
+        }
+      }
+      
       $subDir = clean_path($subDir);
       my $cmd = "rsync -avz $opts $file $to:~/$subDir 2>/dev/null";
       print "$cmd\n";
       print qx($cmd) . "\n";
-      my $exitStatus = ($? >> 8);
-
-      # If the copy failed, then perhaps the directory is missing on the remote
-      # machine, then create it and redo the copy.
-      if ($exitStatus != 0 && $subDir =~ /\// && $subDir ne "./") {
-        # First create the subdirectory on the remote machine
-        my $baseDir = get_base_dir($rel_path);
-        print "file is $file\n";
-        print "base dir is $baseDir\n";
-        qx(mkdir -p /tmp/$randDir/$subDir);
-        my $dir_cmd = "rsync -avz /tmp/$randDir/$baseDir $to: 2>/dev/null";
-        print "$dir_cmd\n";
-        print qx($dir_cmd) . "\n";
-        if ($baseDir !~ /^\.*\/*$/ && $baseDir !~ /\.\./ ){
-          # Careful with what we wipe
-          print qx(rm -rfv /tmp/$randDir) . "\n";
-        }
-      }
-      print qx($cmd) . "\n";
-
-
     }
   }else{
     print "Invalid usage: Must copy either from or to a remote machine\n";
