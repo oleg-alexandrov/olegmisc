@@ -3,16 +3,10 @@
 echo Running $0 on $(date)
 
 source ~/.bashenv
-
-ORIGIN=$B
+source ~/.bash_profile # Get the new home dir from here
+ORIGIN=$M
 
 DEST=$HOME
-if [ "$(uname -n |grep -i pfe)" != "" ]; then
-    DEST=/nobackupnfs1/$(whoami)
-fi
-if [ "$(uname -n |grep -i zula)" != "" ]; then
-    DEST=/media/raid/oleg/
-fi
 
 # Copy only files matching the given patterns
 rsync -avz                                     \

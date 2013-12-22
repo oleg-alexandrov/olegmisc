@@ -6,7 +6,7 @@ use Cwd;
 sub clean_path{
   # From /path/to/../dir create /path/dir
   my $path = shift;
-  if ($path =~ /^(.*?)\/\w+\/\.\.(.*?)$/){
+  while ($path =~ /^(.*?)\/\w+\/\.\.(.*?)$/){
     $path = $1 . $2;
   }
   return $path;
@@ -19,8 +19,11 @@ sub maybe_call_itself_on_remote_host{
   my @args = @_;
   my $u_host = get_u_host();
 
-  my $user = qx(whoami); $user =~ s/\s*$//g;
-  my $r_u_host = $user . '@lunokhod2';
+  if ( !exists $ENV{"L2"} || $ENV{"L2"} !~ /\@/ ){
+    print "ERROR: Incorrect value of environmental variable: L2\n";
+    exit(1);
+  }
+  my $r_u_host = $ENV{"L2"};
 
   if ($u_host ne $r_u_host){
 
@@ -103,7 +106,7 @@ sub get_home_dir{
   my $home;
   my $machine = qx(uname -n);
   if ($machine =~ /pfe/){
-    $home = "/nobackupnfs1/" . qx(whoami);
+    $home = "/nobackupnfs2/" . qx(whoami);
   }elsif ($machine =~ /zula/){
     $home = "/media/raid/oleg";
   }else{
