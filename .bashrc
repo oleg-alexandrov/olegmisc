@@ -1,7 +1,27 @@
-# .bashrc
+[ -z "$PS1" ] && return # to not confuse scp and rsync
+
+#echo now in bashrc1
+
+# If we did not source ~/.bash_profile, do that first.
+# It will then return here to continue.
+if [ "$RAN_BASHPROFILE" = "" ]; then
+    export RAN_BASHPROFILE=1
+    if [ -f ~/.bash_profile ]; then
+        source ~/.bash_profile
+        return
+    fi
+fi
+
+#echo now in bashrc2
 
 umask 022              # permissions set to -rw-r--r--
-ulimit -f 2000000000   # max file size (200MB)
+
+# Set these if the system says max number of threads exceeded
+ulimit -s unlimited  > /dev/null 2>&1
+ulimit -f unlimited  > /dev/null 2>&1
+ulimit -v unlimited  > /dev/null 2>&1
+ulimit -u unlimited  > /dev/null 2>&1
+
 unset ignoreeof
 
 set history=10000
@@ -10,8 +30,8 @@ set show-all-if-ambiguous on
 
 ## Pager macros
 function mymore {
-#local MORE="/usr/bin/less -e"
-local MORE=more
+local MORE="/usr/bin/less -e"
+#local MORE=more
 
 if [ "$#" = 1 ]; then
     case "$1" in
@@ -24,7 +44,7 @@ if [ "$#" = 1 ]; then
 	*.jpg) xv "$@" ;;
 	*.Z)     zcat "$@" | $MORE ;;
 	*.zip)   unzip -v "$@" | $MORE ;;
-	*.man|*.[0-9]|*.[0-9][a-z]) nroff -man "$@" | $MORE ;; 
+	*.man|*.[0-9]|*.[0-9][a-z]) nroff -man "$@" | $MORE ;;
 	*)       $MORE "$@" ;;
     esac
 else
@@ -32,15 +52,62 @@ else
 fi
 }
 
+function mb {
+    LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/mesa:$LD_LIBRARY_PATH PATH=~/projects/meshlab/meshlab/src/distrib:$PATH meshlab $*
+}    
+
+function num_fmt {
+    echo $1 | perl -p -e "s#(\d+)#sprintf('%05d', \$1)#eg"
+}    
+
+function num_fmtd {
+    # Format with given number of digits
+    echo $1 | perl -p -e "s#(\d+)#sprintf('%0"$2"d', \$1)#eg"
+}    
+
+function rmp {
+    pack=$1
+    if [ "$pack" = "" ]; then
+        echo empty input
+    else
+        perl -pi -e "s#^.*?$pack.*?\n##g" build_asp/done.txt
+    fi
+}
+
+function gfr {
+    grep -i "fail" report.txt | grep -v " failed" | perl -p -e "s#^.*?\[(.*?)\].*?\$#\$1#g"
+}
+
+function rga {
+    for f in $(gfr | print_col.pl 1); do
+	echo $f;
+	if [ ! -d "$f" ]; then
+	    echo "Missing $f"
+	    continue;
+	fi
+	cd $f
+	rm -rfv gold; cp -rfv run gold
+	cd ..
+    done
+}
+
+function tg {
+    tail -n 1000 $1 | grep -i -v wait | tail -n 200
+}
+
 function cdls {
-  if [ "$*" ]; then 
-     builtin cd "$*"; 
+  if [ "$*" ]; then
+     builtin cd "$*";
      ls -a --color=auto;
-     echo $(pwd) > ~/.lastDir 
+     echo $(pwd) > ~/.lastDir
   else
       builtin cd; ls -a --color=auto;
   fi
   proml;
+}
+
+function node {
+    ssh $(qstat -f $1 |grep exec_vnode | perl -p -e "s#^.*?\((.*?):.*?\n#\$1#g")
 }
 
 function lcd {
@@ -53,8 +120,38 @@ function rwd {
    export WORKDIR=`pwd`;
  }
 
+function ge {
+    gdalinfo $1 | tail -n 8 | grep --colour=auto Mean=
+}
+
+function gis {
+    gdalinfo $1 | grep -i --colour=auto size
+}
+
+function gim {
+    gdalinfo -stats $1 | grep -i Maximum | grep -i --colour=auto mean
+}
+
+
 function cdw {
  cd $WORKDIR;
+}
+
+# Tail the latest file in current directory,
+# or the n-th one if n is provided.
+function tls {
+    n=$1
+    lines=$2
+    if [ "$n" = "" ]; then
+        n=1
+    fi
+    if [ "$lines" = "" ]; then
+        lines=1000
+    fi
+    
+    file=$(ls -altrdh * | tail -n $n | ~/bin/print_col.pl 0 | head -n 1)
+    echo tail -n $lines $file
+    tail -n $lines $file
 }
 
 function cvdel {
@@ -65,41 +162,52 @@ function cvdel {
 # after the W variable is updated, update the other settings
 function setbuildenv
 {
-  export BASE=$HOME/$W/dev; 
+  export BASE=$HOME/$W/dev;
   export b=$HOME/$W/build;
   export bt=$HOME/$W/build/test;
   export bb=$HOME/$W/build/bin;
 }
 
+function gip {
+    gdalinfo $1 | grep -i "pixel size";
+}
+
 function a {
 
-  # Refresh the aliases
-  if [ -f ~/.unaliases    ]; then source ~/.unaliases;    fi;
-  if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi;
+# Alias management
 
-  if [ "$*" ]; then
-      # Set the alias, and then display and save it
-      alias "$*" > /dev/null # set the alias
-      ans=$( alias "$*" | perl -pi -e 's#(^|\n)(\w+=)#$1 . "a " . $2#eg' ); 
-      if [ "$ans" != "" ]; then echo "$ans"; fi; # echo it
-      alias > ~/.bash_aliases;
-      perl -pi -e "s#^([^\s]+=)#alias \$1#" ~/.bash_aliases;
-  else
-      alias;  # Just list the aliases
-  fi;
+    if [ -f ~/.unaliases    ]; then source ~/.unaliases;    fi;
+    if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi;
+
+    if [ "$*" ]; then
+        # Set the alias, and then display and save it
+        alias "$*" > /dev/null # set the alias
+        ans=$( alias "$*" | perl -p -e 's#(^|\n)(\w+=)#$1 . "a " . $2#eg' );
+        if [ "$ans" != "" ]; then echo "$ans"; fi; # echo it
+
+        ans2=$(echo "$*" | perl -p -e "s#[^=]##g")
+        if [ "$ans2" != "" ]; then
+            # We are actually setting an alias
+            alias > ~/.bash_aliases;
+            perl -pi -e "s#^([^\s]+=)#alias \$1#" ~/.bash_aliases
+            ssh m.ndc.nasa.gov "echo alias '$*' | ~/bin/add_alias.pl" 2>/dev/null
+        fi
+    else
+        alias  # Just list the aliases
+    fi
 
 }
 
 function ald {
     # Create an alias to cd to the current directory
-    dir=$(echo $(pwd) | perl -pi -e 's#'$HOME'#\$HOME#g')
+    dir=$(echo $(pwd) | perl -p -e 's#'$HOME'#\$HOME#g')
     echo "a $1='cd $dir'"
     a $1="cd $dir"
 }
 
 function ag {
     # grep through all aliases for given pattern
-    alias | grep -i --colour=auto "$*" | perl -pi -e "s#^#a #g"
+    alias | grep -i --colour=auto "$*" | perl -p -e "s#^#a #g"
 }
 
 function eg {
@@ -108,12 +216,12 @@ function eg {
 
 function un {
   # Unalias an alias in all open and future sessions
-  for u in $*; do 
+  for u in $*; do
     unalias $u 2>/dev/null
     echo "unalias $u 2>/dev/null" >> ~/.unaliases
   done
   perl -pi -e "s#^alias $u=.*?\n##g" ~/.base_aliases
-  
+
   alias > ~/.bash_aliases
   perl -pi -e "s#^([^\s]+=)#alias \$1#g" ~/.bash_aliases
 }
@@ -135,8 +243,27 @@ function hg {
 
 function gr {
   # recursive grep
-  grep -r -i -n -E --colour=auto $* . --include="*.cc"  --include="*.cpp"  \
-      --include="*.cxx" --include="*.h"  --include="*.hpp";
+  grep -r -i -n -E --colour=auto "$*" . --include="*.cc"  --include="*.cpp"  \
+      --include="*.cxx" --include="*.h"  --include="*.hpp" --include="*.tcc" \
+      --include="*.tex" --include="*.py" --include="*.in"  --include="*.c"   \
+      --include="*.am" --include="*.m4" --include="*.xml"  --include="*.launch" \
+      --include="*.java" 
+}
+
+function grr {
+  # recursive grep every single file
+  grep -r -i -n -E --colour=auto "$*" . 
+}
+
+function grf {
+  # recursive grep every single file, then return the file names.
+    grep -r -i -n -E --colour=auto "$*" . | perl -p -e "s#:.*?\n#\n#g" | ~/bin/unique.pl
+}
+
+# List all files matching the given pattern
+function grf {
+    val=$1
+    gr $val | perl -p -e "s#:.*?\n#\n#g" | ~/bin/unique.pl
 }
 
 function fe {
@@ -160,7 +287,7 @@ function vp {
     echo $(pwd)/$1
 }
 
-function st { 
+function st {
   grep -n $(ps ux |grep -i lt-reconstruct |grep -v grep | tail -n 1 | awk '{print $15}') imagesList.txt
 }
 
@@ -168,7 +295,13 @@ function gse {
     grep -E -i "(start|end) job" $1 | diff_time.pl
 }
 
-function sdr {
+function dm {
+    # For the moon, convert degree per pixel to meters per pixel
+    source ~/.bashenv
+    ev $1\*$mmd
+}
+
+function s {
 
     # Detach and re-attach to screen number $n,
     # in the order given by 'screen -ls'
@@ -183,20 +316,111 @@ function tb {
     remote_copy.pl $* $B
 }
 
+function tm () {
+    remote_copy.pl $* $M
+}
+
+function f7 () {
+    remote_copy.pl pipeline@centos7 $* 
+}
+
+function t7 () {
+    remote_copy.pl $* pipeline@centos7
+}
+
+function tw () {
+    remote_copy.pl $* oalexan1@wow
+}
+
+
+function ts () {
+    remote_copy.pl $* oalexan1@spherescheetah
+}
+
+function fs () {
+    remote_copy.pl oalexan1@spherescheetah $*
+}
+
+function tz {
+    remote_copy.pl $* $Z
+}
+
+function fa {
+    remote_copy.pl $A $*
+}
+
+function ta {
+    remote_copy.pl $* $A
+}
+
+function ta2 {
+    remote_copy.pl $* $A2
+}
+
+function tl1 {
+    remote_copy.pl $* $L1
+}
+
+function tle {
+    remote_copy.pl $* $(whoami)@lfe
+}
+
+function fd {
+    remote_copy.pl $(whoami)@decoder $*
+}
+
+function td {
+    remote_copy.pl $* $(whoami)@decoder
+}
+
 function tl {
     remote_copy.pl $* $L2
 }
 
-function v {
+function tl2 {
+    remote_copy.pl $* $L2
+}
 
- fs="$HOME/.fileToOpen"
- # Save the current file name. Will open it in emacs.
- file=$(pwd)/$1;
- file=$( echo $file | perl -pi -e "s#:\s*(\d+).*?\$#;line: \$1#g" );
- file=$( echo $file | perl -pi -e "s#:[^\d\s].*?\$##g" );
- echo $file > $fs
- perl -pi -e "s#;#\n#g" $fs
- cat $fs
+function t3 {
+    remote_copy.pl $* $C3
+}
+
+function t6 {
+    remote_copy.pl $* $C6
+}
+
+function ta {
+    remote_copy.pl $* oalexan1@astrobeast
+}
+
+function fa {
+    remote_copy.pl oalexan1@astrobeast $*
+}
+
+function cls {
+    for file in $*; do
+        # Wipe progress bar and special characters
+        perl -pi -e "s#^.*?\*\*.*?\n##g" $file
+        perl -pi -e "s#\r##g" $file
+    done
+}
+
+# read something like:
+# myfile.cc:343 etc etc
+# which is output by grep -r -i -N
+# Write to disk the file and the line number in a format that we will read
+# in xemacs with a simple keystroke
+function v {
+    fs="$HOME/.fileToOpen"
+    val=$1
+    val="$val:0" # in case the line is missing
+    file=$(echo $val | perl -p -e 's#^(.*?):.*?$#$1#g')
+    line=$(echo $val | perl -p -e 's#^.*?:(\d*).*?$#$1#g')
+    if [ "$line" = "" ]; then line="0"; fi
+    file=$(readlink -f $file) # make absolute
+    echo $file > $fs
+    echo "line: $line" >> $fs
+    cat $fs
 }
 
 function ovl {
@@ -205,7 +429,7 @@ function ovl {
 }
 
 function llt {
-    ls -alh -rtd --color=auto $* | tee /tmp/output_llt.txt
+    ls -alh -rtd --color=auto $*
 }
 
 # -<colour opc>--------------------------------
@@ -227,18 +451,18 @@ COLOR4="\[\033[1;34m\]"  # Blue
 COLOR_5="\[\033[0;35m\]" # Purple (Dark)
 COLOR5="\[\033[1;35m\]"  # Purple
 COLOR_6="\[\033[0;36m\]" # Cyan (Dark)
-COLOR6="\[\033[1;36m\]"  # Cyan 
+COLOR6="\[\033[1;36m\]"  # Cyan
 
 COLOR_7="\[\033[0;37m\]" # White (dark) / Light Gray
 COLOR7="\[\033[1;37m\]"  # White
 
 COLOR_8="\[\033[0;38m\]" # White
-COLOR8="\[\033[1;38m\]"  # White Bold  
+COLOR8="\[\033[1;38m\]"  # White Bold
 
 COLOR_9="\[\033[0;39m\]" # White
 COLOR9="\[\033[1;39m\]"  # White Bold
 
-function proml 
+function proml
 {
  case $TERM in
          xterm*)
@@ -254,12 +478,17 @@ PS1="${TITLEBAR}\
 \nbash $COLOR2>$COLOR3>$COLOR1>$COLOR_9 "
 }
 
+function cg {
+    tail -n 10000000 $1 | grep -v Warn |grep -v col |grep -v range |grep -v actual |grep -v Tile |grep -v ROI
+
+}
+
 # While this is an environment variable, it needs to be set here
 # because it is used only interactively
 if [ "$PS1" ]; then
-  if [ $UID = 0 ]; then 
+  if [ $UID = 0 ]; then
     export PS1="\h \! # "
-  else 
+  else
     proml
  fi
 fi
@@ -271,7 +500,7 @@ export EDITOR=vim
 export TEXEDIT='vim +%d %s'
 export VISUAL=vim
 
-# the two lines below cause trouble. 
+# the two lines below cause trouble.
 #export MORE=less
 #export LESS='XeiwmQPm--Less--?e (END):?s (%pb\%)..$PM--Less-- %f %bb/%s?e (END):?s (%pb\%)..'
 export PAGER=less
@@ -295,16 +524,53 @@ if [ -f ~/.bashenv ];   then source ~/.bashenv;   fi
 if [ -f ~/.unaliases ]; then source ~/.unaliases; fi
 
 # Aliases
-if [ -f ~/.base_aliases ]; then source ~/.base_aliases; fi 
-if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi  
+if [ -f ~/.base_aliases ]; then source ~/.base_aliases; fi
+if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi
 
-if [ -f ~/.bash_aliases ]; then 
- grep -E -v "(cd|ssh|scp)"  ~/.bash_aliases >  ~/.base_aliases 
+if [ -f ~/.bash_aliases ]; then
+     grep -E -v "(cd|ssh|scp)"  ~/.bash_aliases > ~/.base_aliases
 fi
 
-moduleFile=/usr/share/modules/init/bash
-if [ -e $moduleFile ]; then
-    . $moduleFile
-    module load git/1.7.7.4
+# if [ "$(uname -a |grep -E 'byss|xxx')" != "" ]; then
+#     . $HOME/GNUstep/System/Library/Makefiles/GNUstep.sh
+# fi
+
+#if [ "$(uname -n)" = "spherescheetah.ndc.nasa.gov" ] || [ "$(uname -n)" = "freeflyer" ]; then
+
+#    if   [ "$LZSH" = "" ]; then
+#        # Avoid running this twice
+#        source ~/.bash_login
+#    fi
+    
+#    export FF_ROOT_DIR=$HOME/projects/freeflyer
+#    export FF_ROOT_BIN=$HOME/cmake_build
+    
+#    source /opt/ros/indigo/setup.bash > /dev/null 2>&1
+#    source $FF_ROOT_BIN/devel/setup.bash > /dev/null 2>&1
+#    export ROS_PACKAGE_PATH=$FF_ROOT_BIN/devel/share/:$ROS_PACKAGE_PATH
+#    export ROSLAUNCH_SSH_UNKNOWN=1
+#    export ROS_HOSTNAME=10.42.0.50
+#    export ROS_MASTER_URI=http://10.42.0.50:11311
+#fi
+# roslaunch astrobee proto3.launch disable_fans:=true
+#rosbag record /nav_cam/image /ground_truth
+
+#/royale/src/CameraManager.cpp has the L2 key
+#echo -n "walnuts are great" | sha1sum 
+#d79dab562f13ef8373e906d919aec323a2857388  -
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/oalexan1/miniconda2/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/oalexan1/miniconda2/etc/profile.d/conda.sh" ]; then
+        . "/home/oalexan1/miniconda2/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/oalexan1/miniconda2/bin:$PATH"
+    fi
 fi
+unset __conda_setup
+# <<< conda initialize <<<
 

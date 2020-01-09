@@ -2,11 +2,11 @@
 if [[ -f ~/.bash_login ]]; then source ~/.bash_login; fi
 if [[ -f ~/.bashrc     ]]; then source ~/.bashrc;     fi
 
-autoload -U compinit;   compinit
-autoload -U promptinit; promptinit
+# autoload -U compinit;   compinit
+# autoload -U promptinit; promptinit
 
-# Disable completion with these as it is too slow
-compdef -d svn make git vim
+# # Disable completion with these as it is too slow
+# compdef -d svn make git vim
 
 export HISTFILE=~/.zsh_history
 export HISTSIZE=10000
@@ -20,12 +20,11 @@ setopt histreduceblanks
 unsetopt histignorespace # save to history commands that start with space
 setopt nohistbeep
 setopt histsavenodups
-setopt sharehistory  
+setopt sharehistory
 setopt nohup            # don't kill jobs when exiting
 
-setopt CSH_NULL_GLOB    # don't complain if there are no matches
-setopt NULL_GLOB        # don't complain if there are no matches
-unsetopt GLOB_SUBST     # expand "*" into the list of files
+setopt +o NOMATCH       # don't complain if there are no matches, just keep on going
+unsetopt GLOB_SUBST     # do not expand "*" into the list of files
 setopt AUTO_PUSHD       # make cd push the old directory onto the directory stack
 setopt complete_in_word # complete when the cursor is in the middle of a word
 setopt CSH_JUNKIE_LOOPS # for i in *; echo $i; end
@@ -50,38 +49,41 @@ function expand-command-smartly () {
   # When some text is typed in the command line, expand it
   # intelligently to save typing.
 
-  # Bind this function to a keystroke as follows: 
+  # Bind this function to a keystroke as follows:
   #zle -N expand-command-smartly
   #bindkey "^J" expand-command-smartly
-  
-  BUFFER=$($HOME/bin/python/expand_cmdline.py "$BUFFER" $CURSOR)
-  CURSOR=$(echo "$BUFFER" | sed -e 's/__sep__.*//') 
-  BUFFER=$(echo "$BUFFER" | sed -e 's/^[0-9]*__sep__//') 
+
+  CURSOR_IN="$CURSOR"
+  BUFFER_IN="$BUFFER"   
+  CURSOR_OUT=$($HOME/projects/python/expand_cmdline.py "$BUFFER_IN" "$CURSOR_IN" "1")
+  BUFFER_OUT=$($HOME/projects/python/expand_cmdline.py "$BUFFER_IN" "$CURSOR_IN" "2")
+  BUFFER="$BUFFER_OUT"
+  CURSOR=$(echo $CURSOR_OUT) # I guess this is needed to go from string to number
   #zle accept-line
 }
 zle -N expand-command-smartly
 
 function proml
 {
-    
- # Show user@machine:/curdirr in the title bar 
+
+ # Show user@machine:/curdirr in the title bar
  if [[ $TERM == "xterm" || $TERM == "rxvt" ]]; then
-   print -Pn "\e]2;%n@%m:%~\a"; 
+   print -Pn "\e]2;%n@%m:%~\a";
  fi;
 
-  if [[ $LOXIM_MODE = "" ]]; then
-    LOX_TAG=""; 
+  if [[ $BASE = "" ]]; then
+    BASE_TAG="";
     W_TAG="";
   else
-    LOX_TAG="LOXIM_MODE=$LOXIM_MODE%{$fg[yellow]%}@";
+    BASE_TAG="$BASE%{$fg[yellow]%}@";
     W_TAG="$W ";
   fi;
 
-  # The command prompt. 
+  # The command prompt.
   # Must put escape characters in {% and %} to avoid garbling long command lines.
   PS1="
-$terminfo[bold]%{$fg[green]%}%n@%m%{$fg[white]%}:%{$fg[blue]%}%~ 
-%{$fg[blue]%}$LOX_TAG%{$fg[green]%}$W_TAG%{$fg[red]%}>%{$fg[yellow]%}>%{$fg[green]%}>%{$fg[white]%} ";
+$terminfo[bold]%{$fg[green]%}%n@%m%{$fg[white]%}:%{$fg[blue]%}%~
+%{$fg[blue]%}$BASE_TAG%{$fg[green]%}$W_TAG%{$fg[red]%}>%{$fg[yellow]%}>%{$fg[green]%}>%{$fg[white]%} ";
 }
 
 bindkey  "^A"                beginning-of-line
@@ -105,9 +107,9 @@ bindkey '^[[F'               end-of-line       # mac
 bindkey  "^["                backward-delete-word
 bindkey  "\M-d"              delete-word
 bindkey  "^Z"                undo
-bindkey  "^[d"               delete-word  
-bindkey  "^[[3;5~"           kill-line    
-bindkey  "^K"                kill-line    
+bindkey  "^[d"               delete-word
+bindkey  "^[[3;5~"           kill-line
+bindkey  "^K"                kill-line
 bindkey  "^[f"               forward-word
 bindkey  "^[b"               backward-word
 bindkey "\M-^?"              backward-delete-word
@@ -117,31 +119,34 @@ bindkey " "                  magic-space
 bindkey "\M- "               _history-complete-older # completion from history
 bindkey "\M-/"               _history-complete-older # completion from history
 
-function reread_aliases {
-  if [ -f ~/.unaliases    ]; then source ~/.unaliases;    fi;
-  if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi;
-}
-#add-zsh-hook preexec reread_aliases # older versions of zsh do not support this
+# function reread_aliases {
+#   if [ -f ~/.unaliases    ]; then source ~/.unaliases;    fi;
+#   if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi;
+# }
+# #add-zsh-hook preexec reread_aliases # older versions of zsh do not support this
 
-function save_curr_cmd {
-    # Copy the current command to byss, so that we can
-    # execute it from other machines
-    #ssh -f byss "echo \"$1\" > ~/.lastCmd" 1>/dev/null 2>&1 
-}
-#add-zsh-hook preexec save_curr_cmd
+# function save_curr_cmd {
+#     # Copy the current command to byss, so that we can
+#     # execute it from other machines
+#     #ssh -f byss "echo \"$1\" > ~/.lastCmd" 1>/dev/null 2>&1
+# }
+# #add-zsh-hook preexec save_curr_cmd
 
 # Colors
 autoload -U colors
 for cFile in $HOME/.zsh_colors                 \
     $w/local/share/zsh/4.3.10/functions/colors \
     /usr/share/zsh/functions/Misc/colors; do
-  if [[ -f $cFile ]]; then 
-  	source $cFile > /dev/null 2>&1 
+  if [[ -f $cFile ]]; then
+	source $cFile > /dev/null 2>&1
 	break
    fi
 done
 
+# edit command line in full screen editor in zsh
+autoload -z edit-command-line
+zle -N edit-command-line
+bindkey "^X^E" edit-command-line
+
 # Init the prompt
 proml
-
-

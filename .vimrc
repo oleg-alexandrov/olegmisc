@@ -45,8 +45,8 @@ noremap <C-Home> <Esc>1gg
 map  <C-S> <Esc>:wq<CR>
 imap <C-S> <Esc>:wq<CR>
 
-map  <C-w> <Esc>:w<CR>
-imap <C-w> <Esc>:w<CR>
+"map  <C-w> <Esc>:w<CR>
+"imap <C-w> <Esc>:w<CR>
 
 " Move to other window in vimdiff
 map  <C-p> <Esc>:wincmd w<CR>
@@ -81,4 +81,18 @@ map! <C-T> call ToggleTrueFalse()
 noremap <C-T> call ToggleTrueFalse()
 
 set wrap
+
+" Use mouse in terminal
+"set mouse=a
+
+set autoindent
+" use intelligent indentation for C
+set smartindent
+" configure tabwidth and insert spaces instead of tabs
+set tabstop=4 " tab width is 4 spaces
+set shiftwidth=4 " indent also with 4 spaces
+set noexpandtab " expand tabs to spaces
+
+"vimdiff
+highlight DiffChange cterm=none ctermfg=green ctermbg=blue gui=none guifg=blue guibg=Yellow
 

@@ -28,6 +28,11 @@ vncconfig -nowin&
 
 #xrandr --output VBOX1 --auto --output VBOX0 --auto --right-of VBOX1
 
+# Disable screen saver, no use as this OS is within a virtual machine
+xset -dpms
+xset s off
+xset s noblank
+
 if [ -e ~/diverse/fvwm/bin/fvwm ]; then 
     ~/diverse/fvwm/bin/fvwm
 else

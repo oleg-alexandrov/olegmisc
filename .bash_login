@@ -1,14 +1,13 @@
-#  .bash_login
-
 LZSH=$HOME/bin/zsh
-if [ ! -f "$LZSH" ]; then
-  LZSH=/bin/zsh
-fi
+if [ ! -f "$LZSH" ]; then LZSH=/bin/zsh; fi
+if [ ! -f "$LZSH" ]; then LZSH=/usr/bin/zsh; fi
 if [ $SHELL != "$LZSH" ] && [ -f "$LZSH" ]; then 
     export SHELL="$LZSH"
     exec "$LZSH"
     exit
 fi
+
+#echo now in .bash_login
 
 echo "                                                                   "
 echo "    What makes the quality of a researcher's inventiveness and     "
@@ -24,12 +23,12 @@ echo "    voices of things.                    -- A. Grothendieck        "
 #if [ 0 ] && [ "$SSH_TTY" != "" ] && [ "$DISPLAY" != "" ]; then
 
   # Make the backspace behave
-  stty erase '^?'
+#  stty erase '^?'
 
   # Disable control s and control q, so that I can use them in vim.
   # stty -a # see what is enabled
-  stty stop  undef # control s
-  stty start undef # control q
+#  stty stop  undef # control s
+#  stty start undef # control q
   
   # Bind the windows key for use in fvwm, if we have a display 
   #if [ "$DISPLAY" != "" ]; then 
@@ -37,5 +36,3 @@ echo "    voices of things.                    -- A. Grothendieck        "
   #  xmodmap -e  "add mod4 = Super_L"
   #fi  
 #fi
-
-
