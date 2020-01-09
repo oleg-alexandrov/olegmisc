@@ -4,7 +4,7 @@
 # running 'make install' all the time.
 
 base=$HOME/projects/visionworkbench$BASE
-rm -rfv $base/build
+rm -rfv $base/build/include $base/build/lib
 
 mkdir -p $base/build/include
 ln -s $base/src/vw $base/build/include
@@ -27,7 +27,3 @@ for f in $(find $base -regextype posix-egrep -regex '.*\.(la|a|so).*$'); do
     echo ln -s $f $base/build/lib/$g
     ln -s $f $base/build/lib/$g
 done
-
-
-    
-

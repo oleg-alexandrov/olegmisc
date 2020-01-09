@@ -1,5 +1,48 @@
 # .fvwm2rc 
-EdgeResistance 550 200
+# 1.1 Barre de titre
+# ------------------
+# Hauteur d'une barre de titre
+TitleStyle Height 15
+
+# On définit la couleur de la barre de titre (ici on génère un gradient)
+TitleStyle (VGradient 128 2 royalblue1 50 royalblue3 50 royalblue4)
+
+# On définit la couleur lorsque la barre de titre est pressée
+AddTitleStyle ActiveDown (VGradient 128 2 royalblue3 50 royalblue1 50 royalblue4)
+# barre de titre inactive
+TitleStyle Inactive (VGradient 128 2 grey85 50 grey70 50 grey50) -- Flat
+HilightColor   grey85 royalblue1
+Style "*"   Color royalblue1/grey85
+Style "*"   Borderwidth 4, Handlewidth 6
+Style "*"   MWMFunctions,MWMDecor,HintOverride
+Style "*"   MWMBorder, MWMButtons
+Style "*"   DecorateTransient
+Style "*"   IconBox 1200 750 1600 1400
+Style "*"   NoPPosition
+Style "*"   RandomPlacement
+Style "*"   SmartPlacement
+Style "*"   MouseFocus
+#Style "*"   ClickToFocus
+Style "*"   SloppyFocus
+Style "Fvwm*"   NoTitle, NoHandles, Sticky, WindowListSkip,
+Style "Fvwm*"   Borderwidth 2, CirculateSkipIcon
+Style "FvwmButtons"   NoTitle, NoHandles, Sticky, WindowListSkip
+Style "FvwmButtons"   Borderwidth 0, CirculateSkip, Color white/royalblue3
+Style "FvwmButtons"   Icon toolbox.xpm,ClickToFocus
+Style "FvwmPager"   NoTitle,BorderWidth 3
+Style "FvwmPager"   Color white/royalblue3
+
+## Other programs
+Style "*clock*"  StaysOnTop, NoTitle, NoHandles, Sticky, WindowListSkip, Borderwidth 0, Color white/royalblue3
+Style "*mail*"   NoTitle, NoHandles, Sticky, WindowListSkip ,Borderwidth 1, Color white/royalblue3
+Style "xload"   NoTitle, NoHandles, Sticky, WindowListSkip,ClickToFocus, BorderWidth 3, Color white/royalblue3 
+Style "Pine"   Icon xnomail.xpm
+Style "XTerm"   Icon tux.xpm
+Style "Netscape"   Icon nsc.xpm
+Style "opera"   Icon opera.xpm
+Style "*emacs"   Icon XEmacs.xpm
+
+EdgeResistance 250 250 # this is about 3 seconds?
 WindowFont   -*-fixed-bold-*-*-*-15-*-*-*-*-*-*-* 
 IconFont   -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
 EdgeScroll 0 0
@@ -25,21 +68,23 @@ MenuStyle * MenuFace VGradient 128 1 #2c80A0 1 #1c5572
 #MenuStyle * MenuFace VGradient 128 2 grey85 50 grey70 50 grey50 -- Flat
 
 
-#AddToFunc InitFunction    "I" Module FvwmPager  *
-AddToFunc InitFunction "I" Exec firefox&
+AddToFunc InitFunction    "I" Module FvwmPager  *
+#AddToFunc InitFunction "I" Exec firefox&
+#AddToFunc InitFunction "I" Exec pidgin&
+#AddToFunc InitFunction "I" Exec skype&
+#AddToFunc InitFunction "I" Exec thunderbird&
 AddToFunc InitFunction "I" Module FvwmCommandS
-AddToFunc InitFunction "I" Exec ssh -N -f byss -L 2002:localhost:22 &
 AddToFunc InitFunction "I" Exec $HOME/bin/fvwm_dual_monitor.pl&
-AddToFunc InitFunction "I" Exec xclock -d -twentyfour -bg black -fg green -brief -geo -0+0&
-AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 102x57+0+1080 --tab 1 --tab 2 -e zsh &
-AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 102x57+970+1080 --tab 1 --tab 2 -e zsh &
-AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 102x57+1920+1080 --tab 1 --tab 2 -e zsh &
-AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 102x57+2890+1080 --tab 1 --tab 2 -e zsh &
-AddToFunc InitFunction "I" Exec xe -geo 208x66+3840+1080 &
+AddToFunc InitFunction "I" Exec xclock -d -twentyfour -bg black -fg green -brief -geo 100x50+1850+0 &
+AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 103x55+0+1080 -e zsh &
+AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 103x55+970+1080 -e zsh &
+AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 103x55+1920+1080 -e zsh &
+AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 103x55+2890+1080 -e zsh &
+AddToFunc InitFunction "I" Exec ~/bin/xe -geometry 209x66+3840+1080 &
 AddToFunc InitFunction "I" Exec xrandr --output VBOX0 --auto --output VBOX1 --auto --right-of VBOX0
 AddToFunc InitFunction "I" Restart # Restart after we forced using two monitors
 
-#AddToFunc RestartFunction "I" Module FvwmPager  *
+AddToFunc RestartFunction "I" Module FvwmPager  *
 #AddToFunc RestartFunction "I" Module FvwmCommandS
 #AddToFunc RestartFunction "I" Exec $HOME/bin/fvwm_dual_monitor.pl&
 #AddToFunc RestartFunction "I" Exec xclock -d -twentyfour -bg black -fg green -brief -geo -0+0&
@@ -58,49 +103,6 @@ ImagePath $HOME/diverse/icons/:/usr/X11/include/X11/pixmaps/:/usr/X11R6/include/
 #Style "*" Color green/red
 #MenuStyle Black slategrey DarkGrey -adobe-helvetica-bold-r-*-*-16-*-*-*-*-*-*-* mwm
 
-# 1.1 Barre de titre
-# ------------------
-# Hauteur d'une barre de titre
-TitleStyle Height 15
-
-# On définit la couleur de la barre de titre (ici on génère un gradient)
-TitleStyle (VGradient 128 2 royalblue1 50 royalblue3 50 royalblue4)
-
-# On définit la couleur lorsque la barre de titre est pressée
-AddTitleStyle ActiveDown (VGradient 128 2 royalblue3 50 royalblue1 50 royalblue4)
-# barre de titre inactive
-TitleStyle Inactive (VGradient 128 2 grey85 50 grey70 50 grey50) -- Flat
-HilightColor   grey85 royalblue1
-Style "*"   Color royalblue1/grey85
-
-Style "*"   Borderwidth 4, Handlewidth 6
-Style "*"   MWMFunctions,MWMDecor,HintOverride
-Style "*"   MWMBorder, MWMButtons
-Style "*"   DecorateTransient
-Style "*"   IconBox 1200 750 1600 1400
-Style "*"   NoPPosition
-Style "*"   RandomPlacement
-Style "*"   SmartPlacement
-Style "*"   MouseFocus
-#Style "*"   ClickToFocus
-Style "*"   SloppyFocus
-Style "Fvwm*"   NoTitle, NoHandles, Sticky, WindowListSkip,
-Style "Fvwm*"   Borderwidth 2, CirculateSkipIcon
-Style "FvwmButtons"   NoTitle, NoHandles, Sticky, WindowListSkip
-Style "FvwmButtons"   Borderwidth 0, CirculateSkip, Color white/royalblue3
-Style "FvwmButtons"   Icon toolbox.xpm,ClickToFocus
-Style "FvwmPager"   NoTitle,BorderWidth 3
-Style "FvwmPager"   Color white/royalblue3
-
-## Other programs
-Style "*clock*"   NoTitle, NoHandles, Sticky, WindowListSkip, Borderwidth 0, Color white/royalblue3
-Style "*mail*"   NoTitle, NoHandles, Sticky, WindowListSkip ,Borderwidth 3, Color white/royalblue3
-Style "xload"   NoTitle, NoHandles, Sticky, WindowListSkip,ClickToFocus, BorderWidth 3, Color white/royalblue3 
-Style "Pine"   Icon xnomail.xpm
-Style "XTerm"   Icon tux.xpm
-Style "Netscape"   Icon nsc.xpm
-Style "opera"   Icon opera.xpm
-Style "*emacs"   Icon XEmacs.xpm
 
 
 ########################### Buttons #########################################
@@ -113,7 +115,7 @@ Style "*emacs"   Icon XEmacs.xpm
 #*FvwmButtons(2x1) - Whatever  Swallow "xdaliclock" Exec xdaliclock -24 -noseconds -builtin0 -transparent&
 #*FvwmButtons(1x1) "" NULL  Swallow "Mail" Exec $HOME/bin/asmail -title "Mail"& 
 # #*FvwmButtons(1x1) "" NULL  Swallow "xmailbox" Exec xmailbox  -update 5 -title "Mail"& 
-*FvwmButtons(2x1, Swallow xdaliclock 'Exec xdaliclock -24 -noseconds -builtin0 -transparent&')
+#*FvwmButtons(2x1, Swallow xdaliclock 'Exec xdaliclock -24 -noseconds -builtin0 -transparent&')
 #*FvwmButtons(1x1, Swallow asmail 'Exec nice -4 $HOME/bin/asmail &')
 #*FvwmButtons  ""  gnome-terminal.xpm   Exec "" /opt/kde3/bin/rxvt &
 #*FvwmButtons  ""  gnome-terminal.xpm   Exec "" /u/joshua/h5/afa/aoleg/bin/rxvt  &
@@ -123,13 +125,13 @@ Style "*emacs"   Icon XEmacs.xpm
 #*FvwmButtons(1x3, Swallow "FvwmPager" 'FvwmPager 0 2', Frame 3)
 
 ########################### Pager #########################################
-DeskTopSize 6x12
+DeskTopSize 4x16
 DesktopName 0 Desk 0
 DesktopName 1 Desk 1
 DesktopName 2 Desk 2
 DesktopName 3 Desk 3
 
-*FvwmPagerGeometry 170x532-0-0
+*FvwmPagerGeometry 160x640-0-0
 *FvwmPagerBack  #1c5572  
 ##  was   #908090
 *FvwmPagerFore white 
@@ -143,14 +145,14 @@ DesktopName 3 Desk 3
  
 ######################### Keyboard binding###########################
 #Key F1    A   N   Exec /usr/bin/konsole& 
-Key F1    A   C   Exec /usr/bin/gnome-terminal  --geometry 81x40+0+0 --tab 1 --tab 2 -e zsh & 
-Key F1    A   M   Exec /usr/bin/gnome-terminal  --geometry 102x57+0+0 --tab 1 --tab 2 -e zsh & 
+Key F1    A   C   Exec /usr/bin/gnome-terminal  --geometry 103x55+0+0 -e zsh & 
+Key F1    A   M   Exec /usr/bin/gnome-terminal  --geometry 81x40+0+0 -e zsh & 
 #Key F1   A   C   Exec /usr/bin/gnome-terminal --geometry 110x44 -e "$HOME/bin/zsh"& 
 #Key F1    A   M   Exec /usr/bin/xterm  -geo 108x46+0+0  -hc blue  -bdc -fn 8x16 -e zsh&
 #Key F1    A   N   Exec  /m1/aoleg/bin/rxvt & # -geo 140x61+10+10  -hc blue  -bdc -fn 8x16 &
-Key F2    A   N   Exec  thunderbird& 
-Key F3    A   C   Exec  ~/bin/xe &
-Key F4    A   C   Exec  firefox&
+#Key F2    A   N   Exec  thunderbird& 
+Key F3    A   C   Exec  ~/bin/xe&
+#Key F4    A   C   Exec  firefox&
 Key F5    A   C   Exec  pidgin&
 Key F6    A   N   Exec  mozilla& 
 Key F7    A   N   Exec  /usr/local/bin/mathematica&
@@ -166,16 +168,16 @@ Key F9   A   M    Move +25 +0
 Key Down A   CMS  Move +0 +100 
 Key F10   A   C   Resize 49 98
 Key F10   A   M   Resize 24 98
-Key F11   A   C   Resize 99 98
+Key F11   A   C   Resize 99 96
 Key F12   A   M   Restart fvwm
-Key F12   A   N   Close
+Key F12   A   C   Close
 Key F11   A   N   Iconify
 
 # arrow + control anywhere => scroll by a page
-Key Left  A   C   Scroll -100    0
-Key Right A   C   Scroll +100   +0
-Key Up    A   C   Scroll +0   -100
-Key Down  A   C   Scroll +0   +100
+Key Left  A   S   Scroll -100    0
+Key Right A   S   Scroll +100   +0
+Key Up    A   S   Scroll +0   -100
+Key Down  A   S   Scroll +0   +100
 
 # Pop-up the pager temorarily
 Key Insert A   CM   Module FvwmPager -transient *
@@ -324,7 +326,7 @@ Mouse 2   I     N   Iconify
 Mouse 2   T     M   Move
 Mouse 1   T     N   Close
 
-Mouse 0   3     A   Stick
+#Mouse 0   3     A   Stick
 Mouse 0   4     A   Maximize
 Mouse 0   6     A   Iconify
 Mouse 1   F     A   Resize-or-Raise
@@ -351,11 +353,13 @@ Mouse 3 R C Module FvwmPager -transient
 ########################  Menus ##############################
 AddToMenu Programs   "+++Programs+++"   Title
 +   ""   Nop
-+   "Xterm"   Exec exec /usr/bin/xterm  -geo 108x46+0+0  -hc blue  -bdc -fn 8x16 -e zsh&
++   "xterm"   Exec exec xterm -bg black -fg white & 
++   ""   Nop
++   "gnome-terminal"   Exec exec /usr/bin/gnome-terminal  --geometry 103x55+0+0 -e zsh & 
 +   ""   Nop
 +   "Xemacs"   Exec exec  ~/bin/xe&
-+   ""   Nop
-+   "Firefox"   Exec exec  firefox&
+#+   ""   Nop
+#+   "Firefox"   Exec exec  firefox&
 +   ""   Nop
 +   "Graphics"   Popup Graphics
 +   ""   Nop   
@@ -366,6 +370,10 @@ AddToMenu Programs   "+++Programs+++"   Title
 +    "Restart"	              Restart fvwm
 +   ""   Nop
 +   "Quit"   Quit   
++   ""   Nop
++   "Close"   Close   
++   ""   Nop
++   "Move"   Move
 +   ""   Nop
 +   "Destroy"   Destroy   
 +   ""   Nop

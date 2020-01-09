@@ -1,5 +1,10 @@
 ; c++-my.el
 
+; make trailing whitespace at the end of a line visible
+(setq show-trailing-whitespace t)
+(setq whitespace-style 'trailing)
+;(add-hook 'before-save-hook 'whitespace-cleanup)
+
 (flyspell-prog-mode)      ; turn on `flyspell-mode' for comments and strings
 (c-toggle-hungry-state 1) ; delete space hungrily
 (turn-on-pending-delete)  ; delete selected text when any character is touched
@@ -24,7 +29,7 @@
     (setq exp_ab (looking-at "[\t]*[ ]*$")))
   (if (not exp_ab)
       (insert "if ")
-    (insert "if (){")
+    (insert "if () {")
     (c-indent-line-or-region)
     (insert "\n")
     (c-indent-line-or-region)
@@ -71,7 +76,7 @@
     (setq empty (looking-at "[ ]*[\t]*[ ]*$")))
   (if (not empty)
       (insert "for ")
-    (insert "for ( ; ; ){")
+    (insert "for ( ; ; ) {")
     (c-indent-line-or-region)
     (insert "\n")
     (c-indent-line-or-region)
@@ -92,15 +97,15 @@
       (backward-char 2)
       (backward-word 1)
       (if (looking-at "\\(\\w+\\)")
-          (let ((w (match-string 1) ))
-            (search-forward "; ")
-            (insert w)
-            (insert " < ")
-            (search-forward "; ")
-            (insert w)
-            (insert "++")
-            )
-        )
+	  (let ((w (match-string 1) ))
+	    (search-forward "; ")
+	    (insert w)
+	    (insert " < ")
+	    (search-forward "; ")
+	    (insert w)
+	    (insert "++")
+	    )
+	)
       )
   ))
 
@@ -109,7 +114,7 @@
   (if (and (= smart_equal_flag 0) (= smart_equal_flag 0))
       (forward-char 1)
     )
-  
+
   (if (not (= smart_equal_flag 1))
       ()
     (search-forward "< " nil t)
@@ -144,7 +149,7 @@
   (interactive)
   (insert " << endl\;\n")
   )
-(defun smart-space ()
+(defun c++-smart-space ()
   (interactive)
   (if (not (expand-abbrev))
       (insert " ")
@@ -158,8 +163,8 @@
   (goto-char (min (mark) (point)))
   (while (re-search-forward "^[ \t]*//" nil t)
     (progn (replace-match " ")
-           (c-indent-line-or-region)
-           ))
+	   (c-indent-line-or-region)
+	   ))
   (widen)
   ;(c-indent-line-or-region)
   ;(indent-relative)
@@ -261,16 +266,16 @@
 (defun swap-cc-h-aux (filename)
   (interactive)
   (cond (
-         (string-match "\\.cc" filename)
-         (setq filename (replace-match ".h" t t filename))
-         ) ; end of matching .cc
+	 (string-match "\\.cc" filename)
+	 (setq filename (replace-match ".h" t t filename))
+	 ) ; end of matching .cc
 
-        (
-         (string-match "\\.h" filename)
-         (setq filename (replace-match ".cc" t t filename))
-         ); endp of matching .h
+	(
+	 (string-match "\\.h" filename)
+	 (setq filename (replace-match ".cc" t t filename))
+	 ); endp of matching .h
 
-        ); end cond
+	); end cond
 
   filename ; return
   )
@@ -283,8 +288,8 @@ exist, try replacing 'src' with 'include' and vice-versa"
   (interactive)
   (if (string-match "\\(\\.cc\\|\\.h\\)$" file-to-swap)
       (let ((swapped-file (swap-cc-h-aux file-to-swap ) ))
-        swapped-file ; attempt succeeded, return current file
-        ) ; end let
+	swapped-file ; attempt succeeded, return current file
+	) ; end let
     file-to-swap ; return the input if failed
     ); end if
   ) ; end function
@@ -301,10 +306,10 @@ exist, try replacing 'src' with 'include' and vice-versa"
   (let ((cur-file (buffer-file-name) ))
 
     (if (string-match "\\.cpp$" cur-file)
-        (let ((command (concat "~/bin/python/update_header.py " cur-file " "
-                               (swap-cpp-h cur-file)) ))
-          (shell-command command)
-          )
+	(let ((command (concat "~/bin/python/update_header.py " cur-file " "
+			       (swap-cpp-h cur-file)) ))
+	  (shell-command command)
+	  )
       )
     )
   )
@@ -342,7 +347,7 @@ exist, try replacing 'src' with 'include' and vice-versa"
 (local-set-key [(right)] 'smart-forward)
 (local-set-key [(super return)] 'smart-forward)
 (local-set-key [(down)] 'smart-down)
-(local-set-key [(space)] 'smart-space)
+(local-set-key [(space)] 'c++-smart-space)
 (local-set-key [(return)] 'reindent-then-newline-and-indent)
 (local-set-key [(meta j)] 'open-spq)
 (local-set-key [(control s)] 'save-and-copy)
@@ -357,4 +362,3 @@ exist, try replacing 'src' with 'include' and vice-versa"
 (local-set-key [(control meta e)] 'end-of-defun)
 (local-set-key [(delete)] 'c++-delete)
 (local-set-key [(meta \')] 'smart-forward)
-

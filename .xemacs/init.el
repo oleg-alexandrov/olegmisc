@@ -1,5 +1,14 @@
 ;;init.el
 
+; focus follows mouse
+(load-file "~/.xemacs/mouse-focus.el")
+(turn-on-mouse-focus)
+
+(turn-on-pending-delete)  ; delete selected text when any character is touched
+
+; make trailing whitespace at the end of a line visible
+(setq show-trailing-whitespace t)
+
 ; Point to the directory(ies) where all other files to be loaded are located.
 (setq load-path (cons (expand-file-name "~/.xemacs/") load-path))
 
@@ -24,11 +33,20 @@
 ;load the redo package
 (require 'redo)
 
-;Saves a history of commands used previously (including other times XEmacs was used). 
+;Saves a history of commands used previously (including other times XEmacs was used).
+; Load this list on startup.
+; Save this list each time a file is open.
 (require `savehist)
 (setq savehist-file "~/.xemacs/history")
-(setq savehist-length 1000)
+
+(setq savehist-length 100)
 (savehist-mode 1)
+(if (file-readable-p savehist-file)
+    (load-file savehist-file)
+  )
+;(dolist (x file-name-history) (find-file x) )
+(add-hook 'find-file-hook 'savehist-save)
+(add-hook 'find-files-hook 'savehist-save)
 
 ;Saves the position the cursor was in a file before the file was closed.
 (load-library "saveplace")
@@ -51,7 +69,7 @@
 (load-library "global-my")
 
 ; to automatically remove annoying ^M from end of windows files. But this slows things down a bit
-;;(add-hook 'find-file-hooks 'dos-to-unix) 
+;;(add-hook 'find-file-hooks 'dos-to-unix)
 
 ; switch buffers
 (setq iswitchb-buffer-ignore '("^ " "^\\*"))
@@ -59,16 +77,16 @@
 (setq iswitchb-case t); case insensitive
 (require 'edmacro)
 (defun iswitchb-local-keys ()
-  (mapc (lambda (K) 
-          (let* ((key (car K)) (fun (cdr K)))
-            (define-key iswitchb-mode-map (edmacro-parse-keys key) fun)))
-        '(("<right>" . iswitchb-next-match)
-          ("<left>"  . iswitchb-prev-match)
-          ("<up>"    . ignore             )
-          ("<down>"  . ignore             ))))
+  (mapc (lambda (K)
+	  (let* ((key (car K)) (fun (cdr K)))
+	    (define-key iswitchb-mode-map (edmacro-parse-keys key) fun)))
+	'(("<right>" . iswitchb-next-match)
+	  ("<left>"  . iswitchb-prev-match)
+	  ("<up>"    . ignore             )
+	  ("<down>"  . ignore             ))))
 (add-hook 'iswitchb-define-mode-map-hook 'iswitchb-local-keys)
 
-; turn on spelling for source code 
+; turn on spelling for source code
 ;(flyspell-prog-mode)
 
 ;;auto-insert stuff
@@ -80,10 +98,10 @@
 
 ; make the delete key work properly in tcl
 (add-hook 'tcl-mode-hook
-          (local-set-key [(delete)] 'backward-or-forward-delete-char)
-          )
+	  (local-set-key [(delete)] 'backward-or-forward-delete-char)
+	  )
 
-;;to enable control-x to copy, control v to paste,  etc. 
+;;to enable control-x to copy, control v to paste,  etc.
 (load-library "cua-mode")
 (CUA-mode 1)
 
@@ -97,12 +115,14 @@
 ;; auto-mode-alist
 (setq auto-mode-alist
       (append '(
+		("CMakeLists\\.txt"       . shell-script-mode)
 		("\\.bash"                . shell-script-mode)
 		("\\.sh"                  . shell-script-mode)
 		("\\.aliases"             . shell-script-mode)
 		("\\.param"               . shell-script-mode)
 		("\\.java$"               . java-mode)
 		("\\.C$"                  . c++-mode)
+		("\\.tcc$"                . c++-mode)
 		("\\.cc$"                 . c++-mode)
 		("\\.hh$"                 . c++-mode)
 		("\\.h$"                  . c++-mode)
@@ -114,6 +134,7 @@
 		("\\.\\(acumask\\)\\'"    . cperl-mode)
 		("\\.\\(param\\)\\'"      . text-mode)
 		("\\.m\\'"                . matlab-mode)
+		;("\\.m\\'"                . objc-mode)
 		("muttrc\\'"              . muttrc-mode)
 		("^\/tmp\/mutt"           . mutt-mode)
 		) auto-mode-alist))
@@ -122,10 +143,10 @@
 
 ;; mutt mode.
  (autoload 'mutt-mode "~/.xemacs/mutt.el" "Major mode to compose mail" t)
- (add-hook 'mutt-mode-hook 
- 	  '(lambda()
- 	     (load-library "mail-my")
- 	     ))
+ (add-hook 'mutt-mode-hook
+	  '(lambda()
+	     (load-library "mail-my")
+	     ))
 
 (add-hook 'fundamental-mode-user-hook
 	  '(lambda()
@@ -134,20 +155,20 @@
 
 
 ;; plain text mode
-(add-hook 'text-mode-hook 
+(add-hook 'text-mode-hook
 	  '(lambda()
-;	     (flyspell-mode 1) ;; underline spelling mistakes
+;             (flyspell-mode 1) ;; underline spelling mistakes
 	     ))
 
 
 ;;matlab
 (autoload 'matlab-mode "~/.xemacs/matlab.el" "matlab major mode." t)
-(add-hook 'matlab-mode-hook 
+(add-hook 'matlab-mode-hook
 	  '(lambda()
 	     ;;my personal stuff
 	     (load-library "matlab-my")
 	     ))
-	     
+
 
 ;; muttrc mode.
 (autoload 'muttrc-mode "muttrc-mode.el"
@@ -157,42 +178,42 @@
 
 ;TeX
 ;(require 'tex-site)
-(add-hook 'LaTeX-mode-hook 
+(add-hook 'LaTeX-mode-hook
 	  '(lambda()
 	     ;; LaTeX toolbar
 	     ;(load-library "oleg-latex-toolbar")
-	     
+
 	     ;;my personal latex stuff
 	     (load-library "latex-my")
 	     ))
 
 ;;Fortran
-(add-hook 'fortran-mode-hook 
+(add-hook 'fortran-mode-hook
 	  '(lambda()
 	     (load-library "fortran-my")
 	     ))
 
 ;;Fortran90
-(add-hook 'f90-mode-hook 
+(add-hook 'f90-mode-hook
 	  '(lambda()
-         (load-library "fortran90-my")
+	 (load-library "fortran90-my")
 	     ))
 
 ;;C
-(add-hook 'c-mode-hook 
+(add-hook 'c-mode-hook
 	  '(lambda()
 	     (load-library "perl-my")
 	     ))
 
 
 ;;C++
-(add-hook 'c++-mode-hook 
+(add-hook 'c++-mode-hook
 	  '(lambda()
 	     (load-library "c++-my")
 	     ))
 (add-hook 'c++-mode-hook 'turn-on-auto-revert-mode)
 
-(add-hook 'java-mode-hook 
+(add-hook 'java-mode-hook
 	  '(lambda()
 	     (load-library "c++-my")
 	     (load-library "java-my")
@@ -200,14 +221,14 @@
 (add-hook 'java-mode-hook 'turn-on-auto-revert-mode)
 
 ;;Perl
-(add-hook 'cperl-mode-hook 
+(add-hook 'cperl-mode-hook
 	  '(lambda()
 	     (load-library "perl-my")
 	     ))
 
 
 ;;;Emacs-Lisp
-(add-hook 'emacs-lisp-mode-hook 
+(add-hook 'emacs-lisp-mode-hook
 	  '(lambda()
 	     (load-library "emacs-lisp-my")
 	     ))
@@ -220,7 +241,7 @@
 
 ;Html
 ;(add-hook 'html-mode-hook 'hm--html-mode)
-(add-hook 'html-mode-hook 
+(add-hook 'html-mode-hook
 	  '(lambda()
 	     (load-library "html-my")
 	     ))

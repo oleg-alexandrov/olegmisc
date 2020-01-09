@@ -26,7 +26,7 @@ int main( int argc, char**argv ){
 
   if (argc < 3){
     std::cerr << "Usage: " << argv[0] << " input.tif output.tif" << std::endl;
-    exit(0);
+    exit(1);
   }
   std::string input_name( argv[1] );
   std::string output_name( argv[2] );
@@ -52,42 +52,50 @@ int main( int argc, char**argv ){
   ImageView<Vector3> point_cloud(dem.cols(), dem.rows());
   size_t count = 0;
   Vector3 mean_center;
-
-  vw_out() << "Calculating the number of points in the file!" << std::endl;
-  {
-    TerminalProgressCallback tpc("","");
-    double inc_amount = 1.0 / double(dem.rows() );
-    tpc.report_progress(0);
+  BBox2 bb;
+  
+  TerminalProgressCallback tpc("","");
+  double inc_amount = 1.0 / double(dem.cols() );
+  for ( int i = 0; i < dem.cols(); i++ ) {
+    int local_count = 0;
+    Vector3 local_mean;
+      
     for (int j = 0; j < dem.rows(); j++ ) {
-      int local_count = 0;
-      Vector3 local_mean;
-      for ( int i = 0; i < dem.cols(); i++ ) {
-        if (dem(i, j) == nodata) continue;
-        Vector2 lonlat = dem_georef.pixel_to_lonlat( Vector2(i,j) );
-	Vector3 lonlatrad( lonlat.x(), lonlat.y(), dem(i,j) );
-        Vector3 xyz = dem_georef.datum().geodetic_to_cartesian( lonlatrad );
-        if ( xyz != Vector3() && xyz == xyz ) {
-          point_cloud(i, j) = xyz;
-          local_mean += xyz;
-          local_count++;
-        }
+
+      if (dem(i, j) == nodata) continue;
+      Vector2 lonlat = dem_georef.pixel_to_lonlat( Vector2(i,j) );
+      bb.grow(lonlat);
+      Vector3 lonlatrad( lonlat.x(), lonlat.y(), dem(i,j) );
+      //std::cout.precision(20);
+      //std::cout << "\nxyz " << i << ' ' << j << ' ' << lonlatrad << std::endl;
+        
+      Vector3 xyz = dem_georef.datum().geodetic_to_cartesian( lonlatrad );
+      if ( xyz != Vector3() && xyz == xyz ) {
+        point_cloud(i, j) = xyz;
+        local_mean += xyz;
+        local_count++;
       }
-      if ( local_count > 0 ) {
-        local_mean /= double(local_count);
-        double afraction = double(count) / double(count + local_count);
-        double bfraction = double(local_count) / double(count + local_count);
-        mean_center = afraction*mean_center + bfraction*local_mean;
-        count += local_count;
-      }
-      tpc.report_incremental_progress( inc_amount );
     }
-    tpc.report_finished();
+    if ( local_count > 0 ) {
+      local_mean /= double(local_count);
+      double afraction = double(count) / double(count + local_count);
+      double bfraction = double(local_count) / double(count + local_count);
+      mean_center = afraction*mean_center + bfraction*local_mean;
+      count += local_count;
+    }
+    tpc.report_incremental_progress( inc_amount );
   }
+  tpc.report_finished();
+
+  std::cout.precision(20);
   std::cout << "Found " << count << " valid points\n";
   std::cout << "Center is " << mean_center << std::endl;
-
+  std::cout << "box is " << bb  << ' ' << bb.max() - bb.min() << std::endl;
+  std::cout << "spacing is " << elem_quot(bb.max()-bb.min(), Vector2(point_cloud.cols()-1, point_cloud.rows()-1)) << std::endl;
   cout << "Writing: " << output_name << endl;
   Options opt;
+  opt.gdal_options["BIGTIFF"] = "IF_SAFER";
+
   asp::block_write_gdal_image(output_name, point_cloud, opt,
                               TerminalProgressCallback("asp", "\t-->: "));
 

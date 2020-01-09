@@ -1,4 +1,4 @@
-; Vi style star search 
+; Vi style star search
 (defun isearch-set-initial-string ()
   (remove-hook 'isearch-mode-hook 'isearch-set-initial-string)
   (setq isearch-string isearch-initial-string)
@@ -32,13 +32,13 @@
 
 
 ;; Check for shebang magic in file after save, make executable if found.
-(setq my-shebang-patterns 
-      (list "^#!/usr/.*/perl\\(\\( \\)\\|\\( .+ \\)\\)-w *.*" 
+(setq my-shebang-patterns
+      (list "^#!/usr/.*/perl\\(\\( \\)\\|\\( .+ \\)\\)-w *.*"
             "^#!/usr/bin/perl"
             "^#!/usr/.*/sh"
-            "^#!/usr/.*/bash"
-            "^#!/bin/sh"
-            "^#!/bin/bash")
+            "^#!/.*sh"
+            "^#PBS.*sh"
+            )
       )
 
 (defun make-file-executable-if-script ()
@@ -59,8 +59,7 @@
 
 (add-hook 'after-save-hook 'make-file-executable-if-script)
 
-; Always wrap long lines
-(setq-default truncate-lines t)
+(setq-default truncate-lines nil) ; don't truncate long lines
 (setq truncate-partial-width-windows nil) ;; for vertically-split windows
 
 (defun dos-to-unix ()
@@ -71,8 +70,8 @@
   (goto-char (point-min))
   )
 
-  
-;;; Jump forward and backward through buffer list ; XEmacs mailing list 
+
+;;; Jump forward and backward through buffer list ; XEmacs mailing list
 (defun gse-unbury-buffer ()
   "Switch to the buffer at the bottom of the buffer list, if it's not a
 'hidden' buffer."
@@ -132,17 +131,17 @@
 ;;   (if (boundp 'modeline-multibyte-status) 'modeline-multibyte-status "")
 ;;   (cons modeline-modified-extent 'modeline-modified)
 ;;   (cons modeline-buffer-id-extent
-;;  	(list (cons modeline-buffer-id-left-extent
-;;  		    (cons 15 (list
-;;  			      (list 'line-number-mode "%l ")
-;;  			      (list 'column-number-mode "%c ")
-;;  			      (cons -3 "%p"))))
-;;  	      (cons modeline-buffer-id-right-extent "%17b")))
+;;	(list (cons modeline-buffer-id-left-extent
+;;		    (cons 15 (list
+;;			      (list 'line-number-mode "%l ")
+;;			      (list 'column-number-mode "%c ")
+;;			      (cons -3 "%p"))))
+;;	      (cons modeline-buffer-id-right-extent "%17b")))
 ;;   "   "
 ;;   'global-mode-string
 ;;   "   %[("
 ;;   (cons modeline-minor-mode-extent
-;;  	(list "" 'mode-name 'minor-mode-alist))
+;;	(list "" 'mode-name 'minor-mode-alist))
 ;;   (cons modeline-narrowed-extent "%n")
 ;;   'modeline-process
 ;;   ")%]----"
@@ -173,7 +172,7 @@
   (interactive)
   (if (not (expand-abbrev))
       (progn (insert " ")
- 	     (do-auto-fill)
+	     ;(do-auto-fill)
 	     ))
   )
 
@@ -233,7 +232,7 @@
   (beginning-of-line)
   )
 
-(defun jump-and-insert-space () 
+(defun jump-and-insert-space ()
   (interactive)
   (forward-char 1)
   (insert " ")
@@ -243,23 +242,23 @@
 ;   "Make an HTML file name from FILE. Stolen from htmlize.el"
 ;   (interactive)
 ;   (let ((extension (htmlize-file-name-extension file))
-;  	(sans-extension (file-name-sans-extension file)))
+;	(sans-extension (file-name-sans-extension file)))
 ;     (if (or (equal extension "html")
-;  	    (equal extension "htm")
-;  	    (equal sans-extension ""))
-;  	(concat file ".html")
+;	    (equal extension "htm")
+;	    (equal sans-extension ""))
+;	(concat file ".html")
 ;       (concat sans-extension ".html"))))
 ;
 ;
 ; (defun my-htmlize ()
 ;   "Htmilze a file called say mygraph.m and save it as mygraph.html.
 ;  Delete the portion before <pre> and after </pre>. Do not insert the last-modfied string"
-;  
+;
 ;   (interactive)
 ;   (let ((new-html-buffer
-; 	 (my-htmlize-make-file-name
-; 	  (file-name-nondirectory
-; 	   (buffer-file-name)))))
+;	 (my-htmlize-make-file-name
+;	  (file-name-nondirectory
+;	   (buffer-file-name)))))
 ;     (htmlize-buffer)
 ;     (beginning-of-buffer)
 ;     (let ((beg (point)))
@@ -287,51 +286,21 @@
 ;     (kill-buffer (current-buffer))
 ;     ))
 
-;;;; see another example below with search and replace
-; (defun copy-to-blythe ()
-;   (interactive)
-;   (let ((origin-file (buffer-file-name)))
-;     (let ((destination-file (concat "/u/cedar/h1/afa/aoleg" (nth 1 (split-string origin-file "oalexandrov")) )))
-;       (let ((command (concat "scp " origin-file " aoleg@blythe.math.ucla.edu:" destination-file)))
-;  	(message command)
-;  	(shell-command command)
-;  	(message (concat "Done: " command))
-;  	)
-;       )))
 
-; (defun save-buffer-and-copy-to-blythe ()
-;   (interactive)
-;   (save-buffer)
-;   (copy-to-blythe)
-;   )
-
-
+; Invoke a tool to copy the current file to another machine
 (defun  scp-copy ()
   (interactive)
-  
-  (let (( my_file (buffer-file-name) )) ; assign to my_file the current file
-					;(replace-string)
-
-    (if (string-match "/home/oleg/" my_file)
-
-	(let ((my_new_file (replace-match "/home/oalexan1/" t "/home/oleg/" my_file) ))
-	  (let ((
-                 ;my_command (concat "rsync -avz " my_file " oalexan1@byss:" my_new_file " >/dev/null 2>&1" )
-                 my_command (concat "rsync -avz  -e 'ssh -p 2002 oalexan1@localhost' " my_file " :" my_new_file " >/dev/null 2>&1" )
-                            ))
-	    (message my_command)
-	    (shell-command my_command)
-	    ;(message (concat "Done!!! " my_command) )
-	    )
-	  )
-      )
-    
+  (let ((my_command (concat "~/bin/copy_file.sh " (buffer-file-name) " >~/bin/copy_log.txt" ) ))
+    (message my_command)
+    (shell-command my_command)
     )
   )
 
 (defun save-and-copy ()
   (interactive)
+  ;(whitespace-cleanup)
   (save-buffer)
+  (make-file-executable-if-script)
   (scp-copy)
   )
 
@@ -340,7 +309,7 @@
   (interactive)
 
   (shell-command (concat "/home/olegalex/bin/call_tkdiff.pl " (buffer-file-name) )  t)
-  
+
   )
 
 
@@ -379,12 +348,12 @@
   (gnuserv-edit)
   )
 
- 
+
 (defun pm2wiki ()
   (interactive)
   (shell-command-on-region (point-min) (point-max) "~/bin/pm2wp.pl" nil t)
   )
-      
+
 (defun putcat ()
   (interactive)
   (shell-command-on-region (point-min) (point-max) "~/.xemacs/put_cat.pl" nil t)
@@ -420,10 +389,10 @@
 (setq scroll-step 1)
 
 (defun align-repeat (start end regexp)
-  "repeat alignment with respect to 
+  "repeat alignment with respect to
      the given regular expression"
   (interactive "r\nsAlign regexp: ")
-  (align-regexp start end 
+  (align-regexp start end
                 (concat "\\(\\s-*\\)" regexp) 1 1 t))
 
 (defun goto-match-paren ()
@@ -440,6 +409,11 @@
   (call-interactively 'align-repeat)
   )
 
+(defun plain-space ()
+  (interactive)
+  (insert " ")
+  )
+
 (global-set-key [(meta m)] 'mark-paragraph-and-align)
 ;(global-set-key     'button4 'mwheel-down)
 ;(global-set-key     'button5 'mwheel-up)
@@ -453,7 +427,7 @@
 (global-set-key [(control meta a)] 'define-mode-abbrev)
 ;(global-set-key [(control meta left)] 'gse-bury-buffer)
 ;(global-set-key [(control meta right)] 'gse-unbury-buffer)
-(global-set-key [(control o)] 'find-file) 
+(global-set-key [(control o)] 'find-file)
 (global-set-key [(control r)]  'query-replace)
 (global-set-key [(control s)] 'save-and-copy)
 (global-set-key [(control space)] 'jump-and-insert-space)
@@ -505,7 +479,7 @@
 (global-set-key [(control \8)] 'isearch-forward-at-point)
 (global-set-key [(control t)] 'isearch-forward-at-point)
 
-; A first attempt to make "control z" work as undo. 
+; A first attempt to make "control z" work as undo.
 (global-set-key [(control z)] 'undo)
 
 ; The above does not work on newer versions of XEmacs. The key
@@ -554,11 +528,11 @@
           (setq lineno (string-to-number lineno))
           )
         )
-  
+
   (kill-buffer ".fileToOpen")
   (find-file file)
   (goto-line lineno)
-  
+
   )
 
 (global-auto-revert-mode 1)

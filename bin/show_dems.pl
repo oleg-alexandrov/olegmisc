@@ -9,6 +9,8 @@ require 'utils.pl';
 
 MAIN:{
 
+  set_path();
+
   if (scalar(@ARGV) < 1){
     print "Usage: $0 name dem_files\n";
     exit(0);
@@ -24,7 +26,7 @@ MAIN:{
   my $name = shift @ARGV;
   $name =~ s/^\.\/*//g;
   $name =~ s/\//_/g;
-  $name =~ s/\.\w+\s*$//g; # rm filename extension
+  $name =~ s/\.(tif|ntf)\s*$//ig; # rm filename extension
   $name =~ s#\.#_#g;
 
   my %files;
@@ -35,22 +37,23 @@ MAIN:{
   my $tmpDir = "tmp_" . $name;
   my $cmd = "rm -rf ./$tmpDir; mkdir $tmpDir";
   print "$cmd\n";
-  qx($cmd);
+  system($cmd);
   my $count = 0;
   foreach my $file (keys %files){
     $cmd = "hillshade --azimuth 300 --elevation 20 -o "
        . "$tmpDir/hill$count.tif -s 0 "
           .  $file;
     print "$cmd\n";
-    qx($cmd);
+    system($cmd);
     $count++;
   }
 
   print qx(pwd) . "\n";
   $cmd = "image2qtree.pl $name $tmpDir/*tif";
   print "$cmd\n";
+  system($cmd);
+  $cmd = "rm -rf ./$tmpDir";
+  print "$cmd\n";
   print qx($cmd) . "\n";
-  print "rm -rf ./$tmpDir\n";
-  print qx(rm -rf ./$tmpDir) . "\n";
 
 }

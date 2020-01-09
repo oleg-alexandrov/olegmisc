@@ -84,9 +84,9 @@ int main( int argc, char *argv[] ){
   std::cout << "pc shift and angle " << in_pc_file << " "
             << shiftx << ' ' << shifty << ' ' << angle << std::endl;
   std::cout << "Reading: " << in_pc_file << std::endl;
-  ImageView<Vector3> in_point_image = read_n_channels<3>(in_pc_file);
+  ImageView<Vector3> in_point_image = asp::read_cloud<3>(in_pc_file);
 
-  double theta = angle*M_PI/360;
+  double theta = angle*2*M_PI/360;
   Matrix3x3 M;
   M(0, 0) = cos(theta);
   M(0, 1) = -sin(theta);
@@ -99,8 +99,12 @@ int main( int argc, char *argv[] ){
   ImageView<Vector3> out_point_image(in_point_image.cols(), in_point_image.rows());
   for (int col = 0; col < out_point_image.cols(); col++){
     for (int row = 0; row < out_point_image.rows(); row++){
-      out_point_image(col, row) = M*in_point_image(col, row) + shift;
-      max_disp = std::max(max_disp, norm_2(out_point_image(col, row) - in_point_image(col, row)));
+      if (in_point_image(col, row) == Vector3()){
+        out_point_image(col, row) =  Vector3();
+      }else{
+        out_point_image(col, row) = M*in_point_image(col, row) + shift;
+        max_disp = std::max(max_disp, norm_2(out_point_image(col, row) - in_point_image(col, row)));
+      }
     }
   }
 

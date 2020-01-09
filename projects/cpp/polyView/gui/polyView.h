@@ -1,17 +1,17 @@
 // MIT License Terms (http://en.wikipedia.org/wiki/MIT_License)
-// 
+//
 // Copyright (C) 2011 by Oleg Alexandrov
-// 
+//
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
 // in the Software without restriction, including without limitation the rights
 // to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 // copies of the Software, and to permit persons to whom the Software is
 // furnished to do so, subject to the following conditions:
-// 
+//
 // The above copyright notice and this permission notice shall be included in
 // all copies or substantial portions of the Software.
-// 
+//
 // THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 // IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 // FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,7 +22,7 @@
 #ifndef POLYVIEW_H
 #define POLYVIEW_H
 
-#include <QPolygon>
+#include <Q3PointArray>
 #include <QContextMenuEvent>
 #include <QEvent>
 #include <QKeyEvent>
@@ -43,7 +43,7 @@ class polyView : public QWidget{
 public:
   polyView(QWidget *parent, const cmdLineOptions & options);
   void runCmd(std::string cmd);
-  
+
 public slots:
 
   // File menu
@@ -53,7 +53,9 @@ public slots:
   void overwriteMultiplePolys();
   void saveAsMultiplePolys();
   void writeMultiplePolys(bool overwrite);
-  void reloadPolys();
+  void translatePolys();
+  void rotatePolys();
+  void scalePolys();
 
   // View menu
   void zoomOut();
@@ -89,9 +91,6 @@ public slots:
   // Transform menu
   void enforce45();
   void enforce45AndSnapToGrid();
-  void translatePolys();
-  void rotatePolys();
-  void scalePolys();
 
   // Highlights menu
   void createHlt();
@@ -132,7 +131,7 @@ public slots:
   void align_flip_against_y_axis();
   void align_flip_against_x_axis();
   void performAlignmentOfClosePolys();
-  
+
 protected:
 
   void paintEvent(QPaintEvent *);
@@ -164,7 +163,7 @@ protected:
 
 private slots:
  void showFilesChosenByUser();
-  
+
 private:
   void setupViewingWindow();
   void readAllPolys();
@@ -196,7 +195,7 @@ private:
   void appendToPolyVec(const dPoly & P);
   double pixelToWorldDist(int pd);
   void createHighlightWithPixelInputs(int pxll, int pyll, int pxur, int pyur);
-  
+
   void createHighlightWithRealInputs(double xll, double yll, double xur, double yur);
 
   void printCurrCoords(const Qt::ButtonState & state, // input
@@ -207,12 +206,12 @@ private:
                    bool            plotPointsOnly,
                    closedPolyInfo  isPolyClosed,
                    // output
-                   dPoly & poly           
+                   dPoly & poly
                    );
   bool isClosestGridPtFree(std::vector< std::vector<int> > & Grid,
                            int x, int y);
   void initTextOnScreenGrid(std::vector< std::vector<int> > & Grid);
-  bool isPolyZeroDim(const QPolygon & pa);
+  bool isPolyZeroDim(const Q3PointArray & pa);
   void centerViewAtPoint(double x, double y);
   void drawOneVertex(int x0, int y0, QColor color, int lineWidth,
                      int drawVertIndex, QPainter * paint);
@@ -233,11 +232,11 @@ private:
                           double & wx, double & wy);
   void worldToPixelCoords(double wx, double wy,
                           int & px,  int & py);
-  
-  
+
+
   void setStandardCursor();
   void setPolyDrawCursor();
-  
+
   void plotDistBwPolyClips( QPainter *paint );
 
   void saveDataForUndo(bool resetViewOnUndo);
@@ -250,7 +249,7 @@ private:
   double m_viewXll, m_viewYll,   m_viewWidX,   m_viewWidY;
   double m_prevClickedX, m_prevClickedY;
   double m_screenRatio, m_pixelSize;
-  
+
   // Polygons
   std::vector<dPoly>       m_polyVec;
 
@@ -267,20 +266,20 @@ private:
   bool m_resetView;
   bool m_prevClickExists;
   bool m_firstPaintEvent;
-  
+
   // Use double buffering: draw to a pixmap first, refresh it only
   // if really necessary, and display it when paintEvent is called.
   QPixmap m_pixmap;
 
   std::vector<QPoint> m_snappedPoints, m_nonSnappedPoints;
   int m_smallLen;
-  
+
   QRect   m_emptyRubberBand;
   QRect   m_rubberBand;
 
   bool m_showAnnotations;
   bool m_showFilledPolys;
-  
+
   std::vector<dPoly> m_highlights;
 
   int m_showEdges, m_showPoints, m_showPointsEdges, m_toggleShowPointsEdges;
@@ -291,7 +290,7 @@ private:
   std::vector<double> m_markX, m_markY;
 
   bool m_zoomToMouseSelection, m_viewChanged;
-  
+
   double m_menuX, m_menuY;
 
   // If the current point on the polygon being created is closer than
@@ -338,13 +337,12 @@ private:
   std::vector<dPoly> m_polyVecBeforeShift;
   std::vector<dPoly> m_copiedPolyVec;
   bool m_movingPolysInHlts;
-  
+
   // Align mode (align one file with another file via linear transform)
   bool m_alignMode;
   bool m_aligningPolysNow;
   utils::linTrans m_T, m_totalT;
-  
+
 };
 
 #endif // POLYVIEW_H
-

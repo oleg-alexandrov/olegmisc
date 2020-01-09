@@ -25,7 +25,7 @@ MAIN:{
   my %cols;
   my $count = 0;
   foreach my $arg (@ARGV){
-    next unless ($arg =~ /^\-*\d+$/);
+    next unless ($arg =~ /^\-*[\/\d]+$/);
     $cols{$arg} = $count++;
     push(@c, $arg);
   }
@@ -33,19 +33,36 @@ MAIN:{
   foreach my $line (<STDIN>){
     $line =~ s/^\s*//g;
     $line =~ s/\s*$//g;
+    next if ($line =~ /^\s*$/);
+    
     my @vals = split(/\s+/, $line);
     my $nVals = scalar(@vals);
     #for (my $col = 1; $col <= $nVals; $col++){
     foreach my $col (@c){
-      my $col_exists = (exists $cols{$col} || exists $cols{$col-$nVals});
-      if (  ( !$do_exclude &&  $col_exists ) ||
-            (  $do_exclude && !$col_exists )
-         ){
-        # Recall that our convention is that 1 is first column,
-        # 0 is last column, -1 is the one before last, etc.
-        print $vals[$col-1] . "\t";
+      if ($col =~ /^(\d+)\/(\d+)/){
+	# ratio
+	my $a = $1; my $b = $2;
+        if ($a > scalar(@vals) || $b > scalar(@vals)){
+          print "Out of range for line $line\n";
+        }else{
+          print ( ($vals[$a-1]/$vals[$b-1]) . "\t" );
+        }
+      } else {
+	my $col_exists = (exists $cols{$col} || exists $cols{$col-$nVals});
+	if (  ( !$do_exclude &&  $col_exists ) ||
+	      (  $do_exclude && !$col_exists )
+	   ){
+	  # Recall that our convention is that 1 is first column,
+	  # 0 is last column, -1 is the one before last, etc.
+          if ($col-1 < scalar(@vals)){
+            print $vals[$col-1] . "\t";
+          }else{
+            print "none\t";
+          }
+	}
       }
     }
+    
     print "\n";
   }
 

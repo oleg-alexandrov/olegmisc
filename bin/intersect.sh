@@ -8,6 +8,6 @@ win=$($HOME/bin/intersection.pl $img1 $img2)
 img1_crop=$(echo $img1 | perl -pi -e "s#^.*\/##g"); img1_crop=${img1_crop/.tif/_crop.tif}
 img2_crop=$(echo $img2 | perl -pi -e "s#^.*\/##g"); img2_crop=${img2_crop/.tif/_crop.tif}
 
-time_run.sh gdal_translate -projwin $win $img1 $img1_crop
-time_run.sh gdal_translate -projwin $win $img2 $img2_crop
+time_run.sh ~/bin/gdal_translate.pl -projwin $win $img1 $img1_crop
+time_run.sh ~/bin/gdal_translate.pl -projwin $win $img2 $img2_crop
 

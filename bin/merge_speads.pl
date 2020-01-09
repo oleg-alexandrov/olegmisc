@@ -17,7 +17,7 @@ MAIN:{
   my $file;
   my $max_num_rows = 0;
   foreach $file (@files){
-    open(FILE, "<$file"); my @sp = ($file, split("\n", <FILE>)); close(FILE);
+    open(FILE, "<$file"); my @sp = split("\n", <FILE>); close(FILE);
     $max_num_rows = scalar (@sp) if (scalar(@sp) > $max_num_rows);
     push(@data, \@sp);
   }

@@ -12,6 +12,8 @@ gitserver*
 .emacs
 .xemacs/*.el
 .xemacs/*.bmk
+projects/visionworkbench/src
+projects/StereoPipeline/src
 *.sh
 *.el
 *.pl
@@ -28,6 +30,7 @@ gitserver*
 *.am
 *.ac
 *.f
+*.bib
 *stereo*.default
 *.tex
 *rsync_include.txt
@@ -40,6 +43,8 @@ gitserver*
 *.patch
 *.conf
 *README*
+*readme*
+*.md
 *.wkt
 .git/objects
 *NEWS*
@@ -51,3 +56,7 @@ gitserver*
 *CMakeLists.txt
 *AUTHORS*
 *INSTALL*
+LogConf.example
+*.cmake
+*.xml
+*stereo*

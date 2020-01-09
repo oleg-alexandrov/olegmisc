@@ -8,32 +8,33 @@
 
 (define-abbrev-table 'c++-mode-abbrev-table '(
     ("\\cs" ".c_str()" nil 52)
-    ("\\x" "exit(0);" nil 7)
-    ("\\vi" "vector<int> " nil 51)
+    ("\\x" "exit(0);" nil 9)
+    ("\\vi" "std::vector<int> " nil 51)
     ("\\ubf" "Util_AssertBool(false);" nil 191)
     ("\\cp" "std::cout.precision(20);" nil 1)
     ("\\dos" "double* " nil 32)
     ("\\uw" "Util_StopWatch watch;" nil 1)
-    ("\\vg" "vector<Geom_Dbu> " nil 9)
-    ("cin" "cin >> " nil 9)
-    ("\\vd" "vector<double> " nil 137)
+    ("\\vg" "std::vector<Geom_Dbu> " nil 9)
+    ("cin" "cin >> " nil 10)
+    ("\\vd" "std::vector<double> " nil 137)
     ("\\cl" ".close();" nil 78)
     ("\\us" "Util_AssertCndString( ,  );" (lambda nil (interactive) (search-backward ",")) 4)
     ("\\p" ".push_back();" (lambda nil (interactive) (search-backward ")")) 0)
     ("\\gd" "Geom_Dbu" nil 313)
-    ("\\n" "\\n" nil 42)
+    ("\\n" "\\n" nil 46)
     ("\\gb" "Geom_Bln " nil 63)
-    ("\\xx" "exit(0);" nil 16)
+    ("\\xx" "exit(0);" nil 22)
     ("\\row" "for (int row = 0; row < .rows(); row++){" nil 0)
     ("\\cd" "complex<double>" nil 8)
-    (",." " << std::endl;" nil 342)
+    (",." " << std::endl;" nil 344)
     ("\\ui" "unsigned int " nil 17)
-    (",," " << ' ' << " nil 664)
+    (",," " << ' ' << " nil 677)
     ("\\f" ".front()" nil 0)
     ("\\e" "std::endl;" nil 3)
+    ("\\v30" "Vector3()" nil 2)
     ("\\c" ".clear();" nil 189)
     ("paramter" "parameter" nil 3)
-    ("for" "" c++-for 1387)
+    ("for" "" c++-for 1407)
     ("\\ub" "Util_AssertBool(\"\");" (lambda nil (interactive) (search-backward "\"")) 0)
     ("nii" "new int []" backward-char 4)
     ("co2" "std::cout.precision(20);" nil 1)
@@ -46,52 +47,56 @@
     ("\\ws" "watch.Start();" nil 3)
     ("\\wp" "watch.Print();" nil 1)
     ("\\args" "std::cout << \"\\n\\n\"; for (int s = 0; s < argc; s++) std::cout << argv[s]  << ' '; std::cout << \"\\n\\n\";" nil 1)
-    ("\\st" "std::string" nil 1)
-    ("\\sr" "std::string" nil 1)
+    ("\\str" "std::string " nil 1)
+    ("\\st" "std::string " nil 0)
+    ("\\sr" "std::string " nil 1)
     ("else" "else" c-electric-continued-statement 0)
-    ("couts" "std::cout << \"\" << std::endl;" (lambda nil (interactive) (setq smart_forward_flag 1) (search-backward "\"") (c-indent-command)) 2124)
+    ("couts" "std::cout << \"\" << std::endl;" (lambda nil (interactive) (setq smart_forward_flag 1) (search-backward "\"") (c-indent-command)) 2226)
     ("\\spr" "sprintf(, \"%d\", );" (lambda nil (interactive) (beginning-of-line) (search-forward "\"")) 11)
     ("cout" "std::cout <<  << std::endl;" (lambda nil (interactive) (search-backward " <<") (c-indent-command)) 906)
-    ("xxx" "xxx " nil 12)
-    ("coutp" "std::cout.precision();" (lambda nil (interactive) (search-backward ")") (c-indent-command)) 16)
+    ("xxx" "xxx " nil 20)
+    ("coutp" "std::cout.precision();" (lambda nil (interactive) (search-backward ")") (c-indent-command)) 22)
     ("\\ofs" "ofstream (\"\");" (lambda nil (interactive) (search-backward "(")) 14)
     ("\\pb" ".push_back();" (lambda nil (interactive) (search-backward ")")) 154)
     ("catch" "catch" c-electric-continued-statement 0)
     ("\\sti" "static_cast<int>" nil 27)
-    ("if" "" c++-if 1930)
-    ("\\do" "double " nil 909)
+    ("if" "" c++-if 1979)
+    ("\\do" "double " nil 919)
     ("\\incl" "#include \"\"" backward-char 86)
     ("ints" "int*" nil 3)
     ("\\si" ".size()" nil 328)
-    ("\\vs" "vector<string>" nil 0)
+    ("\\vs" "std::vector<std::string>" nil 0)
     ("\\std" "static_cast<double>" nil 13)
     ("\\inc" "#include <>" backward-char 122)
     ("\\rs" ".resize()" backward-char 100)
-    ("coute" "std::cout << std::endl;" nil 30)
-    ("\\v3" "Vector3 " nil 1)
-    ("cerr" "std::cerr << \"\" << std::endl;" (lambda nil (interactive) (setq smart_forward_flag 1) (search-backward "\"") (c-indent-command)) 901)
-    ("\\v2" "Vector2 " nil 2)
+    ("coute" "std::cout << std::endl;" nil 37)
+    ("\\v3" "Vector3 " nil 5)
+    ("cerr" "std::cerr << \"\" << std::endl;" (lambda nil (interactive) (setq smart_forward_flag 1) (search-backward "\"") (c-indent-command)) 902)
+    ("\\v2" "Vector2 " nil 16)
     ))
 
 (define-abbrev-table 'c-mode-abbrev-table '(
     ("while" "while" c-electric-continued-statement 0)
     ("else" "else" c-electric-continued-statement 0)
+    ("printf" "printf(\"\\n\");" (lambda nil (interactive) (search-backward "\\n")) 0)
     ))
 
 (define-abbrev-table 'cperl-mode-abbrev-table '(
     (";u" "undef $/;" nil 0)
+    ("printe" "" perl-print-error 839)
     ("sg" "" subst-globally 385)
     ("ssg" "" tilde-subst-globally 42)
     ("\\m" "=~ //" (lambda nil (interacive) (backward-char 1)) 0)
     ("\\cf" "close(FILE);" cperl-indent-command 145)
+    ("\\xx" "exit(1);" (lambda nil (indent-according-to-mode)) 1)
     ("opf" "open (FILE, \":utf8\", \"\");" (lambda nil (interactive) (backward-char 3)) 1)
     (",." "\"\\n\"" nil 16)
     ("\\f" "<FILE>" nil 55)
     ("\\ud" "undef $/; # undefines the separator. Can read one whole file in one scalar." nil 12)
-    ("for" "" c++-for 1292)
-    ("\\ar" "$ARGV[]" (lambda nil (interactive) (forward-char -1)) 29)
+    ("for" "" perl-for 1292)
+    ("\\ar" "$ARGV[]" (lambda nil (interactive) (forward-char -1)) 30)
     ("\\sub" "sub  " (lambda nil (interactive) (perl-brace) (search-backward " {")) 0)
-    ("else" "" c-electric-continued-statement 156)
+    ("else" "" perl-else 488)
     ("\\ofw" "open(FILE, \">\");" (lambda nil (interactive) (search-backward "\"")) 40)
     ("\\pf" "print FILE \"\\n\";" (lambda nil (interactive) (forward-char -4)) 71)
     ("\\sp" "split(\"\\n\", )" (lambda nil (interactive) (forward-char -1)) 32)
@@ -99,11 +104,11 @@
     ("\\ag" "$ARGV[];" (lambda nil (interactive) (forward-char -2)) 3)
     ("\\ofr" "open(FILE, \"<\");" (lambda nil (interactive) (search-backward "\"")) 69)
     ("\\spn" "split(\"\\n\", );" (lambda nil (interactive) (search-backward ")")) 1)
-    ("if" "" c++-if 481)
+    ("if" "" perl-if 487)
     (";x" "exit(0);" nil 0)
-    ("foreach" "" perl-foreach 228)
+    ("foreach" "" perl-foreach 229)
     ("\\of" "open (FILE, \":utf8\", \"\");" (lambda nil (interactive) (backward-char 3)) 57)
-    ("print" "" perl-print 828)
+    ("print" "" perl-print 839)
     ))
 
 (define-abbrev-table 'doctex-mode-abbrev-table '(
@@ -340,6 +345,7 @@
 (define-abbrev-table 'objc-mode-abbrev-table '(
     ("while" "while" c-electric-continued-statement 0)
     ("else" "else" c-electric-continued-statement 0)
+    ("cout" "printf(\"\\n\");" (lambda nil (interactive) (search-backward "\\n")) 0)
     ))
 
 (define-abbrev-table 'pascal-mode-abbrev-table '(
@@ -356,8 +362,8 @@
     ))
 
 (define-abbrev-table 'python-mode-abbrev-table '(
-    ("printq" "print(\"\")" (lambda nil (interactive) (search-backward "\"")) 55)
-    ("print" "print()" (lambda nil (interactive) (search-backward ")")) 56)
+    ("printp" "print()" (lambda nil (interactive) (search-backward ")")) 66)
+    ("print" "print(\"\")" (lambda nil (interactive) (search-backward "\"")) 55)
     ))
 
 (define-abbrev-table 'rpm-spec-mode-abbrev-table '(
@@ -367,13 +373,14 @@
     ))
 
 (define-abbrev-table 'sh-mode-abbrev-table '(
+    ("\\pl" "perl -pi -e \"s###g\"" (lambda nil (interactive) (search-backward "##")) 59)
+    ("pl" "perl -pi -e \"s###g\"" (lambda nil (interactive) (search-backward "##")) 59)
     ))
 
 (define-abbrev-table 'shell-mode-abbrev-table '(
     ))
 
 (define-abbrev-table 'tcl-mode-abbrev-table '(
-    ("\\trk" "set shared::job::dbgTrackKaroList                      {0} ;# UD" nil 1)
     ))
 
 (define-abbrev-table 'temp-buffer-mode-abbrev-table '(
@@ -1044,9 +1051,7 @@
     ))
 
 (define-abbrev-table 'fundamental-mode-abbrev-table '(
-    ("\\trk" "set shared::job::dbgTrackKaroList                      {0} ;# UD" nil 0)
     ))
 
 (define-abbrev-table 'global-abbrev-table '(
     ))
-

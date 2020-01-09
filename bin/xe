@@ -1,12 +1,16 @@
 #!/bin/bash
 
+# These are workarounds for a XEmacs bug
+export LANG=C
+unset XMODIFIERS
+
 #export XEPATH=$HOME/bin/
 instanceCount=$(ps aux | grep `whoami` | grep xemacs | grep -v 'grep xemacs' | wc -l);
 if [ "$instanceCount" -eq "0" ]; then
 
-  xemacs -geo 206x56+0+0 &
+  xemacs -geo 206x56+0+0 $* &
   instanceCount="";
-  
+
   while [ "$instanceCount" = "" ]; do
     instanceCount=$(ps aux | grep `whoami` | grep gnuserv | grep -v 'grep gnuserv' | wc -l);
     echo "waiting for gnuserv";
@@ -16,11 +20,7 @@ if [ "$instanceCount" -eq "0" ]; then
   sleep 1;
 
 else
-  
+
   gnuclient -q $* &
 
 fi
-
-
-
-

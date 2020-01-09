@@ -15,6 +15,21 @@ MAIN:{
     exit(0);
   }
 
+  my $print_all = 0;
+
+  if (scalar(@ARGV) >= 3 && $ARGV[2] =~ '-print-all'){
+    $print_all = 1;
+  }
+  
+  # Exclude certain lines from comparison
+  my %exclude;
+  if (scalar(@ARGV) >= 4 && $ARGV[2] =~ '-exclude'){
+    my @vals = split(/s+/, $ARGV[3]);
+    foreach my $num (@vals){
+      $exclude{$num} = 1;
+    }
+  }
+  
   my $file1 = shift @ARGV;
   my $file2 = shift @ARGV;
   open(FILE, "<$file1");  my @val1 = split("\n", <FILE>);  close(FILE);
@@ -26,10 +41,18 @@ MAIN:{
 
   my ($max_abs_err, $max_rel_err, $max_row, $max_col) = (0, 0, 0, 0);
 
+  my $will_warn = 1;
   for (my $row_num = 0; $row_num < $numRows; $row_num++){
 
     my $row1 = $val1[$row_num];
     my $row2 = $val2[$row_num];
+
+    if (exists $exclude{$row_num}){
+      print "Exclude line $row_num\n";
+      print "Exclude: $row1\n";
+      print "Exclude: $row2\n";
+      next;
+    }
 
     # wipe all kinds of parentheses
     $row1 =~ s/[\<\>\(\)\[\]]/ /g;
@@ -47,9 +70,14 @@ MAIN:{
     my $len1 = scalar(@l1);
     my $len2 = scalar(@l2);
     if ( $len1 != $len2 ){
-      print "Warning: Row " . ($row_num + 1) . " does not have the same number "
-         . "of elements in $file1 and $file2 ($len1 vs $len2).\n";
+      if ($will_warn){
+	print "Warning: Row " . ($row_num + 1) . " does not have the same number "
+	   . "of elements in $file1 and $file2 ($len1 vs $len2).\n";
+	print "Skipping more such messages.\n";
+	$will_warn = 0;
+      }
     }
+
     my $numlen = min( $len1, $len2 );
 
     my $col_num = -1;
@@ -63,7 +91,7 @@ MAIN:{
         my $den = min(abs($l1[$col]), abs($l2[$col]));
         $den = 1 if ($den == 0);
         my $rel_err = $err/$den;
-        #print "rel_err abs_err data $rel_err $err $l1[$col] $l2[$col] "
+        if ($print_all) { print "rel_err abs_err data $rel_err $err $l1[$col] $l2[$col]\n" }
         # . "$row_num $col_num\n";
         if ($err > $max_abs_err){
           $max_abs_err = $err;

@@ -10,7 +10,8 @@ T=lunokhod1
 progName=$(echo $0 | perl -pi -e "s#^.*\/##g")
 echo progName is $progName
 machine=$(uname -n)
-output=$(ssh $T "ssh $machine ls / 2>/dev/null" 2>/dev/null) 
+output=$(ssh $T "ssh $machine ls / 2>/dev/null" 2>/dev/null)
+
 if [ "$output" = "" ]; then
     echo "Connection to $T is bad or non-existent, will restart it"
     pid=$(ps ux |grep localhost | grep $port | grep -v ps | \

@@ -18,6 +18,7 @@ sub create_combined_kml{
   my $success = 0;
   my $planet = "moon";
   foreach my $url (@$urls){
+    print "url is $url\n";
     my $text = get ($url);
     if ($text =~ /target=(\w+)/){
       $planet = $1;

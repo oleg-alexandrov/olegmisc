@@ -72,7 +72,8 @@ int main( int argc, char *argv[] ){
     shifty = atof(argv[4]);
     angle  = atof(argv[5]);
   }else{
-    std::cout << "Must specify shift and rotation angle" << std::endl;
+    std::cout << "Required: in.tif out.tif shiftx shifty [angle]"
+              << std::endl;
     return 1;
   }
 
@@ -105,12 +106,12 @@ int main( int argc, char *argv[] ){
   int n = 512;
   //int sx = 2300, sy = 3000;
   int sx = 0, sy = 0;
-  ImageView<PMaskT> dem;
+  ImageView<PMaskT> dem = in_dem;
   if (pixel_shift){
-    dem = crop(edge_extend(in_dem,
-                           ValueEdgeExtension<PMaskT>(PMaskT())),
-               BBox2i(sx + shiftx, sy + shifty, n, n));
-    georef = crop(georef, sx, sy);
+//     dem = crop(edge_extend(in_dem,
+//                            ValueEdgeExtension<PMaskT>(PMaskT())),
+//                BBox2i(sx + shiftx, sy + shifty, n, n));
+    georef = crop(georef, shiftx, shifty);
   }else{
     double theta = angle*M_PI/360;
     Matrix2x2 M;

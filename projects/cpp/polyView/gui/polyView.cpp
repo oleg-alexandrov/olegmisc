@@ -19,7 +19,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-#include <QPolygon>
+#include <Q3PointArray>
 #include <Q3PopupMenu>
 #include <QContextMenuEvent>
 #include <QEvent>
@@ -490,7 +490,7 @@ void polyView::plotDPoly(bool plotPoints, bool plotEdges,
       signedArea = signedPolyArea(pSize, xv + start, yv + start);
     }
       
-    QPolygon pa(pSize);
+    Q3PointArray pa(pSize);
     for (int vIter = 0; vIter < pSize; vIter++){
 
       int x0, y0;
@@ -503,16 +503,14 @@ void polyView::plotDPoly(bool plotPoints, bool plotEdges,
       // draw a small shape.
       int tol = 4; // This is a bug fix for missing points. I don't understand
       //           // why this is necessary and why the number 4 is right.  
-      if ( plotPoints                                                      &&
+      if ( plotPoints                                                  &&
            x0 > m_screenXll - tol && x0 < m_screenXll + m_screenWidX + tol && 
            y0 > m_screenYll - tol && y0 < m_screenYll + m_screenWidY + tol
            ){
         drawOneVertex(x0, y0, color, lineWidth, drawVertIndex, paint);
       }
     }
-
-    if (pa.size() <= 0) continue;
-    
+      
     if (plotEdges){
 
       if (plotFilled && isPolyClosed[pIter]){
@@ -524,28 +522,13 @@ void polyView::plotDPoly(bool plotPoints, bool plotEdges,
         paint->setPen( QPen(color, lineWidth) );
       }
 
-      if ( isPolyZeroDim(pa) ){
+      if ( pa.size() >= 1 && isPolyZeroDim(pa) ){
         // Treat the case of polygons which are made up of just one point
         int l_drawVertIndex = -1;
         drawOneVertex(pa[0].x(), pa[0].y(), color, lineWidth, l_drawVertIndex,
                       paint);
       }else if (isPolyClosed[pIter]){
-
-        if (plotFilled){
-          paint->drawPolygon( pa );
-        }else{
-          // In some versions of Qt, drawPolygon is buggy when not
-          // called to fill polygons. Don't use it, just draw the
-          // edges one by one.
-          int n = pa.size();
-          for (int k = 0; k < n; k++){
-            QPolygon pb;
-            int x0, y0; pa.point(k, &x0, &y0);       pb << QPoint(x0, y0);
-            int x1, y1; pa.point((k+1)%n, &x1, &y1); pb << QPoint(x1, y1);
-            paint->drawPolyline( pb );
-          }
-        }
-        
+        paint->drawPolygon( pa );
       }else{
         paint->drawPolyline( pa ); // don't join the last vertex to the first
       }
@@ -1785,8 +1768,7 @@ void polyView::appendToPolyVec(const dPoly & P){
     m_polyVec.push_back(P);
     m_polyOptionsVec.push_back(m_prefs);
     string fileName = "poly" + num2str(m_polyVec.size() - 1) + ".xg";
-    m_polyOptionsVec.back().polyFileName     = fileName;
-    m_polyOptionsVec.back().readPolyFromDisk = false;
+    m_polyOptionsVec.back().polyFileName = fileName;
   }else{
     m_polyVec.back().appendPolygons(P);
   }
@@ -2183,9 +2165,6 @@ void polyView::toggleShowPolyDiff(){
   m_polyOptionsVec[2].polyFileName = "diff1.xg";
   m_polyOptionsVec[3].polyFileName = "diff2.xg";
   
-  m_polyOptionsVec[2].readPolyFromDisk = false;
-  m_polyOptionsVec[3].readPolyFromDisk = false;
-
   refreshPixmap();
 }
 
@@ -2754,11 +2733,6 @@ void polyView::redo(){
 }
 
 
-void polyView::reloadPolys(){
-  readAllPolys();
-  refreshPixmap();
-}
-
 void polyView::readAllPolys(){
 
   int numFiles = m_polyOptionsVec.size();
@@ -2768,10 +2742,6 @@ void polyView::readAllPolys(){
   int numMissing = 0;
   
   for (int fileIter = 0; fileIter < numFiles; fileIter++){
-
-    // Do not read polygons which were created by the program itself
-    // rather than read from disk.
-    if (!m_polyOptionsVec[fileIter].readPolyFromDisk) continue;
     
     bool success = readOnePoly(// inputs
                                m_polyOptionsVec[fileIter].polyFileName,
@@ -2843,8 +2813,7 @@ void polyView::openPoly(){
   assert ( (int)m_polyVec.size() == (int)m_polyOptionsVec.size() );
 
   m_polyOptionsVec.push_back(m_prefs);
-  m_polyOptionsVec.back().polyFileName     = fileName;
-  m_polyOptionsVec.back().readPolyFromDisk = true;
+  m_polyOptionsVec.back().polyFileName = fileName;
   
   dPoly poly;
   bool success = readOnePoly(// inputs
@@ -2971,7 +2940,7 @@ void polyView::changeOrder(){
   
 }
 
-bool polyView::isPolyZeroDim(const QPolygon & pa){
+bool polyView::isPolyZeroDim(const Q3PointArray & pa){
 
   int numPts = pa.size();
   for (int s = 1; s < numPts; s++){

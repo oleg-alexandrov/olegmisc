@@ -4,7 +4,7 @@ use diagnostics;   # expand the cryptic warnings
 
 MAIN:{
   
-  # Usage: cat file.txt | unique.pl
+  # Usage: cat file.txt | unique_in_orig_order.pl
 
   my %unique;
   foreach my $line (<STDIN>){

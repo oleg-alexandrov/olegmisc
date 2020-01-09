@@ -82,7 +82,7 @@ int main( int argc, char *argv[] ){
   std::cout << "pc shift and angle " << in_pc_file << " "
             << shiftx << ' ' << shifty << ' ' << angle << std::endl;
   std::cout << "Reading: " << in_pc_file << std::endl;
-  ImageView<Vector3> in_point_image = read_n_channels<3>(in_pc_file);
+  ImageView<Vector3> in_point_image = read_cloud<3>(in_pc_file);
 
   double theta = angle*M_PI/360;
   Matrix3x3 M;

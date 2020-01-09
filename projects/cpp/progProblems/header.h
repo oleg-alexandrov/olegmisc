@@ -6,6 +6,7 @@ bool isInList(node *, int);
 double eval(int);
 double eval_expr(const char *, int, int);
 double f(int, int);
+double f2(int, int);
 double myfun(int);
 double myfun2(int);
 double val(const double *);

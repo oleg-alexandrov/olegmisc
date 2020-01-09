@@ -1,3 +1,4 @@
+#include <google/profiler.h>
 #include <iostream>
 #include <fstream>
 #include <cmath>
@@ -16,6 +17,10 @@ struct node{
 
 void printTree(node * root){
 
+  int n = 2;
+  cout << "Will sleep " << n << " seconds" << endl;
+  sleep(n);
+  
   node * empty = (node*)(-1);
   
   vector<node*> currLevel, nextLevel;
@@ -78,6 +83,10 @@ void printTree(node * root){
 
 void formBST(node* & root, int * A, int num){
 
+  int n = 2;
+  cout << "Will sleep 2 " << n << " seconds" << endl;
+  sleep(n);
+
   if (num == 0){
     root = NULL;
     return;
@@ -95,6 +104,12 @@ void formBST(node* & root, int * A, int num){
 
 void printInOrder(node *root){
 
+  double k = 4;
+  for (int i = 0; i < 1000000; i++){
+    k *= 0.9;
+  }
+  cout << "val is " << k << endl;
+  
   if (root == NULL) return;
   if (root->left != NULL) printInOrder(root->left);
   cout << root->val << " ";
@@ -149,6 +164,12 @@ void printInOrderNonRec(node *root){
 
 int main(){
 
+  //ProfilerStart();
+
+  int n = 3;
+  cout << "Will sleep " << n << " seconds" << endl;
+  sleep(n);
+  
   int A[] = { -2, 0, 4, 2, -3, 13, -17};
   int num = sizeof(A)/sizeof(A[0]);
 
@@ -170,6 +191,8 @@ int main(){
   cout << "Printing tree in-order non-recursively" << endl;
   printInOrderNonRec(root);
   cout << endl;
+
+  //ProfilerStop();
   
   return 0;
   

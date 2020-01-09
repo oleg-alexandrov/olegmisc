@@ -2,6 +2,7 @@
 use strict;        # insist that all variables be declared
 use diagnostics;   # expand the cryptic warnings
 use Cwd;
+use File::Spec;
 
 sub clean_path{
   # From /path/to/../dir create /path/dir
@@ -9,8 +10,17 @@ sub clean_path{
   while ($path =~ /^(.*?)\/\w+\/\.\.(.*?)$/){
     $path = $1 . $2;
   }
+
+  # Wipe /. at the end, it makes rsync do the wrong thing
+  $path =~ s/\/*\.$//g;
+
   return $path;
 }
+
+sub set_path{
+  $ENV{'PATH'} = $ENV{'HOME'} . '/projects/BinaryBuilder/latest/bin:' . $ENV{'HOME'} . '/projects/base_system/bin:/byss/packages/gdal-1.8.1/bin/:' . $ENV{'PATH'};
+}
+
 sub maybe_call_itself_on_remote_host{
 
   #print "\nDirectory: " . getcwd . "\n";
@@ -36,8 +46,12 @@ sub maybe_call_itself_on_remote_host{
       }
     }
 
+    # Use pwd -L, this avoids dereferencing sym links.
+    my $currDir=qx(/bin/pwd -L);
+    $currDir =~ s/\s//g;
+
     my $cmd = "ssh $r_u_host 'source .bashenv; nohup nice -20 " . basename($0) . " --dir " .
-       get_path_in_home_dir(getcwd) . " " . join(" ", @args) . "' 2>/dev/null";
+       get_path_in_home_dir($currDir) . " " . join(" ", @args) . "' 2>/dev/null";
     print qx($cmd) . "\n";
     exit(0);
   }
@@ -67,22 +81,69 @@ sub get_u_host{
 
 sub get_path_in_home_dir{
 
-  # From /home/user/abc/something.txt
-  # return abc/something.txt
+  # Make the input path absolute. Then, from
+  # /home/user/abc/something.txt extract abc/something.txt.
 
-  my $path = shift;
+  my $relpath = shift;
+  my $custom_home = "";
+  if (scalar(@_) > 0){
+    $custom_home = shift;
+  }
+
+  # For paths in current directory, use pwd,
+  # this avoids dereferencing sym links.
+  my $currDir=qx(/bin/pwd -L);
+  $currDir =~ s/\s//g;
+
+  # The full path. Don't use File::Spec yet as that one
+  # may dereference external links.
+  my $path;
+  if ($relpath =~ /^\//){
+    $path = $relpath;
+  }else{
+    $path = $currDir . '/' . $relpath;
+  }
+
+  my $parent_path = $path;
+  $parent_path =~ s/\/*\s*$//g;
+  if ($parent_path =~ /(^.*)\//){
+    $parent_path = $1;
+  }
+
+  # Use rel2abs as our naive handling missed something.
+  if ( (! -f $parent_path) && (!-d $parent_path) ){
+    $path = File::Spec->rel2abs($relpath);
+  }
+
   my $home = get_home_dir();
   my $whoami = qx(whoami); $whoami =~ s/\s*$//g;
-  if ($path !~ /^$home(.*?)$/){
-    print "Error: Expecting $path to be in $home.\n";
-    exit(1);
-  }
-  $path = $1;
-  $path =~ s/^\/*//g;
 
+  # Sometimes home dir is /home/user, while file is in
+  # /nobackup/user symlinked to /home/user. Handle this.
+  if ($custom_home eq ""){
+    if ($path =~ /^\/.*?\/$whoami\/(.*?)$/){
+      $path = $1;
+    }elsif ($path =~ /^.*?\/$whoami$/){
+      $path = "";
+    }else{
+      print "Error: Expecting $path to be in $home.\n";
+      exit(1);
+    }
+  }else{
+    if ($path =~ /^$custom_home\/*(.*?)$/){
+      $path = $1;
+    }else{
+      print "Error. Expecting $path to be in $custom_home.\n";
+      exit(1);
+    }
+  }
+  
+  $path =~ s/^\/*//g;
   if ($path =~ /^\s*$/){
     $path = ".";
   }
+
+  $path = clean_path($path);
 
   return $path;
 }
@@ -105,9 +166,9 @@ sub generate_random_string{
 sub get_home_dir{
   my $home;
   my $machine = qx(uname -n);
-  if ($machine =~ /pfe/){
-    $home = "/nobackupnfs2/" . qx(whoami);
-  }elsif ($machine =~ /zula/){
+  #if ($machine =~ /pfe/){
+  #  $home = "/nobackupnfs2/" . qx(whoami);
+  if ($machine =~ /zula/){
     $home = "/media/raid/oleg";
   }else{
     $home = $ENV{'HOME'};

@@ -1,7 +1,5 @@
 (turn-on-pending-delete); enable pending delete
 
-;(require 'xdvi-search) ; a nice package to make xdvi take orders from xemacs
-
 (setq TeX-auto-local nil)
 (auto-fill-mode 0)
 (setq fill-column 72)
@@ -304,7 +302,7 @@
   (if (expand-abbrev)
       ()
     (insert " ")
-    (do-auto-fill)
+    ;(do-auto-fill)
     )
   )
 

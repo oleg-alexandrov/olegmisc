@@ -19,7 +19,7 @@ MAIN:{
 
   my $code = "figure(1); clf; hold on;\n";
   for (my $band = 1; $band <= 3 ; $band++){
-    $code .= plot_band($band, $bands[$band-1], $text);
+    $code .= plot_band($band, $bands[$band-1], $text, $prefix);
   }
 
   my $mFile = $file;
@@ -48,13 +48,14 @@ sub plot_band{
   my $band  = shift;
   my $title = shift;
   my $text  = shift;
-
+  my $prefix = shift;
+  
   my ($min, $max, $vals);
   if ($text =~ /Band\s+$band.*?Minimum=(.*?),\s+Maximum=(.*?),.*?buckets.*?\n\s*(.*?)\s*\n/s){
     $min = $1;
     $max = $2;
     $vals = $3;
-    print "--$min $max $vals\n";
+    print "--min, max, vals: $min $max $vals\n";
   }else{
     return "";
   }
@@ -62,6 +63,15 @@ sub plot_band{
   my @vals_y = split(/\s+/, $vals);
   my $size = scalar(@vals_y);
 
+  my $file = "$prefix.txt";
+  print "Will write: $file\n";
+  open(FILE, ">$file");
+  my $spacing = ($max - $min)/($size + 1);
+  for (my $i = 0; $i < $size; $i++){
+    print FILE ( ($min + $spacing*$i) . " " . $vals_y[$i] . "\n" );
+  }
+  close(FILE);
+  
   my $X = "X = linspace($min, $max, $size)";
   my $Y = "Y = [$vals]";
 
