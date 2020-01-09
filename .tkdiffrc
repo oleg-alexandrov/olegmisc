@@ -10,25 +10,25 @@ define autocenter {1}
 define autoselect {0}
 
 # Tag options for characters in line view
-define bytetag {-background blue -foreground white -font {Monospace 14 bold}}
+define bytetag {-background blue -foreground white -font {Monospace 12 bold}}
 
 # Tag options for changed diff region
-define chgtag {-background LightSteelBlue -font {Monospace 14 bold}}
+define chgtag {-background LightSteelBlue -font {Monospace 12 bold}}
 
 # Color change bars to match the diff map
 define colorcbs {0}
 
 # Tag options for the current diff region
-define currtag {-background Khaki -font {Monospace 14 bold}}
+define currtag {-background Khaki -font {Monospace 12 bold}}
 
 # Tag options for deleted diff region
-define deltag {-background Tomato -font {Monospace 14 bold}}
+define deltag {-background Tomato -font {Monospace 12 bold}}
 
 # diff command
 define diffcmd {diff}
 
 # Tag options for diff regions
-define difftag {-background gray -font {Monospace 14 bold}}
+define difftag {-background gray -font {Monospace 12 bold}}
 
 # Program for editing files
 define editor {}
@@ -49,13 +49,13 @@ define ignoreblanks {0}
 define ignoreblanksopt {-b}
 
 # Tag options for diff region inline differences
-define inlinetag {-background DodgerBlue -font {Monospace 14 bold}}
+define inlinetag {-background DodgerBlue -font {Monospace 12 bold}}
 
 # Tag options for inserted diff region
-define instag {-background PaleGreen -font {Monospace 14 bold}}
+define instag {-background PaleGreen -font {Monospace 12 bold}}
 
 # Tag options for overlap diff region
-define overlaptag {-background yellow -font {Monospace 14 bold}}
+define overlaptag {-background yellow -font {Monospace 12 bold}}
 
 # Show change bars
 define showcbs {1}
@@ -91,7 +91,7 @@ define tagln {0}
 define tagtext {1}
 
 # Text widget options
-define textopt {-background white -foreground black -font {Monospace 14} -wrap none}
+define textopt {-background white -foreground black -font {Monospace 12} -wrap none}
 
 # Directory for scratch files
 define tmpdir {/tmp}
