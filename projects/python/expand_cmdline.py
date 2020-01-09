@@ -8,7 +8,7 @@ import re # perl-style regular expressions
 # Edit the content of the command line as passed from zsh
 
 def expandAlias(aliasName):
-
+   
    # Given the name of an alias, return the line showing its definition
    # in the alias file
 
@@ -37,7 +37,7 @@ def expandAlias(aliasName):
 
 # end expandAlias()
 
-def expandCmdLine(cmdLine, cursor):
+def expandCmdLine(cmdLine, cursor, part):
 
    # Intelligently replace the current string with another string.
    # We take into account where the cursor is positioned in the string.
@@ -50,6 +50,9 @@ def expandCmdLine(cmdLine, cursor):
 
    before = cmdLine[0:cursor]
    after  = cmdLine[cursor:lineLen]
+
+   before = re.sub('\"\"', '', before)
+   after = re.sub('\"\"', '', after)
 
    #marker = ' xtk45TSfl ';
    #words = re.sub(r'\b', marker, before).split(marker);
@@ -65,8 +68,15 @@ def expandCmdLine(cmdLine, cursor):
       cursor  = len(cmdLine)
 
    lWord = words[numWords-1]
-   if    ( numWords >= 2 and lWord[-2:] == "ld" and (len(lWord) == 2 or not re.match('\w', lWord[-3]))):
+   
+   if    ( numWords >= 2 and lWord[-2:] == "ld" and
+           (len(lWord) == 2 or not re.match('\w', lWord[-3]))):
       words[numWords-1] = lWord[:-2] + "LD_LIBRARY_PATH"
+      cmdLine = " ".join(words) + after
+      cursor  = len(cmdLine)
+
+   if ( numWords >= 2 and lWord[-2:] == "ba"):
+      words[numWords-1] = lWord[:-2] + "--bundle-adjust-prefix"
       cmdLine = " ".join(words) + after
       cursor  = len(cmdLine)
 
@@ -90,8 +100,9 @@ def expandCmdLine(cmdLine, cursor):
       cmdLine = " ".join(words) + after
       cursor  = len(cmdLine)
 
-   elif  ( numWords >= 1 and words[numWords-1][:1] == "o"):
-      # Replace o45 with > output45.txt 2>&1&
+   elif  ( numWords >= 1 and words[numWords-1][:1] == "o") and \
+            len(words[numWords-1]) <= 2:
+      # Replace o4 with > output4.txt 2>&1&
       suff = words[numWords-1][1:]
       words[numWords-1] = "> output" + suff + ".txt 2>&1&"
       cmdLine = " ".join(words) + after
@@ -108,7 +119,6 @@ def expandCmdLine(cmdLine, cursor):
       cursor  = len(cmdLine)
 
    elif  ( numWords >= 3 and words[numWords-3] == "r"):
-      #print('now here')
       # Given the input 'hi there r hi ho', will replace it with 'ho there'
       fr = words[numWords-2]
       to = words[numWords-1]
@@ -127,7 +137,7 @@ def expandCmdLine(cmdLine, cursor):
       # Expand the string "pl"
       words[numWords-1] = "perl -pi -e \"s###g\""
       cmdLine = " ".join(words) + after
-      cursor  = cursor + 13
+      cursor  = cursor + 13 # advance to between the first two ##
 
    elif ( numWords >= 2 and words[numWords-2] == "for" ):
       # Expand "for var" into a full for loop.
@@ -153,17 +163,21 @@ def expandCmdLine(cmdLine, cursor):
       cmdLine = " ".join(words) + after
       cursor  = len(cmdLine)
 
-   return str(cursor) + sep + cmdLine
-
+   if part == 1:
+      return str(cursor) # return cursor position
+   else:
+      return cmdLine    # return the processed command line
+   
 # Main program
 
 numArgs = len(sys.argv)
-if numArgs <= 2:
-   print "Error: Need to have the existing command line and the cursor postion as inputs"
+if numArgs <= 3:
+   print "Error: Need to have as inputs the existing " +  \
+         "command line, the cursor postion, and a flag."
    sys.exit(0)
 
 cmdLine = sys.argv[1]
 cursor  = int(sys.argv[2])
-sep     = '__sep__'
+part    = int(sys.argv[3])
 
-print expandCmdLine(cmdLine, cursor)
+print expandCmdLine(cmdLine, cursor, part)
