@@ -1,0 +1,7 @@
+defscrollback 50000
+escape ^Oo
+bindkey "^[k" eval "copy" "stuff ^b"  
+bindkey "^[[5;5~" eval "copy" "stuff ^b"
+
+
+
