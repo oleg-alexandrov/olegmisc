@@ -174,10 +174,10 @@ Key F12   A   C   Close
 Key F11   A   N   Iconify
 
 # arrow + control anywhere => scroll by a page
-Key Left  A   S   Scroll -100    0
-Key Right A   S   Scroll +100   +0
-Key Up    A   S   Scroll +0   -100
-Key Down  A   S   Scroll +0   +100
+Key Left  A   C   Scroll -100    0
+Key Right A   C   Scroll +100   +0
+Key Up    A   C   Scroll +0   -100
+Key Down  A   C   Scroll +0   +100
 
 # Pop-up the pager temorarily
 Key Insert A   CM   Module FvwmPager -transient *
