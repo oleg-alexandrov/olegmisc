@@ -1,7 +1,5 @@
 [ -z "$PS1" ] && return # to not confuse scp and rsync
 
-#echo now in bashrc1
-
 # If we did not source ~/.bash_profile, do that first.
 # It will then return here to continue.
 if [ "$RAN_BASHPROFILE" = "" ]; then
@@ -11,8 +9,6 @@ if [ "$RAN_BASHPROFILE" = "" ]; then
         return
     fi
 fi
-
-#echo now in bashrc2
 
 umask 022              # permissions set to -rw-r--r--
 
@@ -52,6 +48,15 @@ else
 fi
 }
 
+function add_to_path () {
+    # Prepend to PATH unless alrady first in the path
+    if ! echo "$PATH" | grep -Eq "(^)$1($|:)" ; then
+        export PATH="$1:$PATH"
+        #echo New path $PATH
+        #echo Already in the PATH=$PATH
+    fi
+}
+
 function mb {
     LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/mesa:$LD_LIBRARY_PATH PATH=~/projects/meshlab/meshlab/src/distrib:$PATH meshlab $*
 }    
@@ -76,6 +81,10 @@ function rmp {
 
 function gfr {
     grep -i "fail" report.txt | grep -v " failed" | perl -p -e "s#^.*?\[(.*?)\].*?\$#\$1#g"
+}
+
+function bmh {
+  ~/freeflyer_build/native/devel/lib/sparse_mapping/build_map -info -output_map $1 | head -n 5
 }
 
 function rga {
@@ -198,6 +207,11 @@ function a {
 
 }
 
+function cll  {
+    # Remove everything after semicolon
+    perl -p -e "s#:.*?\n#\n#g" | ~/bin/unique.pl | perl -p -e "s#\n# #g"
+}
+
 function ald {
     # Create an alias to cd to the current directory
     dir=$(echo $(pwd) | perl -p -e 's#'$HOME'#\$HOME#g')
@@ -284,7 +298,7 @@ function gcd {
 }
 
 function vp {
-    echo $(pwd)/$1
+    echo $(pwd)/$(echo $1 | perl -p -e "s#^\.\/##g")
 }
 
 function st {
@@ -310,6 +324,10 @@ function s {
     id=$(screen -ls | head -n $n | tail -n 1 | awk '{print $1}')
     echo Will attach to screen $id
     screen -d -r $id
+}
+
+function tp () {
+    remote_copy.pl $* oalexan1@pfx
 }
 
 function tb {
@@ -397,14 +415,6 @@ function fa {
     remote_copy.pl oalexan1@astrobeast $*
 }
 
-function cls {
-    for file in $*; do
-        # Wipe progress bar and special characters
-        perl -pi -e "s#^.*?\*\*.*?\n##g" $file
-        perl -pi -e "s#\r##g" $file
-    done
-}
-
 # read something like:
 # myfile.cc:343 etc etc
 # which is output by grep -r -i -N
@@ -417,7 +427,14 @@ function v {
     file=$(echo $val | perl -p -e 's#^(.*?):.*?$#$1#g')
     line=$(echo $val | perl -p -e 's#^.*?:(\d*).*?$#$1#g')
     if [ "$line" = "" ]; then line="0"; fi
-    file=$(readlink -f $file) # make absolute
+    # Apply a fix changing /home6 to /home
+    file=$(echo $file | perl -p -e "s#^\/home.*?/$(whoami)#$HOME#g")
+    # make absolute
+    file=$(readlink -f $file)
+    if [ ! -f "$file" ]; then
+        echo File $file does not exist
+        return
+    fi
     echo $file > $fs
     echo "line: $line" >> $fs
     cat $fs
@@ -531,46 +548,4 @@ if [ -f ~/.bash_aliases ]; then
      grep -E -v "(cd|ssh|scp)"  ~/.bash_aliases > ~/.base_aliases
 fi
 
-# if [ "$(uname -a |grep -E 'byss|xxx')" != "" ]; then
-#     . $HOME/GNUstep/System/Library/Makefiles/GNUstep.sh
-# fi
-
-#if [ "$(uname -n)" = "spherescheetah.ndc.nasa.gov" ] || [ "$(uname -n)" = "freeflyer" ]; then
-
-#    if   [ "$LZSH" = "" ]; then
-#        # Avoid running this twice
-#        source ~/.bash_login
-#    fi
-    
-#    export FF_ROOT_DIR=$HOME/projects/freeflyer
-#    export FF_ROOT_BIN=$HOME/cmake_build
-    
-#    source /opt/ros/indigo/setup.bash > /dev/null 2>&1
-#    source $FF_ROOT_BIN/devel/setup.bash > /dev/null 2>&1
-#    export ROS_PACKAGE_PATH=$FF_ROOT_BIN/devel/share/:$ROS_PACKAGE_PATH
-#    export ROSLAUNCH_SSH_UNKNOWN=1
-#    export ROS_HOSTNAME=10.42.0.50
-#    export ROS_MASTER_URI=http://10.42.0.50:11311
-#fi
-# roslaunch astrobee proto3.launch disable_fans:=true
-#rosbag record /nav_cam/image /ground_truth
-
-#/royale/src/CameraManager.cpp has the L2 key
-#echo -n "walnuts are great" | sha1sum 
-#d79dab562f13ef8373e906d919aec323a2857388  -
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/oalexan1/miniconda2/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/home/oalexan1/miniconda2/etc/profile.d/conda.sh" ]; then
-        . "/home/oalexan1/miniconda2/etc/profile.d/conda.sh"
-    else
-        export PATH="/home/oalexan1/miniconda2/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
 

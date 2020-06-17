@@ -24,6 +24,7 @@ Style "FvwmButtons"   Borderwidth 0, CirculateSkip, Color white/royalblue3
 Style "FvwmButtons"   Icon toolbox.xpm,ClickToFocus
 Style "FvwmPager"   NoTitle,BorderWidth 3
 Style "FvwmPager"   Color white/royalblue3
+Style "*" SnapAttraction 500 All Screen
 
 ## Other programs
 Style "*clock*"  StaysOnTop, NoTitle, NoHandles, Sticky, WindowListSkip, Borderwidth 0, Color white/royalblue3
@@ -60,7 +61,7 @@ MenuStyle * Font -adobe-helvetica-medium-r-*-*-11-*-*-*-*-*-*-* fvwm, PopupOffse
 # Menu Ocean-Ploum
 MenuStyle * MenuFace VGradient 128 1 #2c80A0 1 #1c5572 
 
-#ModulePath ${HOME}/projects/fvwm/modules/FvwmPager:+
+ModulePath ${HOME}/projects/fvwm/modules/FvwmPager:+
 
 AddToFunc InitFunction    "I" Module FvwmPager  *
 #AddToFunc InitFunction "I" Exec firefox&
@@ -68,25 +69,26 @@ AddToFunc InitFunction    "I" Module FvwmPager  *
 #AddToFunc InitFunction "I" Exec skype&
 #AddToFunc InitFunction "I" Exec thunderbird&
  
-AddToFunc InitFunction "I" Exec $HOME/bin/fvwm_dual_monitor.pl&
+#AddToFunc InitFunction "I" Exec $HOME/bin/fvwm_dual_monitor.pl& # uncomment when going back to work
 AddToFunc InitFunction "I" Exec xclock -d -twentyfour -bg black -fg green -brief -geo 100x50+1850+0 &
-AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 103x55+0+1080  -- zsh &
-AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 103x55+970+1080  -- zsh &
-AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 103x55+1920+1080  -- zsh &
-AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 103x55+2890+1080  -- zsh &
-AddToFunc InitFunction "I" Exec ~/bin/xe -geometry 209x66+3840+1080 &
+AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 103x59+0+0  --tab --tab &
+AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 103x59+960+0  --tab --tab &
+AddToFunc InitFunction "I" Module FvwmPager  *
+#AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 103x55+1920+1080  -- zsh &
+#AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 103x55+2890+1080  -- zsh &
+#AddToFunc InitFunction "I" Exec ~/bin/xe -geometry 209x66+3840+1080 &
 # Uncomment below when going back to work!
 #AddToFunc InitFunction "I" Exec xrandr --output VBOX0 --auto --output VBOX1 --auto --right-of VBOX0
-AddToFunc InitFunction "I" Restart # Restart after we forced using two monitors
+#AddToFunc InitFunction "I" Restart # Restart after we forced using two monitors
 
 AddToFunc RestartFunction "I" Module FvwmPager  *
 
-#AddToFunc RestartFunction "I" Exec $HOME/bin/fvwm_dual_monitor.pl&
+#AddToFunc RestartFunction "I" Exec $HOME/bin/fvwm_dual_monitor.pl& # uncomment when going back to work
 #AddToFunc RestartFunction "I" Exec xclock -d -twentyfour -bg black -fg green -brief -geo -0+0&
 # xrandr --output VBOX1 --auto --output VBOX0 --auto --right-of VBOX1
 #xrandr --output VBOX0 --auto --output VBOX1 --auto --right-of VBOX0
 
-ImagePath $HOME/diverse/icons/:/usr/X11/include/X11/pixmaps/:/usr/X11R6/include/X11/pixmaps:/usr/include/X11/pixmaps/:/home/grad/aoleg/diverse/htmls/icons/
+#ImagePath $HOME/diverse/icons/:/usr/X11/include/X11/pixmaps/:/usr/X11R6/include/X11/pixmaps:/usr/include/X11/pixmaps
 
 ########################### Buttons #########################################
 *FvwmButtonsFore White 
@@ -116,8 +118,8 @@ DesktopName 3 Desk 3
  
 ######################### Keyboard binding###########################
 #Key F1    A   N   Exec /usr/bin/konsole& 
-Key F1    A   C   Exec /usr/bin/gnome-terminal  --geometry 103x55+0+0  -- zsh & 
-Key F1    A   M   Exec /usr/bin/gnome-terminal  --geometry 81x40+0+0  -- zsh & 
+Key F1    A   C   Exec /usr/bin/gnome-terminal --geometry 103x59+0+0 --tab --tab & 
+Key F1    A   M   Exec /usr/bin/gnome-terminal --geometry 81x40+0+0  -- zsh & 
 #Key F1   A   C   Exec /usr/bin/gnome-terminal --geometry 110x44 -e "$HOME/bin/zsh"& 
 #Key F1    A   M   Exec /usr/bin/xterm  -geo 108x46+0+0  -hc blue  -bdc -fn 8x16  -- zsh&
 #Key F1    A   N   Exec  /m1/aoleg/bin/rxvt & # -geo 140x61+10+10  -hc blue  -bdc -fn 8x16 &
