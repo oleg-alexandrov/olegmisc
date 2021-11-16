@@ -8,7 +8,7 @@ unset XMODIFIERS
 instanceCount=$(ps aux | grep `whoami` | grep xemacs | grep -v 'grep xemacs' | wc -l);
 if [ "$instanceCount" -eq "0" ]; then
 
-  xemacs -geo 206x56+0+0 $* &
+  xemacs -geo 206x66+0+0 $* &
   instanceCount="";
 
   while [ "$instanceCount" = "" ]; do

@@ -8,10 +8,19 @@ l=$(echo $f |  perl -p -e "s#^.*?\/##g" | perl -p -e "s#^.*?-(.*?)__.*?\$#\$1#g"
 r=$(echo $f |  perl -p -e "s#^.*?\/##g" | perl -p -e "s#^.*?-.*?__(.*?)(|-clean).match\$#\$1#g")
 
 #echo 1 $l $r
+l1=$l
+r1=$r
+
 #echo $log
 
 l=$(grep -E "bundle_adjust|stereo_pprc" $log | perl -p -e "s#\s#\n#g" | grep $l | grep -i -E ".cub|.ntf|.tif")
 r=$(grep -E "bundle_adjust|stereo_pprc" $log | perl -p -e "s#\s#\n#g" | grep $r | grep -i -E ".cub|.ntf.|.tif")
+
+# This is a guess, just append a .tif extension. Ideally we should do
+# ls ${l}* and pick the earliest matching pattern.
+
+if [ "$l" = "" ]; then l="$l1.tif"; fi
+if [ "$r" = "" ]; then r="$r1.tif"; fi
 
 #echo 2 $l $r
 

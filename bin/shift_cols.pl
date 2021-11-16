@@ -3,11 +3,11 @@ use strict;		      # 'strict' insists that all variables be declared
 use diagnostics;	      # 'diagnostics' expands the cryptic warnings
 use POSIX;
 
-# Scale a polygon by a given amount
+# shift a set of columns by a given amount in each columns
 MAIN: {
 
   if (scalar (@ARGV) < 4  ){
-    print "Usage: input.txt out.txt shift_to_subtr\n";
+    print "Usage: input.txt out.txt shift_to_add\n";
     exit(0);
   }
 
@@ -20,12 +20,17 @@ MAIN: {
   my @lines = <FILE>; 
   close(FILE);
 
+  my $index = 0;
+  my $total = scalar(@lines);
+  
   open(FILE, ">$out");
 
   foreach my $line (@lines){
     $line =~ s/\n//g;
     $line =~ s/^\s*//g;
     $line =~ s/\s*$//g;
+    $line =~ s/,/ /g;
+    $line =~ s/\s+/ /g;
     
     if ($line =~ /^\s*$/){
       next;  
@@ -33,8 +38,10 @@ MAIN: {
     
     my @vals = split(/\s/, $line);
 
+    print "doing line $index/$total\n";
+    
     if (scalar(@vals) != scalar(@shift)){
-      print "Wrong number of shifts\n";
+      print "Wrong number of shifts. Line is $line with " . scalar(@vals) . " elements.\n";
       exit(1);
     }
 
@@ -45,7 +52,8 @@ MAIN: {
       print FILE "$val ";
     }
     print FILE "\n";
-    
+
+    $index++;
   }
 
   close(FILE);

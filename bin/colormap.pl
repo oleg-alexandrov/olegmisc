@@ -45,45 +45,70 @@ MAIN:{
   }
 
   my @outFiles;
+  my $cmd;
   foreach my $fileIn (@files){
 
+    my ($nmin, $nmax);
+    if (!$useInputMinMax){
 
-    my $cmd="gdalinfo -stats $fileIn";
-    my $out = qx($cmd);
+      # Find the stats and infer the min and max
+      $cmd="gdalinfo -stats $fileIn";
+      my $out = qx($cmd);
 
-    my ($min, $max, $mean, $stddev) = (0, 1, 0.5, 0);
-    if ($out =~ /STATISTICS_MINIMUM=(.*?)\s+/){ $min = $1;     }else{ print "Cannot find minimum\n"; $min  = 0; }
-    if ($out =~ /STATISTICS_MAXIMUM=(.*?)\s+/){ $max = $1;     }else{ print "Cannot find maximum\n"; $max  = $min + 1; }
-    if ($out =~ /STATISTICS_MEAN=(.*?)\s+/)   { $mean = $1;    }else{ print "Cannot find mean\n";   }
-    if ($out =~ /STATISTICS_STDDEV=(.*?)\s+/)  { $stddev = $1; }else{ print "Cannot find stddev\n"; }
-
-    my $nmin = $mean - $sigmaFactor*$stddev;
-    my $nmax = $mean + $sigmaFactor*$stddev;
-
-    # Correction for images with non-negative values
-    if ($min >=0 && $nmin <= 0){
-      $nmin = 0;
-    }
-    
-    #gdal cannot handle numbers like 1e-5
-    if ($nmin  =~ /e-/) {
-      if ($nmin < 0){
-        while ($nmin =~ /e-/) { $nmin *= 1.2; }
-      }else{
-        $nmin = 0.0;
+      my ($min, $max, $mean, $stddev) = (0, 1, 0.5, 0);
+      if ($out =~ /STATISTICS_MINIMUM=(.*?)\s+/) {
+        $min = $1;
+      } else {
+        print "Cannot find minimum\n"; $min  = 0;
       }
-    }
-    while ($nmax =~ /e-/)  { $nmax *= 1.2; }
+      if ($out =~ /STATISTICS_MAXIMUM=(.*?)\s+/) {
+        $max = $1;
+      } else {
+        print "Cannot find maximum\n"; $max  = $min + 1;
+      }
+      if ($out =~ /STATISTICS_MEAN=(.*?)\s+/) {
+        $mean = $1;
+      } else {
+        print "Cannot find mean\n";
+      }
+      if ($out =~ /STATISTICS_STDDEV=(.*?)\s+/) {
+        $stddev = $1;
+      } else {
+        print "Cannot find stddev\n";
+      }
 
-    if ($useSameMinMaxForAll == 1){
-      # All images wll use the nmin and nmax calculated for first image
-      $useSameMinMaxForAll = $useSameMinMaxForAll + 1;
-      $useInputMinMax = 1;
-      $inputMin = $nmin;
-      $inputMax = $nmax;
-    }
+      $nmin = $mean - $sigmaFactor*$stddev;
+      $nmax = $mean + $sigmaFactor*$stddev;
 
-    if ($useInputMinMax){
+      # Correction for images with non-negative values
+      if ($min >=0 && $nmin <= 0) {
+        $nmin = 0;
+      }
+    
+      #gdal cannot handle numbers like 1e-5
+      if ($nmin  =~ /e-/) {
+        if ($nmin < 0) {
+          while ($nmin =~ /e-/) {
+            $nmin *= 1.2;
+          }
+        } else {
+          $nmin = 0.0;
+        }
+      }
+      while ($nmax =~ /e-/) {
+        $nmax *= 1.2;
+      }
+
+      if ($useSameMinMaxForAll == 1) {
+        # All images wll use the nmin and nmax calculated for first image
+        $useSameMinMaxForAll = $useSameMinMaxForAll + 1;
+        $useInputMinMax = 1;
+        $inputMin = $nmin;
+        $inputMax = $nmax;
+      }
+      
+    } else {
+      # Use user-provided min and max
       $nmin = $inputMin;
       $nmax = $inputMax;
     }

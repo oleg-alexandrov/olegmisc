@@ -9,6 +9,8 @@ MAIN:{
     exit(0);
   }
 
+  #$ENV{'PATH'} = $ENV{'HOME'} . '/miniconda3/envs/asp/bin' . ':' . $ENV{'PATH'};
+  
   my $cmd = join(" ", @ARGV);
   $cmd =~ s/://g; # rm stray chars
   my $file = "";
@@ -47,11 +49,8 @@ MAIN:{
     $cmd = "gdal_translate $cmd";
     print "$cmd\n";
     my $ans = qx($cmd);
-    if ($ans !~ /Computed -srcwin\s+([\-\d]+)\s+([\-\d]+)\s+([\-\d]+)\s+([\-\d]+)\s+from projected window/){
-      print "Command failed!\n";
-      exit(1);
-    }
-    $a = $1; $b = $2; $c = $3; $d = $4;
+    print "$ans\n";
+    exit(0);
   }elsif ($cmd =~ /^(.*?-srcwin)\s+([\-\d]+)\s+([\-\d]+)\s+([\-\d]+)\s+([\-\d]+)(.*?)$/){
     $crop = 1;
     $bf = $1; $a = $2; $b = $3; $c = $4; $d = $5; $af = $6;

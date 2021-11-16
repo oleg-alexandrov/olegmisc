@@ -4,9 +4,8 @@ import sys, os, re
 import numpy as np
 from numpy.linalg import svd
 
-# Fit a plane to given points
-# Points me 1 per line.
-# ignore points like (0, 0, 0).
+# Find a best fit plane for a set of points, then shift those points
+# along the normal to that plane so that they are on the moon surface.
 
 def planeFit(points):
     """
@@ -27,53 +26,20 @@ def planeFit(points):
     M = np.dot(x, x.T) # Could also use np.cov(x) here.
     return ctr, svd(M)[0][:,-1]
 
-inFile = sys.argv[1]
-inNormal_str = sys.argv[2]
+if len(sys.argv) < 3:
+    print("usage: fit_plane.py in.txt out.txt")
 
-inNormal = np.array(inNormal_str.split()).astype(float)
+inFile = sys.argv[1]
+outFile = sys.argv[2]
+
 print("Reading: " + inFile)
 
-outFile = inFile
-m = re.match('^(.*?\.)(ply|txt)', outFile)
-if not m:
-    print("Could not match image in: " + outFile)
-    sys.exit(1)
-outFile = m.group(1) + "csv"
+points = np.loadtxt(inFile)
 
-with open(inFile, 'r') as f:
-    lines = f.readlines()
+print("points shape is ", points.shape)
 
-points = np.empty((0,3), float) # empty array with 3 columns (x, y, z, intensity)
-count = 0
-for line in lines:
-    # Keep only lines with numbers. This is fragile.
-    if not re.match('^[\s\d\.\-\+e]*?$', line):
-        continue
-
-    # Make the values in the line into floats
-    vals = np.array(line.split()).astype(float)
-
-    if vals.size < 3:
-        continue
-    
-    # Skip invlalid values
-    if vals[0] == 0 and vals[1] == 0 and vals[2] == 0:
-        continue
-
-    points = np.append(points, [vals[0:3]], axis = 0) # append a new row
-    count = count + 1
-
-    if count % 100 == 0:
-        print("Count ", count, len(lines))
-    #if count == 5:
-    #    break
-
-
-if inNormal.size >= 3:
-    normal = inNormal
-else:
-    # Find the best fit plane to the xyz values (without intensity)
-    [ctr, normal] = planeFit(np.transpose(points[:, 0:3]))
+# Find the best fit plane to the xyz values (without intensity)
+[ctr, normal] = planeFit(np.transpose(points[:, 0:3]))
 
 print("Normal: ", normal)
 

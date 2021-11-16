@@ -6,6 +6,8 @@ if [ "$#" -eq 3 ]; then
     plainDiff=1
 fi
 
+#export PATH=$HOME/miniconda3/envs/asp/bin:$PATH
+
 out1=tmpimg1.txt
 out2=tmpimg2.txt
 
@@ -25,8 +27,8 @@ if [ $status -ne 0 ]; then
     opts=""
 fi
 
-gdalinfo -stats $opts $1 | grep -v Min= | grep -v .tif | perl -pi -e "s#=# = #g" >> $out1
-gdalinfo -stats $opts $2 | grep -v Min= | grep -v .tif | perl -pi -e "s#=# = #g" >> $out2
+gdalinfo -stats $opts $1 | grep -v Min= | grep -v .tif | perl -p -e "s#=# = #g" >> $out1
+gdalinfo -stats $opts $2 | grep -v Min= | grep -v .tif | perl -p -e "s#=# = #g" >> $out2
 
 if [ "$plainDiff" -eq 1 ]; then
     diff $out1 $out2

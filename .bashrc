@@ -58,7 +58,14 @@ function add_to_path () {
 }
 
 function mb {
-    LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/mesa:$LD_LIBRARY_PATH PATH=~/projects/meshlab/meshlab/src/distrib:$PATH meshlab $*
+    cmd='PATH=~/projects/meshlab/distrib:$PATH meshlab $*'
+    machine=$(uname -n | grep astrobeast)
+    if [  "$machine" != "" ]; then
+        # For astrobeast need to set the path to the right OpenGL libraries
+        cmd='LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/mesa:$LD_LIBRARY_PATH '$cmd
+    fi
+    echo $cmd
+    eval $cmd
 }    
 
 function num_fmt {
@@ -108,7 +115,6 @@ function cdls {
   if [ "$*" ]; then
      builtin cd "$*";
      ls -a --color=auto;
-     echo $(pwd) > ~/.lastDir
   else
       builtin cd; ls -a --color=auto;
   fi
@@ -119,31 +125,16 @@ function node {
     ssh $(qstat -f $1 |grep exec_vnode | perl -p -e "s#^.*?\((.*?):.*?\n#\$1#g")
 }
 
-function lcd {
-    cd $(cat ~/.lastDir);
-}
-
-function rwd {
-
-   # remember the working directory
-   export WORKDIR=`pwd`;
- }
-
 function ge {
     gdalinfo $1 | tail -n 8 | grep --colour=auto Mean=
 }
 
 function gis {
-    gdalinfo $1 | grep -i --colour=auto size
+     gdalinfo $1 | grep -i --colour=auto size
 }
 
 function gim {
     gdalinfo -stats $1 | grep -i Maximum | grep -i --colour=auto mean
-}
-
-
-function cdw {
- cd $WORKDIR;
 }
 
 # Tail the latest file in current directory,
@@ -298,7 +289,7 @@ function gcd {
 }
 
 function vp {
-    echo $(pwd)/$(echo $1 | perl -p -e "s#^\.\/##g")
+    echo $(readlink -f $1)
 }
 
 function st {
@@ -397,6 +388,10 @@ function tl {
 
 function tl2 {
     remote_copy.pl $* $L2
+}
+
+function tl0 {
+    remote_copy.pl $* oalexan1@laptop
 }
 
 function t3 {

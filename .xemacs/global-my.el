@@ -444,6 +444,7 @@
 (global-set-key [(meta a)] 'define-mode-abbrev)
 (global-set-key [(meta c)] 'comment-region)
 (global-set-key [(meta control a)] 'define-mode-abbrev)
+(global-set-key [(control i)] 'ispell-buffer)
 (global-set-key [(meta j)] 'forward-char)
 (global-set-key [(meta q)] 'kill-this-buffer)
 ;(global-set-key [(meta s)] 'write-file)	; 'save file as...' with Alt-s

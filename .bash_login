@@ -20,6 +20,12 @@ echo "    voices of things.                    -- A. Grothendieck        "
 # universe that makes sense. But the real universe is always one step
 # beyond logic." -Frank Herbert
 
+if [ "$(uname -n)" = "oleg-linux" ]; then
+    # Turn off the insert key, it is so easy to hit it by accident.
+    # This can be very slow on some machines.
+    xmodmap -e "keycode 118 =" 2>/dev/null
+fi
+
 #if [ 0 ] && [ "$SSH_TTY" != "" ] && [ "$DISPLAY" != "" ]; then
 
   # Make the backspace behave

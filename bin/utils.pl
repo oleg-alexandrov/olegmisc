@@ -110,10 +110,11 @@ sub get_path_in_home_dir{
     $parent_path = $1;
   }
 
-  # Use rel2abs as our naive handling missed something.
-  if ( (! -f $parent_path) && (!-d $parent_path) ){
-    $path = File::Spec->rel2abs($relpath);
-  }
+  # Do not use this as it dereferences sym links making a mess.
+  ## Use rel2abs as our naive handling missed something.
+  #if ( (! -f $parent_path) && (!-d $parent_path) ){
+  #  $path = File::Spec->rel2abs($relpath);
+  #}
 
   my $home = get_home_dir();
   my $whoami = qx(whoami); $whoami =~ s/\s*$//g;

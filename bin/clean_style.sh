@@ -16,7 +16,7 @@ for file in $*; do
     perl -pi -e "s#(if\s*\()\s(.*)\s*(\)\s*\{)#\$1\$2\$3#g" $file # consistent spaces around if
     perl -pi -e "s#(ofstream\s+\w+)\s+(\()#\$1\$2#g" $file
     perl -pi -e "s#[ \t]*,[ \t]*([^\n])#, \$1#g" $file # fix commas
-    perl -pi -e "s#https:\s*//\s*#https:\/\/#g" $file # fix https
+    perl -pi -e "s#http\w*:\s*//\s*#https:\/\/#g" $file # fix https
     remote_copy.pl $file $M
 done
 

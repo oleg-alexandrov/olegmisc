@@ -33,6 +33,7 @@ projects/StereoPipeline/src
 *.bib
 *stereo*.default
 *.tex
+*.rst
 *rsync_include.txt
 *.in
 *.c
@@ -59,4 +60,6 @@ projects/StereoPipeline/src
 LogConf.example
 *.cmake
 *.xml
+*.yaml
+*.yml
 *stereo*

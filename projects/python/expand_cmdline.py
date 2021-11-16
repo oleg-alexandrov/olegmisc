@@ -53,6 +53,8 @@ def expandCmdLine(cmdLine, cursor, part):
 
    before = re.sub('\"\"', '', before)
    after = re.sub('\"\"', '', after)
+   before = re.sub('\'\'', '', before)
+   after = re.sub('\'\'', '', after)
 
    #marker = ' xtk45TSfl ';
    #words = re.sub(r'\b', marker, before).split(marker);
@@ -75,8 +77,8 @@ def expandCmdLine(cmdLine, cursor, part):
       cmdLine = " ".join(words) + after
       cursor  = len(cmdLine)
 
-   if ( numWords >= 2 and lWord[-2:] == "ba"):
-      words[numWords-1] = lWord[:-2] + "--bundle-adjust-prefix"
+   if ( numWords >= 3 and lWord[-3:] == " ba"):
+      words[numWords-1] = lWord[:-3] + "--bundle-adjust-prefix"
       cmdLine = " ".join(words) + after
       cursor  = len(cmdLine)
 
@@ -129,6 +131,14 @@ def expandCmdLine(cmdLine, cursor, part):
       words[numWords-2] = ""
       words[numWords-1] = ""
       cmdLine = " ".join(words) + after
+      cmdLine = re.sub('\s*$', '', cmdLine)
+      cursor  = len(cmdLine)
+
+   elif  ( numWords >= 2 and words[numWords-1] == "s"):
+      # Remove extra spaces
+      words[numWords-1] = ""
+      cmdLine = " ".join(words)
+      cmdLine = re.sub('\s+', ' ', cmdLine)
       cmdLine = re.sub('\s*$', '', cmdLine)
       cursor  = len(cmdLine)
 

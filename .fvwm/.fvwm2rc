@@ -24,7 +24,7 @@ Style "FvwmButtons"   Borderwidth 0, CirculateSkip, Color white/royalblue3
 Style "FvwmButtons"   Icon toolbox.xpm,ClickToFocus
 Style "FvwmPager"   NoTitle,BorderWidth 3
 Style "FvwmPager"   Color white/royalblue3
-Style "*" SnapAttraction 500 All Screen
+#Style "*" SnapAttraction 150 All Screen
 
 ## Other programs
 Style "*clock*"  StaysOnTop, NoTitle, NoHandles, Sticky, WindowListSkip, Borderwidth 0, Color white/royalblue3
@@ -125,7 +125,7 @@ Key F1    A   M   Exec /usr/bin/gnome-terminal --geometry 81x40+0+0  -- zsh &
 #Key F1    A   N   Exec  /m1/aoleg/bin/rxvt & # -geo 140x61+10+10  -hc blue  -bdc -fn 8x16 &
 #Key F2    A   N   Exec  thunderbird& 
 Key F3    A   C   Exec  ~/bin/xe&
-#Key F4    A   C   Exec  firefox&
+Key F4    A   C   Exec  firefox&
 Key F5    A   C   Exec  pidgin&
 Key F6    A   N   Exec  mozilla& 
 Key F7    A   N   Exec  /usr/local/bin/mathematica&
@@ -134,6 +134,7 @@ Key F9    A   N   Exec  gnumeric --geometry 1120x993+0+0&
 Key Delete    A   CM   Quit
 Key End    A   CM  Exec /usr/bin/X11/xlock
 
+Key F7   A   C   Resize 90 96
 Key F8   A   C    Move +0 +0
 Key F8   A   M    Move +75 +0
 Key F9   A   C    Move +50 +0 # Move window half a screen to the right
@@ -324,6 +325,8 @@ AddToMenu Programs   "+++Programs+++"   Title
 +   "Close"   Close   
 +   ""   Nop
 +   "Move"   Move
++   "Resize" Resize 83 93
+
 +   ""   Nop
 +   "Destroy"   Destroy   
 +   ""   Nop

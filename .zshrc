@@ -71,19 +71,10 @@ function proml
    print -Pn "\e]2;%n@%m:%~\a";
  fi;
 
-  if [[ $BASE = "" ]]; then
-    BASE_TAG="";
-    W_TAG="";
-  else
-    BASE_TAG="$BASE%{$fg[yellow]%}@";
-    W_TAG="$W ";
-  fi;
-
-  # The command prompt.
   # Must put escape characters in {% and %} to avoid garbling long command lines.
-  PS1="
-$terminfo[bold]%{$fg[green]%}%n@%m%{$fg[white]%}:%{$fg[blue]%}%~
-%{$fg[blue]%}$BASE_TAG%{$fg[green]%}$W_TAG%{$fg[red]%}>%{$fg[yellow]%}>%{$fg[green]%}>%{$fg[white]%} ";
+ PS1="
+$terminfo[bold]%{$fg[green]%}%n@$(hostname | perl -p -e 's#\..*?$##g')%{$fg[white]%}:%{$fg[blue]%}%~
+%{$fg[blue]%}%{$fg[green]%}%{$fg[red]%}>%{$fg[yellow]%}>%{$fg[green]%}>%{$fg[white]%} ";
 }
 
 bindkey  "^A"                beginning-of-line
@@ -150,3 +141,9 @@ bindkey "^X^E" edit-command-line
 
 # Init the prompt
 proml
+
+# Source the ROS settings
+ros=/opt/ros/kinetic/setup.zsh
+if [ -f "$ros" ] && [ $(uname -n) != "oleg-linux" ]; then
+    source $ros
+fi

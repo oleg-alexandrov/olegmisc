@@ -2,6 +2,8 @@
 use strict;        # insist that all variables be declared
 use diagnostics;   # expand the cryptic warnings
 
+my $height = 1737400.0;
+my $shift = 1; # to avoid pole artifacts
 MAIN:{
   
   if (scalar(@ARGV) < 2){
@@ -17,12 +19,20 @@ MAIN:{
     print "Missing either $intr_file or $cam_file\n";
     exit(1);
   }
-  
+
+  my ($f, $cx, $cy);
   open(FILE, "<$intr_file");
-  @vals = split(/\s+/, join(" ", <FILE>));
-  my $f = $vals[0];
-  my $cx = $vals[1];
-  my $cy = $vals[2];
+  foreach my $line (<FILE>){
+    if ($line =~ /^\#/){
+      next;
+    }
+    $line =~ s/^\s*$//g;
+    @vals = split(/\s+/, $line);
+    $f  = $vals[2];
+    $cx = $vals[3];
+    $cy = $vals[4];
+    last;
+  }
   close(FILE);
 
   open(FILE, "<$cam_file");
@@ -32,7 +42,7 @@ MAIN:{
   @vals = split(/\s+/, $all);
   close(FILE);
 
-  my @C = ($vals[3], $vals[7], 1737400 + $vals[11]);
+  my @C = ($shift + $vals[3], $shift + $vals[7], $height + $vals[11]);
   my @R = ($vals[0], $vals[1], $vals[2],
            $vals[4], $vals[5], $vals[6],
            $vals[8], $vals[9], $vals[10]);

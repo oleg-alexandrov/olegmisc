@@ -4,8 +4,6 @@ use diagnostics;   # expand the cryptic warnings
 
 MAIN:{
 
-  # print images with indices in given range,
-  # with a spacing no less than $spacing
   if (scalar(@ARGV) < 2){
     print "Print lines from file with line number in [min, max). Indices start from 0. Usage: cat file.txt | $0 min max\n";
     exit(0);
