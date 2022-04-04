@@ -265,29 +265,36 @@
 
 
 (defun swap-cc-h-aux (filename)
+  ; Switch from .h to .cc or .cpp (whichever exists), and vice versa
   (interactive)
-  (cond (
-	 (string-match "\\.cc" filename)
-	 (setq filename (replace-match ".h" t t filename))
-	 ) ; end of matching .cc
+  (cond
 
-	(
-	 (string-match "\\.h" filename)
-	 (setq filename (replace-match ".cc" t t filename))
-	 ); endp of matching .h
+   ((string-match "\\.cpp" filename)
+    (setq filename (replace-match ".h" t t filename)))
+   
+   ((string-match "\\.cc" filename)
+    (setq filename (replace-match ".h" t t filename)))
 
-	); end cond
-
+   ((string-match "\\.h" filename)
+    (setq filename (replace-match ".cc" t t filename))
+    (if (not (file-exists-p filename))
+        (if (string-match "\\.cc" filename)
+            (setq filename (replace-match ".cpp" t t filename))
+          )
+      )
+    )
+   
+   ); end cond
+  
   filename ; return
   )
-
 
 (defun swap-cc-h (file-to-swap)
   "If the currently open file ends in .cc, open instead the
 corresponding .h file, and vice-versa. If the corresponding file does not
 exist, try replacing 'src' with 'include' and vice-versa"
   (interactive)
-  (if (string-match "\\(\\.cc\\|\\.h\\)$" file-to-swap)
+  (if (string-match "\\(\\.cc\\|\\.cpp\\|\\.h\\)$" file-to-swap)
       (let ((swapped-file (swap-cc-h-aux file-to-swap ) ))
 	swapped-file ; attempt succeeded, return current file
 	) ; end let
