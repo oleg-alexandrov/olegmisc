@@ -42,7 +42,7 @@ MAIN:{
   if ($startx + $widx > $sizeX){ $widx = $sizeX - $startx; }
   if ($starty + $widy > $sizeY){ $widy = $sizeY - $starty; }
 
-  my $cmd = ". isis_setup.sh; crop from = $in to = $out sample = $startx line = $starty nsamples = $widx nlines = $widy";
+  my $cmd = "crop from = $in to = $out sample = $startx line = $starty nsamples = $widx nlines = $widy";
   print "$cmd\n";
   print qx($cmd) . "\n";
 }

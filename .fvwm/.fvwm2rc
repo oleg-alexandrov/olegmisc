@@ -61,7 +61,7 @@ MenuStyle * Font -adobe-helvetica-medium-r-*-*-11-*-*-*-*-*-*-* fvwm, PopupOffse
 # Menu Ocean-Ploum
 MenuStyle * MenuFace VGradient 128 1 #2c80A0 1 #1c5572 
 
-ModulePath ${HOME}/projects/fvwm/modules/FvwmPager:+
+ModulePath ${HOME}/projects/fvwm/modules/FvwmPager:${HOME}/projects/fvwm-2.6.9/modules/FvwmPager:+
 
 AddToFunc InitFunction    "I" Module FvwmPager  *
 #AddToFunc InitFunction "I" Exec firefox&
@@ -71,11 +71,11 @@ AddToFunc InitFunction    "I" Module FvwmPager  *
  
 #AddToFunc InitFunction "I" Exec $HOME/bin/fvwm_dual_monitor.pl& # uncomment when going back to work
 AddToFunc InitFunction "I" Exec xclock -d -twentyfour -bg black -fg green -brief -geo 100x50+1850+0 &
-AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 103x59+0+0  --tab --tab &
-AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 103x59+960+0  --tab --tab &
+AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 103x53+0+0 --tab --tab &
+AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 103x53+960+0 --tab --tab &
 AddToFunc InitFunction "I" Module FvwmPager  *
-#AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 103x55+1920+1080  -- zsh &
-#AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 103x55+2890+1080  -- zsh &
+#AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry--geometry 103x55+1920+1080  -- zsh &
+#AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry--geometry 103x55+2890+1080  -- zsh &
 #AddToFunc InitFunction "I" Exec ~/bin/xe -geometry 209x66+3840+1080 &
 # Uncomment below when going back to work!
 #AddToFunc InitFunction "I" Exec xrandr --output VBOX0 --auto --output VBOX1 --auto --right-of VBOX0
@@ -118,9 +118,9 @@ DesktopName 3 Desk 3
  
 ######################### Keyboard binding###########################
 #Key F1    A   N   Exec /usr/bin/konsole& 
-Key F1    A   C   Exec /usr/bin/gnome-terminal --geometry 103x59+0+0 --tab --tab & 
-Key F1    A   M   Exec /usr/bin/gnome-terminal --geometry 81x40+0+0  -- zsh & 
-#Key F1   A   C   Exec /usr/bin/gnome-terminal --geometry 110x44 -e "$HOME/bin/zsh"& 
+Key F1    A   C   Exec /usr/bin/gnome-terminal --geometry 103x53+0+0 --tab --tab & 
+Key F1    A   M   Exec /usr/bin/gnome-terminal --geometry--geometry 81x40+0+0  -- zsh & 
+#Key F1   A   C   Exec /usr/bin/gnome-terminal --geometry--geometry 110x44 -e "$HOME/bin/zsh"& 
 #Key F1    A   M   Exec /usr/bin/xterm  -geo 108x46+0+0  -hc blue  -bdc -fn 8x16  -- zsh&
 #Key F1    A   N   Exec  /m1/aoleg/bin/rxvt & # -geo 140x61+10+10  -hc blue  -bdc -fn 8x16 &
 #Key F2    A   N   Exec  thunderbird& 
@@ -152,6 +152,12 @@ Key Left  A   C   Scroll -100    0
 Key Right A   C   Scroll +100   +0
 Key Up    A   C   Scroll +0   -100
 Key Down  A   C   Scroll +0   +100
+
+# shift + control anywhere => scroll by a page
+Key Left  A   S   Scroll -100    0
+Key Right A   S   Scroll +100   +0
+Key Up    A   S   Scroll +0   -100
+Key Down  A   S   Scroll +0   +100
 
 # Use the left windows key for moving the cursor  
 # Put this in .bashrc: xmodmap -e  "add mod4 = Super_L"
@@ -325,8 +331,8 @@ AddToMenu Programs   "+++Programs+++"   Title
 +   "Close"   Close   
 +   ""   Nop
 +   "Move"   Move
++   ""   Nop
 +   "Resize" Resize 83 93
-
 +   ""   Nop
 +   "Destroy"   Destroy   
 +   ""   Nop

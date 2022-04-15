@@ -7,16 +7,4 @@ if [ "$do_switch" != "" ] && [ "$shell" = "" ]; then
     if [[ -f ~/.bash_login ]]; then source ~/.bash_login; fi
 fi
 
-#     # Interactive mode on do_switch
-#     export HOME=/nobackupnfs2/oalexan1
-#     cd
-#     if [ -f ~/.bash_login ]; then source ~/.bash_login; fi
-#if [ "$zula" != "" ]; then
-    # Interactive mode on zulla
-#    export HOME=/media/raid/oleg
-#    cd
-#    if [ -f ~/.bash_login ]; then source ~/.bash_login; fi
-#else
-# Non-interacive mode
 if [ -f ~/.bashrc ]; then source ~/.bashrc; fi
-#fi

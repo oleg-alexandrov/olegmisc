@@ -383,7 +383,7 @@ function td {
 }
 
 function tl {
-    remote_copy.pl $* $L2
+    remote_copy.pl $* $(whoami)@laptop
 }
 
 function tl2 {

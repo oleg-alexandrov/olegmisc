@@ -16,7 +16,7 @@ MAIN:{
 
   my $out = $in; $out =~ s/.cub/_sub$scale.cub/g;
 
-  my $cmd = ". isis_setup.sh; reduce from = $in to = $out sscale = $scale lscale = $scale";
+  my $cmd = "reduce from = $in to = $out sscale = $scale lscale = $scale";
   print "$cmd\n";
   print qx($cmd) . "\n";
 }
