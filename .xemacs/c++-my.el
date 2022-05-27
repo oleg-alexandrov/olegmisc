@@ -89,15 +89,22 @@
     ))
 
 (defun smart-equal ()
+  ;; Auto-complete the variable name in a for loop whereever it is
+  ;; needed.
   (interactive)
   (if (= smart_equal_flag 0)
       (insert "=")
     (insert " =")
     (forward-char 1)
     (save-excursion
-      (backward-char 2)
-      (backward-word 1)
-      (if (looking-at "\\(\\w+\\)")
+      ;; The logic is quite tricky below, since a variable name can
+      ;; have an underscore which is not a word. Find the opening
+      ;; parenthesis, Move forward to the type, such as "int". Move a
+      ;; character ahead. All the text between that location and the
+      ;; next space is the variable name.
+      (search-backward "(")
+      (search-forward " ")
+      (if (looking-at "\\(.*?\\)[ ]")
 	  (let ((w (match-string 1) ))
 	    (search-forward "; ")
 	    (insert w)
@@ -357,15 +364,15 @@ exist, try replacing 'src' with 'include' and vice-versa"
 (local-set-key [(down)] 'smart-down)
 (local-set-key [(space)] 'c++-smart-space)
 (local-set-key [(return)] 'reindent-then-newline-and-indent)
-(local-set-key [(meta j)] 'open-spq)
 (local-set-key [(control s)] 'save-and-copy)
-;(local-set-key [(meta \[)] 'c++-brace)
+(local-set-key [(meta \[)] 'forward-sexp)
+;(local-set-key [(meta \[)] 'my-insert-brackets)
+(local-set-key [(meta \{)] 'my-insert-braces)
 ;(local-set-key "\e[7~" 'beginning-of-line)
 ;(local-set-key "\e[8~" 'end-of-line)
 (local-set-key [(meta t)] 'toggle-cc-h)
 (local-set-key [(meta h)] 'update-header-file)
 (local-set-key [(control return)] 'c++-break-line)
-(local-set-key [(meta \[)] 'goto-match-paren)
 (local-set-key [(control meta a)] 'beginning-of-defun)
 (local-set-key [(control meta e)] 'end-of-defun)
 (local-set-key [(delete)] 'c++-delete)

@@ -118,6 +118,7 @@
 		("CMakeLists\\.txt"       . shell-script-mode)
 		("\\.bash"                . shell-script-mode)
 		("\\.sh"                  . shell-script-mode)
+		("\\.yaml"                . shell-script-mode)
 		("\\.aliases"             . shell-script-mode)
 		("\\.param"               . shell-script-mode)
 		("\\.java$"               . java-mode)

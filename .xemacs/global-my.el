@@ -114,13 +114,6 @@
 	  )))
     ))
 
-(defun my-insert-parantheses ()
-  "A simple stupid function"
-  (interactive)
-  (insert "()")
-  (backward-char 1)
-  )
-
 ;; Rearrange the modeline so that everything is to the left of the
 ;; long list of minor modes, which is relatively unimportant but takes
 ;; up so much room that anything to the right is obliterated.
@@ -176,6 +169,23 @@
 	     ))
   )
 
+(defun my-insert-parantheses ()
+  (interactive)
+  (insert "()")
+  (backward-char 1)
+  )
+
+(defun my-insert-brackets ()
+  (interactive)
+  (insert "[]")
+  (backward-char 1)
+  )
+
+(defun my-insert-braces ()
+  (interactive)
+  (insert "{}")
+  (backward-char 1)
+  )
 
 ;  in this way one can move back and forth between previous cuts and copies (that is, navigate the clipboard)
 ;  with alt-y and alt-u
@@ -445,7 +455,8 @@
 (global-set-key [(meta c)] 'comment-region)
 (global-set-key [(meta control a)] 'define-mode-abbrev)
 (global-set-key [(control i)] 'ispell-buffer)
-(global-set-key [(meta j)] 'forward-char)
+(global-set-key [(meta j)] 'ispell-region)
+(global-set-key [(meta k)] 'ispell-buffer)
 (global-set-key [(meta q)] 'kill-this-buffer)
 ;(global-set-key [(meta s)] 'write-file)	; 'save file as...' with Alt-s
 (global-set-key [(meta space)] 'dabbrev-expand)
