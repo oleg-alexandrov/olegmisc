@@ -36,5 +36,5 @@ else
     tkdiff $out1 $out2
 fi
 
-max_err.pl  $out1 $out2
+~/bin/max_err_v2.pl  $out1 $out2
 rm -f $out1 $out2

@@ -111,6 +111,15 @@ function tg {
     tail -n 1000 $1 | grep -i -v wait | tail -n 200
 }
 
+# Given an LRO NAC image and other stuff on each line, return names of
+# mapprojected images in given dir with given convention. The first
+# argument, $1, must be a directory.
+function plm {
+    dir=$1
+    if [ ! -d "$dir" ]; then echo Not a directory $dir; return; fi
+    perl -pi -e "s#^.*?(M.*?E).*?\n#${dir}/\$1.cal.echo.map.tr1.tif\n#g"
+}
+
 function cdls {
   if [ "$*" ]; then
      builtin cd "$*";
@@ -154,6 +163,10 @@ function tls {
     tail -n $lines $file
 }
 
+function fn {
+   find "$1" -name "$2"
+}
+
 function cvdel {
     rm -fv $1
     cvs delete $1
@@ -170,6 +183,10 @@ function setbuildenv
 
 function gip {
     gdalinfo $1 | grep -i "pixel size";
+}
+
+function gipr {
+    gdalinfo -proj4 $1 | grep -i "proj";
 }
 
 function a {
@@ -198,9 +215,35 @@ function a {
 
 }
 
+# This calls the 'tail' function in several ways
+function t {
+        
+    if [ "$#" -le 1 ]; then
+
+        re='^[0-9]+$' # nice to know bash can use regexps
+        if [[ "$1" =~ "$re" ]]; then
+            # Was called as: cat file.txt | t 5
+            tail -n $1
+        else
+            # Was called as: t file.txt
+            tail -n 5 $1
+        fi
+        
+    else
+        # Was called as: t 20 file.txt
+        tail -n $1 $2
+    fi
+}
+
 function cll  {
-    # Remove everything after semicolon
+    # Remove everything after column
     perl -p -e "s#:.*?\n#\n#g" | ~/bin/unique.pl | perl -p -e "s#\n# #g"
+}
+
+# Wipe distracting stuff from an ASP log file
+function cl {
+    perl -pi -e "s#.*?\]\s+:##g" $*
+    perl -pi -e "s#^.*?\*\*.*?\$##g" $*
 }
 
 function ald {
@@ -533,6 +576,7 @@ export FVWM_USERDIR=$HOME/.fvwm # needed for fvwm
 
 # More env variables
 if [ -f ~/.bashenv ];   then source ~/.bashenv;   fi
+
 if [ -f ~/.unaliases ]; then source ~/.unaliases; fi
 
 # Aliases
@@ -542,5 +586,4 @@ if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi
 if [ -f ~/.bash_aliases ]; then
      grep -E -v "(cd|ssh|scp)"  ~/.bash_aliases > ~/.base_aliases
 fi
-
 

@@ -458,9 +458,8 @@
 (global-set-key [(meta j)] 'ispell-region)
 (global-set-key [(meta k)] 'ispell-buffer)
 (global-set-key [(meta q)] 'kill-this-buffer)
-;(global-set-key [(meta s)] 'write-file)	; 'save file as...' with Alt-s
 (global-set-key [(meta space)] 'dabbrev-expand)
-(global-set-key [(meta t)] 'pop-prev-yank)
+(global-set-key [(meta t)] 'ispell-buffer)
 (global-set-key [(meta u)] 'un-comment-region)
 (global-set-key [(meta z)] 'redo)
 (global-set-key [(shift space)] 'my-insert-space)

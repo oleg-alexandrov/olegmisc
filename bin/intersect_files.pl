@@ -15,8 +15,6 @@ MAIN:{
   my $file2 = $ARGV[1];
   open(FILE, "<$file2"); my @lines2 = <FILE>; close(FILE);
   
-  print "files are $file1 $file2\n";
-
   my (%vals1, %vals2);
 
   my $count = 0;

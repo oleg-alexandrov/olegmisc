@@ -51,10 +51,10 @@ def expandCmdLine(cmdLine, cursor, part):
    before = cmdLine[0:cursor]
    after  = cmdLine[cursor:lineLen]
 
-   before = re.sub('\"\"', '', before)
-   after = re.sub('\"\"', '', after)
-   before = re.sub('\'\'', '', before)
-   after = re.sub('\'\'', '', after)
+#    before = re.sub('\"\"', '', before)
+#    after = re.sub('\"\"', '', after)
+#    before = re.sub('\'\'', '', before)
+#    after = re.sub('\'\'', '', after)
 
    #marker = ' xtk45TSfl ';
    #words = re.sub(r'\b', marker, before).split(marker);

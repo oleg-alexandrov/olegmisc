@@ -36,6 +36,11 @@ setopt PUSHD_IGNORE_DUPS
 export WORDCHARS=""; # Make every non-alphanumeric be a word separator
 #export WORDCHARS="*?_-.[]~=/&;!#$%^(){}<>"; # original
 
+# To prevent funny editing
+export ZLE_SPACE_SUFFIX_CHARS=$'&'
+export ZLE_REMOVE_SUFFIX_CHARS=$'&'
+bindkey " " self-insert
+
 #eval `dircolors -b`
 
 zstyle ':completion:*' menu select
@@ -104,7 +109,7 @@ bindkey  "^K"                kill-line
 bindkey  "^[f"               forward-word
 bindkey  "^[b"               backward-word
 bindkey "\M-^?"              backward-delete-word
-bindkey " "                  magic-space
+#bindkey " "                  magic-space
 #bindkey '\e[15~' _history-complete-older #F5
 #bindkey '\e[28~' _history-complete-newer #Shift-F5
 bindkey "\M- "               _history-complete-older # completion from history

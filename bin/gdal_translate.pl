@@ -10,6 +10,8 @@ MAIN:{
   }
 
   #$ENV{'PATH'} = $ENV{'HOME'} . '/miniconda3/envs/asp/bin' . ':' . $ENV{'PATH'};
+
+  my $gdal_opts = "-co compress=lzw -co TILED=yes -co INTERLEAVE=BAND -co BLOCKXSIZE=256 -co BLOCKYSIZE=256";
   
   my $cmd = join(" ", @ARGV);
   $cmd =~ s/://g; # rm stray chars
@@ -46,7 +48,7 @@ MAIN:{
 
     $bf = "$1 -srcwin"; $af = $2;
     $crop = 1;
-    $cmd = "gdal_translate $cmd";
+    $cmd = "gdal_translate $gdal_opts $cmd";
     print "$cmd\n";
     my $ans = qx($cmd);
     print "$ans\n";
@@ -71,7 +73,7 @@ MAIN:{
     print "Corrected srcwin bounds.\n";
   }
   
-  $cmd = "gdal_translate -co compress=lzw -co TILED=yes -co INTERLEAVE=BAND -co BLOCKXSIZE=256 -co BLOCKYSIZE=256 $bf $a $b $c $d $af";
+  $cmd = "gdal_translate $gdal_opts $bf $a $b $c $d $af";
   print "$cmd\n";
   my $ans = qx($cmd);
   print "$ans";
