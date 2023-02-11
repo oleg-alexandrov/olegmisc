@@ -11,6 +11,10 @@ filename = sys.argv[1]
 col1 = int(sys.argv[2])
 col2 = int(sys.argv[3])
 
+style = '.'
+if len(sys.argv) > 4:
+    style = sys.argv[4]
+
 X, Y = [], []
 for line in open(filename, 'r'):
     count = 0
@@ -21,7 +25,7 @@ for line in open(filename, 'r'):
             Y.append(float(s))
         count += 1
 
-plt.plot(X, Y, '.')
+plt.plot(X, Y, style)
 plt.show()
 
 

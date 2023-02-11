@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import sys
 import os
@@ -126,7 +126,22 @@ def expandCmdLine(cmdLine, cursor, part):
       to = words[numWords-1]
       for i in range(len(words)):
          words[i] = re.sub(fr, to, words[i])
-         #print words[i]
+         #print(words[i])
+      words[numWords-3] = ""
+      words[numWords-2] = ""
+      words[numWords-1] = ""
+      cmdLine = " ".join(words) + after
+      cmdLine = re.sub('\s*$', '', cmdLine)
+      cursor  = len(cmdLine)
+
+   elif  ( numWords >= 3 and words[numWords-3] == "d"):
+      # Given the input 'hi 2 d 2 i', will replace it with 'hi ${i}'.
+      # Need this because typing dollars and curly braces is so annoying.
+      fr = words[numWords-2]
+      to = words[numWords-1]
+      for i in range(len(words)):
+         words[i] = re.sub(fr, '${' + to + '}', words[i])
+         #print(words[i])
       words[numWords-3] = ""
       words[numWords-2] = ""
       words[numWords-1] = ""
@@ -145,9 +160,16 @@ def expandCmdLine(cmdLine, cursor, part):
    elif ( numWords == 1 and words[0] == "pl" ) or \
           ( numWords >= 2 and words[numWords-2] != "a" and words[numWords-1] == "pl" ):
       # Expand the string "pl"
+      words[numWords-1] = "perl -p -e \"s###g\""
+      cmdLine = " ".join(words) + after
+      cursor  = cursor + 12 # advance to between the first two ##
+
+   elif ( numWords == 1 and words[0] == "pli" ) or \
+          ( numWords >= 2 and words[numWords-2] != "a" and words[numWords-1] == "pli" ):
+      # Expand the string "pli"
       words[numWords-1] = "perl -pi -e \"s###g\""
       cmdLine = " ".join(words) + after
-      cursor  = cursor + 13 # advance to between the first two ##
+      cursor  = cursor + 12 # advance to between the first two ##
 
    elif ( numWords >= 2 and words[numWords-2] == "for" ):
       # Expand "for var" into a full for loop.
@@ -182,12 +204,12 @@ def expandCmdLine(cmdLine, cursor, part):
 
 numArgs = len(sys.argv)
 if numArgs <= 3:
-   print "Error: Need to have as inputs the existing " +  \
-         "command line, the cursor postion, and a flag."
+   print("Error: Need to have as inputs the existing " +  \
+         "command line, the cursor postion, and a flag.")
    sys.exit(0)
 
 cmdLine = sys.argv[1]
 cursor  = int(sys.argv[2])
 part    = int(sys.argv[3])
 
-print expandCmdLine(cmdLine, cursor, part)
+print(expandCmdLine(cmdLine, cursor, part))
