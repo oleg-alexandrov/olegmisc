@@ -1,3 +1,77 @@
+Make the texture processing tool work with multiple sensors. Made a tool to extract a submap from a map with multiple sensors. Made a tool to merge maps with multiple sensors (it resulted in a big rewrite of the existing merge_maps since some code was not easy to port). That tool a while. Made updated nav and sci textures for the full JPM. Also recreated them with correct registration using the JPM control points. 
+
+sfm_submap: Save the shift?
+
+Update the rig_calibrator example dataset.
+
+rig_calibrator: Must merge new matches with old matches! Or else they accumulate!
+
+dg_mosaic: Throw an error when the product is not L1B, particularly for P2AS.
+
+Add testcases with extra images, with no rig, and with rig set.
+
+Update the mac build for MultiView!
+   
+Fix the bug with last timestamp being equal!
+
+rig_calibrator: Document multiple rigs! Also in news!
+
+rig_calibrator: Should --num_overlaps match between different rigs?
+Now it does, which may not be desirable. See std::sort(cams.begin(), ...).
+
+rig_calibrator: New matches don't get merged with old matches read from nvm!
+
+Must use OpenMVG 1.1 from https://github.com/openMVG/openMVG. Newer
+versions changed the API.
+
+Bug in rig_calibrator when there is a rig and all sensors acquire data
+at the same time. The last non-ref cameras will not have the rig
+transform applied to them!
+
+rig_calibrator: Are quaternions normalized properly?
+
+Add some logic to wv_correct to check the metadata for WV-2.
+
+Add sfm_merge, sfm_submap tools. 
+
+rig_calibrator: Add --fixed_image_list, --fix_poses_before_image_additions
+
+Theia does much better matches than rig_calibrator.
+Compare:
+Pixel and value for bay4_tiny/queen_nav/1654694796.1763611.jpg: 941 378 91
+Pixel and value for bay3_tiny/bumble_nav/1654696536.1434920.jpg: 585 397 175
+Also compare the rig calibrator with ipfind/ipmatch.
+   
+When loading nvm files, do not do sub until 5000, and load only one or two images at a time,
+not all at once.
+
+stereo_gui: Hide/show does not work nvm files.
+
+rig_calibrator interest point matching makes too many outliers when num_overlaps is large.
+Likely depth_tri_weight makes that worse?
+Borrow the build_map approach of filtering outliers.
+
+Make timestamp offset 0! Test effect!
+
+Must test with interpolating cameras when having an input list!
+
+Do histogram equalization on nav and haz images before building a map?
+
+Upload and upgrade rig_calibrator conda package.
+
+# theia_sfsm --min_triangulation_angle_degrees=0.3 option in default config file
+# may be too small. There's a lot of data with rotation only.
+# Expose this param.
+
+Must archive nobile_v7.0 when lou comes back. Already archived nobile_1 and nobile_2. Must then wipe these at some point.
+
+MSL: Note in the doc that the metakernels ar hard to find, and need to copy to a a name for the current year.
+
+MSL: See ~/projects/cahvor/cahvor_notes.sh. There is a paper at the bottom.
+
+Look at jitter with many LRO NAC images. See /home/oalexan1/projects/nobile_2/nobile_2_notes.sh.
+There is a triplet, and can add more nearby images. 
+
 Fix quaternion logic
 
 Mapproject MSL data on both MOLA and on the higher res DEM. See how well it goes
