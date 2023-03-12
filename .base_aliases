@@ -9,6 +9,7 @@ alias bmi='~/projects/astrobee/devel/lib/sparse_mapping/build_map -info -output_
 alias buf='stdbuf -o 0'
 alias c=clear
 alias c2s='~/bin/syncSettings.sh'
+alias ca='conda activate'
 alias caa='. ~/miniconda3/etc/profile.d/conda.sh'
 alias cc='~/projects/CloudCompare/build/ccViewer/ccViewer'
 alias ccv=/home/oalexan1/projects/CloudCompare/install/bin/CloudCompare
@@ -201,7 +202,7 @@ alias lsd='ls -d *(/)'
 alias lt='ll -rt'
 alias lta='llt *'
 alias m=mymore
-alias m0='make -j 16'
+alias m0='make -j 16 install'
 alias m0c='ulimit -s unlimited; ulimit -f unlimited; ulimit -v unlimited; is; m0 check'
 alias m0k='make -j 16 -k'
 alias make='time make'
@@ -249,6 +250,7 @@ alias pll=perl
 alias plmap=perl
 alias plmap0=perl
 alias plmap3=perl
+alias plt='perl -p -e "s#^.*?(\d+\.\d+).*?(\n)#\$1\$2#g"'
 alias pm='point2mesh -s 4 --texture-step-size 1'
 alias pp='python plot_mat.py'
 alias ppd='~/miniconda3/envs/sparse_disp/bin/python ~/projects/jitter_2020/plot_disp.py --skip_moving_avg 1 --skip_output_gen 1 --exclude 0 --ylim 2 --clamp 2'
@@ -390,10 +392,24 @@ alias which-command=whence
 alias ww=/home/oalexan1/openMVS/build/bin/Viewer
 alias x=exit
 alias z=zsh
-alias ca='conda activate'
-alias ca='conda activate'
-alias m0='make -j 16 intall'
-alias m0='make -j 16 install'
-alias m0='make -j 16 install'
-alias py='python'
-alias py='python'
+alias plt=perl -p -e "s#^.*?(\d+\.\d+).*?(
+ )#\$1\$2#g"
+alias plt=perl -p -e "s#^.*?(\d+\.\d+).*?(
+ )#\$1\$2#g"
+alias plt=perl -p -e "s#^.*?(\d+\.\d+).*?(
+ )#\$1\$2#g"
+alias plt=perl -p -e "s#^.*?(\d+\.\d+).*?(
+ )#\$1\$2#g"
+alias plt=perl -p -e "s#^.*?(\d+\.\d+).*?(
+ )#\$1\$2#g"
+alias bmi='ASTROBEE_ROBOT=queen; ~/projects/astrobee/devel/lib/sparse_mapping/build_map -info -output_map'
+alias bmi='ASTROBEE_ROBOT=queen; ~/projects/astrobee/devel/lib/sparse_mapping/build_map -info -output_map'
+alias bmi='ASTROBEE_ROBOT=queen ~/projects/astrobee/devel/lib/sparse_mapping/build_map -info -output_map'
+alias bmi='ASTROBEE_ROBOT=queen ~/projects/astrobee/devel/lib/sparse_mapping/build_map -info -output_map'
+alias a nv='~/projects/astrobee/devel/lib/sparse_mapping/nvm_visualize -skip_3d_points -skip_3d_images -enable_image_deletion'
+alias nv='~/projects/astrobee/devel/lib/sparse_mapping/nvm_visualize -skip_3d_points -skip_3d_images -enable_image_deletion'
+alias pco='g haz |g nav | sbc 0 | t 10'
+alias rfou='rm -fv out*'
+alias gg='grep'
+alias gg='grep'
+alias gg='grep'

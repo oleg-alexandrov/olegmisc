@@ -453,6 +453,11 @@ function fa {
     remote_copy.pl oalexan1@astrobeast $*
 }
 
+function pco {
+    # print largest number of matches
+    cat $1 | grep haz |grep nav | sortbycol.pl 0
+}
+
 # read something like:
 # myfile.cc:343 etc etc
 # which is output by grep -r -i -N

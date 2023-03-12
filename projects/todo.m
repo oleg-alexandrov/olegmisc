@@ -1,6 +1,20 @@
-Make the texture processing tool work with multiple sensors. Made a tool to extract a submap from a map with multiple sensors. Made a tool to merge maps with multiple sensors (it resulted in a big rewrite of the existing merge_maps since some code was not easy to port). That tool a while. Made updated nav and sci textures for the full JPM. Also recreated them with correct registration using the JPM control points. 
+- Make the texture processing tool work with multiple sensors.
 
-sfm_submap: Save the shift?
+- Made a tool to extract a submap from a map with multiple
+sensors.
+
+- Made a tool to merge maps which can handle (a) multiple sensors and (b)
+a mix of features from different sources (Theia, rig_calibrator,
+build_map). It resulted in a big rewrite of the existing merge_maps
+since some code was not easy to port and new code was needed.
+
+-Made updated nav and sci textures for the full JPM. Also recreated
+them with correct registration using the JPM control points.
+
+rig_calibrator: Too few points at boundary? Revisit the matching code!
+Undistort points, use homography transform! See how that works with haz cam!
+
+sfm_merge: How about the shift?
 
 Update the rig_calibrator example dataset.
 
@@ -20,9 +34,6 @@ rig_calibrator: Should --num_overlaps match between different rigs?
 Now it does, which may not be desirable. See std::sort(cams.begin(), ...).
 
 rig_calibrator: New matches don't get merged with old matches read from nvm!
-
-Must use OpenMVG 1.1 from https://github.com/openMVG/openMVG. Newer
-versions changed the API.
 
 Bug in rig_calibrator when there is a rig and all sensors acquire data
 at the same time. The last non-ref cameras will not have the rig
