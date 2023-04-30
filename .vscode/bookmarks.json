@@ -1,0 +1,179 @@
+{
+	"files": [
+		{
+			"path": "projects/usgscsm/ale/ale/base/type_sensor.py",
+			"bookmarks": [
+				{
+					"line": 8,
+					"column": 0,
+					"label": "type"
+				}
+			]
+		},
+		{
+			"path": "projects/usgscsm/ale/ale/formatters/formatter.py",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "fmt"
+				},
+				{
+					"line": 77,
+					"column": 21,
+					"label": "fmt"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Tools/mapproject_single.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "map"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/docs/examples/msl.rst",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "rmrs"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/docs/examples.rst",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "ers"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/NEWS.rst",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "n"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/docs/examples/mer.rst",
+			"bookmarks": [
+				{
+					"line": 39,
+					"column": 15,
+					"label": "rmrs"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Tools/cam_test.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "ct"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Tools/stereo.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "st"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Tools/point2dem.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "pd"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Tools/bundle_adjust.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "ba"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/docs/examples/csm.rst",
+			"bookmarks": [
+				{
+					"line": 458,
+					"column": 0,
+					"label": "msrs"
+				}
+			]
+		},
+		{
+			"path": "projects/cahvor/cahvor_notes.sh",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "cah"
+				}
+			]
+		},
+		{
+			"path": "projects/MultiView/bin/rig_calibrator.cc",
+			"bookmarks": [
+				{
+					"line": 5,
+					"column": 42,
+					"label": "rc"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/docs/tools/rig_calibrator.rst",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "rcrs"
+				}
+			]
+		},
+		{
+			"path": ".muttrc",
+			"bookmarks": [
+				{
+					"line": 189,
+					"column": 0,
+					"label": "mu"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/docs/tools/stereo_gui.rst",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "mu"
+				}
+			]
+		}
+	]
+}
