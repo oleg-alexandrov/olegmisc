@@ -2,7 +2,7 @@
 
 # Kill all processes matching the given name
 
-progName=$(echo $0 | perl -pi -e "s#^.*\/##g")
+progName=$(echo $0 | perl -p -e "s#^.*\/##g")
 
 pids=""
 for name in $*; do
@@ -11,7 +11,7 @@ for name in $*; do
     pids="$pids $local_pids"
 done
 
-for pid in $(echo $pids | perl -pi -e "s#\s+#\n#g"); do
+for pid in $(echo $pids | perl -p -e "s#\s+#\n#g"); do
     echo "kill -9 $pid"
     kill -9 $pid
 done

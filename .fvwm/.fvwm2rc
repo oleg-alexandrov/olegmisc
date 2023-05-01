@@ -13,8 +13,8 @@ Style "*"   MWMBorder, MWMButtons
 Style "*"   DecorateTransient
 Style "*"   IconBox 1200 750 1600 1400
 Style "*"   NoPPosition
-#Style "*"   SmartPlacement
-Style * MinOverlapPlacement, GrabFocusOff, !UsePPosition
+Style "*"   SmartPlacement
+#Style * MinOverlapPlacement, GrabFocusOff, !UsePPosition
 Style "*"   MouseFocus
 Style "*"   SloppyFocus
 Style "Fvwm*"   NoTitle, NoHandles, Sticky, WindowListSkip,
@@ -61,7 +61,7 @@ MenuStyle * Font -adobe-helvetica-medium-r-*-*-11-*-*-*-*-*-*-* fvwm, PopupOffse
 # Menu Ocean-Ploum
 MenuStyle * MenuFace VGradient 128 1 #2c80A0 1 #1c5572 
 
-ModulePath ${HOME}/projects/fvwm/modules/FvwmPager:${HOME}/projects/fvwm-2.6.9/modules/FvwmPager:+
+#ModulePath ${HOME}/projects/fvwm/modules/FvwmPager:${HOME}/projects/fvwm-2.6.9/modules/FvwmPager:+
 
 AddToFunc InitFunction    "I" Module FvwmPager  *
 #AddToFunc InitFunction "I" Exec firefox&
@@ -143,9 +143,9 @@ Key Down A   CMS  Move +0 +100
 Key F10   A   C   Resize 49 98
 Key F10   A   M   Resize 24 98
 Key F11   A   C   Resize 99 96
-Key F12   A   M   Restart fvwm
-Key F12   A   C   Close
-Key F11   A   N   Iconify
+#Key F12   A   M   Restart fvwm
+#Key F12   A   C   Close
+#Key F11   A   N   Iconify
 
 # arrow + control anywhere => scroll by a page
 Key Left  A   C   Scroll -100    0
@@ -154,10 +154,10 @@ Key Up    A   C   Scroll +0   -100
 Key Down  A   C   Scroll +0   +100
 
 # shift + control anywhere => scroll by a page
-Key Left  A   S   Scroll -100    0
-Key Right A   S   Scroll +100   +0
-Key Up    A   S   Scroll +0   -100
-Key Down  A   S   Scroll +0   +100
+#Key Left  A   S   Scroll -100    0
+#Key Right A   S   Scroll +100   +0
+#Key Up    A   S   Scroll +0   -100
+#Key Down  A   S   Scroll +0   +100
 
 # Use the left windows key for moving the cursor  
 # Put this in .bashrc: xmodmap -e  "add mod4 = Super_L"

@@ -5,7 +5,7 @@ alias an='~/bin/putanno.pl'
 alias ap=add_to_path
 alias av='~/projects/visionworkbench/src/vw/gui/vwv'
 alias bm='~/projects/astrobee/devel/lib/sparse_mapping/build_map -output_map'
-alias bmi='~/projects/astrobee/devel/lib/sparse_mapping/build_map -info -output_map'
+alias bmi='ASTROBEE_ROBOT=queen ~/projects/astrobee/devel/lib/sparse_mapping/build_map -info -output_map'
 alias buf='stdbuf -o 0'
 alias c=clear
 alias c2s='~/bin/syncSettings.sh'
@@ -152,6 +152,7 @@ alias gs2='git status | grep -v "\.\."'
 alias gsc=gsc.sh
 alias gsc10=gsc10.sh
 alias gt='git difftool --tool=tkdiff'
+alias gtc='gt $(gs |g rig | pc 0)'
 alias gtf='gdal_translate -of GTiff'
 alias gts='gdal_translate.pl -srcwin'
 alias gu='git reset HEAD'
@@ -229,6 +230,7 @@ alias os=osgviewer
 alias p=vim
 alias pa='ps aux'
 alias pc=print_col.pl
+alias pco='g haz |g nav | sbc 0 | t 10'
 alias pd=point2dem
 alias pda='pd --tr 18 --stereographic --proj-lon 3.6357977 --proj-lat 25.4814476'
 alias pdac='point2dem --t_srs "+proj=stere +lat_0=90 +lat_ts=70 +lon_0=-45 +k=1 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs" --tr 0.4 --errorimage --csv-format 1:lat,2:lon,3:height_above_datum'
@@ -250,7 +252,8 @@ alias pll=perl
 alias plmap=perl
 alias plmap0=perl
 alias plmap3=perl
-alias plt='perl -p -e "s#^.*?(\d+\.\d+).*?(\n)#\$1\$2#g"'
+alias plr='perl -p -e "s#lnav#*nav#g" | perl -p -e "s#NLB#N*B#g" | perl -p -e "s#\s# #g"'
+alias plt=perl
 alias pm='point2mesh -s 4 --texture-step-size 1'
 alias pp='python plot_mat.py'
 alias ppd='~/miniconda3/envs/sparse_disp/bin/python ~/projects/jitter_2020/plot_disp.py --skip_moving_avg 1 --skip_output_gen 1 --exclude 0 --ylim 2 --clamp 2'
@@ -313,12 +316,14 @@ alias rvv='rosrun rviz rviz'
 alias sbc='~/bin/sortbycol.pl'
 alias sc=screen
 alias sc2='sortbycol.pl -1'
-alias sg='stereo_gui --window-size 1700 900'
+alias sg='stereo_gui --window-size 2000 1300 --font-size 12 --lowest-resolution-subimage-num-pixels 9000000'
+alias sg0='stereo_gui --window-size 1300 1400 --font-size 12 --lowest-resolution-subimage-num-pixels 9000000'
 alias sg1='sg --colorize --min 0 --max 100'
 alias sgc='sg --colorize --min 0 --max 0.5'
 alias sgg=./StereoPipeline-None-2017-04-19-x86_64-Linux/bin/stereo_gui
 alias sgh='sg --hillshade'
 alias sgp='stereo_gui --create-image-pyramids-only'
+alias sgp0='stereo_gui --preview --window-size 1300 1400 --font-size 12 --lowest-resolution-subimage-num-pixels 9000000'
 alias sgph='stereo_gui --create-image-pyramids-only --hillshade'
 alias sis=sis.pl
 alias sls='screen -ls'
@@ -340,6 +345,7 @@ alias svs='svn status --show-updates'
 alias svu='svn update'
 alias sw='sg -g -w'
 alias swa='sg -g -w --hide-all'
+alias swah='sg -g -w --hide-all --hillshade'
 alias swh='sg -g -w --hillshade'
 alias sws='sg -w --hide-all'
 alias sx='screen -x'
@@ -374,17 +380,17 @@ alias vlv='valview --view-log'
 alias vn5='vncviewer -FullColor localhost:5001'
 alias vnc='vncserver -geometry 1750x1050'
 alias vnc2='vncserver -geometry 1800x1050'
-alias vnc3='vncserver -geometry 1730x1050'
+alias vnc3='vncserver -geometry 3000x2000'
 alias vnc_home='vncserver -geometry 1750x1000'
 alias vnc_pfe='vncserver -geometry 1800x1050'
 alias vncbig='vncserver -geometry 2550x1008'
-alias vncbig2='vncserver -geometry 2546x993'
+alias vncbig2='vncserver -geometry 3546x1593'
 alias vnw='xvncviewer localhost:9007'
 alias vo='~/bin/view_out.sh'
 alias voff='perl -pi -e "s#AM_DEFAULT_VERBOSITY = 1#AM_DEFAULT_VERBOSITY = 0#g" Makefil*'
 alias von='perl -pi -e "s#AM_DEFAULT_VERBOSITY = 0#AM_DEFAULT_VERBOSITY = 1#g" Makefile; g verb Makefile'
 alias vr='. ~/bin/vr'
-alias vs='~/bin/view_err.sh'
+alias vs='~/projects/VSCode-linux-x64/bin/code-insiders'
 alias vv=./validate.sh
 alias w=which
 alias wget='wget --no-check-certificate'
@@ -392,24 +398,10 @@ alias which-command=whence
 alias ww=/home/oalexan1/openMVS/build/bin/Viewer
 alias x=exit
 alias z=zsh
-alias plt=perl -p -e "s#^.*?(\d+\.\d+).*?(
- )#\$1\$2#g"
-alias plt=perl -p -e "s#^.*?(\d+\.\d+).*?(
- )#\$1\$2#g"
-alias plt=perl -p -e "s#^.*?(\d+\.\d+).*?(
- )#\$1\$2#g"
-alias plt=perl -p -e "s#^.*?(\d+\.\d+).*?(
- )#\$1\$2#g"
-alias plt=perl -p -e "s#^.*?(\d+\.\d+).*?(
- )#\$1\$2#g"
-alias bmi='ASTROBEE_ROBOT=queen; ~/projects/astrobee/devel/lib/sparse_mapping/build_map -info -output_map'
-alias bmi='ASTROBEE_ROBOT=queen; ~/projects/astrobee/devel/lib/sparse_mapping/build_map -info -output_map'
-alias bmi='ASTROBEE_ROBOT=queen ~/projects/astrobee/devel/lib/sparse_mapping/build_map -info -output_map'
-alias bmi='ASTROBEE_ROBOT=queen ~/projects/astrobee/devel/lib/sparse_mapping/build_map -info -output_map'
-alias a nv='~/projects/astrobee/devel/lib/sparse_mapping/nvm_visualize -skip_3d_points -skip_3d_images -enable_image_deletion'
-alias nv='~/projects/astrobee/devel/lib/sparse_mapping/nvm_visualize -skip_3d_points -skip_3d_images -enable_image_deletion'
-alias pco='g haz |g nav | sbc 0 | t 10'
-alias rfou='rm -fv out*'
-alias gg='grep'
-alias gg='grep'
-alias gg='grep'
+alias sw0='sg0 -g -w'
+alias vt='vs --goto'
+alias sg='stereo_gui --window-size 2000 1300 --font-size 12 --lowest-resolution-subimage-num-pixels 1000000'
+alias sg0='stereo_gui --window-size 1300 1400 --font-size 12 --lowest-resolution-subimage-num-pixels 1000000'
+alias sg='stereo_gui --window-size 2000 1300 --font-size 12 --lowest-resolution-subimage-num-pixels 1000000'
+alias sg='stereo_gui --window-size 2000 1300 --font-size 12 --lowest-resolution-subimage-num-pixels 4000000'
+alias sg='stereo_gui --window-size 2000 1300 --font-size 12 --lowest-resolution-subimage-num-pixels 1000000'

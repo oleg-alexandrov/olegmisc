@@ -1,3 +1,4 @@
 {
-    "cmake.sourceDirectory": "/home/oalexan1/projects/MultiView/TheiaSfM"
+    "cmake.sourceDirectory": "/home/oalexan1/projects/MultiView/TheiaSfM",
+    "esbonio.sphinx.confDir": "."
 }

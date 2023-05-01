@@ -1,15 +1,101 @@
-- Make the texture processing tool work with multiple sensors.
+CSM accomplishments:
 
-- Made a tool to extract a submap from a map with multiple
-sensors.
+// Improved the CSM camera logic for the MSL Curiosity rover to the point where
+// it can be used to create reasonably correctly placed cameras, which results
+// in plausible terrain models and orthoimages created from nav cam images for
+// this rover. 
 
-- Made a tool to merge maps which can handle (a) multiple sensors and (b)
-a mix of features from different sources (Theia, rig_calibrator,
-build_map). It resulted in a big rewrite of the existing merge_maps
-since some code was not easy to port and new code was needed.
+// Added an example to the documentation of using ASP to create a mesh from MSL
+// Curiosity rover images (based on structure from motion, without knowing the
+// geolocations of cameras). This work resulted in many robustness improvements
+// andn bug fixes in the software. This may be helpful in processing forthcoming
+// VIER Lunar rover data.
 
--Made updated nav and sci textures for the full JPM. Also recreated
-them with correct registration using the JPM control points.
+// Improved the Shape-from-Shading algorithm, adding much more detail in areas
+// close to permanet shadows. Created an updated 14,000 x 11,000 pixel terrain
+// model with this improvmeent that will be used for planning the Lunar VIPER
+// rover terrain traversal.
+
+Look at new stereo system: https://github.com/CNES/cars
+
+Must add new MGM!
+
+Refinement of SGM with uncertainty: 
+https://isprs-archives.copernicus.org/articles/XLIII-B2-2021/383/2021/
+
+Look at CloudCompare! Very nice!
+
+rig_calibrator: Must throw error for duplicate images! Before inserting extra ones with rig constraint.
+   
+Fix std+14 issue in voxblox!
+
+Fix hideAll bug with hillshaded images!
+
+Implement filtering of outlier by homography. See the effect on haz cam points and sfm_merge!
+
+bundle_adjust: Add support for NVM format.
+   
+stereo_gui: Do not render pixels that will not show up!
+
+Bundle_adjust: Save triangulation angle per point!
+
+Push Readme.md in MultiView!
+
+TODO(oalexan1): sfm_merge: Allow image lists on input.
+
+rig_calibrator: Bug with extra list if more than one rig!!! Timestamps can be
+for any sensor!
+
+sfm_merge: Remove outliers on saving!
+
+stereo_gui: Load nvm without loading all images.
+
+Look at pcl outlier removal! Also meshing, based on fast marching cubes.
+
+voxblox_mesh: Add weighing by distance! Add back noisy clouds!
+
+rig_calibrator: Add per camera residual report! Very helpful in
+throwing out misaligned cameras!
+
+rig_calibrator: Add tool for visualizing 3D features and camereas!
+
+For the report:
+
+Did quite some testing and fixed 3 bugs in rig calibration in some
+circumstances. Made some robustness improvements that will make the
+software more reliable.
+
+It is tricky to deal with the wall behind the airlock. It
+shows up as isolated low-resolution blobs which get filtered in mesh
+processing. What really helps in filling holes is using voxels of size
+1.5 cm instead of 1.0 cm. But then the mesh becomes noisy and blocky.
+I tried to use CGAL Poisson reconstruction mode, but it chokes on
+the JPM mesh. If a panning dataset is a acquired, care is needed at
+the airlock.
+
+Added detailed documentation. https://stereopipeline.readthedocs.io/en/latest/examples/sfm_iss.html
+
+Latest mesh, correctly registered to the JEM coordinate system, and with some improvement on the wall opposite the dock. Directory on astrobeast: /home/oalexan1/projects/20220608_Isaac9. Mesh: bay123457_airlock_nobr_rig/smooth2_filled4_subset4_vx0.01_median.ply. Texture: bay123457_airlock_nobr_norig/bumble_sci_queen_sci/texture.obj.
+
+%sfm_merge: Remove debug code in map merging! ("keep this till....")
+
+sfm_merge: Make it work with shifted nvm!
+
+rig_calibrator: Test with and without shifted nvm! Too many things changed!
+
+rig_calibrator: Merge IP!!!
+
+sfm_merge: Add doc and test!
+
+# Look at Poisson surface reconstruction!
+/usr/local/home/oalexan1/projects/CGAL-5.3/examples/Poisson_surface_reconstruction_3/tutorial_example.cpp
+
+sfm_merge: Allow sets of images to use in matching.
+
+Fixed a rig_calibrator bug when left and right bracket were same.
+Documented the sfm_merge tool. Added the --fast_merge option.
+
+Must make nvm_merge not save triangulated outliers!
 
 rig_calibrator: Too few points at boundary? Revisit the matching code!
 Undistort points, use homography transform! See how that works with haz cam!
@@ -242,34 +328,9 @@ Implement reading csv file with x, y, z, and no georef
 
 Implement reading graphs and polygons
 
-Accomplishments:
-
-Added ability to visualize interest point matches produced by rig_calibrator (nvm files) on top of images.
-
-Can visualize residual errors produced by bundle_adjustment (and overall, any scatter plots in geographic coordinates), which help evaluate the acuracy of using this tool.
-
-- Added to ASP CGAL-based tools for mesh smoothing, hole-filling, simplification, and removal of connected components.
-
-- Added the ability to use the exact linescan model for the Pleiades 1A/1B satellites.
-  Used the CSM linescan model as an implementation. Compared with using the homegrown
-  ASP linescan model. Their results agree to within 2.0e-6 pixels (for pixel operations)
-  and similarly small numbers when comparing camera centers and ground intersections.
-
-  The CSM-based implementation is 21 times faster than the ASP implementation.
-  In fact, it is twice as fast compared to using the RPC model. Note that what
-  was compared here was the combined operation of going from camera to ground
-  and back. The RPC model is likely somewhat faster if just doing ground-to-image
-  operations.
-
-- The CSM-based and RPC camera models for Pleiades disagree by 0.003 pixels
-  (after projecting from image to ground with one model, and back with another one).
-     
-
-Add Pleiades example to nightly build!
-
 Add PeruSat to nightly build!
 
-Look at Open Drone Map.
+Look at OpenDroneMap.
 
 The libelas algorithm does quite well with ISAAC.
 
