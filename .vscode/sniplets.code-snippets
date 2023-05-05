@@ -12,13 +12,77 @@
 	// C++
     "For loop": {
 		"scope": "cpp",
-        "prefix": "fx",
+        "prefix": "fo",
         "body": [
             "for ($1 $2 = $3; $2 < $4; $2++) {",
             "}"
         ],
-        "description": "For Loop"
+        "description": ""
     },  
+    "cout str": {
+		"scope": "cpp",
+        "prefix": "cs",
+        "body": [
+            "std::cout << \"$1\\n\";"
+        ],
+        "description": ""
+    },
+    "cout": {
+		"scope": "cpp",
+        "prefix": "cou",
+        "body": [
+            "std::cout << \"$1\" << $2 << \"\\n\";"
+        ],
+        "description": ""
+    },
+    "cout": {
+		"scope": "cpp",
+        "prefix": "czzz",
+        "body": [
+            "std::cout << \"$1\" << $2 << \"\\n\";"
+        ],
+        "description": ""
+    },
+    "string": {
+		"scope": "cpp",
+        "prefix": "str",
+        "body": [
+            "std::string $1 "
+        ],
+        "description": ""
+    },
+    "string": {
+		"scope": "cpp",
+        "prefix": "coup",
+        "body": [
+            "std::cout.precision($1);$2"
+        ],
+        "description": ""
+    },
+    "string": {
+		"scope": "cpp", 
+        "prefix": "cou7", 
+        "body": [
+            "std::cout.precision(17);$2"
+        ],
+        "description": ""
+    },
+    "string": {
+		"scope": "cpp", 
+        "prefix": "td", 
+        "body": [
+            "// TODO(oalexan1): $1"
+        ],
+        "description": ""
+    },
+    "cout": {
+		"scope": "cpp",
+        "prefix": "sep",
+        "body": [
+            "<< \" \" << "
+        ],
+        "description": ""
+    },
 
 	// ReStructuredText
     "numref": {
@@ -36,7 +100,7 @@
             ".. _$1:"
         ],
         "description": "section"
-    }
+    },
     "url": {
 		"scope": "restructuredtext",
         "prefix": "ur",
@@ -44,6 +108,6 @@
             "`$1 <>`_"
         ],
         "description": "url"
-    }
+    },
 
 }

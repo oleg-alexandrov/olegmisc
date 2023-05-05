@@ -204,9 +204,39 @@
 					"label": "td"
 				},
 				{
-					"line": 21,
+					"line": 22,
 					"column": 26,
 					"label": "td"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Camera/PleiadesXML.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "px"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/docs/examples/pleiades.rst",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "prs"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Camera/LinescanPleiadesModel.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "pls"
 				}
 			]
 		}
