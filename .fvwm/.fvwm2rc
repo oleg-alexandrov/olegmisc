@@ -120,30 +120,21 @@ DesktopName 3 Desk 3
 #Key F1    A   N   Exec /usr/bin/konsole& 
 Key F1    A   C   Exec /usr/bin/gnome-terminal --geometry 103x53+0+0 --tab --tab & 
 Key F1    A   M   Exec /usr/bin/gnome-terminal --geometry--geometry 81x40+0+0  -- zsh & 
-#Key F1   A   C   Exec /usr/bin/gnome-terminal --geometry--geometry 110x44 -e "$HOME/bin/zsh"& 
-#Key F1    A   M   Exec /usr/bin/xterm  -geo 108x46+0+0  -hc blue  -bdc -fn 8x16  -- zsh&
-#Key F1    A   N   Exec  /m1/aoleg/bin/rxvt & # -geo 140x61+10+10  -hc blue  -bdc -fn 8x16 &
-#Key F2    A   N   Exec  thunderbird& 
-Key F3    A   C   Exec  ~/bin/xe&
+Key F3    A   C   Exec  ~/projects/VSCode-linux-x64/bin/code-insiders ~/ &
 Key F4    A   C   Exec  firefox&
-Key F5    A   C   Exec  pidgin&
-Key F6    A   N   Exec  mozilla& 
-Key F7    A   N   Exec  /usr/local/bin/mathematica&
-Key F9    A   N   Exec  gnumeric --geometry 1120x993+0+0&
 
-Key Delete    A   CM   Quit
 Key End    A   CM  Exec /usr/bin/X11/xlock
 
-Key F7   A   C   Resize 90 96
+Key F7   A   C   Resize 90 93
 Key F8   A   C    Move +0 +0
 Key F8   A   M    Move +75 +0
 Key F9   A   C    Move +50 +0 # Move window half a screen to the right
 Key F9   A   M    Move +25 +0
 Key Down A   CMS  Move +0 +100 
-Key F10   A   C   Resize 49 98
-Key F10   A   M   Resize 24 98
-Key F11   A   C   Resize 99 96
-#Key F12   A   M   Restart fvwm
+Key F10   A   C   Resize 49 89
+Key F10   A   M   Resize 24 89
+Key F11   A   C   Resize 99 89
+Key F12   A   M   Restart fvwm
 #Key F12   A   C   Close
 #Key F11   A   N   Iconify
 
@@ -314,7 +305,7 @@ AddToMenu Programs   "+++Programs+++"   Title
 +   ""   Nop
 +   "gnome-terminal"   Exec exec /usr/bin/gnome-terminal  --geometry 103x55+0+0  -- zsh & 
 +   ""   Nop
-+   "Xemacs"   Exec exec  ~/bin/xe&
++   "VSCode"   Exec exec ~/projects/VSCode-linux-x64/bin/code-insiders ~/ &
 #+   ""   Nop
 #+   "Firefox"   Exec exec  firefox&
 +   ""   Nop

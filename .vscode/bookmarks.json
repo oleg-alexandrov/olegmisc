@@ -239,6 +239,96 @@
 					"label": "pls"
 				}
 			]
+		},
+		{
+			"path": "projects/visionworkbench/src/vw/Cartography/GeoReference.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "geo"
+				}
+			]
+		},
+		{
+			"path": "projects/visionworkbench/src/vw/Cartography/Datum.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "dat"
+				}
+			]
+		},
+		{
+			"path": "projects/visionworkbench/src/vw/Cartography/Datum.h",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "dath"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/GUI/MainWidget.cc",
+			"bookmarks": [
+				{
+					"line": 10,
+					"column": 55,
+					"label": "wid"
+				}
+			]
+		},
+		{
+			"path": "projects/visionworkbench/src/vw/Cartography/GeoReference.h",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "geoh"
+				}
+			]
+		},
+		{
+			"path": "projects/texrecon/mvs-texturing/elibs/mve/apps/umve/mainwindow.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "win"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/GUI/MainWindow.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "mwin"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/GUI/MainWindow.h",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "winh"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/GUI/MainWidget.h",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "widh"
+				}
+			]
 		}
 	]
 }

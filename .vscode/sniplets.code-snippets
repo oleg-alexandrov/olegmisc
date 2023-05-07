@@ -10,12 +10,135 @@
 	// connected.
 
 	// C++
+    "br": {
+		"scope": "cpp",
+        "prefix": "br",
+        "body": [
+            "",
+            "  << \"$1"
+        ],
+        "description": ""
+    },  
+    "xx": {
+		"scope": "cpp",
+        "prefix": "xx",
+        "body": [
+            "exit(0);",
+        ],
+        "description": ""
+    },  
+    "x1": {
+		"scope": "cpp",
+        "prefix": "x1",
+        "body": [
+            "exit(1);",
+        ],
+        "description": ""
+    },  
+    "v2": {
+		"scope": "cpp",
+        "prefix": "v2",
+        "body": [
+            "vw::Vector2 $1",
+        ],
+        "description": ""
+    },  
+    "v3": {
+		"scope": "cpp",
+        "prefix": "v3",
+        "body": [
+            "vw::Vector3 $1",
+        ],
+        "description": ""
+    },  
+    "m3": {
+		"scope": "cpp",
+        "prefix": "m3",
+        "body": [
+            "vw::Matrix3x3 $1",
+        ],
+        "description": ""
+    },  
+    "vs": {
+		"scope": "cpp",
+        "prefix": "vs",
+        "body": [
+            "std::vector<std::string> $1;",
+        ],
+        "description": ""
+    },  
+    "vi": {
+		"scope": "cpp",
+        "prefix": "vi",
+        "body": [
+            "std::vector<int> $1;",
+        ],
+        "description": ""
+    },  
+    "vd": {
+		"scope": "cpp",
+        "prefix": "vd",
+        "body": [
+            "std::vector<double> $1;",
+        ],
+        "description": ""
+    },  
+    "do": {
+		"scope": "cpp",
+        "prefix": "do",
+        "body": [
+            "double $1;",
+        ],
+        "description": ""
+    },  
+    "db": {
+		"scope": "cpp",
+        "prefix": "db",
+        "body": [
+            "double $1;",
+        ],
+        "description": ""
+    },  
+    "ss": {
+		"scope": "cpp",
+        "prefix": "ss",
+        "body": [
+            "size_t $1;",
+        ],
+        "description": ""
+    },  
+    "si": {
+		"scope": "cpp",
+        "prefix": "si",
+        "body": [
+            ".size()$1",
+        ],
+        "description": ""
+    },  
     "For loop": {
 		"scope": "cpp",
         "prefix": "fo",
         "body": [
             "for ($1 $2 = $3; $2 < $4; $2++) {",
             "}"
+        ],
+        "description": ""
+    },  
+    "iff": {
+		"scope": "cpp",
+        "prefix": "iff",
+        "body": [
+            "if ($1) {",
+            "  $2",
+            "}"
+        ],
+        "description": ""
+    },  
+    "vvw": {
+		"scope": "cpp",
+        "prefix": "vvw",
+        "body": [
+            "vw::vw_out() << \"$1\" << \"\\n\";",
         ],
         "description": ""
     },  
@@ -27,7 +150,7 @@
         ],
         "description": ""
     },
-    "cout": {
+    "cou": {
 		"scope": "cpp",
         "prefix": "cou",
         "body": [
@@ -43,7 +166,7 @@
         ],
         "description": ""
     },
-    "string": {
+    "str": {
 		"scope": "cpp",
         "prefix": "str",
         "body": [
@@ -51,7 +174,7 @@
         ],
         "description": ""
     },
-    "string": {
+    "coup": {
 		"scope": "cpp",
         "prefix": "coup",
         "body": [
@@ -59,7 +182,7 @@
         ],
         "description": ""
     },
-    "string": {
+    "cou7": {
 		"scope": "cpp", 
         "prefix": "cou7", 
         "body": [
@@ -67,7 +190,7 @@
         ],
         "description": ""
     },
-    "string": {
+    "td": {
 		"scope": "cpp", 
         "prefix": "td", 
         "body": [
@@ -75,7 +198,7 @@
         ],
         "description": ""
     },
-    "cout": {
+    "sep": {
 		"scope": "cpp",
         "prefix": "sep",
         "body": [
