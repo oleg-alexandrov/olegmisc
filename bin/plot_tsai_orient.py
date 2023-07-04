@@ -8,6 +8,13 @@
 
 # To get cameras named this way, can create symlinks from original data.
 
+# For every camera named a-10000.tsai, there must be a reference camera named
+# a-ref-10000.tsai. This is the camera that will be used to convert from ECEF
+# to NED coordinates. This camera is created by sat_sim with the option
+# --save-ref-cams. After bundle adjustment, such ref cams must be created manually,
+# by copying the original ref cams and renaming them to fit the naming 
+# convention for the bundle adjusted cameras.
+
 # Inputs
 
 # numCams=1000 # how many cameras to plot (if a large number is used, plot all)
@@ -23,7 +30,7 @@
 # python plot_tsai_orient.py $numCams $types $beforeOpt $afterOpt \
 #    $beforeCaption $afterCaption $subtractLineFit
 
-import sys, os, re
+import sys, os, re, math
 import matplotlib.pyplot as plt
 
 import numpy as np
@@ -133,7 +140,22 @@ def read_tsai_dict(tsai):
     tsai_dict = {'camera':camera, 'focal_length':(fu, fv), 'optical_center':(cu, cv), 'cam_cen_ecef':cam_cen, 'cam_cen_wgs':cam_cen_lat_lon, 'rotation_matrix':rot_mat, 'pitch':pitch}
     return tsai_dict
 
-def ned_rotation_from_tsai(tsai_fn):
+def Rroll(theta):
+  return np.matrix([[ 1, 0           , 0           ],
+                   [ 0, math.cos(theta),-math.sin(theta)],
+                   [ 0, math.sin(theta), math.cos(theta)]])
+  
+def Rpitch(theta):
+  return np.matrix([[ math.cos(theta), 0, math.sin(theta)],
+                   [ 0           , 1, 0           ],
+                   [-math.sin(theta), 0, math.cos(theta)]])
+  
+def Ryaw(theta):
+  return np.matrix([[ math.cos(theta), -math.sin(theta), 0 ],
+                   [ math.sin(theta), math.cos(theta) , 0 ],
+                   [ 0           , 0            , 1 ]])
+
+def ned_rotation_from_tsai(tsai_fn, ref_tsai_fn):
     #coordinate conversion step
     from pyproj import Transformer
     ecef_proj = 'EPSG:4978'
@@ -142,15 +164,17 @@ def ned_rotation_from_tsai(tsai_fn):
     
     # read tsai files
     asp_dict = read_tsai_dict(tsai_fn)
+    ref_asp_dict = read_tsai_dict(ref_tsai_fn)
     
     # get camera position
     cam_cen = asp_dict['cam_cen_ecef']
     lat,lon,h = ecef2wgs.transform(*cam_cen)
-    #print(lat,lon)
     # get camera rotation angle
     rot_mat = np.reshape(asp_dict['rotation_matrix'],(3,3))
-    
-   #rotate about z axis by 90 degrees
+    ref_rot_mat = np.reshape(ref_asp_dict['rotation_matrix'],(3,3))
+    inv_ref_rot_mat = np.linalg.inv(ref_rot_mat)
+
+    #rotate about z axis by 90 degrees
     #https://math.stackexchange.com/questions/651413/given-the-degrees-to-rotate-around-axis-how-do-you-come-up-with-rotation-matrix
     rot_z = np.zeros((3,3),float)
     angle = np.pi/2
@@ -160,8 +184,24 @@ def ned_rotation_from_tsai(tsai_fn):
     rot_z[1,1] = np.cos(angle)
     rot_z[2,2] = 1
     
-    #return np.matmul(rot_z,convert_ecef2NED(rot_mat,lon,lat))
-    return R.from_matrix(np.matmul(rot_z,np.linalg.inv(convert_ecef2NED(rot_mat,lon,lat)))).as_euler('ZYX',degrees=True)
+    T = np.zeros((3,3),float)
+    T[0, 1] = 1
+    T[1, 0] = -1
+    T[2, 2] = 1
+    Tinv = np.linalg.inv(T)
+
+    N = np.matmul(inv_ref_rot_mat, rot_mat)
+
+    # Verification that if the input rotations are done in order roll, pitch,
+    # yaw, then the output of as_euler('XYZ') is the same as the input.
+    #roll = 0.1; pitch = 0.2; yaw = 0.3 # in degrees
+    #s = np.pi / 180.0 # convert to radians
+    #Rt = Ryaw(yaw * s) * Rpitch(pitch * s) * Rroll(roll * s)
+    #angles2 = R.from_matrix(Rt).as_euler('XYZ',degrees=True)
+    #print("input is, ", [roll, pitch, yaw])
+
+    angles = R.from_matrix(np.matmul(N, Tinv)).as_euler('XYZ',degrees=True)
+    return angles
 
 def poly_fit(X, Y):
     """
@@ -189,23 +229,50 @@ optTag = sys.argv[6]
 subtractLineFit = int(sys.argv[7])
 
 print("Camera types are: ", Types)
+print("orig prefix ", origPrefix)
 print("opt prefix ", optPrefix)
 print("Subtract line fit: ", subtractLineFit)
 
-f, ax = plt.subplots(3, 3, sharex=True, sharey = False, figsize = (8.5, 8))
+f, ax = plt.subplots(3, 3, sharex=True, sharey = False, figsize = (15, 15))
 
-print("types is ", Types)
+# Set up the font for all elements
+fs = 14
+plt.rcParams.update({'font.size': fs})
+plt.rc('axes', titlesize = fs)   # fontsize of the axes title
+plt.rc('axes', labelsize = fs)   # fontsize of the x and y labels
+plt.rc('xtick', labelsize = fs)  # fontsize of the tick labels
+plt.rc('ytick', labelsize = fs)  # fontsize of the tick labels
+plt.rc('legend', fontsize = fs)  # legend fontsize
+plt.rc('figure', titlesize = fs) # fontsize of the figure title
 
 count = -1
 for s in Types:
 
-    print("Loading: " + s)
     count += 1
 
     # Based on opt cameras find the original cameras. That because
     # maybe we optimized only a subset
     orig_cams = []
-    opt_cams = sorted(glob.glob(optPrefix + s + '*.tsai'))
+    all_opt_cams = sorted(glob.glob(optPrefix + s + '*.tsai'))
+    ref_cams = sorted(glob.glob(optPrefix + s + '-ref-*.tsai'))
+    camMap = set()
+    # Add ref_cams to camMap set
+    for c in ref_cams:
+        camMap.add(c)
+    opt_cams = []
+    # Add to opt_cams only those cameras that are not in camMap
+    # This is to avoid adding ref_cams to opt_cams
+    for c in all_opt_cams:
+        if c not in camMap:
+            opt_cams.append(c) 
+    # TODO(oalexan1): what if opt cams do not exist?
+
+    # Check that ref cams and opt cams have same size
+    if len(ref_cams) != len(opt_cams):
+        print("Number of ref and opt cameras must be the same.")
+        sys.exit(1)
+
+    # Eliminate the ref cams from within opt cams
     if len(opt_cams) > Num:
         opt_cams = opt_cams[0:Num]
     for c in opt_cams:
@@ -217,7 +284,7 @@ for s in Types:
         
     if len(orig_cams) != len(opt_cams):
         print("Number of original and opt cameras must be the same")
-        sys.exit(1) 
+        sys.exit(1)
 
     currNum = Num
     currNum = min(len(orig_cams), currNum)
@@ -225,16 +292,19 @@ for s in Types:
     opt_cams = opt_cams[0:currNum]
     
     # Get rotations, then convert to NED 
-    orig_rotation_angles = np.array([ned_rotation_from_tsai(cam) for cam in orig_cams])
-    opt_rotation_angles = np.array([ned_rotation_from_tsai(cam) for cam in opt_cams])
+    I = range(len(orig_cams))
+    orig_rotation_angles = np.array([ned_rotation_from_tsai(orig_cams[i], ref_cams[i])
+                                      for i in I])
+    opt_rotation_angles = np.array([ned_rotation_from_tsai(opt_cams[i], ref_cams[i]) 
+                                    for i in I])
 
-    orig_roll  = [r[2] for r in orig_rotation_angles]
+    # The order is roll, pitch, yaw, as returned by R.from_matrix().as_euler('XYZ',degrees=True)
+    orig_roll  = [r[0] for r in orig_rotation_angles]
     orig_pitch = [r[1] for r in orig_rotation_angles]
-    orig_yaw   = [r[0] for r in orig_rotation_angles]
-
-    opt_roll  = [r[2] for r in opt_rotation_angles]
+    orig_yaw   = [r[2] for r in orig_rotation_angles]
+    opt_roll  = [r[0] for r in opt_rotation_angles]
     opt_pitch = [r[1] for r in opt_rotation_angles]
-    opt_yaw   = [r[0] for r in opt_rotation_angles]
+    opt_yaw   = [r[2] for r in opt_rotation_angles]
 
     residualTag = ''
     if subtractLineFit:
@@ -251,8 +321,23 @@ for s in Types:
         opt_yaw = opt_yaw - fit_yaw
 
         residualTag = ' residual'
-        
-    # Plot residuals after subtracting a linear fit
+
+    if s == 'a':
+        t = 'aft'
+    if s == 'n':
+        t = 'nadir'
+    if s == 'f':
+        t = 'fwd'
+
+    print("stddev for " + origTag + " " + t + " roll: " + str(np.std(orig_roll)) + " degrees")
+    print("stddev for " + origTag + " " + t + " pitch: " + str(np.std(orig_pitch)) + " degrees")
+    print("stddev for " + origTag + " " + t + " yaw: " + str(np.std(orig_yaw)) + " degrees")
+
+    print("stddev for " + optTag + " " + t + " roll: " + str(np.std(opt_roll)) + " degrees")
+    print("stddev for " + optTag + " " + t + " pitch: " + str(np.std(opt_pitch)) + " degrees")
+    print("stddev for " + optTag + " " + t + " yaw: " + str(np.std(opt_yaw)) + " degrees")
+
+    # Plot residuals
     ax[count][0].plot(np.arange(len(orig_roll)), orig_roll, label=origTag, color = 'r')
     ax[count][0].plot(np.arange(len(opt_roll)), opt_roll, label=optTag, color = 'b')
 
@@ -261,13 +346,6 @@ for s in Types:
 
     ax[count][2].plot(np.arange(len(orig_yaw)), orig_yaw, label=origTag, color = 'r')
     ax[count][2].plot(np.arange(len(opt_yaw)), opt_yaw, label=optTag, color = 'b')
-
-    if s == 'a':
-        t = 'aft'
-    if s == 'n':
-        t = 'nadir'
-    if s == 'f':
-        t = 'fwd'
 
     ax[count][0].set_title(t + ' roll'  + residualTag)
     ax[count][1].set_title(t + ' pitch' + residualTag)
@@ -284,6 +362,12 @@ for s in Types:
     ax[count][0].legend()
     ax[count][1].legend()
     ax[count][2].legend()
+
+    for index in range(3):
+        ac = ax[count][index]
+        for item in ([ac.title, ac.xaxis.label, ac.yaxis.label] +
+             ac.get_xticklabels() + ac.get_yticklabels()):
+          item.set_fontsize(fs)
 
 plt.tight_layout()
 plt.show()

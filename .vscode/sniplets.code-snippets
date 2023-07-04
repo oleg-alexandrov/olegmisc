@@ -150,11 +150,35 @@
         ],
         "description": ""
     },
+    "co": {
+		"scope": "cpp",
+        "prefix": "co",
+        "body": [
+            "std::cout << \""
+        ],
+        "description": ""
+    },
+    "cob": {
+		"scope": "cpp",
+        "prefix": "cob",
+        "body": [
+            "std::cout << \""
+        ],
+        "description": ""
+    },
     "cou": {
 		"scope": "cpp",
         "prefix": "cou",
         "body": [
             "std::cout << \"$1\" << $2 << \"\\n\";"
+        ],
+        "description": ""
+    },
+    "cous": {
+		"scope": "cpp",
+        "prefix": "cous",
+        "body": [
+            "std::cout << \"$1\\n\";"
         ],
         "description": ""
     },
@@ -182,9 +206,9 @@
         ],
         "description": ""
     },
-    "cou7": {
+    "co7": {
 		"scope": "cpp", 
-        "prefix": "cou7", 
+        "prefix": "co7", 
         "body": [
             "std::cout.precision(17);$2"
         ],
@@ -231,6 +255,15 @@
             "`$1 <>`_"
         ],
         "description": "url"
+    },
+
+    "xx": {
+		"scope": "python",
+        "prefix": "xx",
+        "body": [
+            "sys.exit(0)"
+        ],
+        "description": "xx"
     },
 
 }

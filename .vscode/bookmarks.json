@@ -159,7 +159,7 @@
 			"path": ".muttrc",
 			"bookmarks": [
 				{
-					"line": 189,
+					"line": 188,
 					"column": 0,
 					"label": "mu"
 				}
@@ -241,6 +241,16 @@
 			]
 		},
 		{
+			"path": "projects/dart/dart_notes.sh",
+			"bookmarks": [
+				{
+					"line": 85,
+					"column": 0,
+					"label": "rc"
+				}
+			]
+		},
+		{
 			"path": "projects/visionworkbench/src/vw/Cartography/GeoReference.cc",
 			"bookmarks": [
 				{
@@ -273,6 +283,11 @@
 		{
 			"path": "projects/StereoPipeline/src/asp/GUI/MainWidget.cc",
 			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "mwid"
+				},
 				{
 					"line": 10,
 					"column": 55,
@@ -327,6 +342,166 @@
 					"line": 0,
 					"column": 0,
 					"label": "widh"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/INSTALLGUIDE.rst",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "i"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/docs/tools/point2dem.rst",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "pdrs"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Tools/sat_sim.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "ss"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Core/Common.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "co"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Core/Common.h",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "ch"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Tools/stereo_gui.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "sg"
+				}
+			]
+		},
+		{
+			"path": "projects/visionworkbench/src/vw/Cartography/CameraBBox.h",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "bb"
+				}
+			]
+		},
+		{
+			"path": "projects/change_proposal/change_notes.sh",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "cn"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/docs/tools/sat_sim.rst",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "ssrs"
+				}
+			]
+		},
+		{
+			"path": ".bashenv",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "be"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Core/SatSim.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "sss"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Core/SatSim.h",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "ssh"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/docs/sfs_usage.rst",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "sfu"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Camera/SyntheticLinescan.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "sls"
+				}
+			]
+		},
+		{
+			"path": "projects/GM_20191019/gm_notes.sh",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "gm"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Tools/jitter_solve.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "js"
 				}
 			]
 		}

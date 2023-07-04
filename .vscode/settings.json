@@ -1,4 +1,7 @@
 {
     "cmake.sourceDirectory": "/home/oalexan1/projects/MultiView/TheiaSfM",
-    "esbonio.sphinx.confDir": "."
+    "esbonio.sphinx.confDir": ".",
+    "C_Cpp.dimInactiveRegions": false,
+    "C_Cpp.errorSquiggles": "disabled",
+    "cSpell.words": []
 }
