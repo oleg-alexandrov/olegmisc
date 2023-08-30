@@ -1,3 +1,46 @@
+This fails:
+export PROJ_NETWORK=ON 
+cd ~/projects/StereoPipelineTest/ssDG_alignNone_seedMode1_mapProj1_subPix1_badDisp1; ~/miniconda3/envs/asp/bin/point2dem --datum NAD27 run/run-PC.tif --nodata-value -32767 --stereographic --proj-lon 0 --proj-lat -90
+But it passes with export PROJ_NETWORK=OFF
+Check if the DEM is actually in North America. Otherwise it is not surprising that it fails.
+
+Check my gmail and work email about some more items that need to be done.
+
+Add option --matches-per-image to work with ip-per-image. 
+
+STV work:
+- Validated that if projections of satellite trajectories on the ground intersect at an angle (hence the same for image lines), this can correct jitter. Devised and validated a formula connecting the angle of intersection, length of image lines, and jitter frequency.
+- Added the ability to create a desired number of match points for each small image tile. This is useful in ensuring uniform coverage over images when the ground conditions are different in different parts of the image (such as sea ice vs solid ground).
+
+CSM: use isd_generate.
+
+See Jay''s email. "I am going to work on doing a 1.6.1 release of USGSCSM and a release of ale main".
+
+stereo_gui add colorbar to scattered data. Also ability to zoom.
+
+Make parallel_bundle_adjust support indiidual lists in addition to images. 
+Or otherwise disable that in bundle_adjust. As of now this is a bug.
+
+Make release! Check ith Jay!
+
+Update the CSM WAC doc
+
+Improve the sfm_view tool
+
+Add python orbit view tool to ASP
+
+See the OSTFL items!
+
+sat_sim: Write logs!
+
+See the user issue with invalid georeference causing issue in my email.
+
+Fix MGM cost mode 2
+
+Support nvm in bundle adjustment, also the ISIS format. See my work email inbox for details.
+
+Make NED work with ellipsoid heights, not just with a sphere. 
+
 CSM accomplishments:
 
 // Improved the CSM camera logic for the MSL Curiosity rover to the point where
