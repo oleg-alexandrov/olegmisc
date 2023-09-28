@@ -202,11 +202,6 @@
 					"line": 0,
 					"column": 0,
 					"label": "td"
-				},
-				{
-					"line": 22,
-					"column": 26,
-					"label": "td"
 				}
 			]
 		},
@@ -499,9 +494,29 @@
 			"path": "projects/StereoPipeline/src/asp/Tools/jitter_solve.cc",
 			"bookmarks": [
 				{
+					"line": 13,
+					"column": 28,
+					"label": "js"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/docs/tools/jitter_solve.rst",
+			"bookmarks": [
+				{
 					"line": 0,
 					"column": 0,
-					"label": "js"
+					"label": "jsr"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/docs/tools/bundle_adjust.rst",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "bars"
 				}
 			]
 		}

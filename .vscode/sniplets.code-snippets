@@ -27,6 +27,14 @@
         ],
         "description": ""
     },  
+    "xxx": {
+		"scope": "cpp",
+        "prefix": "xxx",
+        "body": [
+            "exit(0);",
+        ],
+        "description": ""
+    },  
     "x1": {
 		"scope": "cpp",
         "prefix": "x1",
@@ -214,6 +222,14 @@
         ],
         "description": ""
     },
+    "tdd": {
+		"scope": "cpp", 
+        "prefix": "tdd", 
+        "body": [
+            "// TODO(oalexan1): $1"
+        ],
+        "description": ""
+    },
     "td": {
 		"scope": "cpp", 
         "prefix": "td", 
@@ -257,13 +273,62 @@
         "description": "url"
     },
 
-    "xx": {
+    "xxx": {
 		"scope": "python",
-        "prefix": "xx",
+        "prefix": "xxx",
         "body": [
             "sys.exit(0)"
         ],
-        "description": "xx"
+        "description": ""
+    },
+    "xx0": {
+		"scope": "python",
+        "prefix": "xx0",
+        "body": [
+            "sys.exit(0)"
+        ],
+        "description": ""
     },
 
+    "td": {
+		"scope": "python",
+        "prefix": "td",
+        "body": [
+            "# TODO(oalexan1): "
+        ],
+        "description": ""
+    },
+
+    "xx": {
+		"scope": "shellscript",
+        "prefix": "xx",
+        "body": [
+            "exit 0"
+        ],
+        "description": ""
+    },
+    "td": {
+		"scope": "shellscript",
+        "prefix": "td",
+        "body": [
+            "# TODO(oalexan1): "
+        ],
+        "description": ""
+    },
+    "x0": {
+		"scope": "shellscript",
+        "prefix": "x0",
+        "body": [
+            "exit 0"
+        ],
+        "description": ""
+    },
+    "x1":{
+        "scope": "shellscript",
+        "prefix": "x1",
+        "body": [
+            "exit 1"
+        ],
+        "description": ""
+    },
 }
