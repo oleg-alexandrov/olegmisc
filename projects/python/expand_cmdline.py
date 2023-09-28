@@ -160,13 +160,18 @@ def expandCmdLine(cmdLine, cursor, part):
    elif ( numWords == 1 and words[0] == "pl" ) or \
           ( numWords >= 2 and words[numWords-2] != "a" and words[numWords-1] == "pl" ):
       # Expand the string "pl"
+      words[numWords-1] = "perl -pi -e \"s###g\""
+      cmdLine = " ".join(words) + after
+      cursor  = cursor + 13 # advance to between the first two ##
+
+   elif ( numWords == 1 and words[0] == "plo" ) or \
+          ( numWords >= 2 and words[numWords-2] != "a" and words[numWords-1] == "pl" ):
       words[numWords-1] = "perl -p -e \"s###g\""
       cmdLine = " ".join(words) + after
-      cursor  = cursor + 12 # advance to between the first two ##
+      cursor  = cursor + 11 # advance to between the first two ##
 
    elif ( numWords == 1 and words[0] == "pli" ) or \
           ( numWords >= 2 and words[numWords-2] != "a" and words[numWords-1] == "pli" ):
-      # Expand the string "pli"
       words[numWords-1] = "perl -pi -e \"s###g\""
       cmdLine = " ".join(words) + after
       cursor  = cursor + 12 # advance to between the first two ##

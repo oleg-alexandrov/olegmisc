@@ -1,14 +1,29 @@
+Initial transform with CSM. Intrinsics refinement.
+
+Test intrinsics per sensor with Pinhole and CSM frame.
+
+Test different distortion sizes.
+
+Also check my email!
+
+./src/asp/Camera/BundleAdjustCamera.cc:392:// TODO(oalexan1): This was not tested
+
+// See David's email about what to wipe at the end of stereo (option --keep-only).
+
+Make new package for usgscsm having the public member!
+
+Test and document --skip-image-normalization
 This fails:
 export PROJ_NETWORK=ON 
 cd ~/projects/StereoPipelineTest/ssDG_alignNone_seedMode1_mapProj1_subPix1_badDisp1; ~/miniconda3/envs/asp/bin/point2dem --datum NAD27 run/run-PC.tif --nodata-value -32767 --stereographic --proj-lon 0 --proj-lat -90
 But it passes with export PROJ_NETWORK=OFF
 Check if the DEM is actually in North America. Otherwise it is not surprising that it fails.
 
-Check my gmail and work email about some more items that need to be done.
-
 Add option --matches-per-image to work with ip-per-image. 
 
 STV work:
+Added the ability to optimize intrinsics per sensor (intrinsics are shared for all images created with the same sensor). Works with Pinhole and CSM (Frame and Linescan) cameras. Validated carefully for CSM for a real-world use case. Also with figures. https://stereopipeline.readthedocs.io/en/latest/bundle_adjustment.html#kaguya-tc-refine-intrinsics
+
 - Validated that if projections of satellite trajectories on the ground intersect at an angle (hence the same for image lines), this can correct jitter. Devised and validated a formula connecting the angle of intersection, length of image lines, and jitter frequency.
 - Added the ability to create a desired number of match points for each small image tile. This is useful in ensuring uniform coverage over images when the ground conditions are different in different parts of the image (such as sea ice vs solid ground).
 
