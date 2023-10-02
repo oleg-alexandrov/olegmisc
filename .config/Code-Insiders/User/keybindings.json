@@ -1,0 +1,70 @@
+// Place your key bindings in this file to override the defaultsauto[]
+[
+    {
+        "key": "ctrl+alt+n",
+        "command": "bookmarks.toggleLabeled"
+    },
+    {
+        "key": "ctrl+alt+i",
+        "command": "bookmarks.list"
+    },
+    {
+        "key": "ctrl+alt+p",
+        "command": "bookmarks.jumpToNext",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "ctrl+alt+l",
+        "command": "-bookmarks.jumpToNext",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "ctrl+l",
+        "command": "bookmarks.listFromAllFiles"
+    },
+    {
+        "key": "shift+tab",
+        "command": "editor.action.inlineSuggest.acceptNextWord",
+        "when": "inlineSuggestionVisible && !editorReadonly"
+    },
+    {
+        "key": "ctrl+right",
+        "command": "-editor.action.inlineSuggest.acceptNextWord",
+        "when": "inlineSuggestionVisible && !editorReadonly"
+    },
+    {
+        "key": "ctrl+alt+l",
+        "command": "expandLineSelection",
+        "when": "textInputFocus"
+    },
+    {
+        "key": "ctrl+l",
+        "command": "-expandLineSelection",
+        "when": "textInputFocus"
+    },
+    {
+        "key": "alt+a",
+        "command": "select-paragraph.selectParagraph",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "ctrl+p",
+        "command": "-select-paragraph.selectParagraph",
+        "when": "editorTextFocus"
+    },
+    {
+        "key": "alt+l",
+        "command": "align.by.regex",
+        "when": "editorHasSelection"
+    },
+    {
+        "key": "shift+alt+a",
+        "command": "-align.by.regex",
+        "when": "editorHasSelection"
+    },
+    {
+        "key": "ctrl+f5",
+        "command": "workbench.action.reloadWindow",
+        "when": "editorTextFocus"
+    }
+]
