@@ -70,7 +70,7 @@ AddToFunc InitFunction    "I" Module FvwmPager  *
 #AddToFunc InitFunction "I" Exec thunderbird&
  
 #AddToFunc InitFunction "I" Exec $HOME/bin/fvwm_dual_monitor.pl& # uncomment when going back to work
-AddToFunc InitFunction "I" Exec xclock -d -twentyfour -bg black -fg green -brief -geo 100x50+1850+0 &
+AddToFunc InitFunction "I" Exec xclock -d -twentyfour -bg black -fg green -brief -geo 150x50-0+0 &
 AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 103x53+0+0 --tab --tab &
 AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 103x53+960+0 --tab --tab &
 AddToFunc InitFunction "I" Module FvwmPager  *
@@ -139,10 +139,10 @@ Key F12   A   M   Restart fvwm
 #Key F11   A   N   Iconify
 
 # arrow + control anywhere => scroll by a page
-Key Left  A   S   Scroll -100    0
-Key Right A   S   Scroll +100   +0
-Key Up    A   S   Scroll +0   -100
-Key Down  A   S   Scroll +0   +100
+Key Left  A   C   Scroll -100    0
+Key Right A   C   Scroll +100   +0
+Key Up    A   C   Scroll +0   -100
+Key Down  A   C   Scroll +0   +100
 
 # shift + control anywhere => scroll by a page
 #Key Left  A   S   Scroll -100    0
