@@ -350,6 +350,7 @@ alias tk=tkdiff
 alias tkn=tkn.sh
 alias tks='~/bin/tksort.sh'
 alias tn='tail -n'
+alias tph='tp \*sh'
 alias tt='tail -n 5'
 alias ua='uname -a'
 alias unc='~/bin/unique.pl'

@@ -66,5 +66,15 @@
         "key": "ctrl+f5",
         "command": "workbench.action.reloadWindow",
         "when": "editorTextFocus"
+    },
+    {
+        "key": "shift+alt+t",
+        "command": "tab-emacs.reindentLines",
+        "when": "editorTabMovesFocus && editorTextFocus || editorTextFocus && !inlineSuggestionHasIndentationLessThanTabSize || editorTextFocus && !inlineSuggestionVisible"
+    },
+    {
+        "key": "tab",
+        "command": "-tab-emacs.reindentLines",
+        "when": "editorTabMovesFocus && editorTextFocus || editorTextFocus && !inlineSuggestionHasIndentationLessThanTabSize || editorTextFocus && !inlineSuggestionVisible"
     }
 ]
