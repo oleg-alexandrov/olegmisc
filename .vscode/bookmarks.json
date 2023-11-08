@@ -4,7 +4,7 @@
 			"path": "projects/usgscsm/ale/ale/base/type_sensor.py",
 			"bookmarks": [
 				{
-					"line": 8,
+					"line": 0,
 					"column": 0,
 					"label": "type"
 				}
@@ -69,8 +69,8 @@
 			"path": "projects/StereoPipeline/docs/examples/mer.rst",
 			"bookmarks": [
 				{
-					"line": 39,
-					"column": 15,
+					"line": 0,
+					"column": 0,
 					"label": "rmrs"
 				}
 			]
@@ -119,6 +119,11 @@
 			"path": "projects/StereoPipeline/docs/examples/csm.rst",
 			"bookmarks": [
 				{
+					"line": 0,
+					"column": 0,
+					"label": "csrs"
+				},
+				{
 					"line": 458,
 					"column": 0,
 					"label": "msrs"
@@ -159,7 +164,7 @@
 			"path": ".muttrc",
 			"bookmarks": [
 				{
-					"line": 188,
+					"line": 189,
 					"column": 0,
 					"label": "mu"
 				}
@@ -179,7 +184,7 @@
 			"path": ".vscode/sniplets.code-snippets",
 			"bookmarks": [
 				{
-					"line": 10,
+					"line": 0,
 					"column": 0,
 					"label": "snip"
 				}
@@ -199,7 +204,7 @@
 			"path": "projects/todo.m",
 			"bookmarks": [
 				{
-					"line": 0,
+					"line": 8,
 					"column": 0,
 					"label": "td"
 				}
@@ -239,7 +244,7 @@
 			"path": "projects/dart/dart_notes.sh",
 			"bookmarks": [
 				{
-					"line": 85,
+					"line": 0,
 					"column": 0,
 					"label": "rc"
 				}
@@ -494,8 +499,8 @@
 			"path": "projects/StereoPipeline/src/asp/Tools/jitter_solve.cc",
 			"bookmarks": [
 				{
-					"line": 13,
-					"column": 28,
+					"line": 0,
+					"column": 0,
 					"label": "js"
 				}
 			]
@@ -517,6 +522,76 @@
 					"line": 0,
 					"column": 0,
 					"label": "bars"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Camera/SatSim.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "sss"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Camera/SatSim.h",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "ssh"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Tools/bundle_adjust.h",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "bah"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Tools/stereo_tri.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "tri"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Camera/BundleAdjustCamera.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "bac"
+				}
+			]
+		},
+		{
+			"path": ".fvwm/.fvwm2rc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "fv"
+				}
+			]
+		},
+		{
+			"path": ".vscode/bookmarks.json",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "bm"
 				}
 			]
 		}

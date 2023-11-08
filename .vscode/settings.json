@@ -1,11 +1,4 @@
 {
-    "cmake.sourceDirectory": "/home/oalexan1/projects/MultiView/TheiaSfM",
-    "esbonio.sphinx.confDir": ".",
-    "C_Cpp.dimInactiveRegions": false,
-    "C_Cpp.errorSquiggles": "disabled",
-    "cSpell.words": [
-        "imager"
-    ],
     "files.associations": {
         "*.tcc": "cpp",
         "any": "cpp",
@@ -84,5 +77,7 @@
         "typeinfo": "cpp",
         "valarray": "cpp",
         "variant": "cpp"
-    }
+    },
+    "esbonio.sphinx.confDir": ".",
+    "C_Cpp.errorSquiggles": "disabled"
 }
