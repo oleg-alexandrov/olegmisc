@@ -549,7 +549,7 @@ function cg {
 function sgm {
     min=$1; shift
     max=$1; shift
-    echo stereo_gui --window-size 2000 1300 --colorbar --min $min --max $max $*
+    stereo_gui --window-size 2000 1300 --colorbar --min $min --max $max $*
 }
 
 # While this is an environment variable, it needs to be set here
