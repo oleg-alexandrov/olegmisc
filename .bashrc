@@ -107,6 +107,13 @@ function rga {
     done
 }
 
+function vt {
+    # Clean up text like "file.cpp:123: other stuff" and keep only 
+    # file.cpp:123, then call vscode on it.
+    arg=$(echo "$*" | perl -p -e "s#^(.*?:\d+).*?\$#\$1#g")
+    ~/projects/VSCode-linux-x64/bin/code-insiders --goto "$arg"
+}
+
 function tg {
     tail -n 1000 $1 | grep -i -v wait | tail -n 200
 }
@@ -128,10 +135,6 @@ function cdls {
       builtin cd; ls -a --color=auto;
   fi
   proml;
-}
-
-function node {
-    ssh $(qstat -f $1 |grep exec_vnode | perl -p -e "s#^.*?\((.*?):.*?\n#\$1#g")
 }
 
 function ge {
@@ -543,6 +546,12 @@ function cg {
 
 }
 
+function sgm {
+    min=$1; shift
+    max=$1; shift
+    echo stereo_gui --window-size 2000 1300 --colorbar --min $min --max $max $*
+}
+
 # While this is an environment variable, it needs to be set here
 # because it is used only interactively
 if [ "$PS1" ]; then
@@ -591,20 +600,4 @@ if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi
 if [ -f ~/.bash_aliases ]; then
      grep -E -v "(cd|ssh|scp)"  ~/.bash_aliases > ~/.base_aliases
 fi
-
-
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/oalexan1/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/home/oalexan1/miniconda3/etc/profile.d/conda.sh" ]; then
-        . "/home/oalexan1/miniconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/home/oalexan1/miniconda3/bin:$PATH"
-    fi
-fi
-unset __conda_setup
-# <<< conda initialize <<<
 
