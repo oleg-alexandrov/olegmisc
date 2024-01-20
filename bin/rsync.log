@@ -1,0 +1,36 @@
+Running /home/oleg/bin/rsync.sh on Wed Apr 23 19:30:01 PDT 2014
+receiving incremental file list
+./
+.base_aliases
+.gvfs/
+projects/StereoPipelineTest/
+projects/StereoPipelineTest/lunokhod.conf
+projects/StereoPipelineTest/pfe.conf
+projects/StereoPipelineTest/release_amos.conf
+projects/StereoPipelineTest/release_andey.conf
+projects/StereoPipelineTest/release_centos-32-5.conf
+projects/StereoPipelineTest/release_centos-64-5.conf
+projects/StereoPipelineTest/release_lunokhod1.conf
+projects/StereoPipelineTest/release_lunokhod2.conf
+projects/StereoPipelineTest/release_pfe25.conf
+projects/StereoPipelineTest/release_ubuntu-64-13.conf
+projects/StereoPipelineTest/release_zula.conf
+projects/StereoPipelineTest/.git/
+projects/StereoPipelineTest/.git/objects/31/
+projects/StereoPipelineTest/.git/objects/32/
+projects/StereoPipelineTest/.git/objects/37/
+projects/StereoPipelineTest/.git/objects/38/
+projects/StereoPipelineTest/.git/objects/77/
+projects/StereoPipelineTest/.git/objects/7a/
+projects/StereoPipelineTest/.git/objects/9d/
+projects/StereoPipelineTest/.git/objects/bf/
+projects/StereoPipelineTest/.git/objects/c2/
+projects/StereoPipelineTest/.git/objects/e2/
+projects/StereoPipelineTest/.git/objects/e5/
+projects/StereoPipelineTest/.git/objects/fe/
+projects/StereoPipelineTest/.git/refs/heads/
+projects/StereoPipelineTest/.git/refs/remotes/god/
+projects/StereoPipelineTest/.git/refs/remotes/origin/
+
+sent 10003 bytes  received 358237 bytes  19904.86 bytes/sec
+total size is 43775639  speedup is 118.88

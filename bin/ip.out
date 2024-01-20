@@ -1,0 +1,12 @@
+--2012-08-21 20:01:01--  http://checkip.dyndns.com/
+Resolving checkip.dyndns.com... 216.146.39.70, 91.198.22.70, 216.146.38.70
+Connecting to checkip.dyndns.com|216.146.39.70|:80... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 105 [text/html]
+Saving to: `index.html'
+
+     0K                                                       100%  899K=0s
+
+2012-08-21 20:01:02 (899 KB/s) - `index.html' saved [105/105]
+
+done
