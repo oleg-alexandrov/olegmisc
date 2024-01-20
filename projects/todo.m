@@ -1,14 +1,69 @@
-Initial transform with CSM. Intrinsics refinement.
+// STV: Made velocity aberation and atmospheric correction be applied once, per
+// input orientations, at camera load time, rather than on-the-fly. This greatly
+// improved the performance and made it usable with CSM cameras. Validated that
+// these corrections greatly improve the agreeement between WorldView linescan
+// and RPC cameras, and were made the default.
 
-Test intrinsics per sensor with Pinhole and CSM frame.
+Dec: USGS
+Jan: 0.5 STV, 0.5 VIPER
+Feb: STV
+March: 0.5 STV, 0.5 VIPER
+April: USGS
+May: USGS
+Jun: 0.5 Vacation, 0.5 STV
+Jul: STV
+Aug: STV
+Sep: 0.5 STV, 0.5 Vacation
 
-Test different distortion sizes.
+CSM work:
 
-Also check my email!
+Solved for distortion for Kaguya Terrain Camera with a narrower image width (3496 pixels).
+This required collecting new data, redoing the work and also the methdology, compared to what was used for the wider image width (4096 pixels).
 
-./src/asp/Camera/BundleAdjustCamera.cc:392:// TODO(oalexan1): This was not tested
+Added to ASP support for PDAL. This is essential for ingestion of LAS 1.4 (latest version) point clouds (the obsolete libLAS library that was used before could not handle this version). 
 
-// See David's email about what to wipe at the end of stereo (option --keep-only).
+Added to CSM cameras support for radial + tangential distortion. Essential for future detailed modeling of frame + linescan sensor designs.
+
+Added to ASP support for the ISIS binary control network model, which is more compact than the match files used by ASP and allows for exchange of control networks between ASP and ISIS and mixed use of tools. Supported in bundle adjustment,
+jitter solving, and stereo_gui.
+
+Added to ASP the ability to read and write CSM state embedded in .cub files, in addition to the existing support for external .json files. 
+
+Fixed several problems in generation of CSM cameras for MSL Curiosity Nav
+and Mast images. Added a large example of how to create terrain models and mosaics
+from these images using ASP.
+     
+Made the operation of projecting into a linescan camera 2.2-2.6 times
+faster by using the secant method to find the best sensor line.
+
+Helped with understanding issues with large-scale aligment of Kaguya data.
+
+In point2las, do not make the scale so tiny. Can cause problem.
+Being at the level of 1 mm should be good enough.
+
+Modularize pc_align_utils.tcc, and move code to .cc
+
+Make ISIS compatible with GDAL.
+
+Add GCP support to jitter_solve and have it optimize a single sensor.
+
+Make auto-computation of projection center in point2dem the default.
+
+Crop left and right mapprojected image to shared box biased by 10%. Nake this an option. If set to -1, do not crop.
+
+Make ip matching go in pprc and not in stereo_corr for alignment method none.
+
+# Problem in usgscsm/UsgsAstroFrameSensorModel.h
+# Must make members public!
+# Compiling fails!
+
+Make parallel_bundle_adjust support the format --image-list list1.txt,list2.txt
+
+Make parallel_bundle_adjust support indiidual lists in addition to images. 
+Or otherwise disable that in bundle_adjust. As of now this is a bug.
+
+Test mixing linescan and frame distortion models in bundle_adjust.
+Ensure sensors of same type have same camera type.
 
 Make new package for usgscsm having the public member!
 
@@ -21,22 +76,9 @@ Check if the DEM is actually in North America. Otherwise it is not surprising th
 
 Add option --matches-per-image to work with ip-per-image. 
 
-STV work:
-Added the ability to optimize intrinsics per sensor (intrinsics are shared for all images created with the same sensor). Works with Pinhole and CSM (Frame and Linescan) cameras. Validated carefully for CSM for a real-world use case. Also with figures. https://stereopipeline.readthedocs.io/en/latest/bundle_adjustment.html#kaguya-tc-refine-intrinsics
-
-- Validated that if projections of satellite trajectories on the ground intersect at an angle (hence the same for image lines), this can correct jitter. Devised and validated a formula connecting the angle of intersection, length of image lines, and jitter frequency.
-- Added the ability to create a desired number of match points for each small image tile. This is useful in ensuring uniform coverage over images when the ground conditions are different in different parts of the image (such as sea ice vs solid ground).
-
 CSM: use isd_generate.
 
-See Jay''s email. "I am going to work on doing a 1.6.1 release of USGSCSM and a release of ale main".
-
 stereo_gui add colorbar to scattered data. Also ability to zoom.
-
-Make parallel_bundle_adjust support indiidual lists in addition to images. 
-Or otherwise disable that in bundle_adjust. As of now this is a bug.
-
-Make release! Check ith Jay!
 
 Update the CSM WAC doc
 

@@ -24,14 +24,14 @@ def expandAlias(aliasName):
 
    for line in allAliases:
 
-       matches = re.match('^(alias ' + aliasName + '=.*?)$', line)
+       matches = re.match(r'^(alias ' + aliasName + '=.*?)$', line)
        if matches:
            aliasExpansion = matches.group(1)
        # end if
 
    #end for
 
-   aliasExpansion = re.sub('^alias', 'a', aliasExpansion)
+   aliasExpansion = re.sub(r'^alias', 'a', aliasExpansion)
 
    return aliasExpansion
 
@@ -51,10 +51,10 @@ def expandCmdLine(cmdLine, cursor, part):
    before = cmdLine[0:cursor]
    after  = cmdLine[cursor:lineLen]
 
-#    before = re.sub('\"\"', '', before)
-#    after = re.sub('\"\"', '', after)
-#    before = re.sub('\'\'', '', before)
-#    after = re.sub('\'\'', '', after)
+#    before = re.sub(r'\"\"', '', before)
+#    after = re.sub(r'\"\"', '', after)
+#    before = re.sub(r'\'\'', '', before)
+#    after = re.sub(r'\'\'', '', after)
 
    #marker = ' xtk45TSfl ';
    #words = re.sub(r'\b', marker, before).split(marker);
@@ -71,9 +71,9 @@ def expandCmdLine(cmdLine, cursor, part):
 
    lWord = words[numWords-1]
    
-   if    ( numWords >= 2 and lWord[-2:] == "ld" and
-           (len(lWord) == 2 or not re.match('\w', lWord[-3]))):
-      words[numWords-1] = lWord[:-2] + "LD_LIBRARY_PATH"
+   if numWords >= 1 and lWord == "ld":
+      # Replace ld with LD_LIBRARY_PATH
+      words[numWords-1] = "LD_LIBRARY_PATH"
       cmdLine = " ".join(words) + after
       cursor  = len(cmdLine)
 
@@ -83,10 +83,10 @@ def expandCmdLine(cmdLine, cursor, part):
       cursor  = len(cmdLine)
 
    if    ( numWords >= 2 and words[0] == "hp"):
-      # If the first word is hp, expand the abbrevation
+      # If the first word is hp, expand the abbreviation
       # of the second word
       expansion = expandAlias(words[1])
-      matches = re.match('^.*?\'(.*?)\'', expansion)
+      matches = re.match(r'^.*?\'(.*?)\'', expansion)
       if matches:
          words[1] = matches.group(1)
          cmdLine = " ".join(words) + after
@@ -102,13 +102,13 @@ def expandCmdLine(cmdLine, cursor, part):
       cmdLine = " ".join(words) + after
       cursor  = len(cmdLine)
 
-   elif  ( numWords >= 1 and words[numWords-1][:1] == "o") and \
-            len(words[numWords-1]) <= 2:
-      # Replace o4 with > output4.txt 2>&1&
-      suff = words[numWords-1][1:]
-      words[numWords-1] = "> output" + suff + ".txt 2>&1&"
-      cmdLine = " ".join(words) + after
-      cursor  = len(cmdLine)
+   # elif  ( numWords >= 1 and words[numWords-1][:1] == "o") and \
+   #          len(words[numWords-1]) <= 2:
+   #    # Replace o4 with > output4.txt 2>&1&
+   #    suff = words[numWords-1][1:]
+   #    words[numWords-1] = "> output" + suff + ".txt 2>&1&"
+   #    cmdLine = " ".join(words) + after
+   #    cursor  = len(cmdLine)
 
    elif  ( numWords >= 1 and words[numWords-1] == "ss"):
       words[numWords-1] = "*/*h */*cc" # expand 'ss' into '*/*h */*cc'
@@ -131,7 +131,7 @@ def expandCmdLine(cmdLine, cursor, part):
       words[numWords-2] = ""
       words[numWords-1] = ""
       cmdLine = " ".join(words) + after
-      cmdLine = re.sub('\s*$', '', cmdLine)
+      cmdLine = re.sub(r'\s*$', '', cmdLine)
       cursor  = len(cmdLine)
 
    elif  ( numWords >= 3 and words[numWords-3] == "d"):
@@ -146,16 +146,22 @@ def expandCmdLine(cmdLine, cursor, part):
       words[numWords-2] = ""
       words[numWords-1] = ""
       cmdLine = " ".join(words) + after
-      cmdLine = re.sub('\s*$', '', cmdLine)
+      cmdLine = re.sub(r'\s*$', '', cmdLine)
       cursor  = len(cmdLine)
 
    elif  ( numWords >= 2 and words[numWords-1] == "s"):
       # Remove extra spaces
       words[numWords-1] = ""
       cmdLine = " ".join(words)
-      cmdLine = re.sub('\s+', ' ', cmdLine)
-      cmdLine = re.sub('\s*$', '', cmdLine)
+      cmdLine = re.sub(r'\s+', ' ', cmdLine)
+      cmdLine = re.sub(r'\s*$', '', cmdLine)
       cursor  = len(cmdLine)
+
+   elif (numWords >= 1 and words[numWords-1] == "op" ):
+      # Expand the string "op"
+      words[numWords-1] = "output.txt"
+      cmdLine = " ".join(words) + after
+      cursor  = cursor + 8
 
    elif ( numWords == 1 and words[0] == "pl" ) or \
           ( numWords >= 2 and words[numWords-2] != "a" and words[numWords-1] == "pl" ):

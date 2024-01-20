@@ -118,7 +118,8 @@ DesktopName 3 Desk 3
  
 ######################### Keyboard binding###########################
 #Key F1    A   N   Exec /usr/bin/konsole& 
-Key F1    A   C   Exec /usr/bin/gnome-terminal --geometry 103x53+0+0 --tab --tab & 
+#Key F1    A   C   Exec /usr/bin/gnome-terminal --geometry 103x53+0+0 --tab --tab & 
+Key F1    A   C   Exec xfce4-terminal --geometry 103x53+0+0 --tab --tab & 
 Key F1    A   M   Exec /usr/bin/gnome-terminal --geometry--geometry 81x40+0+0  -- zsh & 
 Key F3    A   C   Exec  ~/projects/VSCode-linux-x64/bin/code-insiders ~/ &
 Key F4    A   C   Exec  firefox&
@@ -145,10 +146,10 @@ Key Up    A   C   Scroll +0   -100
 Key Down  A   C   Scroll +0   +100
 
 # shift + control anywhere => scroll by a page
-#Key Left  A   S   Scroll -100    0
-#Key Right A   S   Scroll +100   +0
-#Key Up    A   S   Scroll +0   -100
-#Key Down  A   S   Scroll +0   +100
+Key Left  A   S   Scroll -100    0
+Key Right A   S   Scroll +100   +0
+Key Up    A   S   Scroll +0   -100
+Key Down  A   S   Scroll +0   +100
 
 # Use the left windows key for moving the cursor  
 # Put this in .bashrc: xmodmap -e  "add mod4 = Super_L"

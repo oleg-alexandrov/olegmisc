@@ -158,3 +158,26 @@ proml
 # PERL_LOCAL_LIB_ROOT="/home/oalexan1/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
 # PERL_MB_OPT="--install_base \"/home/oalexan1/perl5\""; export PERL_MB_OPT;
 # PERL_MM_OPT="INSTALL_BASE=/home/oalexan1/perl5"; export PERL_MM_OPT;
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+function init_conda_zsh () {
+
+__conda_setup="$('/home/oalexan1/miniforge3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/oalexan1/miniforge3/etc/profile.d/conda.sh" ]; then
+        . "/home/oalexan1/miniforge3/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/oalexan1/miniforge3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+
+if [ -f "/home/oalexan1/miniforge3/etc/profile.d/mamba.sh" ]; then
+    . "/home/oalexan1/miniforge3/etc/profile.d/mamba.sh"
+fi
+}
+# <<< conda initialize <<<
+
