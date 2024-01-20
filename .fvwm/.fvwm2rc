@@ -36,7 +36,7 @@ Style "Netscape"   Icon nsc.xpm
 Style "opera"   Icon opera.xpm
 Style "*emacs"   Icon XEmacs.xpm
 
-# Miliseconds
+# Milliseconds
 EdgeResistance 250
 Style * EdgeMoveDelay 250
 Style * EdgeMoveResistance 250
@@ -144,10 +144,10 @@ Key Up    A   C   Scroll +0   -100
 Key Down  A   C   Scroll +0   +100
 
 # shift + control anywhere => scroll by a page
-Key Left  A   S   Scroll -100    0
-Key Right A   S   Scroll +100   +0
-Key Up    A   S   Scroll +0   -100
-Key Down  A   S   Scroll +0   +100
+# Key Left  A   S   Scroll -100    0
+# Key Right A   S   Scroll +100   +0
+# Key Up    A   S   Scroll +0   -100
+# Key Down  A   S   Scroll +0   +100
 
 # Use the left windows key for moving the cursor  
 # Put this in .bashrc: xmodmap -e  "add mod4 = Super_L"

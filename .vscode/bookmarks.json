@@ -164,7 +164,7 @@
 			"path": ".muttrc",
 			"bookmarks": [
 				{
-					"line": 189,
+					"line": 0,
 					"column": 0,
 					"label": "mu"
 				}
@@ -176,7 +176,7 @@
 				{
 					"line": 0,
 					"column": 0,
-					"label": "mu"
+					"label": "sgrs"
 				}
 			]
 		},
@@ -204,7 +204,7 @@
 			"path": "projects/todo.m",
 			"bookmarks": [
 				{
-					"line": 14,
+					"line": 0,
 					"column": 0,
 					"label": "td"
 				}
