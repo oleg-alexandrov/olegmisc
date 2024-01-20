@@ -117,9 +117,7 @@ DesktopName 3 Desk 3
 #*FvwmPager: Label * 
  
 ######################### Keyboard binding###########################
-#Key F1    A   N   Exec /usr/bin/konsole& 
-#Key F1    A   C   Exec /usr/bin/gnome-terminal --geometry 103x53+0+0 --tab --tab & 
-Key F1    A   C   Exec xfce4-terminal --geometry 103x53+0+0 --tab --tab & 
+Key F1    A   C   Exec /usr/bin/gnome-terminal --geometry 133x79+0+0 --tab --tab -- zsh & 
 Key F1    A   M   Exec /usr/bin/gnome-terminal --geometry--geometry 81x40+0+0  -- zsh & 
 Key F3    A   C   Exec  ~/projects/VSCode-linux-x64/bin/code-insiders ~/ &
 Key F4    A   C   Exec  firefox&
