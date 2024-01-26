@@ -19,7 +19,7 @@
         ],
         "description": ""
     },  
-    "xx": {
+    "cpp-xx": {
 		"scope": "cpp",
         "prefix": "xx",
         "body": [
@@ -27,7 +27,7 @@
         ],
         "description": ""
     },  
-    "xxx": {
+    "cpp-xxx": {
 		"scope": "cpp",
         "prefix": "xxx",
         "body": [
@@ -35,7 +35,7 @@
         ],
         "description": ""
     },  
-    "x1": {
+    "cpp-x1": {
 		"scope": "cpp",
         "prefix": "x1",
         "body": [
@@ -43,7 +43,7 @@
         ],
         "description": ""
     },  
-    "v2": {
+    "cpp-v2": {
 		"scope": "cpp",
         "prefix": "v2",
         "body": [
@@ -51,7 +51,7 @@
         ],
         "description": ""
     },  
-    "v3": {
+    "cpp-v3": {
 		"scope": "cpp",
         "prefix": "v3",
         "body": [
@@ -222,7 +222,7 @@
         ],
         "description": ""
     },
-    "tdd": {
+    "cpp-tdd": {
 		"scope": "cpp", 
         "prefix": "tdd", 
         "body": [
@@ -230,7 +230,7 @@
         ],
         "description": ""
     },
-    "td": {
+    "cpp-td": {
 		"scope": "cpp", 
         "prefix": "td", 
         "body": [
@@ -290,7 +290,7 @@
         "description": ""
     },
 
-    "td": {
+    "python-td": {
 		"scope": "python",
         "prefix": "td",
         "body": [
@@ -307,7 +307,7 @@
         ],
         "description": ""
     },
-    "td": {
+    "shell-td": {
 		"scope": "shellscript",
         "prefix": "td",
         "body": [

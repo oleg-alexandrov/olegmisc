@@ -594,6 +594,16 @@
 					"label": "bm"
 				}
 			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Tools/stereo_corr.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "corr"
+				}
+			]
 		}
 	]
 }
