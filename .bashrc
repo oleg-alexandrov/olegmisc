@@ -271,7 +271,6 @@ function un {
     unalias $u 2>/dev/null
     echo "unalias $u 2>/dev/null" >> ~/.unaliases
   done
-  perl -pi -e "s#^alias $u=.*?\n##g" ~/.base_aliases
 
   alias > ~/.bash_aliases
   perl -pi -e "s#^([^\s]+=)#alias \$1#g" ~/.bash_aliases
@@ -549,7 +548,14 @@ function cg {
 function sgm {
     min=$1; shift
     max=$1; shift
-    stereo_gui --window-size 2000 1300 --colorbar --min $min --max $max $*
+    stereo_gui --window-size 1600 1100 --colorbar --min $min --max $max $*
+}
+
+function sgi {
+    min=$1; shift
+    max=$1; shift
+    stereo_gui --window-size 1600 1100 --colorbar --colormap-style inferno \
+        --min $min --max $max $*
 }
 
 # While this is an environment variable, it needs to be set here
@@ -594,10 +600,4 @@ if [ -f ~/.bashenv ];   then source ~/.bashenv;   fi
 if [ -f ~/.unaliases ]; then source ~/.unaliases; fi
 
 # Aliases
-if [ -f ~/.base_aliases ]; then source ~/.base_aliases; fi
 if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi
-
-if [ -f ~/.bash_aliases ]; then
-     grep -E -v "(cd|ssh|scp)"  ~/.bash_aliases > ~/.base_aliases
-fi
-
