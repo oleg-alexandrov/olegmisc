@@ -1,21 +1,151 @@
-// STV: Made velocity aberation and atmospheric correction be applied once, per
-// input orientations, at camera load time, rather than on-the-fly. This greatly
-// improved the performance and made it usable with CSM cameras. Validated that
-// these corrections greatly improve the agreeement between WorldView linescan
-// and RPC cameras, and were made the default.
+STV: 
 
+Performed a large-scale experiment with 1000 SkySat images (3 rigs with 3 sensors each). Validated that accpetable results were produced. Found out that merely adding more datasets does not improve the absolute geolocation accuracy, as each of these datasets has its own systematic bias, which does not get averaged away. Additional alignment to the ground is still necessary after a self-consistent solution is produced.
+
+Made bundle_adjust export CSM Frame camera information to the NVM format used by rig_calibrator. This allows modeling the rig constraint for SkySat images.
+
+Ensured that the rig_calibrator, ASP, and CSM are in full agreement when it comes to the radial-tangential lens distortion model and that conversions are handled properly. All these are separate implementations so this needed some work.
+
+Validated the bundle_adjust versatility on a collection of aerial images with very strong distortion, using our internal ratio of polynomials distortion model (this not a usual model in the computer vision community). The results were very good.
+ 
+Many improvements to the rig calibration software to have it handle orbital images.
+Addressed issues: naming convention, ground counstraints, filtering out outliers consistent with bundle_adjust, constrain rotation and/or translation of rig transforms.
+
+Added the ability to create simulated images as if produced with a frame camera rig.
+// https://stereopipeline.readthedocs.io/en/latest/tools/sat_sim.html#sat-sim-rig
+
+MPR
+
+// See Ernie's Task 206 on OneDrive.
+
+VIPER
+-Added support for the fisheye lens distortion model, and validated that the Ames Stereo Pipleine software bundle adjustment and rig calibraton solvers work with this model.
+-Added the abilitytto import and export NVM files. These are a rather well-known format for structure for motion.
+-Added the ability to mix images that have an slog filter applied (for effeciency of transmission) with images that are raw. This will be useful for upcoming rover missions.
+-Made a through study a set of orbital 9 sensors, with 3000 images in total using bundle adjustment. 
+# Past MPR
+Performed experiments to show accurate modeling of a large system of cameras using bundle adjustment. 
+Improved the software support for calibration of a rig and for the OpenCV ubiquitous lens distortion model. Added support for the rig calibration software to export its outputs in a format usable by bundle adjustment.
+Developed a process for creating terrain models from VIPER data acquired with
+the forward and aft camera in the sandbox. Validated with ground truth.
+This required additional functionality for the righ calibration
+and bundle adjustment programs. 
+
+parallel_stereo --correlator-mode does not clean the subdirs!
+
+Make stereo_gui create control points for rig_calibrator. For that,
+must accept an arbitrary projection, not just lon,lat,height.
+
+Paralleize loading of CSM cameras.
+
+Fix the --camera-position-weight constraint.
+
+Ensure that the cam_gen csm cameras and pinhole camera with radtan
+format agree.
+
+Fix nonuniquenes issue with Flann
+
+Fix the bug in CSM lens distortion.
+
+Modularize CSM code for Frame camera.
+
+Add the mgm_multi_stereo algorithm.
+
+stereo_gui fixes for small images overlaid on polygons.
+
+parallel_stereo default corr tile size and sgm collar size.
+
+point2mesh: Introduce the option to subtract a given position from 
+all the points to be meshed. This will ensure several consistent meshes.
+
+point2dem: Make local projection the default.
+
+Old
+
+Added the ability to control, per each group of cameras sharing intrinsics,
+which intrinsics should be optimized, independent of other groups. This
+needed quite some new parsing and book-keeping logic.
+
+Perfomed a study that showed it possible to combine different sensors,
+including linescan and frame cameras. This was used to successfully correct
+lens distortion errors.
+
+Added support for latest GDAL and PROJ datums and projection strings. This
+required a large amount of internal chagnes in ASP.
+
+Added the ability to control the horizontal and vertical movement of the
+cameras during bundle adjustment, and a report file that measures the
+resulting movement.
+https://stereopipeline.readthedocs.io/en/latest/tools/bundle_adjust.html#ba-cam-constraints
+
+Added a report file measuring the distance between each initial triangulated
+point and final one, saving the mean, median, and count per camera.
+Documented. This is useful for understanding the effect of bundle adjustment.
+
+Added a program named gcp_gen that can create ground control points based on
+an observerd camera image and a prior orthoimage and DEM. This is useful for
+initializing camera models when they are not provided, as is often the case
+with aerial images.
+https://stereopipeline.readthedocs.io/en/latest/tools/gcp_gen.html#gcp-gen
+
+Contributed to the PDAL project (Point Data Abstraction Library) three
+programs that show all steps needed to create a custom reader, writer, and
+filter. Associated documentation provided as well.
+
+Much work was done on ground and camera position constraints, to ensure
+that they work equally well with different resolutions and different
+numbers of features, and that all constraints are in the same units
+that are physically meaningful (such as uncertainty in meters).
+
+Performed a larger validation excercise, with 5 Blacksky images
+and 4 WorldView images. The goal is to ensure that we can fix
+systematic errors in frame camera models using linescan cameras, which
+are more accurate. This was successful.
+
+Validated the bundlea djustment pointing control on a large set of SkySat
+images (3000), produced with 3 perspectives, and each perspective with 3
+different sensors. In addition, two large WV images were used, and features
+were found and mached in all these images. It was shown that this produces
+very similar results when compared to using smaller subsets of this data,
+such as only one sensor (still with 3 perspectives).
+
+Fixed a numerical precision bug in the VisionWorkench radial-tangenttial
+distortion model, and sped up the undistortion by a factor of 10 using a
+different algorithm.
+
+Old:
+
+Made the satellite velocity aberation and atmospheric correction be
+applied once, per input orientations, at camera load time, rather than
+on-the-fly. This greatly improved the performance and made these usable with
+CSM cameras and bundle adjustment. Validated that these corrections greatly
+improve the agreeement between WorldView linescan and RPC cameras, and were
+made the default.
+
+Added to ASP the ability to create CSM linescan and frame cameras from custom
+vendor formats (for WorldView, Pleiades, ASTER for linescan, and RPC and Pinhole for frame cameras). 
+
+
+Made ASP load images projected with a one camera type and adjustment settings
+for use with another camera type and adjustment settings in bundle adjustment
+and streo. This makes it easy to reuse data and run experiments after optimizing
+the camera models or even swithcing to a different camera model.
+
+# Below updating for the STV - USGS swap
 Dec: USGS
-Jan: 0.5 STV, 0.5 VIPER
+Jan: 0.5 STV, 0.5 CSM
 Feb: STV
 March: 0.5 STV, 0.5 VIPER
-April: USGS
-May: USGS
-Jun: 0.5 Vacation, 0.5 STV
-Jul: STV
+April: 0.5 VIPER, 0.5 STV
+May: STV
+Jun: 0.5 Vacation, 0.5 USGS
+Jul: USGS
 Aug: STV
 Sep: 0.5 STV, 0.5 Vacation
 
 CSM work:
+
+Replaced the ray-to-DEM intersection code in ISIS with a faster and more robust implementation based on a different algorithm that can handle very oblique rays, such as for a rover on the ground.
 
 Solved for distortion for Kaguya Terrain Camera with a narrower image width (3496 pixels).
 This required collecting new data, redoing the work and also the methdology, compared to what was used for the wider image width (4096 pixels).
@@ -38,12 +168,10 @@ faster by using the secant method to find the best sensor line.
 
 Helped with understanding issues with large-scale aligment of Kaguya data.
 
-In point2las, do not make the scale so tiny. Can cause problem.
+In point2las, do not make the scale so tiny. Can cause problems.
 Being at the level of 1 mm should be good enough.
 
 Modularize pc_align_utils.tcc, and move code to .cc
-
-Make ISIS compatible with GDAL.
 
 Add GCP support to jitter_solve and have it optimize a single sensor.
 
@@ -68,11 +196,6 @@ Ensure sensors of same type have same camera type.
 Make new package for usgscsm having the public member!
 
 Test and document --skip-image-normalization
-This fails:
-export PROJ_NETWORK=ON 
-cd ~/projects/StereoPipelineTest/ssDG_alignNone_seedMode1_mapProj1_subPix1_badDisp1; ~/miniconda3/envs/asp/bin/point2dem --datum NAD27 run/run-PC.tif --nodata-value -32767 --stereographic --proj-lon 0 --proj-lat -90
-But it passes with export PROJ_NETWORK=OFF
-Check if the DEM is actually in North America. Otherwise it is not surprising that it fails.
 
 Add option --matches-per-image to work with ip-per-image. 
 
@@ -86,15 +209,9 @@ Improve the sfm_view tool
 
 Add python orbit view tool to ASP
 
-See the OSTFL items!
-
 sat_sim: Write logs!
 
 See the user issue with invalid georeference causing issue in my email.
-
-Fix MGM cost mode 2
-
-Support nvm in bundle adjustment, also the ISIS format. See my work email inbox for details.
 
 Make NED work with ellipsoid heights, not just with a sphere. 
 
@@ -133,13 +250,9 @@ Fix hideAll bug with hillshaded images!
 
 Implement filtering of outlier by homography. See the effect on haz cam points and sfm_merge!
 
-bundle_adjust: Add support for NVM format.
-   
 stereo_gui: Do not render pixels that will not show up!
 
 Bundle_adjust: Save triangulation angle per point!
-
-Push Readme.md in MultiView!
 
 TODO(oalexan1): sfm_merge: Allow image lists on input.
 
@@ -157,13 +270,9 @@ voxblox_mesh: Add weighing by distance! Add back noisy clouds!
 rig_calibrator: Add per camera residual report! Very helpful in
 throwing out misaligned cameras!
 
-rig_calibrator: Add tool for visualizing 3D features and camereas!
+rig_calibrator: Add tool for visualizing 3D features and cameras!
 
 For the report:
-
-Did quite some testing and fixed 3 bugs in rig calibration in some
-circumstances. Made some robustness improvements that will make the
-software more reliable.
 
 It is tricky to deal with the wall behind the airlock. It
 shows up as isolated low-resolution blobs which get filtered in mesh
@@ -183,17 +292,13 @@ sfm_merge: Make it work with shifted nvm!
 
 rig_calibrator: Test with and without shifted nvm! Too many things changed!
 
-rig_calibrator: Merge IP!!!
-
-sfm_merge: Add doc and test!
-
 # Look at Poisson surface reconstruction!
-/usr/local/home/oalexan1/projects/CGAL-5.3/examples/Poisson_surface_reconstruction_3/tutorial_example.cpp
+
+ - https://github.com/mkazhdan/PoissonRecon
+
+ - /usr/local/home/oalexan1/projects/CGAL-5.3/examples/Poisson_surface_reconstruction_3/tutorial_example.cpp
 
 sfm_merge: Allow sets of images to use in matching.
-
-Fixed a rig_calibrator bug when left and right bracket were same.
-Documented the sfm_merge tool. Added the --fast_merge option.
 
 Must make nvm_merge not save triangulated outliers!
 
@@ -204,22 +309,16 @@ sfm_merge: How about the shift?
 
 Update the rig_calibrator example dataset.
 
-rig_calibrator: Must merge new matches with old matches! Or else they accumulate!
-
 dg_mosaic: Throw an error when the product is not L1B, particularly for P2AS.
 
 Add testcases with extra images, with no rig, and with rig set.
 
-Update the mac build for MultiView!
-   
 Fix the bug with last timestamp being equal!
 
 rig_calibrator: Document multiple rigs! Also in news!
 
 rig_calibrator: Should --num_overlaps match between different rigs?
 Now it does, which may not be desirable. See std::sort(cams.begin(), ...).
-
-rig_calibrator: New matches don't get merged with old matches read from nvm!
 
 Bug in rig_calibrator when there is a rig and all sensors acquire data
 at the same time. The last non-ref cameras will not have the rig
@@ -242,7 +341,7 @@ Also compare the rig calibrator with ipfind/ipmatch.
 When loading nvm files, do not do sub until 5000, and load only one or two images at a time,
 not all at once.
 
-stereo_gui: Hide/show does not work nvm files.
+stereo_gui: Hide/show does not work with nvm files.
 
 rig_calibrator interest point matching makes too many outliers when num_overlaps is large.
 Likely depth_tri_weight makes that worse?
@@ -257,7 +356,7 @@ Do histogram equalization on nav and haz images before building a map?
 Upload and upgrade rig_calibrator conda package.
 
 # theia_sfsm --min_triangulation_angle_degrees=0.3 option in default config file
-# may be too small. There's a lot of data with rotation only.
+# may be too small. There is a lot of data with rotation only.
 # Expose this param.
 
 Must archive nobile_v7.0 when lou comes back. Already archived nobile_1 and nobile_2. Must then wipe these at some point.
@@ -273,12 +372,6 @@ Fix quaternion logic
 
 Mapproject MSL data on both MOLA and on the higher res DEM. See how well it goes
 as these differ by a vertical shift.
-
-Ship with ASP tool for breaking up maps.
-   
-Ship with ASP the tool for merging SfM maps, including with fixing first map.
-   
-Add to sfs --image-list and --camera-list
 
 Fix the quaternion bug! See the VW code.
 

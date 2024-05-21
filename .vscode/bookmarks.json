@@ -141,16 +141,6 @@
 			]
 		},
 		{
-			"path": "projects/MultiView/bin/rig_calibrator.cc",
-			"bookmarks": [
-				{
-					"line": 5,
-					"column": 42,
-					"label": "rc"
-				}
-			]
-		},
-		{
 			"path": "projects/StereoPipeline/docs/tools/rig_calibrator.rst",
 			"bookmarks": [
 				{
@@ -191,16 +181,6 @@
 			]
 		},
 		{
-			"path": "projects/MultiView/rig_calibrator/bin/rig_calibrator.cc",
-			"bookmarks": [
-				{
-					"line": 0,
-					"column": 0,
-					"label": "rc"
-				}
-			]
-		},
-		{
 			"path": "projects/StereoPipeline/src/asp/Camera/PleiadesXML.cc",
 			"bookmarks": [
 				{
@@ -227,16 +207,6 @@
 					"line": 0,
 					"column": 0,
 					"label": "pls"
-				}
-			]
-		},
-		{
-			"path": "projects/dart/dart_notes.sh",
-			"bookmarks": [
-				{
-					"line": 0,
-					"column": 0,
-					"label": "rc"
 				}
 			]
 		},
@@ -619,9 +589,29 @@
 			"path": "projects/todo.m",
 			"bookmarks": [
 				{
-					"line": 0,
+					"line": 41,
 					"column": 0,
 					"label": "td"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Tools/pc_align.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "pc"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Tools/rig_calibrator.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "rc"
 				}
 			]
 		}
