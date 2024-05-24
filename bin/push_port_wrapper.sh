@@ -24,7 +24,7 @@ while [ "$ans" != "" ]; do
     if [ "$port" -gt 9999 ]; then port=5000; fi
     if [ "$port" -lt 5000 ]; then port=5000; fi
     echo $port > $portFile # save it for next time
-
+    
     echo Trying port $port
     push_port.sh $port $machine > ${outFile} 2>&1
     ans=$(grep "Warning:" ${outFile} | grep "forwarding failed")
