@@ -18,9 +18,4 @@ if [ "$old_port"  == "" ]; then
 fi
     
 new_port="  Port $port";
-if [ "$old_port" != "$new_port" ]; then
-    perl -pi -e "s#$old_port#$new_port#g" ~/.ssh/config
-    #echo Changed port on machine $(uname -n) to $port
-else
-    #echo Port already set to $port
-fi
+perl -pi -e "s#$old_port#$new_port#g" ~/.ssh/config
