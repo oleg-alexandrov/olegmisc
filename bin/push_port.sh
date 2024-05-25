@@ -1,25 +1,39 @@
 #!/bin/bash
 
-if [ "$#" -lt 3 ]; then echo Usage: $0 port port_in machine; exit; fi
+# Set up reverse port forwarding and record that part on the remote machine.
 
-# Set up reverse port forwarding and record the port on the remote
-# machine. Then, the script set_port.sh will take that recorded port
-# and modify .ssh/config on the remote machine.
-
-port=$1; shift
-port_in=$1; shift
+if [ "$#" -lt 1 ]; then echo Usage: $0 machine; exit; fi
 machine=$1; shift
+
+# Read the last port used from a file
+portFile=/tmp/port_${machine}.txt
+port=$(cat $portFile)
+
+# if it does not exist, or it is >= 9999, then set it to 5000
+if [ "$port" == "" ] || [ "$port" -ge 9999 ]; then
+    port=5000 
+fi
+
+# Increment it
+((port++));
 
 ans=1
 while [ 1 ]; do
-    ssh $machine -N -X -f -R ${port}:localhost:22 -L ${port_in}:localhost:22
+    echo Trying port $port
+    ssh $machine -N -X -f -R ${port}:localhost:22
+    # Updating the remote machine's port requires a second ssh command
+    ssh $machine -X "bin/set_port.sh $port"
     ans=$?
     if [ "$ans" -eq "0" ]; then
-        break
+      echo Success
+      # Save it for next time
+      echo $port > $portFile
+      break
     fi
+    
     ((port=port+1))
-    echo Trying port $port
+    if [ "$port" -ge 9999 ]; then port=5000; fi
 done
-ssh $machine "echo ${port} > .ssh/port.txt"
-ans=$?
 
+echo Updating the local machine time
+sudo ntpdate pool.ntp.org
