@@ -1,0 +1,2005 @@
+{
+  "version": 2,
+  "clips": [
+    {
+      "value": "baPref=dense_ba_wt5_opt_ctr_dist/run # narrow images current prefix\n",
+      "createdAt": 1718126317299,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1419,
+            "character": 0
+          },
+          "end": {
+            "line": 1419,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "\n",
+      "createdAt": 1707014246462,
+      "copyCount": 1384,
+      "useCount": 1384,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 442,
+            "character": 6
+          },
+          "end": {
+            "line": 442,
+            "character": 6
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/BundleAdjustCamera2.cc"
+      }
+    },
+    {
+      "value": "baPref=dense_ba_wt60_opt_ctr_dist/run # narrow images\n",
+      "createdAt": 1718125002356,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1420,
+            "character": 0
+          },
+          "end": {
+            "line": 1420,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "baPref=dense_ba_wt60_opt_ctr_dist_align/run # narrow images\n",
+      "createdAt": 1718124880908,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1421,
+            "character": 0
+          },
+          "end": {
+            "line": 1421,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "optical_center,other_intrinsics \\",
+      "createdAt": 1718080617467,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1495,
+            "character": 26
+          },
+          "end": {
+            "line": 1495,
+            "character": 26
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": " bundle adjust with dense matches and narrow images\n",
+      "createdAt": 1718080601845,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1486,
+            "character": 0
+          },
+          "end": {
+            "line": 1486,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": " bundle adjust with dense matches and narrow images\nwt=5\nbaPref=dense_ba_wt${wt}_opt_ctr_dist/run\nout=output_$(dirname $baPref).txt\necho Writing the output to $out\ns=StereoPipeline-3.4.0-alpha-2023-12-23-x86_64-Linux; export PATH=$HOME/projects/BinaryBuilder/$s/bin:$PATH\ndem=lola/lola-DEM-filled.tif\nnohup nice -20                                            \\\nbundle_adjust --solve-intrinsics                          \\\n    --inline-adjustments                                  \\\n    --intrinsics-to-float optical_center,other_intrinsics \\\n    --intrinsics-to-share none                            \\\n    --image-list left_images2.txt,right_images2.txt       \\\n    --camera-list left_aligned_cameras.txt,right_aligned_cameras.txt \\\n    --num-iterations 10                                   \\\n    --threads 20                                          \\\n    --num-passes 1                                        \\\n    --match-files-prefix dense_ba2/run                    \\\n    --heights-from-dem $dem                               \\\n    --heights-from-dem-uncertainty $wt                    \\\n    --remove-outliers-params '75.0 3.0 10 10'             \\\n    --max-pairwise-matches 20000                          \\\n    --min-matches 0                                       \\\n    -o $baPref > $out 2>&1&",
+      "createdAt": 1718080596798,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1486,
+            "character": 4
+          },
+          "end": {
+            "line": 1486,
+            "character": 4
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": " \n",
+      "createdAt": 1718080475080,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1461,
+            "character": 0
+          },
+          "end": {
+            "line": 1461,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "# bundle adjust with dense matches and narrow images\n",
+      "createdAt": 1718080472073,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1463,
+            "character": 0
+          },
+          "end": {
+            "line": 1463,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "for f in $(cat left_cameras2.txt | perl -pi -e \"s#^.*(TC.*?)\\..*?\\n#\\$1\\n#g\"); do ls dense_ba_wt60_opt_ctr_dist_align/*$f*json; done > left_aligned_cameras.txt\n",
+      "createdAt": 1718080372902,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1451,
+            "character": 0
+          },
+          "end": {
+            "line": 1451,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "\nwt=60\nbaPref=dense_ba_wt${wt}_opt_ctr_dist/run\n\nout=output_$(dirname $baPref).txt\necho Writing the output to $out\n\n# bundle adjust with dense matches and narrow images\ns=StereoPipeline-3.4.0-alpha-2023-12-23-x86_64-Linux; export PATH=$HOME/projects/BinaryBuilder/$s/bin:$PATH\ndem=lola/lola-DEM-filled.tif\nbundle_adjust --solve-intrinsics                          \\\n    --inline-adjustments                                  \\\n    --intrinsics-to-float optical_center,other_intrinsics \\\n    --intrinsics-to-share none                            \\\n    --image-list left_images2.txt,right_images2.txt       \\\n    --camera-list left_cameras2.txt,right_cameras2.txt    \\\n    --num-iterations 10                                   \\\n    --threads 20                                          \\\n    --num-passes 1                                        \\\n    --match-files-prefix dense_ba2/run                    \\\n    --heights-from-dem $dem                               \\\n    --heights-from-dem-uncertainty $wt                    \\\n    --remove-outliers-params '75.0 3.0 10 10'             \\\n    --max-pairwise-matches 20000                          \\\n    --min-matches 0                                       \\\n    -o $baPref > $out 2>&1",
+      "createdAt": 1718080159668,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 18,
+            "character": 0
+          },
+          "end": {
+            "line": 43,
+            "character": 26
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/ba_narrow.sh"
+      }
+    },
+    {
+      "value": "wide ones",
+      "createdAt": 1718076702003,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1438,
+            "character": 29
+          },
+          "end": {
+            "line": 1438,
+            "character": 29
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "# Replace the distortion for wide ones\n",
+      "createdAt": 1718076698995,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1438,
+            "character": 0
+          },
+          "end": {
+            "line": 1438,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "# Replace the distortion for wide ones\npref=TC1W2B0_01_02820N033E2189\npref=TC2W2B0_01_05324N056E2169\norig=$(ls *${pref}*/*${pref}*.json | head -n 1)\n~/projects/kaguya/replace_dist.sh  \\\n  $orig \\\n  dense_ba_mos_wt10_opt_ctr_dist/run-ba-updated-${pref}.adjusted_state.json \\\n  ${pref}_fixed3.json\ndiff $orig ${pref}_fixed3.json\n",
+      "createdAt": 1718076693910,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1308,
+            "character": 0
+          },
+          "end": {
+            "line": 1317,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "#done\n",
+      "createdAt": 1718075651180,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1429,
+            "character": 0
+          },
+          "end": {
+            "line": 1429,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "#    $(pwd)/../stereo_lola_resume.sh $base $prevBaPref $baPref $dem $runDir\n",
+      "createdAt": 1718075650677,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1429,
+            "character": 0
+          },
+          "end": {
+            "line": 1429,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "  #qsub -l walltime=4:00:00 \\\n",
+      "createdAt": 1718075650176,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1429,
+            "character": 0
+          },
+          "end": {
+            "line": 1429,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "  # echo \\\n",
+      "createdAt": 1718075649678,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1429,
+            "character": 0
+          },
+          "end": {
+            "line": 1429,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "job=$(echo $base | perl -p -e \"s#__.*?\\n#\\n#g\")\n",
+      "createdAt": 1718075648171,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1426,
+            "character": 0
+          },
+          "end": {
+            "line": 1426,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "# Let job be the part of $base before __\n",
+      "createdAt": 1718075645665,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1426,
+            "character": 0
+          },
+          "end": {
+            "line": 1426,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "if [ -z \"$base\" ]; then continue; fi # skip empty\n",
+      "createdAt": 1718075643657,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1426,
+            "character": 0
+          },
+          "end": {
+            "line": 1426,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "#for base in $(cat stereo_list.txt); do \n",
+      "createdAt": 1718073941595,
+      "copyCount": 2,
+      "useCount": 2,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1338,
+            "character": 0
+          },
+          "end": {
+            "line": 1338,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "i=5;\n",
+      "createdAt": 1718075631566,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1423,
+            "character": 0
+          },
+          "end": {
+            "line": 1423,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "# cd narrow_kaguya\nprevBaPref=dense_ba_wt30_opt_ctr_dist/run # narrow images\nbaPref=dense_ba_wt60_opt_ctr_dist/run # narrow images\ndem=lola/lola-DEM-filled_blur.tif # narrow images\nrunDir=$(pwd)\n#for base in $(cat stereo_list.txt); do \ni=5;\nbase=$(cat stereo_list.txt | head -n $i | tail -n 1)\n\n  if [ -z \"$base\" ]; then continue; fi # skip empty\n  echo $base\n  # Let job be the part of $base before __\n  job=$(echo $base | perl -p -e \"s#__.*?\\n#\\n#g\")\n\n  nohup nice -20 \\\n    $(pwd)/../stereo_lola_resume.sh $base $prevBaPref $baPref $dem $runDir \\\n    > output_${i}.txt 2>&1 &\n  \n  # echo \\\n  #qsub -q devel -l walltime=0:01:00  \\\n  #echo \\\n  #qsub -l walltime=4:00:00 \\\n  #-m n -r n -N $job -W group_list=s7369 \\\n  #  -j oe -S /bin/bash -l select=1:model=san -- \\\n#    $(pwd)/../stereo_lola_resume.sh $base $prevBaPref $baPref $dem $runDir\n#done\n\n",
+      "createdAt": 1718075628028,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1419,
+            "character": 0
+          },
+          "end": {
+            "line": 1419,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "echo dense_ba_wt60_opt_ctr_dist/run-ba-updated-TC1W2B0_01_02683N073E0077.adjusted_state.json",
+      "createdAt": 1718075221104,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1395,
+            "character": 12
+          },
+          "end": {
+            "line": 1395,
+            "character": 12
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "echo dense_ba_wt60_opt_ctr_dist/run-ba-updated-TC1W2B0_01_02683N073E0077.adjusted_state.json | perl -p -e \"s#^.*(TC1.*?)\\..*?\\$#\\$1#g\" \n",
+      "createdAt": 1718075204074,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1394,
+            "character": 0
+          },
+          "end": {
+            "line": 1394,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "| perl -p -e \"s#^(.*TC1.*?)\\..*?\\$#\\$1#g\" ",
+      "createdAt": 1718075178980,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1394,
+            "character": 0
+          },
+          "end": {
+            "line": 1394,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "geodiff stereo_v2/dem_mosaic_v2.tif lola/lola.csv -o stereo_v2/lola \\\n  --csv-format 2:lon,3:lat,4:radius_km\n  ",
+      "createdAt": 1718074641369,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1361,
+            "character": 16
+          },
+          "end": {
+            "line": 1361,
+            "character": 16
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "# cd narrow_kaguya\nbaPref=dense_ba_wt30_opt_ctr_dist/run # narrow images\ndem=lola/lola-DEM-filled_blur.tif # narrow images\nrunDir=$(pwd)\n\nfor base in $(cat stereo_list.txt); do \n  if [ -z \"$base\" ]; then continue; fi # skip empty\n  echo $base\n  # Let job be the part of $base before __\n  job=$(echo $base | perl -p -e \"s#__.*?\\n#\\n#g\")\n\n  # echo \\\n  #qsub -q devel -l walltime=0:01:00  \\\n  qsub -l walltime=4:00:00 \\\n  -m n -r n -N $job -W group_list=s7369 \\\n    -j oe -S /bin/bash -l select=1:model=san -- \\\n    $(pwd)/../stereo_lola_dense.sh $base $baPref $dem $runDir\ndone\n\n",
+      "createdAt": 1718073414279,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1332,
+            "character": 2
+          },
+          "end": {
+            "line": 1332,
+            "character": 2
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "prefix=stereo/$base/run\n",
+      "createdAt": 1718073367078,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 63,
+            "character": 0
+          },
+          "end": {
+            "line": 63,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/stereo_lola_resume.sh"
+      }
+    },
+    {
+      "value": "baPref",
+      "createdAt": 1718073341471,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 33,
+            "character": 12
+          },
+          "end": {
+            "line": 33,
+            "character": 12
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/stereo_lola_resume.sh"
+      }
+    },
+    {
+      "value": "$(grep $pref tc1_cameras.txt)",
+      "createdAt": 1718066384359,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1315,
+            "character": 5
+          },
+          "end": {
+            "line": 1315,
+            "character": 5
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "$(ls ${pref}*/*${pref}*.json) \\",
+      "createdAt": 1718066365738,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1310,
+            "character": 0
+          },
+          "end": {
+            "line": 1310,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "  TC1W2B0_01_02683N073E0077_fixed3.json\n",
+      "createdAt": 1718066104063,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1315,
+            "character": 0
+          },
+          "end": {
+            "line": 1315,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "  TC1W2B0_01_02683N073E0077__TC2W2B0_01_02683N079E0077/TC1W2B0_01_02683N073E0077.json \\\n",
+      "createdAt": 1718066087528,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1313,
+            "character": 0
+          },
+          "end": {
+            "line": 1313,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "~/projects/kaguya/replace_dist.sh  \\\n  TC1W2B0_01_02683N073E0077__TC2W2B0_01_02683N079E0077/TC1W2B0_01_02683N073E0077.json \\\n  dense_ba2_wt0.1/run-ba-updated-TC1W2B0_01_02683N073E0077.adjusted_state.json \\\n  TC1W2B0_01_02683N073E0077_fixed2.json\ndiff \\\n  TC1W2B0_01_02683N073E0077__TC2W2B0_01_02683N079E0077/TC1W2B0_01_02683N073E0077.json \\\n  TC1W2B0_01_02683N073E0077_fixed2.json\n  \n~/projects/kaguya/replace_dist.sh \\\n  TC1W2B0_01_05183N069E0077__TC2W2B0_01_05183N074E0077/TC2W2B0_01_05183N074E0077.json \\\n  dense_ba2_wt0.1/run-ba-updated-TC2W2B0_01_05183N074E0077.adjusted_state.json \\\n  TC2W2B0_01_05183N074E0077_fixed2.json\ndiff \\\n  TC1W2B0_01_05183N069E0077__TC2W2B0_01_05183N074E0077/TC2W2B0_01_05183N074E0077.json \\\n  TC2W2B0_01_05183N074E0077_fixed2.json\n",
+      "createdAt": 1718065916314,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1017,
+            "character": 0
+          },
+          "end": {
+            "line": 1032,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "  qsub -l walltime=4:00:00 \\\n",
+      "createdAt": 1717894119629,
+      "copyCount": 2,
+      "useCount": 2,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1246,
+            "character": 0
+          },
+          "end": {
+            "line": 1246,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "baPref=dense_ba_wt30_opt_ctr_dist/run # narrow images\n",
+      "createdAt": 1718062734949,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1197,
+            "character": 0
+          },
+          "end": {
+            "line": 1198,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "baPref=dense_ba_wt10_dist/run # narrow images\n",
+      "createdAt": 1718062704725,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1197,
+            "character": 0
+          },
+          "end": {
+            "line": 1197,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "    cob\n",
+      "createdAt": 1718059956669,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 182,
+            "character": 0
+          },
+          "end": {
+            "line": 182,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Core/OutlierProcessing.cc"
+      }
+    },
+    {
+      "value": "point_image",
+      "createdAt": 1718058443087,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 174,
+            "character": 28
+          },
+          "end": {
+            "line": 174,
+            "character": 39
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Core/OutlierProcessing.cc"
+      }
+    },
+    {
+      "value": "    if (error_image.rows() > 0 && error_image.cols() > 0 && \n        error_image.cols() != point_image.cols() || \n        error_image.rows() != point_image.rows()) \n        vw_throw(ArgumentErr() \n                 << \"The error image and point image must have the same size.\");\n",
+      "createdAt": 1718058425572,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 622,
+            "character": 0
+          },
+          "end": {
+            "line": 622,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/point2dem.cc"
+      }
+    },
+    {
+      "value": "perl -pi -e \"s#ba-updated#ba#g\" *cameras*txt\n",
+      "createdAt": 1718055738864,
+      "copyCount": 3,
+      "useCount": 3,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 29,
+            "character": 0
+          },
+          "end": {
+            "line": 29,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/GUI/ColorAxes.h"
+      }
+    },
+    {
+      "value": "function sgm {\n    min=$1; shift\n    max=$1; shift\n    stereo_gui --window-size 1600 1100 --colorbar --min $min --max $max $*\n}\n\n",
+      "createdAt": 1718050208765,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 546,
+            "character": 0
+          },
+          "end": {
+            "line": 546,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/.bashrc"
+      }
+    },
+    {
+      "value": "https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2021.596231/full",
+      "createdAt": 1718042462244,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 164,
+            "character": 0
+          },
+          "end": {
+            "line": 164,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+      }
+    },
+    {
+      "value": " Our results indicate that the adult human brain can build a representation of the complex, global pattern of a probability distribution",
+      "createdAt": 1718042454192,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 164,
+            "character": 0
+          },
+          "end": {
+            "line": 164,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+      }
+    },
+    {
+      "value": "LLM is not neural nets. ",
+      "createdAt": 1718041950061,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 164,
+            "character": 0
+          },
+          "end": {
+            "line": 164,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+      }
+    },
+    {
+      "value": ". https://openreview.net/pdf?id=BZ5a1r-kVsf",
+      "createdAt": 1718041066035,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 164,
+            "character": 0
+          },
+          "end": {
+            "line": 164,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+      }
+    },
+    {
+      "value": "Because both sub-modules of the cost module are differentiable, the gradient of the\nenergy can be back-propagated through the other modules, particularly the world model,\nthe actor and the perception, for planning, reasoning, and learning.\r",
+      "createdAt": 1718040887179,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 164,
+            "character": 0
+          },
+          "end": {
+            "line": 164,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+      }
+    },
+    {
+      "value": "So, LeCun did not change a thing. He wants to double-down on using neural nets.",
+      "createdAt": 1718040870132,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 164,
+            "character": 0
+          },
+          "end": {
+            "line": 164,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+      }
+    },
+    {
+      "value": "https://openreview.net/pdf?id=BZ5a1r-kVsf",
+      "createdAt": 1718040772341,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 164,
+            "character": 0
+          },
+          "end": {
+            "line": 164,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+      }
+    },
+    {
+      "value": "See his 2022 paper. ",
+      "createdAt": 1718040576532,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 164,
+            "character": 0
+          },
+          "end": {
+            "line": 164,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+      }
+    },
+    {
+      "value": "not to make a good hypothesis of what to do, but a bot would need ",
+      "createdAt": 1718039901789,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 164,
+            "character": 0
+          },
+          "end": {
+            "line": 164,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+      }
+    },
+    {
+      "value": " they would need access to sim",
+      "createdAt": 1718039855151,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 164,
+            "character": 0
+          },
+          "end": {
+            "line": 164,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+      }
+    },
+    {
+      "value": "enough for a real-time response, but ",
+      "createdAt": 1718039823528,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 164,
+            "character": 0
+          },
+          "end": {
+            "line": 164,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+      }
+    },
+    {
+      "value": "Currently the bots do not acquire data in real time. They are fed it in a batch. It is less information that way, but that alone is ",
+      "createdAt": 1718039685334,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 164,
+            "character": 0
+          },
+          "end": {
+            "line": 164,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+      }
+    },
+    {
+      "value": "the last 15 years have been ",
+      "createdAt": 1717988498716,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 164,
+            "character": 0
+          },
+          "end": {
+            "line": 164,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+      }
+    },
+    {
+      "value": "https://www.nature.com/articles/nature14539",
+      "createdAt": 1717988404221,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 164,
+            "character": 0
+          },
+          "end": {
+            "line": 164,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+      }
+    },
+    {
+      "value": " rear-guard battle",
+      "createdAt": 1717987883722,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 164,
+            "character": 0
+          },
+          "end": {
+            "line": 164,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+      }
+    },
+    {
+      "value": "Ideally, several pairs of images are available that are acquired with precisely\nthe same camera model (note that there is a whole family of KH-7 camera models).\nThen, the cameras with the same model would be used jointly in bundle\nadjustment, while setting ``--intrinsics-to-share all``. This should increase\nthe accuracy across the board, if the DEMs are for mountainous regions and it is\neasy to measure the warping.\n \n",
+      "createdAt": 1717954457628,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 218,
+            "character": 0
+          },
+          "end": {
+            "line": 218,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+      }
+    },
+    {
+      "value": "  \n",
+      "createdAt": 1717804704431,
+      "copyCount": 3,
+      "useCount": 3,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 95,
+            "character": 0
+          },
+          "end": {
+            "line": 95,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/camera_footprint.cc"
+      }
+    },
+    {
+      "value": "  std::cout << \"---is planet pinhole: \" << opt.planet_pinhole << std::endl;\n",
+      "createdAt": 1717953908955,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 491,
+            "character": 0
+          },
+          "end": {
+            "line": 491,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+      }
+    },
+    {
+      "value": "how much time/effort are required to bypass mask file generation entirely",
+      "createdAt": 1717952598901,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1027,
+            "character": 0
+          },
+          "end": {
+            "line": 1027,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/kh7/kh7_notes.sh"
+      }
+    },
+    {
+      "value": "https://www.researchgate.net/publication/200459089_The_Application_of_Declassified_KH-7_GAMBIT_Satellite_Photographs_to_Studies_of_Cold_War_Material_Culture_A_Case_Study_from_the_Former_Soviet_Union",
+      "createdAt": 1717906177060,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1018,
+            "character": 0
+          },
+          "end": {
+            "line": 1018,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/kh7/kh7_notes.sh"
+      }
+    },
+    {
+      "value": "he GAMBIT satellite appears to have carried a\nsingle strip camera that exposed a continuous photograph of the terrain below by passing the\nfilm over a stationary slit in the focal plane of the lens at a speed synchronised with the velocity\nof the ground image across the focal plane. The slit width would have been sufficiently small\nsuch that at any instant the image of only a narrow ‘ribbon’ of terrain would have been\nexposed on the film. As the satellite moved forward, a long continuous photograph would\nhave been ‘painted’ onto the film by the successive integration of these narrow ribbons.",
+      "createdAt": 1717906159537,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1018,
+            "character": 0
+          },
+          "end": {
+            "line": 1018,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/kh7/kh7_notes.sh"
+      }
+    },
+    {
+      "value": "# cd wide_kaguya\njob=wide\n#qsub -q devel -l walltime=0:01:00              \\\nqsub -l walltime=8:00:00                        \\\n  -m n -r n -N $job -W group_list=s7369         \\\n    -j oe -S /bin/bash -l select=1:model=san -- \\\n    $(pwd)/../ba_wide.sh $(pwd)\n\n# cd narrow_kaguya\njob=narrow\n#qsub -q devel -l walltime=0:01:00              \\\nqsub -l walltime=8:00:00                        \\\n  -m n -r n -N $job -W group_list=s7369         \\\n    -j oe -S /bin/bash -l select=1:model=san -- \\\n    $(pwd)/../ba_narrow.sh $(pwd)\n",
+      "createdAt": 1717894395718,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1214,
+            "character": 0
+          },
+          "end": {
+            "line": 1214,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "  qsub -q devel -l walltime=0:01:00  \\\n",
+      "createdAt": 1717894108596,
+      "copyCount": 2,
+      "useCount": 2,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1245,
+            "character": 0
+          },
+          "end": {
+            "line": 1245,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "  echo \\\n",
+      "createdAt": 1717894107077,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1246,
+            "character": 0
+          },
+          "end": {
+            "line": 1246,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "echo temporary\n",
+      "createdAt": 1717894042801,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 62,
+            "character": 0
+          },
+          "end": {
+            "line": 62,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/stereo_lola_dense.sh"
+      }
+    },
+    {
+      "value": "boost::shared_ptr<vw::camera::CameraModel> ",
+      "createdAt": 1717863790112,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 307,
+            "character": 4
+          },
+          "end": {
+            "line": 307,
+            "character": 4
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Sessions/StereoSession.cc"
+      }
+    },
+    {
+      "value": "     \n",
+      "createdAt": 1717863778084,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 321,
+            "character": 0
+          },
+          "end": {
+            "line": 321,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Sessions/StereoSession.cc"
+      }
+    },
+    {
+      "value": "  // TODO(oalexan1): If the datum read from the image and the one read from the\n  // session disagree, what to do? \n",
+      "createdAt": 1717863658634,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 314,
+            "character": 0
+          },
+          "end": {
+            "line": 314,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Sessions/StereoSession.cc"
+      }
+    },
+    {
+      "value": "    TODO(oalexan1): Must do same for stereo when having a DEM.\n",
+      "createdAt": 1717863588595,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 306,
+            "character": 0
+          },
+          "end": {
+            "line": 306,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/NEWS.rst"
+      }
+    },
+    {
+      "value": "|| have_user_datum)",
+      "createdAt": 1717863038145,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 2414,
+            "character": 64
+          },
+          "end": {
+            "line": 2414,
+            "character": 64
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust.cc"
+      }
+    },
+    {
+      "value": "    // For pinhole session the guessed datum may be unreliable, so warn only\n    bool warn_only = (opt.stereo_session.find(\"pinhole\") != std::string::npos);\n",
+      "createdAt": 1717862864799,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 2308,
+            "character": 0
+          },
+          "end": {
+            "line": 2310,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust.cc"
+      }
+    },
+    {
+      "value": "        // For pinhole session the guessed datum may be unreliable, so warn only\n",
+      "createdAt": 1717862842253,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 2308,
+            "character": 0
+          },
+          "end": {
+            "line": 2308,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust.cc"
+      }
+    },
+    {
+      "value": "  opt.planet_pinhole = boost::algorithm::ends_with(opt.input_camera, \"_pinhole.json\");\n",
+      "createdAt": 1717820060178,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 468,
+            "character": 0
+          },
+          "end": {
+            "line": 468,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+      }
+    },
+    {
+      "value": "    \n",
+      "createdAt": 1717732656391,
+      "copyCount": 7,
+      "useCount": 7,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 40,
+            "character": 0
+          },
+          "end": {
+            "line": 40,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/ba_wide.sh"
+      }
+    },
+    {
+      "value": "  // Planet's custom format  \n",
+      "createdAt": 1717820039075,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 469,
+            "character": 0
+          },
+          "end": {
+            "line": 469,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+      }
+    },
+    {
+      "value": "      vw_throw(ArgumentErr() << \"Only WGS84 is supported for planet cameras.\\n\");\n",
+      "createdAt": 1717820036074,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 467,
+            "character": 0
+          },
+          "end": {
+            "line": 467,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+      }
+    },
+    {
+      "value": "    if (opt.datum_str ! \"WGS84\")\n",
+      "createdAt": 1717820035074,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 467,
+            "character": 0
+          },
+          "end": {
+            "line": 467,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+      }
+    },
+    {
+      "value": "vw::cartography::Datum datum1(opt.datum_str);",
+      "createdAt": 1717820020987,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 465,
+            "character": 4
+          },
+          "end": {
+            "line": 465,
+            "character": 4
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+      }
+    },
+    {
+      "value": "  if (opt.planet_pinhole && opt.datum_str.empty()) {\n    opt.datum_str = \"WGS84\";\n",
+      "createdAt": 1717819964300,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 464,
+            "character": 0
+          },
+          "end": {
+            "line": 464,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+      }
+    },
+    {
+      "value": "  if (!opt.input_camera.empty()) {\n    // Guess the datum from the camera model    \n    asp::SessionPtr session;\n    vw::cartography::Datum cam_datum;\n    bool found_cam_datum = asp::datum_from_camera(opt.image_file, opt.input_camera, \n                                                  // Outputs\n                                                  opt.stereo_session, session, cam_datum);\n    if (found_cam_datum && !opt.datum_str.empty())\n      asp::checkDatumConsistency(cam_datum, opt.datum);\n    // opt.datum is more general than opt.datum_str, but set both\n    if (found_cam_datum && opt.datum_str.empty()) {\n      opt.datum = cam_datum;\n      opt.datum_str = cam_datum.name();\n    }\n  }\n",
+      "createdAt": 1717819740697,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 501,
+            "character": 0
+          },
+          "end": {
+            "line": 501,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+      }
+    },
+    {
+      "value": "  // Set the datum from the string\n  if (!opt.datum_str.empty())\n    opt.datum.set_well_known_datum(opt.datum_str);\n\n  if (!opt.input_camera.empty()) {\n    // Guess the datum from the camera model    \n    asp::SessionPtr session;\n    vw::cartography::Datum cam_datum;\n    bool found_cam_datum = asp::datum_from_camera(opt.image_file, opt.input_camera, \n                                                  // Outputs\n                                                  opt.stereo_session, session, cam_datum);\n    if (found_cam_datum && !opt.datum_str.empty())\n      asp::checkDatumConsistency(cam_datum, opt.datum);\n    // opt.datum is more general than opt.datum_str, but set both\n    if (found_cam_datum && opt.datum_str.empty()) {\n      opt.datum = cam_datum;\n      opt.datum_str = cam_datum.name();\n    }\n  }\n",
+      "createdAt": 1717819727172,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 500,
+            "character": 0
+          },
+          "end": {
+            "line": 500,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+      }
+    },
+    {
+      "value": "      \n",
+      "createdAt": 1717819662900,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 493,
+            "character": 0
+          },
+          "end": {
+            "line": 493,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+      }
+    },
+    {
+      "value": "                                              \n",
+      "createdAt": 1717819661398,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 491,
+            "character": 0
+          },
+          "end": {
+            "line": 491,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+      }
+    },
+    {
+      "value": "   \n",
+      "createdAt": 1717819186565,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 306,
+            "character": 0
+          },
+          "end": {
+            "line": 306,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/NEWS.rst"
+      }
+    },
+    {
+      "value": "  if (opt.datum_str.empty()) \n    vw_throw(ArgumentErr() << \"Must provide a datum to read a pinhole camera.\\n\");\n",
+      "createdAt": 1717819011265,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1184,
+            "character": 0
+          },
+          "end": {
+            "line": 1184,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+      }
+    },
+    {
+      "value": "We prefer to use opt.datum rather than opt.datum_str, but set both.",
+      "createdAt": 1717818822522,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 496,
+            "character": 66
+          },
+          "end": {
+            "line": 496,
+            "character": 66
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+      }
+    },
+    {
+      "value": "    opt.datum.set_well_known_datum(opt.datum_str);\n",
+      "createdAt": 1717818720547,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 467,
+            "character": 0
+          },
+          "end": {
+            "line": 467,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+      }
+    },
+    {
+      "value": "    }\n",
+      "createdAt": 1717803998807,
+      "copyCount": 2,
+      "useCount": 2,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 240,
+            "character": 0
+          },
+          "end": {
+            "line": 240,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/point2dem.cc"
+      }
+    },
+    {
+      "value": "      vw::cartography::Datum datum_from_str(opt.datum_str);\n",
+      "createdAt": 1717818564351,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 495,
+            "character": 60
+          },
+          "end": {
+            "line": 495,
+            "character": 60
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+      }
+    },
+    {
+      "value": "   }\n",
+      "createdAt": 1717818542237,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 483,
+            "character": 0
+          },
+          "end": {
+            "line": 483,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+      }
+    },
+    {
+      "value": "     if (opt.datum.name() == \"UNKNOWN\")\n",
+      "createdAt": 1717818541737,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 483,
+            "character": 0
+          },
+          "end": {
+            "line": 483,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+      }
+    },
+    {
+      "value": "  //asp::checkDatumConsistency(datum, datum2);\n",
+      "createdAt": 1717818531130,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 480,
+            "character": 0
+          },
+          "end": {
+            "line": 480,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+      }
+    },
+    {
+      "value": "&& opt.datum_str.empty()",
+      "createdAt": 1717818304338,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 482,
+            "character": 55
+          },
+          "end": {
+            "line": 482,
+            "character": 55
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+      }
+    },
+    {
+      "value": "    // TODO(oalexan1): Must do a better check at datum consistency.\n",
+      "createdAt": 1717817931753,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 215,
+            "character": 0
+          },
+          "end": {
+            "line": 215,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_test.cc"
+      }
+    },
+    {
+      "value": "      vw::cartography::Datum datum2;\n      found_datum = asp::datum_from_camera(opt.image_file, opt.cam2_file,\n                                           opt.session2, cam2_session, // may change\n                                            datum2); // output\n      asp::checkDatumConsistency(datum, datum2);\n    }\n",
+      "createdAt": 1717817900598,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 248,
+            "character": 0
+          },
+          "end": {
+            "line": 248,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_test.cc"
+      }
+    },
+    {
+      "value": "      // Sanity check: both cameras should have the same datum\n",
+      "createdAt": 1717817855390,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 236,
+            "character": 0
+          },
+          "end": {
+            "line": 236,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_test.cc"
+      }
+    }
+  ]
+}
