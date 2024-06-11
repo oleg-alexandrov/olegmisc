@@ -551,6 +551,13 @@ function sgm {
     stereo_gui --window-size 1600 1100 --colorbar --min $min --max $max $*
 }
 
+function sgc {
+    min=$1; shift
+    max=$1; shift
+    stereo_gui --window-size 1600 1100 --colorize --min $min --max $max $*
+}
+
+
 function sgi {
     min=$1; shift
     max=$1; shift
