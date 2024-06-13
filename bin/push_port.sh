@@ -7,9 +7,12 @@ machine=$1; shift
 
 # Read the last port used from a file
 portFile=/tmp/port_${machine}.txt
-port=$(cat $portFile)
+if [ ! -f $portFile ]; then
+    touch $portFile
+fi
 
-# if it does not exist, or it is >= 9999, then set it to 5000
+# Read the port. Keep it in boudnds.
+port=$(cat $portFile)
 if [ "$port" == "" ] || [ "$port" -ge 9999 ]; then
     port=5000 
 fi
