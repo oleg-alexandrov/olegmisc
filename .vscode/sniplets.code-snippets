@@ -10,7 +10,16 @@
 	// connected.
 
 	// C++
-    "br": {
+    "cpp-inc": {
+		"scope": "cpp",
+        "prefix": "inc",
+        "body": [
+            "#include <"
+        ],
+        "description": ""
+    },  
+    
+    "cpp-br": {
 		"scope": "cpp",
         "prefix": "br",
         "body": [
@@ -150,7 +159,7 @@
         ],
         "description": ""
     },  
-    "cout str": {
+    "cpp-cout1": {
 		"scope": "cpp",
         "prefix": "cs",
         "body": [
@@ -158,15 +167,15 @@
         ],
         "description": ""
     },
-    "co": {
+    "cpp-cout2": {
 		"scope": "cpp",
-        "prefix": "co",
+        "prefix": "co8",
         "body": [
             "std::cout << \""
         ],
         "description": ""
     },
-    "cob": {
+    "cpp-cout3": {
 		"scope": "cpp",
         "prefix": "cob",
         "body": [
@@ -174,7 +183,7 @@
         ],
         "description": ""
     },
-    "cou": {
+    "cpp-cout4": {
 		"scope": "cpp",
         "prefix": "cou",
         "body": [
@@ -182,7 +191,7 @@
         ],
         "description": ""
     },
-    "cous": {
+    "cpp-cout5": {
 		"scope": "cpp",
         "prefix": "cous",
         "body": [
@@ -256,6 +265,14 @@
         ],
         "description": "numref"
     },
+    "todo-rst": {
+		"scope": "restructuredtext",
+        "prefix": "td",
+        "body": [
+            "TODO(oalexan1): "
+        ],
+        "description": "todo-rst"
+    },
     "section": {
 		"scope": "restructuredtext",
         "prefix": "sec",
@@ -273,7 +290,16 @@
         "description": "url"
     },
 
-    "xxx": {
+    "python-print": {
+		"scope": "python",
+        "prefix": "pr",
+        "body": [
+            "print(\"$1\")"
+        ],
+        "description": ""
+    },
+
+    "python-xxx": {
 		"scope": "python",
         "prefix": "xxx",
         "body": [
@@ -281,9 +307,9 @@
         ],
         "description": ""
     },
-    "xx0": {
+    "python-xx": {
 		"scope": "python",
-        "prefix": "xx0",
+        "prefix": "xx",
         "body": [
             "sys.exit(0)"
         ],

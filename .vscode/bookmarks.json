@@ -56,16 +56,6 @@
 			]
 		},
 		{
-			"path": "projects/StereoPipeline/NEWS.rst",
-			"bookmarks": [
-				{
-					"line": 0,
-					"column": 0,
-					"label": "n"
-				}
-			]
-		},
-		{
 			"path": "projects/StereoPipeline/docs/examples/mer.rst",
 			"bookmarks": [
 				{
@@ -589,10 +579,10 @@
 			"path": "projects/todo.m",
 			"bookmarks": [
 				{
-					"line": 41,
+					"line": 0,
 					"column": 0,
 					"label": "td"
-				}
+				},
 			]
 		},
 		{
@@ -612,6 +602,26 @@
 					"line": 0,
 					"column": 0,
 					"label": "rc"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Tools/stereo_pprc.cc",
+			"bookmarks": [
+				{
+					"line": 1,
+					"column": 0,
+					"label": "pp"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/NEWS.rst",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "n"
 				}
 			]
 		}
