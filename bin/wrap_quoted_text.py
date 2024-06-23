@@ -1,9 +1,14 @@
 #!/usr/bin/env python
 
+# The tag that will identify the text to process
+tag = 'xwr'
+
 # Search the current directory for a file and a block of lines in that file
-# having the text "xwr". These lines start and end with quotes. Remove the quotes,
-# wrap the lines to desired width, add back the codes, and replace the text
-# in the file.
+# having the text in the tag. These lines start and end with quotes. Remove the
+# quotes, wrap the lines to desired width, add back the codes, and replace the
+# text in the file. 
+
+# The application is wrapping nicely the text for boost program options.
 
 import os, re, sys, textwrap
 
@@ -83,9 +88,6 @@ def process_file(file, beg_line):
     open(file, 'w').write(text)
         
 # Main program
-
-# The tag that will identify the text to process
-tag = 'xwr'
 
 # In the current directory recursively search for the tag
 cmd = ['grep', '-r', '-i', '-n', '-E', tag, '.']
