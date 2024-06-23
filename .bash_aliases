@@ -646,6 +646,7 @@ alias vs='~/projects/VSCode-linux-x64/bin/code-insiders'
 alias vv=./validate.sh
 alias w=which
 alias which-command=whence
+alias wq='cd $HOME/projects/StereoPipeline; ~/bin/wrap_quoted_text.py'
 alias ww=/home/oalexan1/openMVS/build/bin/Viewer
 alias x=exit
 alias z=zsh

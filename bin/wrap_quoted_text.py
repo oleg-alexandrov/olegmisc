@@ -23,10 +23,9 @@ def wrap_text(text):
     # Replace newlines with spaces.
     text = text.replace('\n', ' ')
 
-    # Wipe any leading and training parenthesis and spaces
-    m = re.match(r'^[\s\()]*(.*?)[\s\)]*$', text)
-    if m:
-        text = m.group(1)
+    # Wipe any leading and training parentheses and spaces.
+    text = re.sub(r'^[\s\(]*', '', text)
+    text = re.sub(r'[\s\)]*$', '', text)
 
     # Keep only one space between words.
     text = re.sub(r'\s+', ' ', text)
@@ -64,14 +63,13 @@ def process_file(file, beg_line):
     lines = open(file, 'r').readlines()
 
     # Collect the text in the block of lines starting from the line number. Stop
-    # when not having a quote or when reaching the string po:: or a semicolon, as
-    # that means the end of the block.
+    # when when reaching the string po:: or spaces and a starting parenthesis or colon,
+    # as that means the end of the block.
     text = ''
     end_line = 0
     for i in range(beg_line, len(lines)):
-        if not re.search(r'\"', lines[i])   or \
-               re.search(r'po::', lines[i]) or \
-               re.search(r';', lines[i]):
+        if re.search(r'po::', lines[i]) or \
+           re.search(r'^\s+[\(;]', lines[i]):
             end_line = i
             break
         # Remove the tag and any spaces around it
@@ -89,17 +87,27 @@ def process_file(file, beg_line):
         
 # Main program
 
-# In the current directory recursively search for the tag
-cmd = ['grep', '-r', '-i', '-n', '-E', tag, '.']
-output = os.popen(' '.join(cmd) + ' 2>/dev/null').read()
+# Do several attempts, as long as the tag can be found. Each attempt will
+# rewrite a file, and can change the line numbers, hence the need to search
+# again.
 
-# For each result, match the file and the line number. Process the file.
-lines = output.split('\n')
-beg_line = 0
-for line in lines:
+while True:
+    
+    # In the current directory recursively search for the tag
+    cmd = ['grep', '-r', '-i', '-n', '-E', tag, '.']
+    output = os.popen(' '.join(cmd) + ' 2>/dev/null').read()
+    lines = output.split('\n')
+    if len(lines) == 1:
+        break # No more tags found
+        
+    # Match the file and the line number
+    line = lines[0]        
+    beg_line = 0
     m = re.match(r'^(.*):(\d+):', line)
     if not m:
         continue
+        
+    # Process the file
     file = m.group(1)
     beg_line = int(m.group(2))
     # Make the line number start from 0
