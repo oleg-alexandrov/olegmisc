@@ -4,9 +4,8 @@
 tag = 'xwr'
 
 # Search the current directory for a file and a block of lines in that file
-# having the text in the tag. These lines start and end with quotes. Remove the
-# quotes, wrap the lines to desired width, add back the codes, and replace the
-# text in the file. 
+# having the text in the tag. Remove any quotes, wrap the lines to desired
+# width, add back the quotes, and replace the text in the file. 
 
 # The application is wrapping nicely the text for boost program options.
 
