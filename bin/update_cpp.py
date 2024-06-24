@@ -81,6 +81,16 @@ def is_balanced(s):
             stack.pop()
     return not stack
 
+# Remove default values for function arguments
+def remove_default_vals(args):
+    num = len(args)
+    for i in range(num):
+        m = re.match(r'^(.*?)(\s*=\s*.*?)(,\s*$|$)', args[i], re.DOTALL)
+        if m:
+            args[i] = m.group(1) + m.group(3)
+    
+    return args
+    
 def split_into_balanced_args(args):
 
     # Swap comma and newline as we want to keep each newline together with the preceding
@@ -129,15 +139,14 @@ a = """void transformAppendNvm(// Append from these
                         std::map<int, int>               const& cid2cid,
                         std::vector<Eigen::Vector2d>     const& keypoint_offsets,
                         int cid_shift,
-                        size_t num_out_cams,
+                        size_t num_out_cams = 0,
                         // Outputs, append to these 
-                        std::vector<int> & fid_count,
-                        std::vector<std::map<std::pair<float, float>, int>>
-                        & merged_keypoint_map,
+                        std::vector<int> & fid_count = std::vector<int>(),
+                        std::vector<std::map<std::pair<float, float>, int>>& merged_keypoint_map = std::vector<std::map<std::pair<float, float>, int>>(),
                         std::vector<std::map<int, int>> & pid_to_cid_fid) {
 """
 
-print("a = ", a)
+print("before=\n" + a)
 
 (before, after) = split_by_closing_parenthesis(a)
 
@@ -160,9 +169,18 @@ for block in blocks:
     else:
         args.extend(split_into_balanced_args(block))
 
+args = remove_default_vals(args)
+
 # Now we have: before, args, after    
-print("before = " + before)
-for barg in args:
-    print("barg = ", barg)
-print("after = " + after)
+#print("before = " + before)
+#for barg in args:
+#    print("barg = ", barg)
+#print("after = " + after)
+
+# join back the args
+args = ''.join(args)
+
+# Put back the text
+text = before + args + after
+print("after=\n" + text)
 
