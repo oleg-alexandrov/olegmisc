@@ -11,19 +11,39 @@ MAIN:{
   # specified, use those as min and max.
 
   if (scalar(@ARGV) == 0){
-    print "Usage: $0 file1 ... file_n [ sigmaFactor | min Max ] \n";
+    print "Usage: $0 file1 ... file_n [ sigmaFactor | min max ] [ options ]\n";
     exit(0);
   }
 
-  # Extract the files.
-  my @files = ();
-  while ( scalar(@ARGV) > 0 && -f $ARGV[0] ){
-    push(@files, shift @ARGV);
+  # Iterate over ARGV and extract the options.
+  # What is left are files and numerical values.
+  my @other = ();
+  my @options = ();
+  # iterate over the arguments
+  foreach my $arg (@ARGV){
+    if ($arg =~ /^\-/){
+      push(@options, $arg);
+    }else{
+      push(@other, $arg);
+    }
   }
-
+  @ARGV = @other;
+  
+  # Extract the files. Those must exist.
+  my @files = ();
+  @other = ();
+  foreach my $file (@ARGV){
+    if (-e $file){
+      push(@files, $file);
+    }else{
+      push(@other, $file);
+    }
+  }
+  @ARGV = @other;
+  
   # Extract the sigma factor.
   my $sigmaFactor = 1.0;
-  if (scalar(@ARGV) > 0){
+  if (scalar(@ARGV) > 0) {
     $sigmaFactor = shift @ARGV;
   }
 
@@ -118,6 +138,9 @@ MAIN:{
     print qx(rm -fv $fileOut*) . "\n"; # Wipe cmap image and sub-images
     $fileOut .= ".tif";
     $cmd = "colormap --min $nmin --max $nmax $fileIn -o $fileOut";
+    # Append the options
+    $cmd .= " " . join(" ", @options);
+    
     print "$cmd\n";
     system($cmd);
     print "Done\n";
