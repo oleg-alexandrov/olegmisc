@@ -2,19 +2,59 @@
   "version": 2,
   "clips": [
     {
-      "value": "baPref=dense_ba_wt5_opt_ctr_dist/run # narrow images current prefix\n",
-      "createdAt": 1718126317299,
+      "value": "  ls_model->m_distortionType = TRANSVERSE;\n",
+      "createdAt": 1720804725396,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 436,
+            "character": 31
+          },
+          "end": {
+            "line": 436,
+            "character": 31
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/CsmUtils.cc"
+      }
+    },
+    {
+      "value": "    \n",
+      "createdAt": 1720560979829,
+      "copyCount": 5,
+      "useCount": 5,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 290,
+            "character": 0
+          },
+          "end": {
+            "line": 290,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/dem2gcp.cc"
+      }
+    },
+    {
+      "value": "  --anchor-weight 0.002                       \\\n  --num-anchor-points 5000                    \\\n  --num-anchor-points-extra-lines 1000        \\\n  --anchor-dem $dem                           \\\n",
+      "createdAt": 1720803264110,
       "copyCount": 1,
       "useCount": 1,
       "language": "shellscript",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 1419,
+            "line": 3006,
             "character": 0
           },
           "end": {
-            "line": 1419,
+            "line": 3010,
             "character": 0
           }
         },
@@ -22,10 +62,190 @@
       }
     },
     {
+      "value": "  --tri-weight 0.1                            \\\n",
+      "createdAt": 1720802830270,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 3009,
+            "character": 0
+          },
+          "end": {
+            "line": 3009,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "wt=1\n",
+      "createdAt": 1720802707549,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 2994,
+            "character": 0
+          },
+          "end": {
+            "line": 2994,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+      }
+    },
+    {
+      "value": "#include <vw/FileIO/FileUtils.h>\n",
+      "createdAt": 1720749584947,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 37,
+            "character": 0
+          },
+          "end": {
+            "line": 37,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/point2dem.cc"
+      }
+    },
+    {
+      "value": "  if (opt.gcp_files.size() > 0)\n",
+      "createdAt": 1720749525836,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1083,
+            "character": 0
+          },
+          "end": {
+            "line": 1083,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/jitter_solve.cc"
+      }
+    },
+    {
+      "value": "The pixel residuals at ground control points \nare flagged in the produced report file (:numref:`jitter_err_per_point`).\n",
+      "createdAt": 1720749233561,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 86,
+            "character": 30
+          },
+          "end": {
+            "line": 86,
+            "character": 30
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/jitter_solve.rst"
+      }
+    },
+    {
+      "value": " with no distortion as shown in",
+      "createdAt": 1720748976700,
+      "copyCount": 2,
+      "useCount": 2,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 202,
+            "character": 22
+          },
+          "end": {
+            "line": 202,
+            "character": 22
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/jitter_solve.rst"
+      }
+    },
+    {
+      "value": "anchor_point_files",
+      "createdAt": 1720748751307,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1704,
+            "character": 0
+          },
+          "end": {
+            "line": 1704,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/jitter_solve.rst"
+      }
+    },
+    {
+      "value": "should be\nsimilar to the number of",
+      "createdAt": 1720748607143,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 200,
+            "character": 28
+          },
+          "end": {
+            "line": 200,
+            "character": 28
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/jitter_solve.rst"
+      }
+    },
+    {
+      "value": "jitter_anchor_points",
+      "createdAt": 1720747350959,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 178,
+            "character": 4
+          },
+          "end": {
+            "line": 178,
+            "character": 24
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/jitter_solve.rst"
+      }
+    },
+    {
       "value": "\n",
       "createdAt": 1707014246462,
-      "copyCount": 1384,
-      "useCount": 1384,
+      "copyCount": 1680,
+      "useCount": 1680,
       "language": "cpp",
       "createdLocation": {
         "range": {
@@ -42,171 +262,471 @@
       }
     },
     {
-      "value": "baPref=dense_ba_wt60_opt_ctr_dist/run # narrow images\n",
-      "createdAt": 1718125002356,
+      "value": "This was then filled in with ``dem_mosaic`` (:numref:`dem_mosaic_grow`).\n",
+      "createdAt": 1720747299699,
       "copyCount": 1,
       "useCount": 1,
-      "language": "shellscript",
+      "language": "restructuredtext",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 1420,
+            "line": 264,
             "character": 0
           },
           "end": {
-            "line": 1420,
+            "line": 264,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/examples/kaguya.rst"
       }
     },
     {
-      "value": "baPref=dense_ba_wt60_opt_ctr_dist_align/run # narrow images\n",
-      "createdAt": 1718124880908,
+      "value": "In my experiments it worked best to use dense matches from disparity for de-jittering a single pair at a time. I used gridded LOLA as a constraint, using a grid size of 25 meters. Then I used ",
+      "createdAt": 1720746496702,
       "copyCount": 1,
       "useCount": 1,
-      "language": "shellscript",
+      "language": "restructuredtext",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 1421,
+            "line": 262,
             "character": 0
           },
           "end": {
-            "line": 1421,
+            "line": 262,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/examples/kaguya.rst"
       }
     },
     {
-      "value": "optical_center,other_intrinsics \\",
-      "createdAt": 1718080617467,
+      "value": "    --search-radius-factor 5             \\\n",
+      "createdAt": 1720746288251,
       "copyCount": 1,
       "useCount": 1,
-      "language": "shellscript",
+      "language": "restructuredtext",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 1495,
-            "character": 26
-          },
-          "end": {
-            "line": 1495,
-            "character": 26
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": " bundle adjust with dense matches and narrow images\n",
-      "createdAt": 1718080601845,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1486,
+            "line": 259,
             "character": 0
           },
           "end": {
-            "line": 1486,
+            "line": 259,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/examples/kaguya.rst"
       }
     },
     {
-      "value": " bundle adjust with dense matches and narrow images\nwt=5\nbaPref=dense_ba_wt${wt}_opt_ctr_dist/run\nout=output_$(dirname $baPref).txt\necho Writing the output to $out\ns=StereoPipeline-3.4.0-alpha-2023-12-23-x86_64-Linux; export PATH=$HOME/projects/BinaryBuilder/$s/bin:$PATH\ndem=lola/lola-DEM-filled.tif\nnohup nice -20                                            \\\nbundle_adjust --solve-intrinsics                          \\\n    --inline-adjustments                                  \\\n    --intrinsics-to-float optical_center,other_intrinsics \\\n    --intrinsics-to-share none                            \\\n    --image-list left_images2.txt,right_images2.txt       \\\n    --camera-list left_aligned_cameras.txt,right_aligned_cameras.txt \\\n    --num-iterations 10                                   \\\n    --threads 20                                          \\\n    --num-passes 1                                        \\\n    --match-files-prefix dense_ba2/run                    \\\n    --heights-from-dem $dem                               \\\n    --heights-from-dem-uncertainty $wt                    \\\n    --remove-outliers-params '75.0 3.0 10 10'             \\\n    --max-pairwise-matches 20000                          \\\n    --min-matches 0                                       \\\n    -o $baPref > $out 2>&1&",
-      "createdAt": 1718080596798,
+      "value": "ba_err_per_point",
+      "createdAt": 1720745986245,
       "copyCount": 1,
       "useCount": 1,
-      "language": "shellscript",
+      "language": "restructuredtext",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 1486,
+            "line": 705,
+            "character": 0
+          },
+          "end": {
+            "line": 705,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/bundle_adjust.rst"
+      }
+    },
+    {
+      "value": "bagcp",
+      "createdAt": 1720745932218,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "restructuredtext",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 419,
             "character": 4
           },
           "end": {
-            "line": 1486,
-            "character": 4
+            "line": 419,
+            "character": 9
           }
         },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/bundle_adjust.rst"
       }
     },
     {
-      "value": " \n",
-      "createdAt": 1718080475080,
+      "value": "  std::cout << \"--now in addGcpConstraint\\n\";\n",
+      "createdAt": 1720745820693,
       "copyCount": 1,
       "useCount": 1,
-      "language": "shellscript",
+      "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 1461,
+            "line": 893,
             "character": 0
           },
           "end": {
-            "line": 1461,
+            "line": 893,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/JitterSolveCostFuns.cc"
       }
     },
     {
-      "value": "# bundle adjust with dense matches and narrow images\n",
-      "createdAt": 1718080472073,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
+      "value": "// Add the GCP constraint\nvoid addGcpConstraint(asp::BaBaseOptions     const& opt,\n                      std::set<int>          const& outliers,\n                      vw::ba::ControlNetwork const& cnet,\n                      // Outputs\n                      std::vector<double>    & tri_points_vec,\n                      std::vector<double>    & weight_per_residual, // append\n                      ceres::Problem         & problem) {\n",
+      "createdAt": 1720742567500,
+      "copyCount": 2,
+      "useCount": 2,
+      "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 1463,
+            "line": 918,
             "character": 0
           },
           "end": {
-            "line": 1463,
+            "line": 918,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/JitterSolveCostFuns.cc"
       }
     },
     {
-      "value": "for f in $(cat left_cameras2.txt | perl -pi -e \"s#^.*(TC.*?)\\..*?\\n#\\$1\\n#g\"); do ls dense_ba_wt60_opt_ctr_dist_align/*$f*json; done > left_aligned_cameras.txt\n",
-      "createdAt": 1718080372902,
+      "value": "  }\n",
+      "createdAt": 1720745301462,
       "copyCount": 1,
       "useCount": 1,
-      "language": "shellscript",
+      "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 1451,
+            "line": 1087,
             "character": 0
           },
           "end": {
-            "line": 1451,
+            "line": 1087,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/jitter_solve.cc"
       }
     },
     {
-      "value": "\nwt=60\nbaPref=dense_ba_wt${wt}_opt_ctr_dist/run\n\nout=output_$(dirname $baPref).txt\necho Writing the output to $out\n\n# bundle adjust with dense matches and narrow images\ns=StereoPipeline-3.4.0-alpha-2023-12-23-x86_64-Linux; export PATH=$HOME/projects/BinaryBuilder/$s/bin:$PATH\ndem=lola/lola-DEM-filled.tif\nbundle_adjust --solve-intrinsics                          \\\n    --inline-adjustments                                  \\\n    --intrinsics-to-float optical_center,other_intrinsics \\\n    --intrinsics-to-share none                            \\\n    --image-list left_images2.txt,right_images2.txt       \\\n    --camera-list left_cameras2.txt,right_cameras2.txt    \\\n    --num-iterations 10                                   \\\n    --threads 20                                          \\\n    --num-passes 1                                        \\\n    --match-files-prefix dense_ba2/run                    \\\n    --heights-from-dem $dem                               \\\n    --heights-from-dem-uncertainty $wt                    \\\n    --remove-outliers-params '75.0 3.0 10 10'             \\\n    --max-pairwise-matches 20000                          \\\n    --min-matches 0                                       \\\n    -o $baPref > $out 2>&1",
-      "createdAt": 1718080159668,
+      "value": "    // Add the GCP constraint\n",
+      "createdAt": 1720745273840,
       "copyCount": 1,
       "useCount": 1,
-      "language": "shellscript",
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1082,
+            "character": 0
+          },
+          "end": {
+            "line": 1082,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/jitter_solve.cc"
+      }
+    },
+    {
+      "value": "    vw_out() << \"Found \" << num_gcp_files << \" GCP files.\\n\";\n",
+      "createdAt": 1720745271332,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1088,
+            "character": 0
+          },
+          "end": {
+            "line": 1088,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/jitter_solve.cc"
+      }
+    },
+    {
+      "value": " int num_gcp_files = ",
+      "createdAt": 1720745259274,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1082,
+            "character": 1
+          },
+          "end": {
+            "line": 1082,
+            "character": 1
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/jitter_solve.cc"
+      }
+    },
+    {
+      "value": "  int num_gcp_files = opt.gcp_files.size();\n  if (num_gcp_files > 0)\n    vw_out() << \"Found \" << num_gcp_files << \" GCP files.\\n\";\n",
+      "createdAt": 1720745247723,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 291,
+            "character": 0
+          },
+          "end": {
+            "line": 291,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/jitter_solve.cc"
+      }
+    },
+    {
+      "value": "int num_gcp_files = opt.gcp_files.size();",
+      "createdAt": 1720745244210,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 292,
+            "character": 2
+          },
+          "end": {
+            "line": 292,
+            "character": 43
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/jitter_solve.cc"
+      }
+    },
+    {
+      "value": "  int num_gcp_files = opt.gcp_files.size();\n  if (num_gcp_files > 0)\n",
+      "createdAt": 1720745221111,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 291,
+            "character": 0
+          },
+          "end": {
+            "line": 291,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/jitter_solve.cc"
+      }
+    },
+    {
+      "value": " on the command line",
+      "createdAt": 1720745202555,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 294,
+            "character": 56
+          },
+          "end": {
+            "line": 294,
+            "character": 56
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/jitter_solve.cc"
+      }
+    },
+    {
+      "value": "  std::cout << \"--now here!!\\n\";\n",
+      "createdAt": 1720744566167,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 727,
+            "character": 0
+          },
+          "end": {
+            "line": 727,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust.cc"
+      }
+    },
+    {
+      "value": "#include <asp/Core/BundleAdjustUtils.h>\n",
+      "createdAt": 1720743903530,
+      "copyCount": 2,
+      "useCount": 2,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 20,
+            "character": 0
+          },
+          "end": {
+            "line": 20,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/BaseCostFuns.cc"
+      }
+    },
+    {
+      "value": "#include <vw/Cartography/GeoReference.h>\n",
+      "createdAt": 1720744220694,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 25,
+            "character": 0
+          },
+          "end": {
+            "line": 25,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/BaseCostFuns.h"
+      }
+    },
+    {
+      "value": "/// A ceres cost function. The residual is the difference between the\n/// observed 3D point and the current (floating) 3D point, normalized by\n/// xyz_sigma.\n// TODO(oalexan1): Must integrate with the bundle_adjust cost function.\n// This will require a large overhaul of the bundle_adjust code.\nstruct XYZError2 {\n  XYZError2(vw::Vector3 const& observation, vw::Vector3 const& xyz_sigma):\n    m_observation(observation), m_xyz_sigma(xyz_sigma) {\n      bool is_good = (xyz_sigma[0] > 0 && xyz_sigma[1] > 0 && xyz_sigma[2] > 0);\n      if (!is_good) {\n        // This will also cover NaNs\n        vw::vw_throw(vw::ArgumentErr() << \"XYZError2: Invalid xyz_sigma: \"\n                 << xyz_sigma << \". All values must be positive.\\n\");\n      }\n    }\n\n  template <typename T>\n  bool operator()(const T* point, T* residuals) const {\n    for (size_t p = 0; p < m_observation.size(); p++)\n      residuals[p] = (point[p] - m_observation[p])/m_xyz_sigma[p]; // Units are meters\n\n    return true;\n  }\n\n  // Factory to hide the construction of the CostFunction object from\n  // the client code.\n  static ceres::CostFunction* Create(vw::Vector3 const& observation,\n                                     vw::Vector3 const& xyz_sigma){\n    return (new ceres::AutoDiffCostFunction<XYZError2, 3, 3>\n            (new XYZError2(observation, xyz_sigma)));\n  }\n\n  vw::Vector3 m_observation;\n  vw::Vector3 m_xyz_sigma;\n};\n\n",
+      "createdAt": 1720744154561,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 885,
+            "character": 0
+          },
+          "end": {
+            "line": 885,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/JitterSolveCostFuns.cc"
+      }
+    },
+    {
+      "value": "vw::",
+      "createdAt": 1720744084506,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 61,
+            "character": 41
+          },
+          "end": {
+            "line": 61,
+            "character": 41
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/BaseCostFuns.h"
+      }
+    },
+    {
+      "value": "#include <map>\n",
+      "createdAt": 1720744031086,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 31,
+            "character": 0
+          },
+          "end": {
+            "line": 31,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/BaseCostFuns.h"
+      }
+    },
+    {
+      "value": "/// A ceres cost function. The residual is the difference between the\n/// observed 3D point and the current (floating) 3D point, normalized by\n/// xyz_sigma. Used only for ground control points or with --tri-weight.\nstruct XYZError {\n  XYZError(Vector3 const& observation, Vector3 const& xyz_sigma):\n    m_observation(observation), m_xyz_sigma(xyz_sigma) {\n      bool is_good = (xyz_sigma[0] > 0 && xyz_sigma[1] > 0 && xyz_sigma[2] > 0);\n      if (!is_good) {\n        // This will also cover NaNs\n        vw_throw(ArgumentErr() << \"XYZError: Invalid xyz_sigma: \"\n                 << xyz_sigma << \". All values must be positive.\\n\");\n      }\n    }\n\n  template <typename T>\n  bool operator()(const T* point, T* residuals) const {\n    for (size_t p = 0; p < m_observation.size(); p++)\n      residuals[p] = (point[p] - m_observation[p])/m_xyz_sigma[p]; // Units are meters\n\n    return true;\n  }\n\n  // Factory to hide the construction of the CostFunction object from\n  // the client code.\n  static ceres::CostFunction* Create(Vector3 const& observation,\n                                     Vector3 const& xyz_sigma){\n    return (new ceres::AutoDiffCostFunction<XYZError, 3, 3>\n            (new XYZError(observation, xyz_sigma)));\n  }\n\n  Vector3 m_observation;\n  Vector3 m_xyz_sigma;\n};\n\n",
+      "createdAt": 1720742122814,
+      "copyCount": 2,
+      "useCount": 2,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 729,
+            "character": 0
+          },
+          "end": {
+            "line": 763,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust_cost_functions.h"
+      }
+    },
+    {
+      "value": "// TODO(oalexan1): Remove from here!\n",
+      "createdAt": 1720744006450,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 727,
+            "character": 0
+          },
+          "end": {
+            "line": 727,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust_cost_functions.h"
+      }
+    },
+    {
+      "value": "#include <asp/Camera/BaseCostFuns.h>\n",
+      "createdAt": 1720743967631,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
@@ -214,1287 +734,327 @@
             "character": 0
           },
           "end": {
-            "line": 43,
-            "character": 26
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/ba_narrow.sh"
-      }
-    },
-    {
-      "value": "wide ones",
-      "createdAt": 1718076702003,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1438,
-            "character": 29
-          },
-          "end": {
-            "line": 1438,
-            "character": 29
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "# Replace the distortion for wide ones\n",
-      "createdAt": 1718076698995,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1438,
-            "character": 0
-          },
-          "end": {
-            "line": 1438,
+            "line": 18,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/BaseCostFuns.cc"
       }
     },
     {
-      "value": "# Replace the distortion for wide ones\npref=TC1W2B0_01_02820N033E2189\npref=TC2W2B0_01_05324N056E2169\norig=$(ls *${pref}*/*${pref}*.json | head -n 1)\n~/projects/kaguya/replace_dist.sh  \\\n  $orig \\\n  dense_ba_mos_wt10_opt_ctr_dist/run-ba-updated-${pref}.adjusted_state.json \\\n  ${pref}_fixed3.json\ndiff $orig ${pref}_fixed3.json\n",
-      "createdAt": 1718076693910,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1308,
-            "character": 0
-          },
-          "end": {
-            "line": 1317,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "#done\n",
-      "createdAt": 1718075651180,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1429,
-            "character": 0
-          },
-          "end": {
-            "line": 1429,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "#    $(pwd)/../stereo_lola_resume.sh $base $prevBaPref $baPref $dem $runDir\n",
-      "createdAt": 1718075650677,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1429,
-            "character": 0
-          },
-          "end": {
-            "line": 1429,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "  #qsub -l walltime=4:00:00 \\\n",
-      "createdAt": 1718075650176,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1429,
-            "character": 0
-          },
-          "end": {
-            "line": 1429,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "  # echo \\\n",
-      "createdAt": 1718075649678,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1429,
-            "character": 0
-          },
-          "end": {
-            "line": 1429,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "job=$(echo $base | perl -p -e \"s#__.*?\\n#\\n#g\")\n",
-      "createdAt": 1718075648171,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1426,
-            "character": 0
-          },
-          "end": {
-            "line": 1426,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "# Let job be the part of $base before __\n",
-      "createdAt": 1718075645665,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1426,
-            "character": 0
-          },
-          "end": {
-            "line": 1426,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "if [ -z \"$base\" ]; then continue; fi # skip empty\n",
-      "createdAt": 1718075643657,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1426,
-            "character": 0
-          },
-          "end": {
-            "line": 1426,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "#for base in $(cat stereo_list.txt); do \n",
-      "createdAt": 1718073941595,
-      "copyCount": 2,
-      "useCount": 2,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1338,
-            "character": 0
-          },
-          "end": {
-            "line": 1338,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "i=5;\n",
-      "createdAt": 1718075631566,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1423,
-            "character": 0
-          },
-          "end": {
-            "line": 1423,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "# cd narrow_kaguya\nprevBaPref=dense_ba_wt30_opt_ctr_dist/run # narrow images\nbaPref=dense_ba_wt60_opt_ctr_dist/run # narrow images\ndem=lola/lola-DEM-filled_blur.tif # narrow images\nrunDir=$(pwd)\n#for base in $(cat stereo_list.txt); do \ni=5;\nbase=$(cat stereo_list.txt | head -n $i | tail -n 1)\n\n  if [ -z \"$base\" ]; then continue; fi # skip empty\n  echo $base\n  # Let job be the part of $base before __\n  job=$(echo $base | perl -p -e \"s#__.*?\\n#\\n#g\")\n\n  nohup nice -20 \\\n    $(pwd)/../stereo_lola_resume.sh $base $prevBaPref $baPref $dem $runDir \\\n    > output_${i}.txt 2>&1 &\n  \n  # echo \\\n  #qsub -q devel -l walltime=0:01:00  \\\n  #echo \\\n  #qsub -l walltime=4:00:00 \\\n  #-m n -r n -N $job -W group_list=s7369 \\\n  #  -j oe -S /bin/bash -l select=1:model=san -- \\\n#    $(pwd)/../stereo_lola_resume.sh $base $prevBaPref $baPref $dem $runDir\n#done\n\n",
-      "createdAt": 1718075628028,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1419,
-            "character": 0
-          },
-          "end": {
-            "line": 1419,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "echo dense_ba_wt60_opt_ctr_dist/run-ba-updated-TC1W2B0_01_02683N073E0077.adjusted_state.json",
-      "createdAt": 1718075221104,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1395,
-            "character": 12
-          },
-          "end": {
-            "line": 1395,
-            "character": 12
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "echo dense_ba_wt60_opt_ctr_dist/run-ba-updated-TC1W2B0_01_02683N073E0077.adjusted_state.json | perl -p -e \"s#^.*(TC1.*?)\\..*?\\$#\\$1#g\" \n",
-      "createdAt": 1718075204074,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1394,
-            "character": 0
-          },
-          "end": {
-            "line": 1394,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "| perl -p -e \"s#^(.*TC1.*?)\\..*?\\$#\\$1#g\" ",
-      "createdAt": 1718075178980,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1394,
-            "character": 0
-          },
-          "end": {
-            "line": 1394,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "geodiff stereo_v2/dem_mosaic_v2.tif lola/lola.csv -o stereo_v2/lola \\\n  --csv-format 2:lon,3:lat,4:radius_km\n  ",
-      "createdAt": 1718074641369,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1361,
-            "character": 16
-          },
-          "end": {
-            "line": 1361,
-            "character": 16
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "# cd narrow_kaguya\nbaPref=dense_ba_wt30_opt_ctr_dist/run # narrow images\ndem=lola/lola-DEM-filled_blur.tif # narrow images\nrunDir=$(pwd)\n\nfor base in $(cat stereo_list.txt); do \n  if [ -z \"$base\" ]; then continue; fi # skip empty\n  echo $base\n  # Let job be the part of $base before __\n  job=$(echo $base | perl -p -e \"s#__.*?\\n#\\n#g\")\n\n  # echo \\\n  #qsub -q devel -l walltime=0:01:00  \\\n  qsub -l walltime=4:00:00 \\\n  -m n -r n -N $job -W group_list=s7369 \\\n    -j oe -S /bin/bash -l select=1:model=san -- \\\n    $(pwd)/../stereo_lola_dense.sh $base $baPref $dem $runDir\ndone\n\n",
-      "createdAt": 1718073414279,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1332,
-            "character": 2
-          },
-          "end": {
-            "line": 1332,
-            "character": 2
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "prefix=stereo/$base/run\n",
-      "createdAt": 1718073367078,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 63,
-            "character": 0
-          },
-          "end": {
-            "line": 63,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/stereo_lola_resume.sh"
-      }
-    },
-    {
-      "value": "baPref",
-      "createdAt": 1718073341471,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 33,
-            "character": 12
-          },
-          "end": {
-            "line": 33,
-            "character": 12
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/stereo_lola_resume.sh"
-      }
-    },
-    {
-      "value": "$(grep $pref tc1_cameras.txt)",
-      "createdAt": 1718066384359,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1315,
-            "character": 5
-          },
-          "end": {
-            "line": 1315,
-            "character": 5
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "$(ls ${pref}*/*${pref}*.json) \\",
-      "createdAt": 1718066365738,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1310,
-            "character": 0
-          },
-          "end": {
-            "line": 1310,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "  TC1W2B0_01_02683N073E0077_fixed3.json\n",
-      "createdAt": 1718066104063,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1315,
-            "character": 0
-          },
-          "end": {
-            "line": 1315,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "  TC1W2B0_01_02683N073E0077__TC2W2B0_01_02683N079E0077/TC1W2B0_01_02683N073E0077.json \\\n",
-      "createdAt": 1718066087528,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1313,
-            "character": 0
-          },
-          "end": {
-            "line": 1313,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "~/projects/kaguya/replace_dist.sh  \\\n  TC1W2B0_01_02683N073E0077__TC2W2B0_01_02683N079E0077/TC1W2B0_01_02683N073E0077.json \\\n  dense_ba2_wt0.1/run-ba-updated-TC1W2B0_01_02683N073E0077.adjusted_state.json \\\n  TC1W2B0_01_02683N073E0077_fixed2.json\ndiff \\\n  TC1W2B0_01_02683N073E0077__TC2W2B0_01_02683N079E0077/TC1W2B0_01_02683N073E0077.json \\\n  TC1W2B0_01_02683N073E0077_fixed2.json\n  \n~/projects/kaguya/replace_dist.sh \\\n  TC1W2B0_01_05183N069E0077__TC2W2B0_01_05183N074E0077/TC2W2B0_01_05183N074E0077.json \\\n  dense_ba2_wt0.1/run-ba-updated-TC2W2B0_01_05183N074E0077.adjusted_state.json \\\n  TC2W2B0_01_05183N074E0077_fixed2.json\ndiff \\\n  TC1W2B0_01_05183N069E0077__TC2W2B0_01_05183N074E0077/TC2W2B0_01_05183N074E0077.json \\\n  TC2W2B0_01_05183N074E0077_fixed2.json\n",
-      "createdAt": 1718065916314,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1017,
-            "character": 0
-          },
-          "end": {
-            "line": 1032,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "  qsub -l walltime=4:00:00 \\\n",
-      "createdAt": 1717894119629,
-      "copyCount": 2,
-      "useCount": 2,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1246,
-            "character": 0
-          },
-          "end": {
-            "line": 1246,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "baPref=dense_ba_wt30_opt_ctr_dist/run # narrow images\n",
-      "createdAt": 1718062734949,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1197,
-            "character": 0
-          },
-          "end": {
-            "line": 1198,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "baPref=dense_ba_wt10_dist/run # narrow images\n",
-      "createdAt": 1718062704725,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1197,
-            "character": 0
-          },
-          "end": {
-            "line": 1197,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "    cob\n",
-      "createdAt": 1718059956669,
+      "value": "// Cost functions shared by bundle adjustment and camera jitter estimation.\n",
+      "createdAt": 1720743934171,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 182,
+            "line": 19,
             "character": 0
           },
           "end": {
-            "line": 182,
+            "line": 20,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Core/OutlierProcessing.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/BaseCostFuns.h"
       }
     },
     {
-      "value": "point_image",
-      "createdAt": 1718058443087,
+      "value": "\n// An error function minimizing the error of projecting an xyz point\n// into a given CSM linescan camera pixel. The variables of optimization are a\n// portion of the position and quaternion variables affected by this, and the \n// triangulation point.\nstruct LsPixelReprojErr {\n  LsPixelReprojErr(vw::Vector2 const& observation, double weight,\n                   UsgsAstroLsSensorModel* ls_model,\n                   int begQuatIndex, int endQuatIndex, \n                   int begPosIndex, int endPosIndex):\n    m_observation(observation), m_weight(weight),\n    m_begQuatIndex(begQuatIndex), m_endQuatIndex(endQuatIndex),\n    m_begPosIndex(begPosIndex),   m_endPosIndex(endPosIndex),\n    m_ls_model(ls_model) {}\n\n  // The implementation is further down\n  bool operator()(double const * const * parameters, double * residuals) const; \n\n  // Factory to hide the construction of the CostFunction object from the client code.\n  static ceres::CostFunction* Create(vw::Vector2 const& observation, double weight,\n                                     UsgsAstroLsSensorModel* ls_model,\n                                     int begQuatIndex, int endQuatIndex,\n                                     int begPosIndex, int endPosIndex) {\n\n    // TODO(oalexan1): Try using here the analytical cost function\n    ceres::DynamicNumericDiffCostFunction<LsPixelReprojErr>* cost_function =\n      new ceres::DynamicNumericDiffCostFunction<LsPixelReprojErr>\n      (new LsPixelReprojErr(observation, weight, ls_model,\n                                  begQuatIndex, endQuatIndex,\n                                  begPosIndex, endPosIndex));\n\n    // The residual size is always the same.\n    cost_function->SetNumResiduals(PIXEL_SIZE);\n\n    // Add a parameter block for each quaternion and each position\n    for (int it = begQuatIndex; it < endQuatIndex; it++)\n      cost_function->AddParameterBlock(NUM_QUAT_PARAMS);\n    for (int it = begPosIndex; it < endPosIndex; it++)\n      cost_function->AddParameterBlock(NUM_XYZ_PARAMS);\n\n    // Add a parameter block for the xyz point\n    cost_function->AddParameterBlock(NUM_XYZ_PARAMS);\n    \n    return cost_function;\n  }\n\nprivate:\n  vw::Vector2 m_observation; // The pixel observation for this camera/point pair\n  double m_weight;\n  UsgsAstroLsSensorModel* m_ls_model;\n  int m_begQuatIndex, m_endQuatIndex;\n  int m_begPosIndex, m_endPosIndex;\n}; // End class LsPixelReprojErr\n\n// An error function minimizing the error of projecting an xyz point\n// into a given CSM Frame camera pixel. The variables of optimization are \n// the camera position, quaternion, and triangulation point.\nstruct FramePixelReprojErr {\n  FramePixelReprojErr(vw::Vector2 const& observation, double weight,\n                   UsgsAstroFrameSensorModel* frame_model):\n    m_observation(observation), m_weight(weight),\n    m_frame_model(frame_model) {}\n\n  // The implementation is further down\n  bool operator()(double const * const * parameters, double * residuals) const; \n\n  // Factory to hide the construction of the CostFunction object from the client code.\n  static ceres::CostFunction* Create(vw::Vector2 const& observation, double weight,\n                                     UsgsAstroFrameSensorModel* frame_model) {\n\n    // TODO(oalexan1): Try using here the analytical cost function\n    ceres::DynamicNumericDiffCostFunction<FramePixelReprojErr>* cost_function =\n      new ceres::DynamicNumericDiffCostFunction<FramePixelReprojErr>\n      (new FramePixelReprojErr(observation, weight, frame_model));\n\n    // The residual size is always the same.\n    cost_function->SetNumResiduals(PIXEL_SIZE);\n\n    // Add a parameter block for each position and quaternion, in this order\n    cost_function->AddParameterBlock(NUM_XYZ_PARAMS);\n    cost_function->AddParameterBlock(NUM_QUAT_PARAMS);\n\n    // Add a parameter block for the xyz point\n    cost_function->AddParameterBlock(NUM_XYZ_PARAMS);\n    \n    return cost_function;\n  }\n\nprivate:\n  vw::Vector2 m_observation; // The pixel observation for this camera/point pair\n  double m_weight;\n  UsgsAstroFrameSensorModel* m_frame_model;\n}; // End class FramePixelReprojErr\n\n// Update the linescan model with the latest optimized values of the position\n// and quaternion parameters. Also update the triangulated point.\nvoid updateLsModelTriPt(double const * const * parameters, \n                        int begQuatIndex, int endQuatIndex,\n                        int begPosIndex, int endPosIndex,\n                        int & param_shift,\n                        UsgsAstroLsSensorModel & cam,\n                        csm::EcefCoord & P) {\n    \n  // Start at the first param\n  param_shift = 0;\n  \n  // Update the relevant quaternions in the local copy\n  for (int qi = begQuatIndex; qi < endQuatIndex; qi++) {\n    for (int coord = 0; coord < NUM_QUAT_PARAMS; coord++) {\n      cam.m_quaternions[NUM_QUAT_PARAMS * qi + coord]\n        = parameters[qi + param_shift - begQuatIndex][coord];\n    }\n  }\n\n  // Same for the positions. Note how we move forward in the parameters array,\n  // as this is after the quaternions\n  param_shift += (endQuatIndex - begQuatIndex);\n  for (int pi = begPosIndex; pi < endPosIndex; pi++) {\n    for (int coord = 0; coord < NUM_XYZ_PARAMS; coord++) {\n      cam.m_positions[NUM_XYZ_PARAMS * pi + coord]\n        = parameters[pi + param_shift - begPosIndex][coord];\n    }\n  }\n\n  // Move forward in the array of parameters, then recover the triangulated point\n  param_shift += (endPosIndex - begPosIndex);\n  P.x = parameters[param_shift][0];\n  P.y = parameters[param_shift][1];\n  P.z = parameters[param_shift][2];\n}  \n\n// See the documentation higher up in the file.\nbool LsPixelReprojErr::operator()(double const * const * parameters, \n                                  double * residuals) const {\n\n  try {\n    // Make a copy of the model, as we will update quaternion and position\n    // values that are being modified now. This may be expensive.\n    // Update the shift too.\n    UsgsAstroLsSensorModel cam = *m_ls_model;\n    int shift = 0;\n    csm::EcefCoord P;\n    updateLsModelTriPt(parameters, m_begQuatIndex, m_endQuatIndex,\n                       m_begPosIndex, m_endPosIndex, shift, cam, P);\n\n    // Project in the camera with high precision. Do not use here\n    // anything lower than 1e-8, as the linescan model will then\n    // return junk.\n    double desired_precision = asp::DEFAULT_CSM_DESIRED_PRECISION;\n    csm::ImageCoord imagePt = cam.groundToImage(P, desired_precision);\n\n    // Convert to what ASP expects\n    vw::Vector2 pix;\n    asp::fromCsmPixel(pix, imagePt);\n\n    residuals[0] = m_weight*(pix[0] - m_observation[0]);\n    residuals[1] = m_weight*(pix[1] - m_observation[1]);\n    \n  } catch (std::exception const& e) {\n    residuals[0] = g_big_pixel_value;\n    residuals[1] = g_big_pixel_value;\n    return true; // accept the solution anyway\n  }\n\n  return true;\n}\n\n// See the .h file for the documentation.\nbool FramePixelReprojErr::operator()(double const * const * parameters, \n                                     double * residuals) const {\n\n  try {\n    // Make a copy of the model, as we will update position and quaternion\n    // values that are being modified now. Use the same order as in\n    // UsgsAstroFrameSensorModel::m_currentParameterValue.\n    UsgsAstroFrameSensorModel cam = *m_frame_model;\n\n    // The latest position is in parameters[0].\n    for (int coord = 0; coord < NUM_XYZ_PARAMS; coord++)\n      cam.setParameterValue(coord, parameters[0][coord]);\n\n    // The latest quaternion is in parameters[1]. Note how we below\n    // move forward when invoking cam.setParameterValue().\n    for (int coord = 0; coord < NUM_QUAT_PARAMS; coord++) \n      cam.setParameterValue(coord + NUM_XYZ_PARAMS, parameters[1][coord]);\n\n    // The triangulation parameter is after the position and orientation\n    csm::EcefCoord P;\n    P.x = parameters[2][0];\n    P.y = parameters[2][1];\n    P.z = parameters[2][2];\n\n    // Project in the camera with high precision. Do not use here\n    // anything lower than 1e-8, as the linescan model will then\n    // return junk.\n    double desired_precision = asp::DEFAULT_CSM_DESIRED_PRECISION;\n    csm::ImageCoord imagePt = cam.groundToImage(P, desired_precision);\n\n    // Convert to what ASP expects\n    vw::Vector2 pix;\n    asp::fromCsmPixel(pix, imagePt);\n\n    residuals[0] = m_weight*(pix[0] - m_observation[0]);\n    residuals[1] = m_weight*(pix[1] - m_observation[1]);\n    \n  } catch (std::exception const& e) {\n    residuals[0] = g_big_pixel_value;\n    residuals[1] = g_big_pixel_value;\n    return true; // accept the solution anyway\n  }\n\n  return true;\n}\n\n// A Ceres cost function. The residual is the roll and/or yaw component of the camera\n// rotation, as measured relative to the initial along-track direction. We assume\n// that all positions are along the same segment in projected coordinates, or at\n// least that the current position and its nearest neighbors are roughly on\n// such a segment. That one is used to measure the roll/yaw from. This is consistent\n// with how sat_sim creates the cameras.\nstruct weightedRollYawError {\n  weightedRollYawError(std::vector<double>       const& positions, \n                   std::vector<double>           const& quaternions,\n                   vw::cartography::GeoReference const& georef,\n                   int cur_pos, double rollWeight, double yawWeight,\n                   bool initial_camera_constraint);\n\n  // Compute the weighted roll/yaw error between the current position and along-track\n  // direction. Recall that quaternion = cam2world = sat2World * rollPitchYaw * rotXY.\n  // rollPitchYaw is variable and can have jitter. Extract from it roll, pitch,\n  bool operator()(double const * const * parameters, double * residuals) const;\n\n  // Factory to hide the construction of the CostFunction object from\n  // the client code.\n  static ceres::CostFunction* Create(std::vector<double>           const& positions, \n                                     std::vector<double>           const& quaternions, \n                                     vw::cartography::GeoReference const& georef,\n                                     int cur_pos, \n                                     double rollWeight, double yawWeight,\n                                     bool initial_camera_constraint) {\n\n    ceres::DynamicNumericDiffCostFunction<weightedRollYawError>* cost_function =\n          new ceres::DynamicNumericDiffCostFunction<weightedRollYawError>\n          (new weightedRollYawError(positions, quaternions, georef, cur_pos, \n                                    rollWeight, yawWeight, initial_camera_constraint));\n\n    cost_function->SetNumResiduals(2); // for roll and yaw\n    cost_function->AddParameterBlock(NUM_QUAT_PARAMS);\n\n    return cost_function;\n  }\n\n  double m_rollWeight, m_yawWeight;\n  vw::Matrix3x3 m_rotXY, m_sat2World, m_initCam2World;\n  bool m_initial_camera_constraint;\n};\n\n// Constructor for weightedRollYawError. See the .h file for the documentation.\nweightedRollYawError::weightedRollYawError\n                  (std::vector<double>           const& positions, \n                   std::vector<double>           const& quaternions,\n                   vw::cartography::GeoReference const& georef,\n                   int cur_pos, double rollWeight, double yawWeight,\n                   bool initial_camera_constraint): \n                   m_rollWeight(rollWeight), m_yawWeight(yawWeight), \n                   m_initial_camera_constraint(initial_camera_constraint) {\n\n    int num_pos = positions.size()/NUM_XYZ_PARAMS;\n    int num_quat = quaternions.size()/NUM_QUAT_PARAMS;\n    if (num_pos != num_quat)\n      vw::vw_throw(vw::ArgumentErr() \n        << \"weightedRollYawError: Expecting the same number of positions and quaternions.\\n\");\n    if (cur_pos < 0 || cur_pos >= num_pos)\n      vw::vw_throw(vw::ArgumentErr() \n        << \"weightedRollYawError: Expecting position index in range.\\n\");\n\n    // Find the nearest neighbors of the current position\n    int beg_pos = std::max(0, cur_pos - 1);\n    int end_pos = std::min(num_pos - 1, cur_pos + 1);\n    if (beg_pos >= end_pos)\n      vw::vw_throw(vw::ArgumentErr() \n        << \"weightedRollYawError: Expecting at least 2 camera positions.\\n\");\n\n    // Find the segment along which the cameras are located, in projected coordinates\n    // Here we mirror the logic from SatSim.cc\n    int b = beg_pos * NUM_XYZ_PARAMS;\n    int c = cur_pos * NUM_XYZ_PARAMS;\n    int e = end_pos * NUM_XYZ_PARAMS;\n    vw::Vector3 beg_pt(positions[b], positions[b+1], positions[b+2]);\n    vw::Vector3 cur_pt(positions[c], positions[c+1], positions[c+2]);\n    vw::Vector3 end_pt(positions[e], positions[e+1], positions[e+2]);\n\n    // Orbital points before the current one, the current one, and after the\n    // current one, in projected coordinates\n    vw::Vector3 beg_proj = vw::cartography::ecefToProj(georef, beg_pt);\n    vw::Vector3 cur_proj = vw::cartography::ecefToProj(georef, cur_pt);\n    vw::Vector3 end_proj = vw::cartography::ecefToProj(georef, end_pt);\n    \n    // Find satellite along and across track directions in projected coordinates\n    vw::Vector3 proj_along, proj_across;\n    asp::calcProjAlongAcross(beg_proj, end_proj, proj_along, proj_across);\n\n    // Find along and across in ECEF\n    vw::Vector3 along, across;\n    asp::calcEcefAlongAcross(georef, asp::satSimDelta(), \n                              proj_along, proj_across, cur_proj,\n                              along, across); // outputs\n\n    // Find the z vector as perpendicular to both along and across\n    vw::Vector3 down = vw::math::cross_prod(along, across);\n    down = down / norm_2(down);\n\n    // Find the rotation matrix from satellite to world coordinates, and 90\n    // degree in-camera rotation. It is assumed, as in sat_sim, that:\n    // cam2world = sat2World * rollPitchYaw * rotXY.\n    asp::assembleCam2WorldMatrix(along, across, down, m_sat2World);\n    m_rotXY = asp::rotationXY();\n\n    // Initial camera rotation matrix, before we optimize it\n    m_initCam2World = asp::quaternionToMatrix(&quaternions[cur_pos*NUM_QUAT_PARAMS]);\n}\n\n// See the .h file for the documentation.\nbool weightedRollYawError::operator()(double const * const * parameters, \n                                      double * residuals) const {\n\n  // Convert to rotation matrix. Order of quaternion is x, y, z, w.  \n  vw::Matrix3x3 cam2world = asp::quaternionToMatrix(parameters[0]);\n\n  if (m_initial_camera_constraint) {\n    // Find the new camera orientation relative to the initial camera, not\n    // relative to the satellite along-track direction. Then find the roll and\n    // yaw from it. This is experimental.\n    vw::Matrix3x3 cam2cam =  vw::math::inverse(cam2world) * m_initCam2World;\n\n    double roll, pitch, yaw;\n    rollPitchYawFromRotationMatrix(cam2cam, roll, pitch, yaw);\n\n    // Fix for roll / yaw being determined with +/- 180 degree ambiguity.\n    roll  = roll  - 180.0 * round(roll  / 180.0);\n    pitch = pitch - 180.0 * round(pitch / 180.0);\n    yaw   = yaw   - 180.0 * round(yaw   / 180.0);\n\n    // Roll, pitch, yaw in camera coordinates are pitch, roll, yaw in satellite\n    // coordinates. So adjust below accordingly.\n    // CERES is very tolerant if one of the weights used below is 0. So there is\n    // no need to use a special cost function for such cases.\n    residuals[0] = pitch * m_rollWeight; // per above, swap roll and pitch\n    residuals[1] = yaw  * m_yawWeight;\n\n    return true;\n  }\n\n  vw::Matrix3x3 rollPitchYaw  \n    = vw::math::inverse(m_sat2World) * cam2world * vw::math::inverse(m_rotXY);\n\n  double roll, pitch, yaw;\n  rollPitchYawFromRotationMatrix(rollPitchYaw, roll, pitch, yaw);\n\n  // Fix for roll / yaw being determined with +/- 180 degree ambiguity.\n  roll = roll - 180.0 * round(roll / 180.0);\n  pitch = pitch - 180.0 * round(pitch / 180.0);\n  yaw  = yaw  - 180.0 * round(yaw  / 180.0);\n\n  // CERES is very tolerant if one of the weights used below is 0. So there is\n  // no need to use a special cost function for such cases.\n  residuals[0] = roll * m_rollWeight;\n  residuals[1] = yaw  * m_yawWeight;\n\n  return true;\n}\n\n// Calc the range of indices in the samples needed to interpolate between time1 and time2.\n// Based on lagrangeInterp() in usgscsm.\nvoid calcIndexBounds(double time1, double time2, double t0, double dt, int numVals,\n                     // Outputs\n                     int & begIndex, int & endIndex) {\n\n  // Order of Lagrange interpolation\n  int numInterpSamples = 8;\n\n  // Starting and ending  index (ending is exclusive).\n  int index1 = static_cast<int>((time1 - t0) / dt);\n  int index2 = static_cast<int>((time2 - t0) / dt);\n  \n  // TODO(oalexan1): Maybe the indices should be more generous, so not adding 1\n  // to begIndex, even though what is here seems correct according to \n  // lagrangeInterp().\n  begIndex = std::min(index1, index2) - numInterpSamples / 2 + 1;\n  endIndex = std::max(index1, index2) + numInterpSamples / 2 + 1;\n  \n  // Keep in bounds\n  begIndex = std::max(0, begIndex);\n  endIndex = std::min(endIndex, numVals);\n  if (begIndex >= endIndex)\n    vw::vw_throw(vw::ArgumentErr() << \"Book-keeping error in interpolation. \" \n      << \"Likely image order is different than camera order.\\n\"); \n    \n  return;\n}\n\n// Add the linescan model reprojection error to the cost function\nvoid addLsReprojectionErr(asp::BaBaseOptions  const& opt,\n                          UsgsAstroLsSensorModel   * ls_model,\n                          vw::Vector2         const& observation,\n                          double                   * tri_point,\n                          double                     weight,\n                          ceres::Problem           & problem) {\n\n  // Find all positions and quaternions that can affect the current pixel. Must\n  // grow the number of quaternions and positions a bit because during\n  // optimization the 3D point and corresponding pixel may move somewhat.\n  double line_extra = opt.max_init_reproj_error + 5.0; // add some more just in case\n  csm::ImageCoord imagePt1, imagePt2;\n  asp::toCsmPixel(observation - vw::Vector2(0.0, line_extra), imagePt1);\n  asp::toCsmPixel(observation + vw::Vector2(0.0, line_extra), imagePt2);\n  double time1 = ls_model->getImageTime(imagePt1);\n  double time2 = ls_model->getImageTime(imagePt2);\n\n  // Find the range of indices that can affect the current pixel\n  int numQuat       = ls_model->m_quaternions.size() / NUM_QUAT_PARAMS;\n  double quatT0     = ls_model->m_t0Quat;\n  double quatDt     = ls_model->m_dtQuat;\n  int begQuatIndex = -1, endQuatIndex = -1;\n  calcIndexBounds(time1, time2, quatT0, quatDt, numQuat, \n                  begQuatIndex, endQuatIndex); // outputs\n\n  // Same for positions\n  int numPos       = ls_model->m_positions.size() / NUM_XYZ_PARAMS;\n  double posT0     = ls_model->m_t0Ephem;\n  double posDt     = ls_model->m_dtEphem;\n  int begPosIndex = -1, endPosIndex = -1;\n  calcIndexBounds(time1, time2, posT0, posDt, numPos, \n                  begPosIndex, endPosIndex); // outputs\n\n  ceres::CostFunction* pixel_cost_function =\n    LsPixelReprojErr::Create(observation, weight, ls_model,\n                             begQuatIndex, endQuatIndex,\n                             begPosIndex, endPosIndex);\n  ceres::LossFunction* pixel_loss_function = new ceres::CauchyLoss(opt.robust_threshold);\n\n  // The variable of optimization are camera quaternions and positions stored in the\n  // camera models, and the triangulated point.\n  std::vector<double*> vars;\n  for (int it = begQuatIndex; it < endQuatIndex; it++)\n    vars.push_back(&ls_model->m_quaternions[it * NUM_QUAT_PARAMS]);\n  for (int it = begPosIndex; it < endPosIndex; it++)\n    vars.push_back(&ls_model->m_positions[it * NUM_XYZ_PARAMS]);\n  vars.push_back(tri_point);\n  problem.AddResidualBlock(pixel_cost_function, pixel_loss_function, vars);\n\n  return;   \n}\n\n// Add the frame camera model reprojection error to the cost function\nvoid addFrameReprojectionErr(asp::BaBaseOptions  const & opt,\n                             UsgsAstroFrameSensorModel * frame_model,\n                             vw::Vector2         const & observation,\n                             double                    * frame_params,\n                             double                    * tri_point,\n                             double                      weight,\n                             ceres::Problem            & problem) {\n\n  ceres::CostFunction* pixel_cost_function =\n    FramePixelReprojErr::Create(observation, weight, frame_model);\n  ceres::LossFunction* pixel_loss_function = new ceres::CauchyLoss(opt.robust_threshold);\n\n  // The variable of optimization are camera positions and quaternion stored \n  // in frame_cam_params, in this order, and the triangulated point.\n  // This is different from the linescan model, where we can directly access\n  // these quantities inside the model, so they need not be stored separately.\n  std::vector<double*> vars;\n  vars.push_back(&frame_params[0]);              // positions start here\n  vars.push_back(&frame_params[NUM_XYZ_PARAMS]); // quaternions start here\n  vars.push_back(tri_point);\n  problem.AddResidualBlock(pixel_cost_function, pixel_loss_function, vars);\n\n  return;   \n}\n\n/// A ceres cost function. The residual is the difference between the observed\n/// 3D point and the current (floating) 3D point, multiplied by given weight.\nstruct weightedXyzError {\n  weightedXyzError(vw::Vector3 const& observation, double weight):\n    m_observation(observation), m_weight(weight){}\n\n  template <typename T>\n  bool operator()(const T* point, T* residuals) const {\n    for (size_t p = 0; p < m_observation.size(); p++)\n      residuals[p] = m_weight * (point[p] - m_observation[p]);\n\n    return true;\n  }\n\n  // Factory to hide the construction of the CostFunction object from\n  // the client code.\n  static ceres::CostFunction* Create(vw::Vector3 const& observation, double const& weight) {\n    return (new ceres::AutoDiffCostFunction<weightedXyzError, 3, 3>\n            (new weightedXyzError(observation, weight)));\n  }\n\n  vw::Vector3 m_observation;\n  double  m_weight;\n};\n\n/// A Ceres cost function. The residual is the difference between the\n/// initial quaternion and optimized quaternion, multiplied by given weight.\nstruct weightedRotationError {\n  weightedRotationError(const double * init_quat, double weight):\n    m_weight(weight) {\n\n    // Make a copy, as later the value at the pointer will change\n    m_init_quat.resize(NUM_QUAT_PARAMS);\n    for (int it = 0; it < NUM_QUAT_PARAMS; it++)\n      m_init_quat[it] = init_quat[it];\n  }\n\n  template <typename T>\n  bool operator()(const T* quat, T* residuals) const {\n    for (size_t p = 0; p < m_init_quat.size(); p++)\n      residuals[p] = m_weight * (quat[p] - m_init_quat[p]);\n\n    return true;\n  }\n\n  // Factory to hide the construction of the CostFunction object from\n  // the client code.\n  static ceres::CostFunction* Create(const double * init_quat, double weight){\n    return (new ceres::AutoDiffCostFunction<weightedRotationError,\n            NUM_QUAT_PARAMS, NUM_QUAT_PARAMS>\n            (new weightedRotationError(init_quat, weight)));\n  }\n\n  std::vector<double> m_init_quat;\n  double  m_weight;\n};\n\n/// A Ceres cost function. The residual is the difference between the\n/// initial position and optimized position, multiplied by given weight.\nstruct weightedTranslationError {\n  weightedTranslationError(const double * init_position, double weight):\n    m_weight(weight) {\n\n    // Make a copy, as later the value at the pointer will change\n    m_init_position.resize(NUM_XYZ_PARAMS);\n    for (int it = 0; it < NUM_XYZ_PARAMS; it++)\n      m_init_position[it] = init_position[it];\n  }\n\n  template <typename T>\n  bool operator()(const T* position, T* residuals) const {\n    for (size_t p = 0; p < m_init_position.size(); p++)\n      residuals[p] = m_weight * (position[p] - m_init_position[p]);\n\n    return true;\n  }\n\n  // Factory to hide the construction of the CostFunction object from\n  // the client code.\n  static ceres::CostFunction* Create(const double * init_position, double weight){\n    return (new ceres::AutoDiffCostFunction\n            <weightedTranslationError, NUM_XYZ_PARAMS, NUM_XYZ_PARAMS>\n            (new weightedTranslationError(init_position, weight)));\n  }\n\n  std::vector<double> m_init_position;\n  double  m_weight;\n};\n\n/// A Ceres cost function. The residual is the weighted difference between 1 and\n/// norm of quaternion.\nstruct weightedQuatNormError {\n  weightedQuatNormError(double weight):\n    m_weight(weight) {}\n\n  template <typename T>\n  bool operator()(const T* quat, T* residuals) const {\n    residuals[0] = T(0.0);\n    for (size_t p = 0; p < NUM_QUAT_PARAMS; p++)\n      residuals[0] += quat[p] * quat[p];\n\n    residuals[0] = m_weight * (residuals[0] - 1.0);\n    \n    return true;\n  }\n\n  // Factory to hide the construction of the CostFunction object from\n  // the client code.\n  static ceres::CostFunction* Create(double weight) {\n    return (new ceres::AutoDiffCostFunction<weightedQuatNormError, 1, NUM_QUAT_PARAMS>\n            (new weightedQuatNormError(weight)));\n  }\n\n  double  m_weight;\n};\n\n// Add reprojection errors. Collect data that will be used to add camera\n// constraints that scale with the number of reprojection errors and GSD.\nvoid addReprojCamErrs(asp::BaBaseOptions                const & opt,\n                      asp::CRNJ                         const & crn,\n                      std::vector<std::vector<vw::Vector2>> const & pixel_vec,\n                      std::vector<std::vector<double>>  const & weight_vec,\n                      std::vector<std::vector<int>>     const & isAnchor_vec,\n                      std::vector<std::vector<int>>     const & pix2xyz_index,\n                      std::vector<asp::CsmModel*>       const & csm_models,\n                      bool                                      have_rig,\n                      rig::RigSet                        const& rig,\n                      std::vector<RigCamInfo>            const& rig_cam_info,\n                      // Outputs\n                      std::vector<double>                     & tri_points_vec,\n                      std::vector<double>                     & frame_params,\n                      std::vector<double>                     & weight_per_residual,\n                      std::vector<std::vector<double>>        & weight_per_cam,\n                      std::vector<std::vector<double>>        & count_per_cam,\n                      std::vector<double>                     & ref_to_curr_sensor_vec,\n                      ceres::Problem                          & problem) {\n\n  // Do here two passes, first for non-anchor points and then for anchor ones.\n  // This way it is easier to do the bookkeeping when saving the residuals.\n  // Note: The same motions as here are repeated in saveJitterResiduals().\n  weight_per_cam.resize(2);\n  count_per_cam.resize(2);\n  for (int pass = 0; pass < 2; pass++) {\n    \n     weight_per_cam[pass].resize((int)crn.size(), 0.0);\n     count_per_cam[pass].resize((int)crn.size(), 0.0);\n\n    for (int icam = 0; icam < (int)crn.size(); icam++) {\n\n      vw::DiskImageView<float> img(opt.image_files[icam]);\n      vw::BBox2 image_box = bounding_box(img);\n      std::vector<double> this_cam_weights;\n\n      for (size_t ipix = 0; ipix < pixel_vec[icam].size(); ipix++) {\n\n        vw::Vector2 pix_obs    = pixel_vec[icam][ipix];\n        double * tri_point = &tri_points_vec[3 * pix2xyz_index[icam][ipix]];\n        double pix_wt      = weight_vec[icam][ipix];\n        bool isAnchor      = isAnchor_vec[icam][ipix];\n\n        // Pass 0 is without anchor points, while pass 1 uses them\n        if ((int)isAnchor != pass) \n          continue;\n        \n        if (!have_rig) {\n          // TODO(oalexan1): This must be a function\n          // No rig\n          // We can have linescan or frame cameras \n          UsgsAstroLsSensorModel * ls_model\n            = dynamic_cast<UsgsAstroLsSensorModel*>((csm_models[icam]->m_gm_model).get());\n          UsgsAstroFrameSensorModel * frame_model\n            = dynamic_cast<UsgsAstroFrameSensorModel*>((csm_models[icam]->m_gm_model).get());\n    \n          // Note how for the frame model we pass the frame_params for the current camera.\n          if (ls_model != NULL)\n            addLsReprojectionErr(opt, ls_model, pix_obs, tri_point, pix_wt, problem);\n          else if (frame_model != NULL)\n            addFrameReprojectionErr(opt, frame_model, pix_obs, \n                &frame_params[icam * (NUM_XYZ_PARAMS + NUM_QUAT_PARAMS)],\n                tri_point, pix_wt, problem);                   \n          else\n            vw::vw_throw(vw::ArgumentErr() << \"Unknown camera model.\\n\");\n        } else {\n          // Have rig\n          // TODO(oalexan1): This must be a function in JitterSolveRigCostFuns.cc\n          auto rig_info = rig_cam_info[icam];  \n          int ref_cam = rig_info.ref_cam_index;\n          int sensor_id = rig_info.sensor_id;\n          double* ref_to_curr_sensor_trans \n              = &ref_to_curr_sensor_vec[rig::NUM_RIGID_PARAMS * sensor_id];\n          \n          // We can have linescan or frame cameras \n          UsgsAstroLsSensorModel * ls_model\n            = dynamic_cast<UsgsAstroLsSensorModel*>((csm_models[icam]->m_gm_model).get());\n          UsgsAstroFrameSensorModel * frame_model\n            = dynamic_cast<UsgsAstroFrameSensorModel*>((csm_models[icam]->m_gm_model).get());\n          UsgsAstroLsSensorModel * ref_ls_model \n            = dynamic_cast<UsgsAstroLsSensorModel*>((csm_models[ref_cam]->m_gm_model).get());\n    \n          // For now, the ref camera must be linescan \n          // TODO(oalexan1): Remove this temporary restriction\n          if (ref_ls_model == NULL)\n            vw::vw_throw(vw::ArgumentErr() << \"Reference camera must be linescan.\\n\");\n          \n          if (rig.isRefSensor(sensor_id)) {\n            // This does not need the rig \n            // Note how for the frame model we pass the frame_params for the current camera.\n            if (ls_model != NULL)\n              addLsReprojectionErr(opt, ls_model, pix_obs, tri_point, pix_wt, problem);\n            else if (frame_model != NULL)\n              addFrameReprojectionErr(opt, frame_model, pix_obs, \n                  &frame_params[icam * (NUM_XYZ_PARAMS + NUM_QUAT_PARAMS)],\n                  tri_point, pix_wt, problem);                   \n            else\n              vw::vw_throw(vw::ArgumentErr() << \"Unknown camera model.\\n\");\n          } else {\n            if (frame_model != NULL)\n              addRigLsFrameReprojectionErr(opt, rig_info, pix_obs, pix_wt, ref_ls_model, \n                          frame_model, ref_to_curr_sensor_trans, tri_point, problem);\n            else if (ls_model != NULL)\n              addRigLsLsReprojectionErr(opt, rig_info, pix_obs, pix_wt, ref_ls_model, \n                          ls_model, ref_to_curr_sensor_trans, tri_point, problem);\n            else \n              vw::vw_throw(vw::ArgumentErr() << \"Unknown camera model.\\n\");\n                \n          } // end case of a non-ref sensor\n        } // end condition for having a rig\n      \n        // Two residuals were added. Save the corresponding weights.\n        for (int c = 0; c < PIXEL_SIZE; c++)\n          weight_per_residual.push_back(pix_wt);\n\n        // Anchor points are fixed by definition. They try to prevent\n        // the cameras from moving too much from original poses.\n        if (isAnchor) \n          problem.SetParameterBlockConstant(tri_point);\n        \n        // Find the weight to use with the camera constraint\n        vw::Vector3 xyz_obs(tri_point[0], tri_point[1], tri_point[2]);\n        double gsd = 0.0;\n        try {\n          gsd = vw::camera::estimatedGSD(opt.camera_models[icam].get(), image_box, \n                                         pix_obs, xyz_obs);\n        } catch (...) {\n          continue;\n        }\n        if (gsd <= 0) \n          continue; \n\n        // The camera position weight depends on the input multiplier, pixel weight, and gsd\n        double position_wt = opt.camera_position_weight * pix_wt / gsd;\n        this_cam_weights.push_back(position_wt);\n      } // end iteration through pixels\n      \n      // Find the median weight and count. The median is more robust to outliers.\n      count_per_cam[pass][icam] = this_cam_weights.size();\n      if (count_per_cam[pass][icam] > 0)\n        weight_per_cam[pass][icam] = vw::math::destructive_median(this_cam_weights);\n      else\n        weight_per_cam[pass][icam] = 0.0;\n    } // end iteration through cameras\n  } // end iteration through passes\n\n  return;\n}\n\n// Add the constraint based on DEM\nvoid addDemConstraint(asp::BaBaseOptions       const& opt,\n                      std::vector<vw::Vector3> const& dem_xyz_vec,\n                      std::set<int>            const& outliers,\n                      vw::ba::ControlNetwork   const& cnet,\n                      // Outputs\n                      std::vector<double>           & tri_points_vec,\n                      std::vector<double>           & weight_per_residual, // append\n                      ceres::Problem                & problem) {\n  \n  double xyz_weight = -1.0, xyz_threshold = -1.0;\n    \n  if (!opt.heights_from_dem.empty()) {\n    xyz_weight = 1.0/opt.heights_from_dem_uncertainty;\n    xyz_threshold = opt.heights_from_dem_robust_threshold;\n  } else {\n    vw::vw_throw(vw::ArgumentErr() << \"No input DEM was provided.\\n\");\n  }\n  \n  if (dem_xyz_vec.size() != cnet.size()) \n    vw::vw_throw(vw::ArgumentErr() << \"Must have as many xyz computed from DEM as xyz \"\n             << \"triangulated from match files.\\n\");\n  if (xyz_weight <= 0 || xyz_threshold <= 0)\n    vw::vw_throw(vw::ArgumentErr() << \"Detected invalid robust threshold or weights.\\n\");\n\n  int num_tri_points = cnet.size();\n  \n  // The tri_points_vec must have at least as many points as cnet. It can have anchor points\n  // as well.\n  if ((int)tri_points_vec.size() < num_tri_points * NUM_XYZ_PARAMS)\n    vw::vw_throw(vw::ArgumentErr() << \"Too few triangulated points.\\n\");\n  \n  for (int ipt = 0; ipt < num_tri_points; ipt++) {\n      \n    if (cnet[ipt].type() == vw::ba::ControlPoint::GroundControlPoint)\n      continue; // Skip GCPs\n\n    // Note that we get tri points from dem_xyz_vec, based on the input DEM\n    vw::Vector3 observation = dem_xyz_vec.at(ipt);\n    if (outliers.find(ipt) != outliers.end() || observation == vw::Vector3(0, 0, 0)) \n      continue; // outlier\n      \n    ceres::CostFunction* xyz_cost_function \n      = weightedXyzError::Create(observation, xyz_weight);\n    ceres::LossFunction* xyz_loss_function = new ceres::CauchyLoss(xyz_threshold);\n    double * tri_point = &tri_points_vec[0] + ipt * NUM_XYZ_PARAMS;\n\n    // Add cost function\n    problem.AddResidualBlock(xyz_cost_function, xyz_loss_function, tri_point);\n\n    for (int c = 0; c < NUM_XYZ_PARAMS; c++)\n      weight_per_residual.push_back(xyz_weight);\n  }\n}\n\n// Add the constraint to keep triangulated points close to initial values\n// This does not need a DEM or alignment\nvoid addTriConstraint(asp::BaBaseOptions     const& opt,\n                      std::set<int>          const& outliers,\n                      vw::ba::ControlNetwork const& cnet,\n                      asp::CRNJ              const& crn,\n                      // Outputs\n                      std::vector<double>    & tri_points_vec,\n                      std::vector<double>    & weight_per_residual, // append\n                      ceres::Problem         & problem) {\n\n  // Estimate the GSD for each triangulated point\n  std::vector<double> gsds;\n  asp::estimateGsdPerTriPoint(opt.image_files, opt.camera_models, crn, \n                              outliers, tri_points_vec, gsds);\n  \n  int num_tri_points = cnet.size();\n  for (int ipt = 0; ipt < num_tri_points; ipt++) {\n    if (cnet[ipt].type() == vw::ba::ControlPoint::GroundControlPoint ||\n        cnet[ipt].type() == vw::ba::ControlPoint::PointFromDem)\n      continue; // Skip GCPs and height-from-dem points which have their own constraint\n\n    if (outliers.find(ipt) != outliers.end()) \n      continue; // skip outliers\n      \n    double * tri_point = &tri_points_vec[0] + ipt * NUM_XYZ_PARAMS;\n    \n    // The weight must be inversely proportional to the GSD, to ensure\n    // this is in pixel units\n    double gsd = gsds[ipt];\n    if (gsd <= 0) \n      continue; // GSD calculation failed. Do not use a constraint.\n    double weight = opt.tri_weight / gsd;\n  \n    // Use as constraint the initially triangulated point\n    vw::Vector3 observation(tri_point[0], tri_point[1], tri_point[2]);\n\n    ceres::CostFunction* cost_function = weightedXyzError::Create(observation, weight);\n    ceres::LossFunction* loss_function = new ceres::CauchyLoss(opt.tri_robust_threshold);\n    problem.AddResidualBlock(cost_function, loss_function, tri_point);\n    \n    for (int c = 0; c < NUM_XYZ_PARAMS; c++)\n      weight_per_residual.push_back(opt.tri_weight);\n      \n  } // End loop through xyz\n}\n\n/// A ceres cost function. The residual is the difference between the\n/// observed 3D point and the current (floating) 3D point, normalized by\n/// xyz_sigma.\n// TODO(oalexan1): Must integrate with the bundle_adjust cost function.\n// This will require a large overhaul of the bundle_adjust code.\nstruct XYZError2 {\n  XYZError2(vw::Vector3 const& observation, vw::Vector3 const& xyz_sigma):\n    m_observation(observation), m_xyz_sigma(xyz_sigma) {\n      bool is_good = (xyz_sigma[0] > 0 && xyz_sigma[1] > 0 && xyz_sigma[2] > 0);\n      if (!is_good) {\n        // This will also cover NaNs\n        vw::vw_throw(vw::ArgumentErr() << \"XYZError2: Invalid xyz_sigma: \"\n                 << xyz_sigma << \". All values must be positive.\\n\");\n      }\n    }\n\n  template <typename T>\n  bool operator()(const T* point, T* residuals) const {\n    for (size_t p = 0; p < m_observation.size(); p++)\n      residuals[p] = (point[p] - m_observation[p])/m_xyz_sigma[p]; // Units are meters\n\n    return true;\n  }\n\n  // Factory to hide the construction of the CostFunction object from\n  // the client code.\n  static ceres::CostFunction* Create(vw::Vector3 const& observation,\n                                     vw::Vector3 const& xyz_sigma){\n    return (new ceres::AutoDiffCostFunction<XYZError2, 3, 3>\n            (new XYZError2(observation, xyz_sigma)));\n  }\n\n  vw::Vector3 m_observation;\n  vw::Vector3 m_xyz_sigma;\n};\n\n// Add the GCP constraint\nvoid addGcpConstraint(asp::BaBaseOptions     const& opt,\n                      std::set<int>          const& outliers,\n                      vw::ba::ControlNetwork const& cnet,\n                      // Outputs\n                      std::vector<double>    & tri_points_vec,\n                      std::vector<double>    & weight_per_residual, // append\n                      ceres::Problem         & problem) {\n\n  int num_tri_points = cnet.size();\n  for (int ipt = 0; ipt < num_tri_points; ipt++) {\n    if (cnet[ipt].type() != vw::ba::ControlPoint::GroundControlPoint)\n      continue; // Applies only to GCPs\n\n    if (outliers.find(ipt) != outliers.end()) \n      continue; // skip outliers\n      \n    double * tri_point = &tri_points_vec[0] + ipt * NUM_XYZ_PARAMS;\n    \n    // Use as constraint the initially triangulated point\n    vw::Vector3 observation(tri_point[0], tri_point[1], tri_point[2]);\n    vw::Vector3 xyz_sigma = cnet[ipt].sigma();\n\n    // Use same cost function as for bundle adjustment\n    ceres::CostFunction* cost_function = XYZError2::Create(observation, xyz_sigma);\n    \n    // No soft cost function for GCP. These are assumed to be accurate.\n    ceres::LossFunction* loss_function  = new ceres::TrivialLoss();\n    problem.AddResidualBlock(cost_function, loss_function, tri_point);\n    \n    for (int c = 0; c < NUM_XYZ_PARAMS; c++)\n      weight_per_residual.push_back(1.0 / xyz_sigma[c]);\n      \n  } // End loop through xyz\n}\n\n// Add camera constraints that are proportional to the number of reprojection errors.\n// This requires going through some of the same motions as in addReprojCamErrs().\nvoid addCamPositionConstraint(asp::BaBaseOptions               const& opt,\n                              std::set<int>                    const& outliers,\n                              asp::CRNJ                        const& crn,\n                              std::vector<asp::CsmModel*>      const& csm_models,\n                              std::vector<std::vector<double>> const& weight_per_cam,\n                              std::vector<std::vector<double>> const& count_per_cam,\n                              bool                                    have_rig,\n                              rig::RigSet                      const& rig,\n                              std::vector<asp::RigCamInfo>     const& rig_cam_info,\n                              // Outputs\n                              std::vector<double>                & frame_params,\n                              std::vector<double>                & weight_per_residual, \n                              ceres::Problem                     & problem) {\n\n  // First pass is for interest point matches, and second pass is for anchor points\n  for (int pass = 0; pass < 2; pass++) {\n    for (int icam = 0; icam < (int)crn.size(); icam++) {\n      \n      // With a rig, only the ref sensor has rotation constraints \n      if (have_rig && !rig.isRefSensor(rig_cam_info[icam].sensor_id))\n        continue;\n      \n      double median_wt = weight_per_cam[pass][icam];\n      double count = count_per_cam[pass][icam];\n      if (count <= 0) \n        continue; // no reprojection errors for this camera\n      \n      // We know the median weight to use, and how many residuals were added.\n      // Based on the CERES loss function formula, adding N loss functions each \n      // with weight w and robust threshold t is equivalent to adding one loss \n      // function with weight sqrt(N)*w and robust threshold sqrt(N)*t.\n      // For linescan cameras, then need to subdivide this for individual\n      // positions for that camera.\n      double combined_wt  = sqrt(count * 1.0) * median_wt;\n      double combined_th = sqrt(count * 1.0) * opt.camera_position_robust_threshold;\n      UsgsAstroLsSensorModel * ls_model\n        = dynamic_cast<UsgsAstroLsSensorModel*>((csm_models[icam]->m_gm_model).get());\n      UsgsAstroFrameSensorModel * frame_model\n        = dynamic_cast<UsgsAstroFrameSensorModel*>((csm_models[icam]->m_gm_model).get());\n        \n      if (ls_model != NULL) {\n        // There are multiple position parameters per camera. They divide among\n        // them the job of minimizing the reprojection error. So need to divide\n        // the weight among them.\n\n        // Divide the weight among the positions\n        int numPos = ls_model->m_positions.size() / NUM_XYZ_PARAMS;\n        double wt = combined_wt / sqrt(numPos * 1.0);\n        double th = combined_th / sqrt(numPos * 1.0);\n        for (int ip = 0; ip < numPos; ip++) {\n          ceres::CostFunction* cost_function\n            = weightedTranslationError::Create(&ls_model->m_positions[ip * NUM_XYZ_PARAMS],\n                                               wt);\n          ceres::LossFunction* loss_function = new ceres::CauchyLoss(th);\n          problem.AddResidualBlock(cost_function, loss_function,\n                                  &ls_model->m_positions[ip * NUM_XYZ_PARAMS]);\n          \n          for (int c = 0; c < NUM_XYZ_PARAMS; c++)\n            weight_per_residual.push_back(wt);\n        }\n        \n      } else if (frame_model != NULL) {\n      \n        // Same logic as for bundle_adjust\n        // There is only one position per camera\n        double * curr_params = &frame_params[icam * (NUM_XYZ_PARAMS + NUM_QUAT_PARAMS)];\n        // we will copy from curr_params the initial position\n        ceres::CostFunction* cost_function\n          = weightedTranslationError::Create(&curr_params[0], combined_wt);\n        ceres::LossFunction* loss_function = new ceres::CauchyLoss(combined_th);\n        problem.AddResidualBlock(cost_function, loss_function,\n                                &curr_params[0]); // translation starts here\n        \n        for (int c = 0; c < NUM_XYZ_PARAMS; c++)\n          weight_per_residual.push_back(combined_wt);\n            \n      } else {\n         vw::vw_throw(vw::ArgumentErr() << \"Unknown camera model.\\n\");\n      }\n    }\n  }\n}\n\nvoid addQuatNormRotationConstraints(\n    asp::BaBaseOptions            const& opt,\n    std::set<int>                 const& outliers,\n    asp::CRNJ                     const& crn,\n    std::vector<asp::CsmModel*>   const& csm_models,\n    bool                                 have_rig,\n    rig::RigSet                   const& rig,\n    std::vector<RigCamInfo>       const& rig_cam_info,\n    double                               quat_norm_weight, \n    // Outputs\n    std::vector<double>                & frame_params,\n    std::vector<double>                & weight_per_residual, // append\n    ceres::Problem                     & problem) {\n  \n  // Constrain the rotations\n  // TODO(oalexan1): Make this a standalone function\n  if (opt.rotation_weight > 0.0) {\n    for (int icam = 0; icam < (int)crn.size(); icam++) {\n\n      // With a rig, only the ref sensor has rotation constraints \n      if (have_rig && !rig.isRefSensor(rig_cam_info[icam].sensor_id))\n        continue;\n      \n      UsgsAstroLsSensorModel * ls_model\n        = dynamic_cast<UsgsAstroLsSensorModel*>((csm_models[icam]->m_gm_model).get());\n      UsgsAstroFrameSensorModel * frame_model\n        = dynamic_cast<UsgsAstroFrameSensorModel*>((csm_models[icam]->m_gm_model).get());\n\n      if (ls_model != NULL) {\n        // There are multiple quaternion parameters per camera\n        int numQuat = ls_model->m_quaternions.size() / NUM_QUAT_PARAMS;\n        for (int iq = 0; iq < numQuat; iq++) {\n          ceres::CostFunction* rotation_cost_function\n            = weightedRotationError::Create(&ls_model->m_quaternions[iq * NUM_QUAT_PARAMS],\n                                            opt.rotation_weight);\n          // We use no loss function, as the quaternions have no outliers\n          ceres::LossFunction* rotation_loss_function = NULL;\n          problem.AddResidualBlock(rotation_cost_function, rotation_loss_function,\n                                  &ls_model->m_quaternions[iq * NUM_QUAT_PARAMS]);\n          \n          for (int c = 0; c < NUM_QUAT_PARAMS; c++)\n            weight_per_residual.push_back(opt.rotation_weight);\n        }\n\n      } else if (frame_model != NULL) {\n        // There is one quaternion per camera, stored after the translation\n        double * curr_params = &frame_params[icam * (NUM_XYZ_PARAMS + NUM_QUAT_PARAMS)];\n          \n        // Copy from curr_params the initial quaternion\n        ceres::CostFunction* rotation_cost_function\n          = weightedRotationError::Create(&curr_params[NUM_XYZ_PARAMS], // quat starts here\n                                          opt.rotation_weight);\n        // Pass the quaternion to optimize to the problem                                  \n        // We use no loss function, as the quaternions have no outliers\n        ceres::LossFunction* rotation_loss_function = NULL;\n        problem.AddResidualBlock(rotation_cost_function, rotation_loss_function,\n                                &curr_params[NUM_XYZ_PARAMS]); // quat starts here\n        \n        for (int c = 0; c < NUM_QUAT_PARAMS; c++)\n          weight_per_residual.push_back(opt.rotation_weight);\n      } else {\n         vw::vw_throw(vw::ArgumentErr() << \"Unknown camera model.\\n\");\n      }\n\n    } // end loop through cameras\n  }\n\n  // Try to make the norm of quaternions be close to 1\n  // TODO(oalexan1): Make this a standalone function\n  if (quat_norm_weight > 0.0) {\n    for (int icam = 0; icam < (int)crn.size(); icam++) {\n\n      UsgsAstroLsSensorModel * ls_model\n        = dynamic_cast<UsgsAstroLsSensorModel*>((csm_models[icam]->m_gm_model).get());\n      UsgsAstroFrameSensorModel * frame_model\n        = dynamic_cast<UsgsAstroFrameSensorModel*>((csm_models[icam]->m_gm_model).get());\n\n      if (ls_model != NULL) {\n\n        int numQuat = ls_model->m_quaternions.size() / NUM_QUAT_PARAMS;\n        for (int iq = 0; iq < numQuat; iq++) {\n          ceres::CostFunction* quat_norm_cost_function\n            = weightedQuatNormError::Create(quat_norm_weight);\n          // We use no loss function, as the quaternions have no outliers\n          ceres::LossFunction* quat_norm_loss_function = NULL;\n          problem.AddResidualBlock(quat_norm_cost_function, quat_norm_loss_function,\n                                  &ls_model->m_quaternions[iq * NUM_QUAT_PARAMS]);\n          \n          weight_per_residual.push_back(quat_norm_weight); // 1 single residual\n        }\n\n      } else if (frame_model != NULL) {\n\n        // There is one quaternion per camera, stored after the translation\n        double * curr_params = &frame_params[icam * (NUM_XYZ_PARAMS + NUM_QUAT_PARAMS)];\n\n        ceres::CostFunction* quat_norm_cost_function\n          = weightedQuatNormError::Create(quat_norm_weight);\n        // We use no loss function, as the quaternions have no outliers\n        ceres::LossFunction* quat_norm_loss_function = NULL;\n        problem.AddResidualBlock(quat_norm_cost_function, quat_norm_loss_function,\n                                &curr_params[NUM_XYZ_PARAMS]); // quat starts here\n        \n        weight_per_residual.push_back(quat_norm_weight); // 1 single residual\n\n      } else {\n         vw::vw_throw(vw::ArgumentErr() << \"Unknown camera model.\\n\");\n      }\n    }\n  }\n}\n\n// Add roll / yaw constraints. For linescan, use the whole set of samples for given\n// camera model. For frame cameras, use the trajectory of all cameras in the same orbital\n// group as the current camera.\nvoid addRollYawConstraint(asp::BaBaseOptions              const& opt,\n                          asp::CRNJ                       const& crn,\n                          std::vector<asp::CsmModel*>     const& csm_models,\n                          vw::cartography::GeoReference   const& georef,\n                          std::map<int, int>              const& orbital_groups,\n                          bool initial_camera_constraint,\n                          double roll_weight, double yaw_weight,\n                          // Outputs (append to residual)\n                          std::vector<double>                  & frame_params,\n                          std::vector<double>                  & weight_per_residual,\n                          ceres::Problem                       & problem) {\n  \n  if (roll_weight <= 0.0 && yaw_weight <= 0.0)\n     vw::vw_throw(vw::ArgumentErr() \n         << \"addRollYawConstraint: The roll or yaw weight must be positive.\\n\");\n\n  int num_cams = crn.size();\n\n  // Frame cameras can be grouped by orbital portion. Ensure that all cameras\n  // belong to a group.\n  if (num_cams != int(orbital_groups.size()))\n    vw::vw_throw(vw::ArgumentErr() \n         << \"addRollYawConstraint: Failed to add each input camera to an orbital group.\\n\");\n\n  // Create the orbital trajectory for each group of frame cameras\n  std::map<int, std::vector<double>> orbital_group_positions;\n  std::map<int, std::vector<double>> orbital_group_quaternions;\n  formPositionQuatVecPerGroup(orbital_groups, csm_models, \n    orbital_group_positions, orbital_group_quaternions); // outputs\n\n  for (int icam = 0; icam < num_cams; icam++) {\n\n    UsgsAstroLsSensorModel * ls_model\n      = dynamic_cast<UsgsAstroLsSensorModel*>((csm_models[icam]->m_gm_model).get());\n    UsgsAstroFrameSensorModel * frame_model\n      = dynamic_cast<UsgsAstroFrameSensorModel*>((csm_models[icam]->m_gm_model).get());\n\n    if (ls_model != NULL) {\n      // Linescan cameras. Use the full sequence of cameras in the model\n      // to enforce the roll/yaw constraint for each camera in the sequence.\n      int numQuat = ls_model->m_quaternions.size() / NUM_QUAT_PARAMS;\n\n      // Make positions one-to-one with quaternions\n      std::vector<double> interp_positions;\n      asp::orbitInterpExtrap(ls_model, georef, interp_positions);\n      \n      for (int iq = 0; iq < numQuat; iq++) {\n        ceres::CostFunction* roll_yaw_cost_function\n          = weightedRollYawError::Create(interp_positions,\n                                         ls_model->m_quaternions,\n                                         georef, iq,\n                                         roll_weight, yaw_weight, \n                                         initial_camera_constraint);\n\n        // We use no loss function, as the quaternions have no outliers\n        ceres::LossFunction* roll_yaw_loss_function = NULL;\n        problem.AddResidualBlock(roll_yaw_cost_function, roll_yaw_loss_function,\n                                &ls_model->m_quaternions[iq * NUM_QUAT_PARAMS]);\n        // The recorded weight should not be 0 as we will divide by it\n        weight_per_residual.push_back(roll_weight || 1.0);\n        weight_per_residual.push_back(yaw_weight  || 1.0);\n      } // end loop through quaternions for given camera\n    \n    } else if (frame_model != NULL) {\n      // Frame cameras. Use the positions and quaternions of the cameras\n      // in the same orbital group to enforce the roll/yaw constraint for\n      // each camera in the group.\n      auto it = orbital_groups.find(icam);\n      if (it == orbital_groups.end())\n        vw::vw_throw(vw::ArgumentErr() \n           << \"addRollYawConstraint: Failed to find orbital group for camera.\\n\"); \n      int group_id = it->second;\n\n      int index_in_group = indexInGroup(icam, orbital_groups);\n      std::vector<double> positions = orbital_group_positions[group_id];\n      std::vector<double> quaternions = orbital_group_quaternions[group_id];\n      if (positions.size() / NUM_XYZ_PARAMS < 2) {\n        // It can happen that we have just one frame camera, but then we just\n        // can't add this constraint\n        vw::vw_out(vw::WarningMessage) << \"Cannot add roll and/or yaw constraint for \"\n          << \"for an orbital group consisting of only one frame camera.\\n\";\n        continue;\n      }\n        \n      ceres::CostFunction* roll_yaw_cost_function\n        = weightedRollYawError::Create(positions, quaternions, \n                                   georef, index_in_group,\n                                   roll_weight, yaw_weight, \n                                   initial_camera_constraint);\n\n      // We use no loss function, as the quaternions have no outliers\n      ceres::LossFunction* roll_yaw_loss_function = NULL;\n\n      // Note how we set the quaternions to be optimized from frame_params.\n      // Above, we only cared for initial positions and quaternions.\n      double * curr_params = &frame_params[icam * (NUM_XYZ_PARAMS + NUM_QUAT_PARAMS)];\n      problem.AddResidualBlock(roll_yaw_cost_function, roll_yaw_loss_function,\n                                &curr_params[NUM_XYZ_PARAMS]); // quat starts here\n\n      // The recorded weight should not be 0 as we will divide by it\n      weight_per_residual.push_back(roll_weight || 1.0);\n      weight_per_residual.push_back(yaw_weight  || 1.0);\n    } else {\n      vw::vw_throw(vw::ArgumentErr() \n         << \"addRollYawConstraint: Expecting CSM linescan or frame cameras.\\n\");\n    }\n\n  } // end loop through cameras\n\n  return;\n}\n",
+      "createdAt": 1720743923171,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 174,
-            "character": 28
+            "line": 23,
+            "character": 0
           },
           "end": {
-            "line": 174,
-            "character": 39
+            "line": 23,
+            "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Core/OutlierProcessing.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/BaseCostFuns.cc"
       }
     },
     {
-      "value": "    if (error_image.rows() > 0 && error_image.cols() > 0 && \n        error_image.cols() != point_image.cols() || \n        error_image.rows() != point_image.rows()) \n        vw_throw(ArgumentErr() \n                 << \"The error image and point image must have the same size.\");\n",
-      "createdAt": 1718058425572,
+      "value": "#include <vw/Camera/CameraImage.h>\n",
+      "createdAt": 1720743906535,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 622,
+            "line": 21,
             "character": 0
           },
           "end": {
-            "line": 622,
+            "line": 21,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/point2dem.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/BaseCostFuns.cc"
       }
     },
     {
-      "value": "perl -pi -e \"s#ba-updated#ba#g\" *cameras*txt\n",
-      "createdAt": 1718055738864,
-      "copyCount": 3,
-      "useCount": 3,
+      "value": "#include <vw/Cartography/GeoReferenceBaseUtils.h>\n",
+      "createdAt": 1720743906034,
+      "copyCount": 1,
+      "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 29,
+            "line": 21,
             "character": 0
           },
           "end": {
-            "line": 29,
+            "line": 21,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/GUI/ColorAxes.h"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/BaseCostFuns.cc"
       }
     },
     {
-      "value": "function sgm {\n    min=$1; shift\n    max=$1; shift\n    stereo_gui --window-size 1600 1100 --colorbar --min $min --max $max $*\n}\n\n",
-      "createdAt": 1718050208765,
+      "value": "#include <asp/Camera/JitterSolveRigCostFuns.h>\n",
+      "createdAt": 1720743905534,
       "copyCount": 1,
       "useCount": 1,
-      "language": "shellscript",
+      "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 546,
+            "line": 21,
             "character": 0
           },
           "end": {
-            "line": 546,
+            "line": 21,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/.bashrc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/BaseCostFuns.cc"
       }
     },
     {
-      "value": "https://www.frontiersin.org/journals/psychology/articles/10.3389/fpsyg.2021.596231/full",
-      "createdAt": 1718042462244,
+      "value": "#include <asp/Core/EigenTransformUtils.h>\n",
+      "createdAt": 1720743904532,
       "copyCount": 1,
       "useCount": 1,
-      "language": "restructuredtext",
+      "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 164,
+            "line": 20,
             "character": 0
           },
           "end": {
-            "line": 164,
+            "line": 20,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/BaseCostFuns.cc"
       }
     },
     {
-      "value": " Our results indicate that the adult human brain can build a representation of the complex, global pattern of a probability distribution",
-      "createdAt": 1718042454192,
+      "value": "#include <asp/Rig/rig_config.h>\n",
+      "createdAt": 1720743904031,
       "copyCount": 1,
       "useCount": 1,
-      "language": "restructuredtext",
+      "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 164,
+            "line": 20,
             "character": 0
           },
           "end": {
-            "line": 164,
+            "line": 20,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/BaseCostFuns.cc"
       }
     },
     {
-      "value": "LLM is not neural nets. ",
-      "createdAt": 1718041950061,
+      "value": "#include <asp/Core/SatSimBase.h>\n",
+      "createdAt": 1720743903023,
       "copyCount": 1,
       "useCount": 1,
-      "language": "restructuredtext",
+      "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 164,
+            "line": 20,
             "character": 0
           },
           "end": {
-            "line": 164,
+            "line": 20,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/BaseCostFuns.cc"
       }
     },
     {
-      "value": ". https://openreview.net/pdf?id=BZ5a1r-kVsf",
-      "createdAt": 1718041066035,
+      "value": "const double g_big_pixel_value = 1000.0;  // don't make this too big\n\nstruct BaBaseOptions;\n\n// Calc the range of indices in the samples needed to interpolate between time1 and time2.\n// Based on lagrangeInterp() in usgscsm.\nvoid calcIndexBounds(double time1, double time2, double t0, double dt, int numVals,\n                     // Outputs\n                     int & begIndex, int & endIndex);\n\n// Update the linescan model with the latest optimized values of the position\n// and quaternion parameters. Also update the triangulated point.\nvoid updateLsModelTriPt(double const * const * parameters, \n                        int begQuatIndex, int endQuatIndex,\n                        int begPosIndex, int endPosIndex,\n                        int & param_shift,\n                        UsgsAstroLsSensorModel & cam,\n                        csm::EcefCoord & P);\n\n// Add the linescan model reprojection error to the cost function\nvoid addLsReprojectionErr(asp::BaBaseOptions const & opt,\n                          UsgsAstroLsSensorModel * ls_model,\n                          vw::Vector2      const & observation,\n                          double                 * tri_point,\n                          double                   weight,\n                          ceres::Problem         & problem);\n\n// Add the frame camera model reprojection error to the cost function\nvoid addFrameReprojectionErr(asp::BaBaseOptions  const & opt,\n                             UsgsAstroFrameSensorModel * frame_model,\n                             vw::Vector2         const & observation,\n                             double                    * frame_params,\n                             double                    * tri_point,\n                             double                      weight,\n                             ceres::Problem            & problem);\n\n// Add reprojection errors. Collect data that will be used to add camera\n// constraints that scale with the number of reprojection errors and GSD.\nvoid addReprojCamErrs(asp::BaBaseOptions                const & opt,\n                      asp::CRNJ                         const & crn,\n                      std::vector<std::vector<vw::Vector2>> const & pixel_vec,\n                      std::vector<std::vector<double>>  const & weight_vec,\n                      std::vector<std::vector<int>>     const & isAnchor_vec,\n                      std::vector<std::vector<int>>     const & pix2xyz_index,\n                      std::vector<asp::CsmModel*>       const & csm_models,\n                      bool                                      have_rig,\n                      rig::RigSet                        const& rig,\n                      std::vector<RigCamInfo>            const& rig_cam_info,\n                      // Outputs\n                      std::vector<double>                     & tri_points_vec,\n                      std::vector<double>                     & frame_params,\n                      std::vector<double>                     & weight_per_residual,\n                      std::vector<std::vector<double>>        & weight_per_cam,\n                      std::vector<std::vector<double>>        & count_per_cam,\n                      std::vector<double>                     & ref_to_curr_sensor_vec,\n                      ceres::Problem                          & problem);\n\n// Add the constraint based on DEM\nvoid addDemConstraint(asp::BaBaseOptions       const& opt,\n                      std::vector<vw::Vector3> const& dem_xyz_vec,\n                      std::set<int>            const& outliers,\n                      vw::ba::ControlNetwork   const& cnet,\n                      // Outputs\n                      std::vector<double>           & tri_points_vec,\n                      std::vector<double>           & weight_per_residual, // append\n                      ceres::Problem                & problem);\n\n// Add the constraint to keep triangulated points close to initial values\n// This does not need a DEM or alignment\nvoid addTriConstraint(asp::BaBaseOptions     const& opt,\n                      std::set<int>          const& outliers,\n                      vw::ba::ControlNetwork const& cnet,\n                      asp::CRNJ              const& crn,\n                      // Outputs\n                      std::vector<double>    & tri_points_vec,\n                      std::vector<double>    & weight_per_residual, // append\n                      ceres::Problem         & problem);\n\n// Add camera constraints that are proportional to the number of reprojection errors.\n// This requires going through some of the same motions as in addReprojCamErrs().\nvoid addCamPositionConstraint(asp::BaBaseOptions               const& opt,\n                              std::set<int>                    const& outliers,\n                              asp::CRNJ                        const& crn,\n                              std::vector<asp::CsmModel*>      const& csm_models,\n                              std::vector<std::vector<double>> const& weight_per_cam,\n                              std::vector<std::vector<double>> const& count_per_cam,\n                              bool                                    have_rig,\n                              rig::RigSet                      const& rig,\n                              std::vector<asp::RigCamInfo>     const& rig_cam_info,\n                              // Outputs\n                              std::vector<double>                & frame_params,\n                              std::vector<double>                & weight_per_residual, \n                              ceres::Problem                     & problem);\n\nvoid addQuatNormRotationConstraints(\n    asp::BaBaseOptions            const& opt,\n    std::set<int>                 const& outliers,\n    asp::CRNJ                     const& crn,\n    std::vector<asp::CsmModel*>   const& csm_models,\n    bool                                 have_rig,\n    rig::RigSet                   const& rig,\n    std::vector<RigCamInfo>       const& rig_cam_info,\n    double                               quat_norm_weight, \n    // Outputs\n    std::vector<double>                & frame_params,\n    std::vector<double>                & weight_per_residual, // append\n    ceres::Problem                     & problem);\n\n// Add roll / yaw constraints. For linescan, use the whole set of samples for given\n// camera model. For frame cameras, use the trajectory of all cameras in the same orbital\n// group as the current camera.\nvoid addRollYawConstraint(asp::BaBaseOptions              const& opt,\n                          asp::CRNJ                       const& crn,\n                          std::vector<asp::CsmModel*>     const& csm_models,\n                          vw::cartography::GeoReference   const& georef,\n                          std::map<int, int>              const& orbital_groups,\n                          bool initial_camera_constraint,\n                          double roll_weight, double yaw_weight,\n                          // Outputs (append to residual)\n                          std::vector<double>                  & frame_params,\n                          std::vector<double>                  & weight_per_residual,\n                          ceres::Problem                       & problem);\n",
+      "createdAt": 1720743873356,
       "copyCount": 1,
       "useCount": 1,
-      "language": "restructuredtext",
+      "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 164,
+            "line": 36,
             "character": 0
           },
           "end": {
-            "line": 164,
+            "line": 36,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/BaseCostFuns.h"
       }
     },
     {
-      "value": "Because both sub-modules of the cost module are differentiable, the gradient of the\nenergy can be back-propagated through the other modules, particularly the world model,\nthe actor and the perception, for planning, reasoning, and learning.\r",
-      "createdAt": 1718040887179,
+      "value": "#include <usgscsm/UsgsAstroLsSensorModel.h>\n#include <usgscsm/UsgsAstroFrameSensorModel.h>\n#include <usgscsm/Utilities.h>\n\n",
+      "createdAt": 1720743865732,
       "copyCount": 1,
       "useCount": 1,
-      "language": "restructuredtext",
+      "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 164,
+            "line": 27,
             "character": 0
           },
           "end": {
-            "line": 164,
+            "line": 27,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/BaseCostFuns.h"
       }
     },
     {
-      "value": "So, LeCun did not change a thing. He wants to double-down on using neural nets.",
-      "createdAt": 1718040870132,
+      "value": "#include <asp/Camera/CsmModel.h>\n#include <asp/Camera/JitterSolveUtils.h>\n#include <asp/Camera/JitterSolveRigUtils.h>\n#include <asp/Camera/CsmUtils.h>\n",
+      "createdAt": 1720743860714,
       "copyCount": 1,
       "useCount": 1,
-      "language": "restructuredtext",
+      "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 164,
+            "line": 24,
             "character": 0
           },
           "end": {
-            "line": 164,
+            "line": 24,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/BaseCostFuns.h"
       }
     },
     {
-      "value": "https://openreview.net/pdf?id=BZ5a1r-kVsf",
-      "createdAt": 1718040772341,
+      "value": "used in solving for jitter. These need access to the camera\n// models, so they are stored in the Camera folder. The bigger functions defined\n// here are implemented in the .cc file.",
+      "createdAt": 1720743836638,
       "copyCount": 1,
       "useCount": 1,
-      "language": "restructuredtext",
+      "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 164,
-            "character": 0
+            "line": 19,
+            "character": 18
           },
           "end": {
-            "line": 164,
-            "character": 0
+            "line": 19,
+            "character": 18
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/BaseCostFuns.h"
       }
     },
     {
-      "value": "See his 2022 paper. ",
-      "createdAt": 1718040576532,
+      "value": "  // Error goes up as cameras move and rotate from their input positions.\n",
+      "createdAt": 1720743560435,
       "copyCount": 1,
       "useCount": 1,
-      "language": "restructuredtext",
+      "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 164,
+            "line": 988,
             "character": 0
           },
           "end": {
-            "line": 164,
+            "line": 988,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust.cc"
       }
     },
     {
-      "value": "not to make a good hypothesis of what to do, but a bot would need ",
-      "createdAt": 1718039901789,
+      "value": "  // - Error goes up as cameras move and rotate from their input positions.\n",
+      "createdAt": 1720743553876,
       "copyCount": 1,
       "useCount": 1,
-      "language": "restructuredtext",
+      "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 164,
+            "line": 972,
             "character": 0
           },
           "end": {
-            "line": 164,
+            "line": 972,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
-      }
-    },
-    {
-      "value": " they would need access to sim",
-      "createdAt": 1718039855151,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "restructuredtext",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 164,
-            "character": 0
-          },
-          "end": {
-            "line": 164,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
-      }
-    },
-    {
-      "value": "enough for a real-time response, but ",
-      "createdAt": 1718039823528,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "restructuredtext",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 164,
-            "character": 0
-          },
-          "end": {
-            "line": 164,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
-      }
-    },
-    {
-      "value": "Currently the bots do not acquire data in real time. They are fed it in a batch. It is less information that way, but that alone is ",
-      "createdAt": 1718039685334,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "restructuredtext",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 164,
-            "character": 0
-          },
-          "end": {
-            "line": 164,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
-      }
-    },
-    {
-      "value": "the last 15 years have been ",
-      "createdAt": 1717988498716,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "restructuredtext",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 164,
-            "character": 0
-          },
-          "end": {
-            "line": 164,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
-      }
-    },
-    {
-      "value": "https://www.nature.com/articles/nature14539",
-      "createdAt": 1717988404221,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "restructuredtext",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 164,
-            "character": 0
-          },
-          "end": {
-            "line": 164,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
-      }
-    },
-    {
-      "value": " rear-guard battle",
-      "createdAt": 1717987883722,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "restructuredtext",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 164,
-            "character": 0
-          },
-          "end": {
-            "line": 164,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
-      }
-    },
-    {
-      "value": "Ideally, several pairs of images are available that are acquired with precisely\nthe same camera model (note that there is a whole family of KH-7 camera models).\nThen, the cameras with the same model would be used jointly in bundle\nadjustment, while setting ``--intrinsics-to-share all``. This should increase\nthe accuracy across the board, if the DEMs are for mountainous regions and it is\neasy to measure the warping.\n \n",
-      "createdAt": 1717954457628,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "restructuredtext",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 218,
-            "character": 0
-          },
-          "end": {
-            "line": 218,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/docs/tools/dem2gcp.rst"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust.cc"
       }
     },
     {
       "value": "  \n",
-      "createdAt": 1717804704431,
-      "copyCount": 3,
-      "useCount": 3,
-      "language": "cpp",
+      "createdAt": 1720741487968,
+      "copyCount": 4,
+      "useCount": 4,
+      "language": "python",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 95,
+            "line": 0,
             "character": 0
           },
           "end": {
-            "line": 95,
+            "line": 0,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/camera_footprint.cc"
+        "uri": "file:///home/oalexan1/.muttrc"
       }
     },
     {
-      "value": "  std::cout << \"---is planet pinhole: \" << opt.planet_pinhole << std::endl;\n",
-      "createdAt": 1717953908955,
+      "value": "  // Error goes up as GCP's move from their input positions.\n  // TODO(oalexan1): Put this in a separate function.\n  for (int ipt = 0; ipt < num_points; ipt++) {\n    if (cnet[ipt].type() != ControlPoint::GroundControlPoint &&\n        cnet[ipt].type() != ControlPoint::PointFromDem)\n      continue; // Skip non-GCP's and points which do not need special treatment\n\n    if (param_storage.get_point_outlier(ipt))\n      continue; // skip outliers\n    if (cnet[ipt].type() == ControlPoint::GroundControlPoint)\n      num_gcp++;\n    Vector3 observation = cnet[ipt].position();\n    Vector3 xyz_sigma   = cnet[ipt].sigma();\n\n    ceres::CostFunction* cost_function;\n    if (!opt.use_llh_error) \n      cost_function = XYZError::Create(observation, xyz_sigma);\n    else{\n      Vector3 llh_sigma = xyz_sigma;\n      // make lat,lon into lon,lat\n      std::swap(llh_sigma[0], llh_sigma[1]);\n      cost_function = LLHError::Create(observation, llh_sigma, opt.datum);\n    }\n\n    // Don't use the same loss function as for pixels since that one\n    // discounts outliers and the GCP's should never be discounted.\n    // The user an override this for the advanced --heights-from-dem\n    // option.\n    ceres::LossFunction* loss_function = NULL;\n    if (opt.heights_from_dem != \"\"           &&\n        opt.heights_from_dem_uncertainty > 0 &&\n        opt.heights_from_dem_robust_threshold > 0) {\n      loss_function \n      = get_loss_function(opt.cost_function, opt.heights_from_dem_robust_threshold);\n    } else {\n      loss_function = new ceres::TrivialLoss();\n    }\n    double * point  = param_storage.get_point_ptr(ipt);\n    problem.AddResidualBlock(cost_function, loss_function, point);\n\n    num_gcp_or_dem_residuals++;\n    \n    // Points whose sigma is FIXED_GCP_SIGMA (a tiny positive value are set to fixed)\n    double s = asp::FIXED_GCP_SIGMA;\n    if (cnet[ipt].type() == ControlPoint::GroundControlPoint && \n        (opt.fix_gcp_xyz || xyz_sigma == vw::Vector3(s, s, s))) {\n      cnet[ipt].set_sigma(Vector3(s, s, s)); // will be saved in the ISIS cnet\n      problem.SetParameterBlockConstant(point);\n    }\n      \n  } // End loop through triangulated points\n",
+      "createdAt": 1720743536717,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 491,
+            "line": 971,
             "character": 0
           },
           "end": {
-            "line": 491,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
-      }
-    },
-    {
-      "value": "how much time/effort are required to bypass mask file generation entirely",
-      "createdAt": 1717952598901,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1027,
-            "character": 0
-          },
-          "end": {
-            "line": 1027,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/kh7/kh7_notes.sh"
-      }
-    },
-    {
-      "value": "https://www.researchgate.net/publication/200459089_The_Application_of_Declassified_KH-7_GAMBIT_Satellite_Photographs_to_Studies_of_Cold_War_Material_Culture_A_Case_Study_from_the_Former_Soviet_Union",
-      "createdAt": 1717906177060,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1018,
-            "character": 0
-          },
-          "end": {
-            "line": 1018,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/kh7/kh7_notes.sh"
-      }
-    },
-    {
-      "value": "he GAMBIT satellite appears to have carried a\nsingle strip camera that exposed a continuous photograph of the terrain below by passing the\nfilm over a stationary slit in the focal plane of the lens at a speed synchronised with the velocity\nof the ground image across the focal plane. The slit width would have been sufficiently small\nsuch that at any instant the image of only a narrow ‘ribbon’ of terrain would have been\nexposed on the film. As the satellite moved forward, a long continuous photograph would\nhave been ‘painted’ onto the film by the successive integration of these narrow ribbons.",
-      "createdAt": 1717906159537,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1018,
-            "character": 0
-          },
-          "end": {
-            "line": 1018,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/kh7/kh7_notes.sh"
-      }
-    },
-    {
-      "value": "# cd wide_kaguya\njob=wide\n#qsub -q devel -l walltime=0:01:00              \\\nqsub -l walltime=8:00:00                        \\\n  -m n -r n -N $job -W group_list=s7369         \\\n    -j oe -S /bin/bash -l select=1:model=san -- \\\n    $(pwd)/../ba_wide.sh $(pwd)\n\n# cd narrow_kaguya\njob=narrow\n#qsub -q devel -l walltime=0:01:00              \\\nqsub -l walltime=8:00:00                        \\\n  -m n -r n -N $job -W group_list=s7369         \\\n    -j oe -S /bin/bash -l select=1:model=san -- \\\n    $(pwd)/../ba_narrow.sh $(pwd)\n",
-      "createdAt": 1717894395718,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1214,
-            "character": 0
-          },
-          "end": {
-            "line": 1214,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "  qsub -q devel -l walltime=0:01:00  \\\n",
-      "createdAt": 1717894108596,
-      "copyCount": 2,
-      "useCount": 2,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1245,
-            "character": 0
-          },
-          "end": {
-            "line": 1245,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "  echo \\\n",
-      "createdAt": 1717894107077,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 1246,
-            "character": 0
-          },
-          "end": {
-            "line": 1246,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/large_kaguya_notes.sh"
-      }
-    },
-    {
-      "value": "echo temporary\n",
-      "createdAt": 1717894042801,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 62,
-            "character": 0
-          },
-          "end": {
-            "line": 62,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/stereo_lola_dense.sh"
-      }
-    },
-    {
-      "value": "boost::shared_ptr<vw::camera::CameraModel> ",
-      "createdAt": 1717863790112,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "cpp",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 307,
-            "character": 4
-          },
-          "end": {
-            "line": 307,
-            "character": 4
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Sessions/StereoSession.cc"
-      }
-    },
-    {
-      "value": "     \n",
-      "createdAt": 1717863778084,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "cpp",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 321,
-            "character": 0
-          },
-          "end": {
-            "line": 321,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Sessions/StereoSession.cc"
-      }
-    },
-    {
-      "value": "  // TODO(oalexan1): If the datum read from the image and the one read from the\n  // session disagree, what to do? \n",
-      "createdAt": 1717863658634,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "cpp",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 314,
-            "character": 0
-          },
-          "end": {
-            "line": 314,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Sessions/StereoSession.cc"
-      }
-    },
-    {
-      "value": "    TODO(oalexan1): Must do same for stereo when having a DEM.\n",
-      "createdAt": 1717863588595,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "restructuredtext",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 306,
-            "character": 0
-          },
-          "end": {
-            "line": 306,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/NEWS.rst"
-      }
-    },
-    {
-      "value": "|| have_user_datum)",
-      "createdAt": 1717863038145,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "cpp",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 2414,
-            "character": 64
-          },
-          "end": {
-            "line": 2414,
-            "character": 64
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust.cc"
-      }
-    },
-    {
-      "value": "    // For pinhole session the guessed datum may be unreliable, so warn only\n    bool warn_only = (opt.stereo_session.find(\"pinhole\") != std::string::npos);\n",
-      "createdAt": 1717862864799,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "cpp",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 2308,
-            "character": 0
-          },
-          "end": {
-            "line": 2310,
+            "line": 971,
             "character": 0
           }
         },
@@ -1502,19 +1062,19 @@
       }
     },
     {
-      "value": "        // For pinhole session the guessed datum may be unreliable, so warn only\n",
-      "createdAt": 1717862842253,
+      "value": "                      std::string const& cost_function_str, \n",
+      "createdAt": 1720743342545,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 2308,
+            "line": 719,
             "character": 0
           },
           "end": {
-            "line": 2308,
+            "line": 719,
             "character": 0
           }
         },
@@ -1522,483 +1082,923 @@
       }
     },
     {
-      "value": "  opt.planet_pinhole = boost::algorithm::ends_with(opt.input_camera, \"_pinhole.json\");\n",
-      "createdAt": 1717820060178,
+      "value": "                      vw::ba::ControlNetwork  const& cnet,\n",
+      "createdAt": 1720743244303,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 468,
+            "line": 717,
             "character": 0
           },
           "end": {
-            "line": 468,
+            "line": 717,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust.cc"
       }
     },
     {
-      "value": "    \n",
-      "createdAt": 1717732656391,
-      "copyCount": 7,
-      "useCount": 7,
-      "language": "shellscript",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 40,
-            "character": 0
-          },
-          "end": {
-            "line": 40,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/large_kaguya/ba_wide.sh"
-      }
-    },
-    {
-      "value": "  // Planet's custom format  \n",
-      "createdAt": 1717820039075,
+      "value": "                      asp::BAParams           const& param_storage, \n",
+      "createdAt": 1720743186672,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 469,
+            "line": 718,
             "character": 0
           },
           "end": {
-            "line": 469,
+            "line": 718,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust.cc"
       }
     },
     {
-      "value": "      vw_throw(ArgumentErr() << \"Only WGS84 is supported for planet cameras.\\n\");\n",
-      "createdAt": 1717820036074,
+      "value": "  int num_gcp = 0, num_gcp_or_dem_residuals = 0;\n",
+      "createdAt": 1720742913188,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 467,
+            "line": 734,
             "character": 0
           },
           "end": {
-            "line": 467,
+            "line": 734,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust.cc"
       }
     },
     {
-      "value": "    if (opt.datum_str ! \"WGS84\")\n",
-      "createdAt": 1717820035074,
+      "value": "  int num_points  = param_storage.num_points();\n  if (num_points != (int)cnet.size()) \n    vw::vw_throw(vw::ArgumentErr() << \"Book-keeping error, the size of the control network \"\n             << \"must equal the number of points.\\n\");\n  \n",
+      "createdAt": 1720742910164,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 467,
+            "line": 728,
             "character": 0
           },
           "end": {
-            "line": 467,
+            "line": 728,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust.cc"
       }
     },
     {
-      "value": "vw::cartography::Datum datum1(opt.datum_str);",
-      "createdAt": 1717820020987,
+      "value": "int num_gcp = 0, num_gcp_or_dem_residuals = 0;",
+      "createdAt": 1720742897629,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 465,
-            "character": 4
+            "line": 965,
+            "character": 2
           },
           "end": {
-            "line": 465,
-            "character": 4
+            "line": 965,
+            "character": 48
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust.cc"
       }
     },
     {
-      "value": "  if (opt.planet_pinhole && opt.datum_str.empty()) {\n    opt.datum_str = \"WGS84\";\n",
-      "createdAt": 1717819964300,
+      "value": "  int num_gcp = 0, num_gcp_or_dem_residuals = 0;\n  for (int ipt = 0; ipt < num_points; ipt++) {\n    if (cnet[ipt].type() != ControlPoint::GroundControlPoint &&\n        cnet[ipt].type() != ControlPoint::PointFromDem)\n      continue; // Skip non-GCP's and points which do not need special treatment\n\n    if (param_storage.get_point_outlier(ipt))\n      continue; // skip outliers\n    if (cnet[ipt].type() == ControlPoint::GroundControlPoint)\n      num_gcp++;\n    Vector3 observation = cnet[ipt].position();\n    Vector3 xyz_sigma   = cnet[ipt].sigma();\n\n    ceres::CostFunction* cost_function;\n    if (!opt.use_llh_error) \n      cost_function = XYZError::Create(observation, xyz_sigma);\n    else{\n      Vector3 llh_sigma = xyz_sigma;\n      // make lat,lon into lon,lat\n      std::swap(llh_sigma[0], llh_sigma[1]);\n      cost_function = LLHError::Create(observation, llh_sigma, opt.datum);\n    }\n\n    // Don't use the same loss function as for pixels since that one\n    // discounts outliers and the GCP's should never be discounted.\n    // The user an override this for the advanced --heights-from-dem\n    // option.\n    ceres::LossFunction* loss_function = NULL;\n    if (opt.heights_from_dem != \"\"           &&\n        opt.heights_from_dem_uncertainty > 0 &&\n        opt.heights_from_dem_robust_threshold > 0) {\n      loss_function \n      = get_loss_function(opt.cost_function, opt.heights_from_dem_robust_threshold);\n    } else {\n      loss_function = new ceres::TrivialLoss();\n    }\n    double * point  = param_storage.get_point_ptr(ipt);\n    problem.AddResidualBlock(cost_function, loss_function, point);\n\n    num_gcp_or_dem_residuals++;\n    \n    // Points whose sigma is FIXED_GCP_SIGMA (a tiny positive value are set to fixed)\n    double s = asp::FIXED_GCP_SIGMA;\n    if (cnet[ipt].type() == ControlPoint::GroundControlPoint && \n        (opt.fix_gcp_xyz || xyz_sigma == vw::Vector3(s, s, s))) {\n      cnet[ipt].set_sigma(Vector3(s, s, s)); // will be saved in the ISIS cnet\n      problem.SetParameterBlockConstant(point);\n    }\n      \n  } // End loop through triangulated points\n",
+      "createdAt": 1720742787299,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 464,
+            "line": 911,
             "character": 0
           },
           "end": {
-            "line": 464,
+            "line": 911,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust.cc"
       }
     },
     {
-      "value": "  if (!opt.input_camera.empty()) {\n    // Guess the datum from the camera model    \n    asp::SessionPtr session;\n    vw::cartography::Datum cam_datum;\n    bool found_cam_datum = asp::datum_from_camera(opt.image_file, opt.input_camera, \n                                                  // Outputs\n                                                  opt.stereo_session, session, cam_datum);\n    if (found_cam_datum && !opt.datum_str.empty())\n      asp::checkDatumConsistency(cam_datum, opt.datum);\n    // opt.datum is more general than opt.datum_str, but set both\n    if (found_cam_datum && opt.datum_str.empty()) {\n      opt.datum = cam_datum;\n      opt.datum_str = cam_datum.name();\n    }\n  }\n",
-      "createdAt": 1717819740697,
+      "value": "                      std::vector<double>    & weight_per_residual, // append\n",
+      "createdAt": 1720742755611,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 501,
+            "line": 720,
             "character": 0
           },
           "end": {
-            "line": 501,
+            "line": 720,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust.cc"
       }
     },
     {
-      "value": "  // Set the datum from the string\n  if (!opt.datum_str.empty())\n    opt.datum.set_well_known_datum(opt.datum_str);\n\n  if (!opt.input_camera.empty()) {\n    // Guess the datum from the camera model    \n    asp::SessionPtr session;\n    vw::cartography::Datum cam_datum;\n    bool found_cam_datum = asp::datum_from_camera(opt.image_file, opt.input_camera, \n                                                  // Outputs\n                                                  opt.stereo_session, session, cam_datum);\n    if (found_cam_datum && !opt.datum_str.empty())\n      asp::checkDatumConsistency(cam_datum, opt.datum);\n    // opt.datum is more general than opt.datum_str, but set both\n    if (found_cam_datum && opt.datum_str.empty()) {\n      opt.datum = cam_datum;\n      opt.datum_str = cam_datum.name();\n    }\n  }\n",
-      "createdAt": 1717819727172,
+      "value": "                      std::vector<double>    & tri_points_vec,\n",
+      "createdAt": 1720742755151,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 500,
+            "line": 720,
             "character": 0
           },
           "end": {
-            "line": 500,
+            "line": 720,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust.cc"
       }
     },
     {
-      "value": "      \n",
-      "createdAt": 1717819662900,
+      "value": "                      ",
+      "createdAt": 1720742611319,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 493,
+            "line": 722,
             "character": 0
           },
           "end": {
-            "line": 493,
+            "line": 722,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust.cc"
       }
     },
     {
-      "value": "                                              \n",
-      "createdAt": 1717819661398,
+      "value": "                      asp::CRNJ              const& crn,\n",
+      "createdAt": 1720742270109,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 491,
+            "line": 923,
             "character": 0
           },
           "end": {
-            "line": 491,
+            "line": 923,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/JitterSolveCostFuns.cc"
       }
     },
     {
-      "value": "   \n",
-      "createdAt": 1717819186565,
-      "copyCount": 1,
-      "useCount": 1,
-      "language": "restructuredtext",
-      "createdLocation": {
-        "range": {
-          "start": {
-            "line": 306,
-            "character": 0
-          },
-          "end": {
-            "line": 306,
-            "character": 0
-          }
-        },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/NEWS.rst"
-      }
-    },
-    {
-      "value": "  if (opt.datum_str.empty()) \n    vw_throw(ArgumentErr() << \"Must provide a datum to read a pinhole camera.\\n\");\n",
-      "createdAt": 1717819011265,
+      "value": "    double weight = opt.tri_weight / gsd;\n",
+      "createdAt": 1720742243947,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 1184,
+            "line": 939,
             "character": 0
           },
           "end": {
-            "line": 1184,
+            "line": 939,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/JitterSolveCostFuns.cc"
       }
     },
     {
-      "value": "We prefer to use opt.datum rather than opt.datum_str, but set both.",
-      "createdAt": 1717818822522,
+      "value": "      continue; // GSD calculation failed. Do not use a constraint.\n",
+      "createdAt": 1720742243453,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 496,
-            "character": 66
+            "line": 939,
+            "character": 0
           },
           "end": {
-            "line": 496,
-            "character": 66
+            "line": 939,
+            "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/JitterSolveCostFuns.cc"
       }
     },
     {
-      "value": "    opt.datum.set_well_known_datum(opt.datum_str);\n",
-      "createdAt": 1717818720547,
+      "value": "    double gsd = gsds[ipt];\n",
+      "createdAt": 1720742241935,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 467,
+            "line": 939,
             "character": 0
           },
           "end": {
-            "line": 467,
+            "line": 939,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/JitterSolveCostFuns.cc"
       }
     },
     {
-      "value": "    }\n",
-      "createdAt": 1717803998807,
+      "value": "    // this is in pixel units\n",
+      "createdAt": 1720742241428,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 939,
+            "character": 0
+          },
+          "end": {
+            "line": 939,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/JitterSolveCostFuns.cc"
+      }
+    },
+    {
+      "value": "XYZError",
+      "createdAt": 1720742155941,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 886,
+            "character": 7
+          },
+          "end": {
+            "line": 886,
+            "character": 7
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/JitterSolveCostFuns.cc"
+      }
+    },
+    {
+      "value": "//===================================================================\n",
+      "createdAt": 1720742107728,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 728,
+            "character": 0
+          },
+          "end": {
+            "line": 728,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust_cost_functions.h"
+      }
+    },
+    {
+      "value": "// Add the GCP constraint\nvoid addGcpConstraint(asp::BaBaseOptions     const& opt,\n                      std::set<int>          const& outliers,\n                      vw::ba::ControlNetwork const& cnet,\n                      asp::CRNJ              const& crn,\n                      // Outputs\n                      std::vector<double>    & tri_points_vec,\n                      std::vector<double>    & weight_per_residual, // append\n                      ceres::Problem         & problem) {\n",
+      "createdAt": 1720741922440,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "python",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 0,
+            "character": 0
+          },
+          "end": {
+            "line": 0,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/.muttrc"
+      }
+    },
+    {
+      "value": "xyz_sigma ",
+      "createdAt": 1720741876164,
       "copyCount": 2,
       "useCount": 2,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 240,
-            "character": 0
+            "line": 913,
+            "character": 12
           },
           "end": {
-            "line": 240,
-            "character": 0
+            "line": 913,
+            "character": 22
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/point2dem.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/JitterSolveCostFuns.cc"
       }
     },
     {
-      "value": "      vw::cartography::Datum datum_from_str(opt.datum_str);\n",
-      "createdAt": 1717818564351,
+      "value": "    if (!opt.use_llh_error) \n",
+      "createdAt": 1720741618026,
+      "copyCount": 2,
+      "useCount": 2,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 916,
+            "character": 0
+          },
+          "end": {
+            "line": 916,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/JitterSolveCostFuns.cc"
+      }
+    },
+    {
+      "value": "\n    ceres::CostFunction* cost_function = weightedXyzError::Create(observation, weight);\n",
+      "createdAt": 1720741617194,
+      "copyCount": 2,
+      "useCount": 2,
+      "language": "python",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 0,
+            "character": 0
+          },
+          "end": {
+            "line": 0,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/.muttrc"
+      }
+    },
+    {
+      "value": "    ceres::CostFunction* cost_function;\n    if (!opt.use_llh_error) \n      cost_function = XYZError::Create(observation, xyz_sigma);\n",
+      "createdAt": 1720741613023,
+      "copyCount": 2,
+      "useCount": 2,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 907,
+            "character": 0
+          },
+          "end": {
+            "line": 907,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust.cc"
+      }
+    },
+    {
+      "value": "    Vector3 xyz_sigma   = cnet[ipt].sigma();\n",
+      "createdAt": 1720741588817,
+      "copyCount": 2,
+      "useCount": 2,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 906,
+            "character": 0
+          },
+          "end": {
+            "line": 907,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust.cc"
+      }
+    },
+    {
+      "value": " = new ceres::TrivialLoss();",
+      "createdAt": 1720741535203,
+      "copyCount": 2,
+      "useCount": 2,
+      "language": "python",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 0,
+            "character": 0
+          },
+          "end": {
+            "line": 0,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/.muttrc"
+      }
+    },
+    {
+      "value": "Skip GCPs and height-from-dem points which have their own constraint",
+      "createdAt": 1720741506518,
+      "copyCount": 2,
+      "useCount": 2,
+      "language": "python",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 0,
+            "character": 0
+          },
+          "end": {
+            "line": 0,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/.muttrc"
+      }
+    },
+    {
+      "value": " ||\n        cnet[ipt].type() != vw::ba::ControlPoint::PointFromDem)",
+      "createdAt": 1720741500531,
+      "copyCount": 2,
+      "useCount": 2,
+      "language": "python",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 0,
+            "character": 0
+          },
+          "end": {
+            "line": 0,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/.muttrc"
+      }
+    },
+    {
+      "value": "                              outliers, tri_points_vec, gsds);\n",
+      "createdAt": 1720741487467,
+      "copyCount": 2,
+      "useCount": 2,
+      "language": "python",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 0,
+            "character": 0
+          },
+          "end": {
+            "line": 0,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/.muttrc"
+      }
+    },
+    {
+      "value": "  asp::estimateGsdPerTriPoint(opt.image_files, opt.camera_models, crn, \n",
+      "createdAt": 1720741486959,
+      "copyCount": 2,
+      "useCount": 2,
+      "language": "python",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 0,
+            "character": 0
+          },
+          "end": {
+            "line": 0,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/.muttrc"
+      }
+    },
+    {
+      "value": "  std::vector<double> gsds;\n",
+      "createdAt": 1720741486503,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 495,
-            "character": 60
+            "line": 894,
+            "character": 0
           },
           "end": {
-            "line": 495,
-            "character": 60
+            "line": 894,
+            "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/JitterSolveCostFuns.cc"
       }
     },
     {
-      "value": "   }\n",
-      "createdAt": 1717818542237,
+      "value": "  // Estimate the GSD for each triangulated point\n",
+      "createdAt": 1720741486458,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "python",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 0,
+            "character": 0
+          },
+          "end": {
+            "line": 0,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/.muttrc"
+      }
+    },
+    {
+      "value": "constraint to keep triangulated points close to initial values\n// This does not need a DEM or alignment",
+      "createdAt": 1720741481439,
+      "copyCount": 2,
+      "useCount": 2,
+      "language": "python",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 0,
+            "character": 0
+          },
+          "end": {
+            "line": 0,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/.muttrc"
+      }
+    },
+    {
+      "value": "// Add the constraint to keep triangulated points close to initial values\n// This does not need a DEM or alignment\nvoid addTriConstraint(asp::BaBaseOptions     const& opt,\n                      std::set<int>          const& outliers,\n                      vw::ba::ControlNetwork const& cnet,\n                      asp::CRNJ              const& crn,\n                      // Outputs\n                      std::vector<double>    & tri_points_vec,\n                      std::vector<double>    & weight_per_residual, // append\n                      ceres::Problem         & problem) {\n\n  // Estimate the GSD for each triangulated point\n  std::vector<double> gsds;\n  asp::estimateGsdPerTriPoint(opt.image_files, opt.camera_models, crn, \n                              outliers, tri_points_vec, gsds);\n  \n  int num_tri_points = cnet.size();\n  for (int ipt = 0; ipt < num_tri_points; ipt++) {\n    if (cnet[ipt].type() == vw::ba::ControlPoint::GroundControlPoint ||\n        cnet[ipt].type() == vw::ba::ControlPoint::PointFromDem)\n      continue; // Skip GCPs and height-from-dem points which have their own constraint\n\n    if (outliers.find(ipt) != outliers.end()) \n      continue; // skip outliers\n      \n    double * tri_point = &tri_points_vec[0] + ipt * NUM_XYZ_PARAMS;\n    \n    // The weight must be inversely proportional to the GSD, to ensure\n    // this is in pixel units\n    double gsd = gsds[ipt];\n    if (gsd <= 0) \n      continue; // GSD calculation failed. Do not use a constraint.\n    double weight = opt.tri_weight / gsd;\n  \n    // Use as constraint the initially triangulated point\n    vw::Vector3 observation(tri_point[0], tri_point[1], tri_point[2]);\n\n    ceres::CostFunction* cost_function = weightedXyzError::Create(observation, weight);\n    ceres::LossFunction* loss_function = new ceres::CauchyLoss(opt.tri_robust_threshold);\n    problem.AddResidualBlock(cost_function, loss_function, tri_point);\n    \n    for (int c = 0; c < NUM_XYZ_PARAMS; c++)\n      weight_per_residual.push_back(opt.tri_weight);\n      \n  } // End loop through xyz\n}\n",
+      "createdAt": 1720741471905,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "python",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 0,
+            "character": 0
+          },
+          "end": {
+            "line": 0,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/.muttrc"
+      }
+    },
+    {
+      "value": "bool is_gcp = (cnet[ipt].type() == ControlPoint::GroundControlPoint);",
+      "createdAt": 1720741175630,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "python",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 0,
+            "character": 0
+          },
+          "end": {
+            "line": 0,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/.muttrc"
+      }
+    },
+    {
+      "value": "              // Skip gcp\n",
+      "createdAt": 1720739749877,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 483,
+            "line": 575,
             "character": 0
           },
           "end": {
-            "line": 483,
+            "line": 575,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Core/BundleAdjustUtils.cc"
       }
     },
     {
-      "value": "     if (opt.datum.name() == \"UNKNOWN\")\n",
-      "createdAt": 1717818541737,
+      "value": "      // Skip gcp\n      if (cnet[ipt].type() == ControlPoint::GroundControlPoint)\n        continue;\n",
+      "createdAt": 1720739692985,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 483,
+            "line": 405,
             "character": 0
           },
           "end": {
-            "line": 483,
+            "line": 405,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust.cc"
       }
     },
     {
-      "value": "  //asp::checkDatumConsistency(datum, datum2);\n",
-      "createdAt": 1717818531130,
+      "value": "// but it can catch unreasonable height values for GCP.\n",
+      "createdAt": 1720738387493,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 480,
+            "line": 1915,
             "character": 0
           },
           "end": {
-            "line": 480,
+            "line": 1915,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/BundleAdjustCamera2.cc"
       }
     },
     {
-      "value": "&& opt.datum_str.empty()",
-      "createdAt": 1717818304338,
+      "value": "// Sanity check. This does not prevent the user from setting the wrong datum,\n",
+      "createdAt": 1720738386972,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 482,
-            "character": 55
+            "line": 1914,
+            "character": 0
           },
           "end": {
-            "line": 482,
-            "character": 55
+            "line": 1914,
+            "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_gen.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/BundleAdjustCamera2.cc"
       }
     },
     {
-      "value": "    // TODO(oalexan1): Must do a better check at datum consistency.\n",
-      "createdAt": 1717817931753,
+      "value": "// Sanity check. This does not prevent the user from setting the wrong datum,\n// but it can catch unreasonable height values for GCP.\nvoid checkGcpRadius(vw::cartography::Datum const& datum, \n                    vw::ba::ControlNetwork const& cnet);\n",
+      "createdAt": 1720738374890,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 215,
+            "line": 733,
             "character": 0
           },
           "end": {
-            "line": 215,
+            "line": 733,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_test.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/BundleAdjustCamera.h"
       }
     },
     {
-      "value": "      vw::cartography::Datum datum2;\n      found_datum = asp::datum_from_camera(opt.image_file, opt.cam2_file,\n                                           opt.session2, cam2_session, // may change\n                                            datum2); // output\n      asp::checkDatumConsistency(datum, datum2);\n    }\n",
-      "createdAt": 1717817900598,
+      "value": "// Sanity check. This does not prevent the user from setting the wrong datum,\n// but it can catch unreasonable height values for GCP.\nvoid checkGcpRadius(vw::cartography::Datum const& datum, ControlNetwork const& cnet) {\n",
+      "createdAt": 1720738353781,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 248,
+            "line": 1911,
             "character": 0
           },
           "end": {
-            "line": 248,
+            "line": 1911,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_test.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Camera/BundleAdjustCamera2.cc"
       }
     },
     {
-      "value": "      // Sanity check: both cameras should have the same datum\n",
-      "createdAt": 1717817855390,
+      "value": "// Sanity check. This does not prevent the user from setting the wrong datum,\n// but it can catch unreasonable height values for GCP.\nvoid checkGcpRadius(vw::cartography::Datum const& datum, ControlNetwork const& cnet) {\n  \n  int num_points = cnet.size();\n  for (int ipt = 0; ipt < num_points; ipt++) {\n    if (cnet[ipt].type() != ControlPoint::GroundControlPoint)\n      continue;\n      \n    vw::Vector3 observation = cnet[ipt].position();\n    double thresh = 2e+5; // 200 km\n    if (std::abs(norm_2(observation) - datum.semi_major_axis()) > thresh || \n        std::abs(norm_2(observation) - datum.semi_minor_axis()) > thresh)\n      vw_throw(ArgumentErr() << \"Radius of a ground control point in ECEF differs \"\n              << \"from the datum radii by more than \" << thresh << \" meters.\\n\"\n              << \"Check your GCPs and datum.\\n\");\n  }\n  \n  return;  \n}\n\n",
+      "createdAt": 1720738339669,
       "copyCount": 1,
       "useCount": 1,
       "language": "cpp",
       "createdLocation": {
         "range": {
           "start": {
-            "line": 236,
+            "line": 1234,
             "character": 0
           },
           "end": {
-            "line": 236,
+            "line": 1234,
             "character": 0
           }
         },
-        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/cam_test.cc"
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust.cc"
+      }
+    },
+    {
+      "value": "  if (!opt.gcp_files.empty()) {\n    num_gcp = vw::ba::add_ground_control_points(cnet, opt.gcp_files, opt.datum);\n    checkGcpRadius(opt.datum, cnet);\n    vw::vw_out() << \"Loaded \" << num_gcp << \" ground control points.\\n\";\n  }\n",
+      "createdAt": 1720738130389,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1309,
+            "character": 0
+          },
+          "end": {
+            "line": 1309,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust.cc"
+      }
+    },
+    {
+      "value": "  std::vector<std::string>  gcp_files;\n",
+      "createdAt": 1720737612110,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "cpp",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 52,
+            "character": 0
+          },
+          "end": {
+            "line": 52,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/StereoPipeline/src/asp/Tools/bundle_adjust.h"
+      }
+    },
+    {
+      "value": " Mapproject all at 0.01 m/pixel\nrange=\"1\" # default\nmachine=$(uname -n)\necho $machine\nif [ \"$machine\" == \"pfe20\" ]; then\n  range=\"1 2 3 4\"\nelif [ \"$machine\" == \"pfe22\" ]; then\n  range=\"5 6 7 8\"\nelif [ \"$machine\" == \"pfe23\" ]; then\n  range=\"9 10 11 12\"\nelif [ \"$machine\" == \"pfe24\" ]; then\n  range=\"13 14 15 16\"\nelif [ \"$machine\" == \"pfe25\" ]; then\n  range=\"17 18 19 20\"\nfi\n\nfor i in $range; do \n  f=$(ls icer2_8bit_sub2/left_nav/*tif |grep -v sub2.tif |head -n $i |tail -n 1)\n  g=$(basename $f)\n  # Remove extension\n  g=${g/.tif/}\n  g=$(ls ba_icer_8bit_sub2/run*${g}*.tsai)\n  # replace .tsai with .map.tif\n  h=${g/.tsai/.map.tif}\n  s=StereoPipeline-3.4.0-alpha-2023-12-23-x86_64-Linux\n  export PATH=$HOME/projects/BinaryBuilder/$s/bin:$PATH #build\n  mapproject --tr 0.01 --tile-size 512 --processes 4 \\\n    ref/ground_fixed.tif $f $g $h\ndone\n  \n",
+      "createdAt": 1720733141412,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1228,
+            "character": 1
+          },
+          "end": {
+            "line": 1258,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/mgru-viper-asp/mgru_viper_navcam_recipe.sh"
+      }
+    },
+    {
+      "value": "ba_icer_8bit_sub2/run",
+      "createdAt": 1720732678413,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1221,
+            "character": 5
+          },
+          "end": {
+            "line": 1221,
+            "character": 26
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/mgru-viper-asp/mgru_viper_navcam_recipe.sh"
+      }
+    },
+    {
+      "value": "# Mapproject all at 0.01 m/pixel\nrange=\"1\" # default\nmachine=$(uname -n)\necho $machine\nif [ \"$machine\" == \"pfe20\" ]; then\n  range=\"1 2 3 4\"\nelif [ \"$machine\" == \"pfe22\" ]; then\n  range=\"5 6 7 8\"\nelif [ \"$machine\" == \"pfe23\" ]; then\n  range=\"9 10 11 12\"\nelif [ \"$machine\" == \"pfe24\" ]; then\n  range=\"13 14 15 16\"\nelif [ \"$machine\" == \"pfe25\" ]; then\n  range=\"17 18 19 20\"\nfi\n\nfor i in $range; do \n  f=$(ls icer2/left_nav/*tif |grep -v sub |head -n $i |tail -n 1)\n  g=$(basename $f)\n  # Remove extension\n  g=${g/.tif/}\n  g=$(ls ba_icer/run*${g}.tsai)\n  # replace .tsai with .map.tif\n  h=${g/.tsai/.map.tif}\n  s=StereoPipeline-3.4.0-alpha-2023-12-23-x86_64-Linux\n  export PATH=$HOME/projects/BinaryBuilder/$s/bin:$PATH #build\n  mapproject --tr 0.01 --tile-size 512 --processes 4 \\\n    ref/ground_fixed.tif $f $g $h\ndone\n  \n",
+      "createdAt": 1720732612069,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1228,
+            "character": 0
+          },
+          "end": {
+            "line": 1228,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/mgru-viper-asp/mgru_viper_navcam_recipe.sh"
+      }
+    },
+    {
+      "value": "theia_icer2_8bit_sub2/image_list.txt ",
+      "createdAt": 1720732317744,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1209,
+            "character": 49
+          },
+          "end": {
+            "line": 1209,
+            "character": 49
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/mgru-viper-asp/mgru_viper_navcam_recipe.sh"
+      }
+    },
+    {
+      "value": "# https://stereopipeline.readthedocs.io/en/latest/tools/rig_calibrator.html\nfloat_cameras=\"left_nav right_nav\" # this is only for orientations\nfloat_intr=\"\" # not floating intrinsics\nfloat_depth=\"\" # no depth clouds to float\nrig_calibrator                                \\\n    --rig_config mgru_rig.txt                 \\\n    --use-initial-rig-transforms              \\\n    --nvm theia_slog/cameras.nvm              \\\n    --camera_poses_to_float \"$float_cameras\"  \\\n    --intrinsics_to_float \"$float_intr\"       \\\n    --depth_to_image_transforms_to_float      \\\n      \"$float_depth\"                          \\\n    --num_overlaps 0                          \\\n    --bracket_len 0.1                         \\\n    --num_iterations 100                      \\\n    --calibrator_num_passes 2                 \\\n    --out_dir rig_out_slog                    \\\n    --save_matches                            \\\n    --save_pinhole_cameras\n\n",
+      "createdAt": 1720732196453,
+      "copyCount": 1,
+      "useCount": 1,
+      "language": "shellscript",
+      "createdLocation": {
+        "range": {
+          "start": {
+            "line": 1201,
+            "character": 0
+          },
+          "end": {
+            "line": 1201,
+            "character": 0
+          }
+        },
+        "uri": "file:///home/oalexan1/projects/mgru-viper-asp/mgru_viper_navcam_recipe.sh"
       }
     }
   ]
