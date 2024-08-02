@@ -37,9 +37,9 @@ Style "opera"   Icon opera.xpm
 Style "*emacs"   Icon XEmacs.xpm
 
 # Milliseconds
-EdgeResistance 250
-Style * EdgeMoveDelay 250
-Style * EdgeMoveResistance 250
+EdgeResistance 5000
+Style * EdgeMoveDelay 5000
+Style * EdgeMoveResistance 5000
 
 WindowFont   -*-fixed-bold-*-*-*-15-*-*-*-*-*-*-* 
 IconFont   -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
@@ -71,8 +71,8 @@ AddToFunc InitFunction    "I" Module FvwmPager  *
  
 #AddToFunc InitFunction "I" Exec $HOME/bin/fvwm_dual_monitor.pl& # uncomment when going back to work
 AddToFunc InitFunction "I" Exec xclock -d -twentyfour -bg black -fg green -brief -geo 150x50-0+0 &
-AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 103x53+0+0 --tab --tab &
-AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 103x53+960+0 --tab --tab &
+AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 150x85+0+0 --tab --tab -- zsh &
+AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry 150x85+960+0 --tab --tab -- zsh &
 AddToFunc InitFunction "I" Module FvwmPager  *
 #AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry--geometry 103x55+1920+1080  -- zsh &
 #AddToFunc InitFunction "I" Exec /usr/bin/gnome-terminal --geometry--geometry 103x55+2890+1080  -- zsh &
@@ -117,7 +117,7 @@ DesktopName 3 Desk 3
 #*FvwmPager: Label * 
  
 ######################### Keyboard binding###########################
-Key F1    A   C   Exec /usr/bin/gnome-terminal --geometry 133x79+0+0 --tab --tab -- zsh & 
+Key F1    A   C   Exec /usr/bin/gnome-terminal --geometry 150x85+0+0 --tab --tab -- zsh & 
 Key F1    A   M   Exec /usr/bin/gnome-terminal --geometry--geometry 81x40+0+0  -- zsh & 
 Key F3    A   C   Exec  ~/projects/VSCode-linux-x64/bin/code-insiders ~/ &
 Key F4    A   C   Exec  firefox&

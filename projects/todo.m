@@ -1,4 +1,59 @@
+//Look at David's document. Do pitch jitter.
+
+// Do toe-in linescan frame vertically.
+
+// Do linescan linescan.
+
+// Look at size of ortho. For WV-3 images must be 13 km?
+
+// One potential option for a future experiment would be to selectively remove some frames from one frame detector sequence (and potentially some corresponding columns in the linescan detector), and see how well we can recover the "true" orientation with and without rig constraint
+
+// OK.  For now, maybe go to 5 or 10° convergence angle and low altitude to simplify?
+
+// Will be useful to use this setup to explore value of 2 vs 3 in-track views with and without rig constraint.  A key question in my mind, and important to guide STV architecture.
+
+
+STV work
+  
+// Finished implementing and testing the solver modeling a linescan + frame camera rig + jitter. This was a large amount of new work. https://stereopipeline.readthedocs.io/en/latest/tools/jitter_solve.html#jitter-rig 
+  
+// Fixes in Ames Stereo Pipeline for number of interest points from disparity, 3D CRS, large disparity search range, control network loading in bundle adjustment.
+
+Ran experiments with a rig consisting of one wide linescan sensor and (a) a single centered frame sensor and (b) two frame sensors, one on each side of the linescan sensor. The conclusions are that modeling the rig improves the robustness of the solution when the data
+coverage is weak, and the two frame sensors on the sides of the linescan sensor improve the control of the yaw angle.
+
+// Improved results for the KH-7 satellites if using the linescan model rather than the RPC model, together with the recently developed ability to add ground control points from a terrain model.
+
+Rename nadirpinhole to orbitalpinhole, but leave the current name for backward compatibility.
+
+theia_sfm: Make the produced nvm file have the images in the order they were read.
+  
+stereo_gui: 
+  - Fix panning
+  - Do not quit when GCP are not saved 
+
+// Stereo Gui had a bug where if I have unsaved GCPs and I clicked exit, the prompt that suggested not quitting caused the program to exit if "no" was selected. I didn't read the prompt to closely, but I'd expect the program to exit if "yes" was selected.
+
+// Stereo Gui did not notify the user if IP points were saved in a pop up like saving the GCPs did. Stereo Gui should be consistent here.
+
+// Stereo Gui IP points saving is different than saving GCPs. I had to repeat about 20 minutes of work as I didn't notice this earlier. The UI should have one button to save GCPs and IPs unless there is some situation where you really need to do one or the other.
+// It was difficult to pan around the images in Stereo Gui even with middle click and arrow keys didn't seem to do anything.
+  
+cam_gen must always accept the --distortion field.
+
+Remove duplicated nvm code
+
+Switch to the kdtree flann implementation with a warning, if having more than 15,000 interest points.
+
+KH-7 linescan example 
+
+Fix warnings in VW and ASP code. Force recompilation for that.
+
+dem_mosaic modularization. 
+
 CSM work
+
+June, July, 2024
 
  - Made the cameras be loaded and saved in parallel in bundle adjustment. This sped up loading by a factor of 4.
  
@@ -10,6 +65,37 @@ CSM work
    with a sparse solver.
    
   - Worked on evaluation of the CTX stereo DEMs to MOLA. 
+  
+  - Worke on handling user bug reports and maintanence for the Ames Stereo Pipeline.
+  
+  - Made a new Stereo Pipeline release incorporating the latest ISIS and many improvements in ASP itself.
+  
+  - Added to the ASP documentation an example of solving for jitter with Kaguya images.
+  
+  - Made a thorough study of CTX distortion and jitter, and comparison with HiRISE. It appears that the CTX lens distortion is good, though there still small scale factor difference
+  between these two sensors, which could be an issue with either one.
+
+ - Much maintanance work in ASP
+         
+Here is what I sent to Ross in April 2024:
+ 
+
+   Added a PushFrame sensor to CSM, along the lines of the existing Linescan sensor, to support the WAC camera. Custom code was needed. Jointly developed and tested by USGS and Ames staff.
+
+   Replaced the CSM Linescan ground-to-image algorithm with a faster and more reliable implementation which fixed some cases when it was failing.
+   Much testing and refinements for the CSM SAR sensor.
+
+   Added a standalone program that is shipped with the USGSCSM library which can interface with it and expose some of its functionality to the user.
+
+   Worked with USGS staff to fix and validate logic to ingest Mars MSL ground-level images to be used with the CSM Frame sensor. 
+
+   Added to ASP the ability to use the CSM Linescan sensor for Earth satellites, namely for Maxar Worldview and Airbus Pleiades satellites.
+
+   Added to ASP a jitter solver for CSM Linescan cameras. Validated and documented its use with CTX Mars cameras and WorldView and Pleiades Earth cameras.
+
+   Implemented uncertainty propagation for Linescan CSM sensors at each pixel. It starts with the uncertainties in satellite positions and orientations, propagates them to the ground, through the triangulation operation, and creates raster horizontal and vertical uncertainty images in one-to-one correspondences with a produced DEM. Currently tied to the Maxar WorldView CSM sensor, which is the only one for which input uncertainties exist, but can be easily extended to any Linescan CSM sensor.
+
+   Updates to the ASP point2las tool allow improved export of point clouds to the LAS file format.
         
 Verbosity switch for ASP (including progress bar). Will adjust internally the wvrc.
 
@@ -188,10 +274,10 @@ Feb: STV
 March: 0.5 STV, 0.5 VIPER
 April: 0.5 VIPER, 0.5 STV
 May: STV
-Jun: 0.5 Vacation, 0.5 USGS
-Jul: USGS
+Jun: 1.0 USGS
+Jul: 0.5 USGS, 0.5 STV
 Aug: STV
-Sep: 0.5 STV, 0.5 Vacation
+Sep: 1.0 Vacation
 
 CSM work:
 
