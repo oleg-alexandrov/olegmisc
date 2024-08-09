@@ -1,7 +1,17 @@
 #!/usr/bin/env python
 
+# Sanity checks for number of arguments
+import sys, os
+if len(sys.argv) != 3:
+    print('Usage: wrap_quoted_text.py tag work_dir')
+    sys.exit(1)
+    
 # The tag that will identify the text to process
-tag = 'xwr'
+#tag = 'xwr'
+# Let tag by the first argument
+tag = sys.argv[1]
+# Let the work directory by the second argument
+os.chdir(sys.argv[2])
 
 # Search the current directory for a file and a block of lines in that file
 # having the text in the tag. Remove any quotes, wrap the lines to desired

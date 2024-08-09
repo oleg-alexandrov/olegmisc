@@ -83,6 +83,7 @@
         "feedstocks",
         "FLANN",
         "frobenius",
+        "fullres",
         "gdal",
         "gdalinfo",
         "geoheader",
@@ -106,6 +107,7 @@
         "Imagers",
         "inpainting",
         "kaguya",
+        "keypoint",
         "keypoints",
         "Lambertian",
         "latexpdf",
@@ -113,6 +115,7 @@
         "linescan",
         "longlat",
         "lonlat",
+        "lowres",
         "lunokhod",
         "mapproj",
         "mapproject",
@@ -152,6 +155,7 @@
         "Pixmap",
         "pointmap",
         "preconditioner",
+        "preconfigured",
         "predefines",
         "preprocess",
         "prerasterize",
@@ -168,8 +172,10 @@
         "Rasterizing",
         "redrawings",
         "Regridding",
+        "Reproj",
         "reproject",
         "reprojection",
+        "rfne",
         "Rodrigues",
         "rubberband",
         "scatterplot",
@@ -193,6 +199,7 @@
         "Theia",
         "thresholded",
         "thresholding",
+        "TOPO",
         "Traj",
         "tsai",
         "Unalign",
@@ -315,6 +322,7 @@
     "**/Desktop/**": true
     },
     "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
-    "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false
+    "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
+    "update.showReleaseNotes": false
  	
 }

@@ -15,3 +15,4 @@ for pid in $(echo $pids | perl -p -e "s#\s+#\n#g"); do
     echo "kill -9 $pid"
     kill -9 $pid
 done
+

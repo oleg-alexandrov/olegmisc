@@ -23,7 +23,6 @@ sub set_path{
 
 sub maybe_call_itself_on_remote_host{
 
-  #print "\nDirectory: " . getcwd . "\n";
   print $0 . " " . join(" ", @ARGV) . "\n\n";
 
   my @args = @_;
@@ -48,10 +47,11 @@ sub maybe_call_itself_on_remote_host{
 
     # Use pwd -L, this avoids dereferencing sym links.
     my $currDir=qx(/bin/pwd -L);
-    $currDir =~ s/\s//g;
+    $currDir =~ s/\s*$//g; # wipe trailing white space
 
     my $cmd = "ssh $r_u_host 'source .bashenv; nohup nice -20 " . basename($0) . " --dir " .
        get_path_in_home_dir($currDir) . " " . join(" ", @args) . "' 2>/dev/null";
+    
     print qx($cmd) . "\n";
     exit(0);
   }
@@ -93,7 +93,7 @@ sub get_path_in_home_dir{
   # For paths in current directory, use pwd,
   # this avoids dereferencing sym links.
   my $currDir=qx(/bin/pwd -L);
-  $currDir =~ s/\s//g;
+  $currDir =~ s/\s$//g; # wipe trailing white space
 
   # The full path. Don't use File::Spec yet as that one
   # may dereference external links.
@@ -103,7 +103,7 @@ sub get_path_in_home_dir{
   }else{
     $path = $currDir . '/' . $relpath;
   }
-
+  
   my $parent_path = $path;
   $parent_path =~ s/\/*\s*$//g;
   if ($parent_path =~ /(^.*)\//){
@@ -165,15 +165,7 @@ sub generate_random_string{
 }
 
 sub get_home_dir{
-  my $home;
-  my $machine = qx(uname -n);
-  #if ($machine =~ /pfe/){
-  #  $home = "/nobackupnfs2/" . qx(whoami);
-  if ($machine =~ /zula/){
-    $home = "/media/raid/oleg";
-  }else{
-    $home = $ENV{'HOME'};
-  }
+  my $home = $ENV{'HOME'};
   $home =~ s/\s*$//g;
   return $home;
 }

@@ -9,15 +9,17 @@ require 'utils.pl';
 
 MAIN:{
 
-  # Generate and run the command: rsync -avz user@machine:path/to/currDir/file path/to/currDir/file
-  # or                            rsync -avz dir/file user@machine:/path/to/currDir/dir
+  # Generate and run the command: 
+  #  rsync -avz user@machine:path/to/currDir/file path/to/currDir/file
+  # or:
+  #  rsync -avz dir/file user@machine:/path/to/currDir/dir
 
   my $homeDir = get_home_dir();
   
   # Pass the arguments starting with dash to rsync
   my $opts = "";
   my @other;
-  foreach my $arg (@ARGV){
+  foreach my $arg (@ARGV) {
     if ($arg =~ /^\-/){
       $opts .= " $arg";
     }else{
@@ -67,13 +69,17 @@ MAIN:{
       my $destDir = get_home_dir() . "/" . get_dirname($file);
       qx(mkdir -p $destDir);
 
+      # Escape any spaces
+      $file =~ s/ /\\ /g;
+      $destDir =~ s/ /\\ /g;
+      
       # Stop complaining about untrusted host
       my $cmd = "rsync -P -avz $opts -e 'ssh $from -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' :$file $destDir 2>/dev/null";
       print "$cmd\n";
       system($cmd);
     }
 
-  }elsif ($ARGV[$numArgs - 1] =~ /\@/){
+  } elsif ($ARGV[$numArgs - 1] =~ /\@/) {
     # Copy from current directory on local machine to same directory
     # on remote machine
     my $to = splice @ARGV, $numArgs - 1, 1;
@@ -109,7 +115,6 @@ MAIN:{
 
       print "$cmd\n";
       system($cmd);
-      #print qx($cmd) . "\n";
     }
   }else{
     print "Invalid usage: Must copy either from or to a remote machine\n";
