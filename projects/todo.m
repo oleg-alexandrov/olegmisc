@@ -1,13 +1,11 @@
-STV work
-  
-// Finished implementing and testing the solver modeling a linescan + frame camera rig + jitter. This was a large amount of new work. https://stereopipeline.readthedocs.io/en/latest/tools/jitter_solve.html#jitter-rig 
-  
-// Fixes in Ames Stereo Pipeline for number of interest points from disparity, 3D CRS, large disparity search range, control network loading in bundle adjustment.
+Archive latest Kaguya and other datasets
 
-Ran experiments with a rig consisting of one wide linescan sensor and (a) a single centered frame sensor and (b) two frame sensors, one on each side of the linescan sensor. The conclusions are that modeling the rig improves the robustness of the solution when the data
-coverage is weak, and the two frame sensors on the sides of the linescan sensor improve the control of the yaw angle.
+Clean up and archive the beehive data. 
 
-// Improved results for the KH-7 satellites if using the linescan model rather than the RPC model, together with the recently developed ability to add ground control points from a terrain model.
+Archive a good bag with bumble, having nav cam, sci cam.
+Archive recent SfS and CTX data in ~/projects
+
+Ship all prerequisites for sparse_disp and wipe that chapter on how to prepare them.
 
 Rename nadirpinhole to orbitalpinhole, but leave the current name for backward compatibility.
 
@@ -28,64 +26,22 @@ cam_gen must always accept the --distortion field.
 
 Remove duplicated nvm code
 
-Switch to the kdtree flann implementation with a warning, if having more than 15,000 interest points.
-
 KH-7 linescan example 
 
 Fix warnings in VW and ASP code. Force recompilation for that.
 
 dem_mosaic modularization. 
-
-        
+       
 Verbosity switch for ASP (including progress bar). Will adjust internally the wvrc.
 
 Must add this to the accomplishments:
 
 Made sat_sim create a rig with specified offsets between the sensors in the sensor plane and between footprints on the ground (at nadir). The resulting orientations are computed automatically. This rig will then be used to produce all the cameras and images.
 
-
 Must support distortion in sat_sim and in jitter solve with frame cameras.
 
 Must throw an error!
 --num-matches-from-disparity does not work with --left-image-crop-win
-
-STV: 
-
-Performed a large-scale experiment with 1000 SkySat images (3 rigs with 3 sensors each). Validated that accpetable results were produced. Found out that merely adding more datasets does not improve the absolute geolocation accuracy, as each of these datasets has its own systematic bias, which does not get averaged away. Additional alignment to the ground is still necessary after a self-consistent solution is produced.
-
-Made bundle_adjust export CSM Frame camera information to the NVM format used by rig_calibrator. This allows modeling the rig constraint for SkySat images.
-
-Ensured that the rig_calibrator, ASP, and CSM are in full agreement when it comes to the radial-tangential lens distortion model and that conversions are handled properly. All these are separate implementations so this needed some work.
-
-Validated the bundle_adjust versatility on a collection of aerial images with very strong distortion, using our internal RPC (ratio of polynomials) distortion model (this not a usual model in the computer vision community). The results were very good.
- 
-Many improvements to the rig calibration software to have it handle orbital images.
-Addressed issues: ground counstraints, filtering out outliers consistent with bundle_adjust, constrain rotation and/or translation of rig transforms.
-
-Validated on a large SkySat set (900 images, split among 3 sensors and 3 perspectives for each) that these can be fit on a rig using our rig calibrator program. SkySat does not assume all images on the rig are acquired simultaneously, so this was a good test for this feature of our software.
-
-Added the ability to create simulated images as if produced with a rig.
-The rig can have a mix of linescan and frame cameras.
-// https://stereopipeline.readthedocs.io/en/latest/tools/sat_sim.html#modeling-a-rig
-
-Added ability to model acquistion time along the oribit in the satellite simulator,
-for frame and linescan img ages. Creation time is saved as part of frame camera
-file name and in the metadata of the linescan images.
-// https://stereopipeline.readthedocs.io/en/latest/tools/sat_sim.html#modeling-time
-
-Found a problem in the CSM model implementation when it comes to handling time. A fix
-was accepted by the upstream project.
-
-Added the ability to create camera files given longitude, latitude, height, and roll, pitch, yaw. This is useful for creating cameras based on measurments from an aircraft.
-// https://stereopipeline.readthedocs.io/en/latest/tools/cam_gen.html#cam-gen-extrinsics
-
-Moved rig_calibrator to the ASP repository (it was originally a codebase in the context of indoor robotics). This needed refactoring and integration work.
-
-Added to the jtiter solver the ability to model a set of rigs, with each rig having a linescan sensor and which can also have other combinations of linescan and frame sensors. This was a significant amount of new software.
-
-Validated in a simple experiment that a rig setup improves the control of yaw, as compared to sensors not being tied by a rig constraint. Will research this more going forward.
-
-Added a tool that can greatly help solve  for lens distortion that manifests itself as large horizontal warping in the  DEM. https://stereopipeline.readthedocs.io/en/latest/tools/dem2gcp.html#dem2gcp 
 
 MPR
 
