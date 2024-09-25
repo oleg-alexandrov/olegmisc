@@ -11,9 +11,9 @@ srand(time|$$);
 @a = <>;
 
 # Get random lines, write 'em out, mark 'em done.
-while ( @a ) {
-$choice = splice(@a, rand @a, 1);
-print $choice;
+while (@a) {
+  $choice = splice(@a, rand @a, 1);
+  print $choice;
 }
 
 

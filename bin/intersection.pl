@@ -13,10 +13,10 @@ MAIN:{
   my $file1 = shift @ARGV;
   my $file2 = shift @ARGV;
 
-  my $res1 = qx(source $ENV{HOME}/.bashenv; gdalinfo $file1);
+  my $res1 = qx(gdalinfo $file1);
   my ($lx1, $ly1, $ux1, $uy1) = parse($res1);
 
-  my $res2 = qx(source $ENV{HOME}/.bashenv; gdalinfo $file2);
+  my $res2 = qx(gdalinfo $file2);
   my ($lx2, $ly2, $ux2, $uy2) = parse($res2);
 
 #   print "$lx1 $ly1 $ux1 $uy1\n";

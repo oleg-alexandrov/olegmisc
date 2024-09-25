@@ -300,7 +300,7 @@ Mouse 3 R C Module FvwmPager -transient
 ########################  Menus ##############################
 AddToMenu Programs   "+++Programs+++"   Title
 +   ""   Nop
-+   "xterm"   Exec exec xterm -bg black -fg white & 
++   "xterm"   Exec exec xterm -bg black -fg white -fa 'Monospace' -fs 14&
 +   ""   Nop
 +   "gnome-terminal"   Exec exec /usr/bin/gnome-terminal  --geometry 103x55+0+0  -- zsh & 
 +   ""   Nop
