@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Plot one column vs another column
+# Plot indices vs each column
 
 import sys, os, re
 import matplotlib.pyplot as plt
@@ -27,7 +27,11 @@ for line in open(filename, 'r'):
             Y.append(float(s))
         count += 1
 
-plt.plot(X, Y, style)
+# Let I be just the indices from 0 to len(X) - 1
+I = range(len(X))
+plt.plot(I, X, 'b')
+plt.plot(I, Y, 'r')
+
 plt.show()
 
 
