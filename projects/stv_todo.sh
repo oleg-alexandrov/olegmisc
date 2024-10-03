@@ -1,3 +1,12 @@
+# STV work: September 2024
+
+# Validated (in an unrelated project) the jitter solver developed partially
+# under STV for a set of 1000 very large LRO NAC Lunar linescan images close to
+# the South Pole. The solver was able to solve for the jitter successfully and
+# bring down across the board coregistration errors relative to the ground for
+# the whole set, and intrinsic triangulation error for stereo pairs. This is a
+# sanity check for robustness and functioning on the large scale.
+
 # David's notes
 # -Just got email from Teledyne on their latest TDI linescan detector offerings.
 # - But if the "cross-talk" width near the outer edges of the input images with different scan azimuths is 2x the jitter wavelength, would that be enough? 

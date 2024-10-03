@@ -1,13 +1,10 @@
+# Make jitter solve use the option --mapproj-dem. Very useful with LRO NAC.
+
 #See point2dem issues in David's email in my work inbox. 
 
+# Implement point2dem with --min-count (per output grid cell).
+
 # Why does jitter_solve and other tools start with 8 threads?
-
-Archive latest Kaguya and other datasets
-
-Clean up and archive the beehive data. 
-
-Archive a good bag with bumble, having nav cam, sci cam.
-Archive recent SfS and CTX data in ~/projects
 
 Ship all prerequisites for sparse_disp and wipe that chapter on how to prepare them.
 
