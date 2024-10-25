@@ -1,3 +1,20 @@
+# FY25 plan
+
+Oct 1 - 15 OSTFL, 16 - 30 STV
+November: STV
+December: LuNaMaps
+January: STV
+Feb 1 - Feb 14 LunaMaps
+Feb 15 - Feb 19 CSM
+Feb 20 - Feb 30: STV
+March 1 - 20 STV, 21 - 30 CSM
+April: 0.5 LunaMaps, 0.5 OSTFL
+May: all CSM
+June: half CSM, half vacation
+July: all STV
+Aug: all STV
+Sept: half STV, half vacation
+
 # STV work: September 2024
 
 # Validated (in an unrelated project) the jitter solver developed partially

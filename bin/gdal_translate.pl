@@ -16,7 +16,7 @@ MAIN:{
   my $cmd = join(" ", @ARGV);
   $cmd =~ s/://g; # rm stray chars
   my $file = "";
-  if ($cmd =~ /([^\s]*\.(?:ntf|tif|cub|vrt|jpg|png))/i){
+  if ($cmd =~ /([^\s]*\.(?:ntf|nitf|tif|cub|vrt|jpg|png))/i){
     $file = $1;
   }else{
     print "Could not match file!\n";

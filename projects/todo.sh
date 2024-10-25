@@ -1,5 +1,3 @@
-# Make jitter solve use the option --mapproj-dem. Very useful with LRO NAC.
-
 #See point2dem issues in David's email in my work inbox. 
 
 # Implement point2dem with --min-count (per output grid cell).

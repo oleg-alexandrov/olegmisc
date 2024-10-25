@@ -1,6 +1,31 @@
 # See the OSTFL document in my ASP Google drive.
 # See the FY25 plan in the same place.
 
+# Task 1: Maintenance
+
+This proposal has allowed ASP to be actively maintained. Issues raised on the mailing
+list are prompty addressed, bugs fixed, and documentation updated as need be. 
+
+# Task 2: Software Release
+
+Each year a new release is being produced. The release is tested on a regression test suite that consists variety of datasets and scenarios, whose numbers grows as more functionality is added. All changes and additions to the software are noted in the release notes and the documentation is updated. Each day a new build is published, after compiling the latest code and running it through the regression test suite. 
+
+# Task 3: Tutorials
+
+The ASP documentation is being updated with detailed examples for how to use the tools in various scnearios that we support. The commands are listed, together with things to note, illustrations of output, and links to other relevant sections.
+
+To go into more detail, many examples were added for how to use the bundle_adjust, jitter_solve, and parallel_stereo programs. Many existing examples were also updated and illustration added.
+
+Documentation:
+
+https://stereopipeline.readthedocs.io/en/latest/tools/bundle_adjust.html
+https://stereopipeline.readthedocs.io/en/latest/tools/jitter_solve.html
+https://stereopipeline.readthedocs.io/en/latest/examples.html#stereo-processing-examples
+https://stereopipeline.readthedocs.io/en/latest/examples.html#sfm-examples-using-a-robot-rig
+https://stereopipeline.readthedocs.io/en/latest/sfm.html
+
+Did Shashank do any work here?
+
 # Task 4: Improvements
 
 # This task contains seven sub-tasks, each of which corresponds to an effort of
@@ -9,7 +34,6 @@
 # development tasks that independently are small, but in the aggregate,
 # represent general improvements for users of the software suite, making it more
 # useful to a greater number of people.
-
 
 # Task 4a: Error Estimate Improvement One of the most frequently requested
 # features in ASP is robust, per-pixel error estimates for output products.
@@ -24,6 +48,23 @@
 # series, filling an important gap identified in the Surface Topography and
 # Vegetation mission incubation study white paper (STV Incubation Study Team
 # 2020). 
+
+Task 4a: 
+
+Uncertainty estimate errors implemented. The input camera covariances get propagated
+to the output point cloud and DEM. The input covariances can either be read automatically
+from the vendor-provided camera model files, or specified by the user as specific values.
+This works with the stereo and bundle adjustment tools.
+
+Detailed documentation added at:  
+
+- https://stereopipeline.readthedocs.io/en/latest/error_propagation.html
+- https://stereopipeline.readthedocs.io/en/latest/tools/bundle_adjust.html#error-propagation
+
+
+Added to bundle_adjust and jitter_solve the option --camera-position-uncertainty, in units of meter, that allows the user to specify how much camera centers can move. Added to both tools the option --heights-from-dem-uncertainty, in units of meter, for when an external DEM is used as a constraint.
+
+Documentation: https://stereopipeline.readthedocs.io/en/latest/tools/bundle_adjust.html#error-propagation
 
 # Task 4b: Improvements in output point clouds The products that ASP
 # traditionally creates are point clouds in a custom 4-band TIFF format, gridded
@@ -62,6 +103,23 @@
 # involving stereo photogrammetry vs. lidar performance for terrain mapping
 # across the Earth’s diverse landscapes.
 
+Task 4b: Moved from the deprecated LibLAS library to the PDAL library for manipulating LAS files. Contributed to the PDAL library documentation and examples for how to process clouds in streaming mode.
+
+Added the ability to filter point clouds using varous outlier removal schemes before saving them to LAS.
+
+Added the ability to export to LAS the triangulation error of point clouds produced by ASP. 
+
+Added the ability to export the image intensity (from the left image) to the LAS file, alongside the triangulated points.
+
+Added the ability to export the horizontal and vertical components of uncertainty
+from the point cloud to the LAS file.
+
+The same approach can be easily extended going forward for any other bands the user requests.
+
+Documentation: 
+
+https://stereopipeline.readthedocs.io/en/latest/tools/point2las.html
+
 # Task 4c: Alignment Improvements ASP provides the widely used pc align tool
 # (Beyer et al. 2014; Shean et al. 2016), which can align (or co-register) two
 # point clouds, whether they are in the ASP point cloud format, raster DEMs, CSV
@@ -90,6 +148,8 @@
 # approaches, and we will integrate these approaches to improve co-registration
 # performance. We will also improve current approaches to detect input point
 # cloud density, and automatically select optimum processing options. 
+
+# TODO(oalexan1): Must add alignment algorithms to pc_align.
 
 # Task 4d: Bundle Adjustment Improvements ASP has a powerful set of tools for
 # performing bundle adjustment to collectively optimize position and pose
@@ -120,6 +180,28 @@
 # possible, so the user will be presented with a limited set of well-documented
 # options for high-level control. Beyer et al. 11 Improving and Sustaining ASP
 
+Task 4d: A rig calibrator program was implemented. It was thoroughly validated
+with a 3-camera rig for a robot (Astrobee, including a modeling depth sensor),
+a satellite 3-camera rig (Planet SkySat), and a VIPER rover prototype (stereo
+rig). 
+
+A separate ASP tool for solving for jitter also implements rig constraint (for a mix of linescan and frame cameras). The satellite simulator program in ASP supports creating images with a rig constraint.
+
+Added to the bundle adjustment program the abiliity to divide the cameras
+into groups, by sensor, and during optimization, share the intrinsics of the
+cameras in the same group. For each group can specify which intrinsics to share
+or keep fixed.
+
+Added the ability to constrain the cameras to a reference DEM during bundle adjustment with a user-specified uncertainty, measured in meters.
+
+Documentation:
+
+https://stereopipeline.readthedocs.io/en/latest/tools/rig_calibrator.html
+https://stereopipeline.readthedocs.io/en/latest/tools/jitter_solve.html
+https://stereopipeline.readthedocs.io/en/latest/tools/sat_sim.html#sat-sim-rig
+https://stereopipeline.readthedocs.io/en/latest/bundle_adjustment.html#refining-the-intrinsics-per-sensor
+https://stereopipeline.readthedocs.io/en/latest/bundle_adjustment.html#using-the-heights-from-a-reference-dem
+
 # Task 4e: Correlation Improvements from Image Texture As users continue to
 # apply ASP to different satellite data sources, they are increasingly
 # interested in more automated measures of stereo correlation performance across
@@ -136,6 +218,11 @@
 # metrics could also be exported as point cloud attributes in task 4b for
 # subsequent filtering and processing steps. 
 
+Task 4e: Added a metric to measure the reliability of stereo correlation.
+The metric is the discrepancy between left-to-right and right-to-left correlation,
+which grows with correlation uncertainty. Option name is "--save-left-right-disparity-difference", and is documented in 
+https://stereopipeline.readthedocs.io/en/latest/stereodefault.html
+
 # Task 4f: Multi-band Improvements The ASP support for multi-band images is
 # currently limited to a maximum of 6 bands. This task will remove this
 # limitation so that multispectral images with more bands can be processed using
@@ -145,6 +232,23 @@
 # WorldView-2/3). In a related effort, we will also implement ASP support for
 # radiometric correction steps during multi-threaded orthorectification
 # (mapproject utility) using image metadata (e.g., gain, offset).
+
+Increased the number of bands in ASP from 6 to 12. This is enough to handle
+multi-spectral images. 
+
+ASP can now produce stereo terrain from any band (channel) of a multi-spectral images.
+The user can specify the band to use with the --band option.
+
+# TODO(oalexan1): Check how this works out with mapprojection.
+
+# TODO(oalexan1): Implement gain and offset in mapprojection?
+
+# TODO(oalexan1): Explain how later the individual bands can be stacked.
+# It is not practical to have dem_mosaic natively support multiple bands,
+# as this would result in a large code change and for the moment this feature
+# is not something users ask for. The ability to invoke the tool multiple
+# times with separate bands, and then stack the bands accomplishes the same
+# goal, with a little more user effort.
 
 # Task 4g: Adaptive Kernel Improvements When ASP performs stereo correlation it
 # uses a fixed kernel size to map disparity across the entire intersecting
@@ -166,3 +270,12 @@
 # related algorithms to implement an enhanced, efficient and multi-threaded
 # adaptive correlation kernel approach in ASP to improve performance across all
 # supported input image sources and landscapes.
+
+Task 4g: Added the Multi-Scale-Multi-Window (MSMW) algorithm to ASP. It implements
+an adaptive multi-scale correlation kernel. The algorithm is documented at:
+https://stereopipeline.readthedocs.io/en/latest/stereo_algorithms.html#msmw
+
+Task 5: Management
+
+Ross fills this in.
+
