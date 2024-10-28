@@ -257,13 +257,6 @@ def parseFunctions(text):
             print("Duplicate function name: " + fname)
             sys.exit(1)
         
-        # print("\n\n===============================")
-        # print("prefix = " + prefix)
-        # print("fname = " + fname)
-        # print("args = " + args)
-        # print("other = " + other)
-        # print("block = " + block)
-        
         functions[fname] = args
     
     return functions
