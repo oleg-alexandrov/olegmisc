@@ -1,14 +1,18 @@
 #!/usr/bin/env python
 
-# Search the current directory for a header with function with this name. 
-# Update the corresponding .cc file with the function signature.
+# Replace the function arguments in the .cc file with the ones from the .h file
+# which presumably is more up-to-date. 
+
+# TODO(oalexan1): This does not yet wipe default values for arguments.
 
 import os, re, sys, textwrap
 
-# Find the matching closing parenthesis. For that, split into individual characters.
-# Go over each character. If it is an opening parenthesis, increment the count. If it is
-# a closing parenthesis, decrement the count. Stop when the count is zero.
-def split_by_closing_parenthesis(a):
+def findBalancedBlock(a):
+    """
+    Split into two blocks, so that in the first block the parentheses are balanced.
+    This should ignore any text in comments without wiping it. 
+    """
+
     count = 0
     num = len(a)
     i = 0
@@ -37,7 +41,6 @@ def split_by_closing_parenthesis(a):
 
         i = i + 1
 
-    i = i - 1 # want to keep the closing parenthesis in the after part
     before = a[:i]
     after = a[i:]
     
@@ -131,56 +134,215 @@ def split_into_balanced_args(args):
         
     return bargs
 
-# Main code
+def splitByEmptyLines(text):
+    """
+    Split by text by a an empty line that may have some spaces.
+    """
+
+    # First replace a newline followed by spaces followed by newline
+    # with just two newlines. Match across multiple lines.
+    text = re.sub(r'\n\s*\n', '\n\n', text, re.DOTALL)
+
+    # Now split by two newlines
+    blocks = text.split('\n\n')
+
+    return blocks   
+
+def splitByTopComments(text):
+    """
+    Return the top-most lines having comments, then the rest of the text.
+    """
+
+    comments = ""
+    other = ""
+
+    # There can be multiple lines, so split by newline
+    lines = text.split('\n')
+
+    startedNonComments = False
+
+    for line in lines:
+        if not line.startswith('//'):
+            startedNonComments = True
+        
+        if startedNonComments:
+            other = other + line + '\n'    
+        else:
+            comments = comments + line + '\n'
+
+    return (comments, other)
+     
+def wipeComments(text):
+    text = re.sub(r'//.*?\n', '', text) # to end of line
+    text = re.sub(r'//.*$', '', text) # to end of string
+    return text
+
+def hasDeclaration(text):
+    """
+       Consider a list of input arguments. Wipe comments. Wipe all after the equal
+       sign. Split by commas. If each produced entity has a space or tab, it is a 
+       declaration. So: myfun(x) has no declarations. But myfun(double x) has a
+       declaration.
+    """
+    # Wipe comments    
+    text = wipeComments(text)
     
-a = """void transformAppendNvm(// Append from these
-                        std::vector<std::map<int, int>>  const& nvm_pid_to_cid_fid,
-                        std::vector<Eigen::Matrix2Xd>    const& nvm_cid_to_keypoint_map,
-                        std::map<int, int>               const& cid2cid,
-                        std::vector<Eigen::Vector2d>     const& keypoint_offsets,
-                        int cid_shift,
-                        size_t num_out_cams = 0,
-                        // Outputs, append to these 
-                        std::vector<int> & fid_count = std::vector<int>(),
-                        std::vector<std::map<std::pair<float, float>, int>>& merged_keypoint_map = std::vector<std::map<std::pair<float, float>, int>>(),
-                        std::vector<std::map<int, int>> & pid_to_cid_fid) {
-"""
+    # Wipe until any starting parenthesis
+    text = re.sub(r'^.*?\(', '', text)
 
-print("before=\n" + a)
+    # Wipe last parenthesis and everything after it
+    text = re.sub(r'\).*$', '', text)
+    
+    # Split by commas
+    args = text.split(',')
+    
+    for arg in args:
+        arg = arg.strip()
+        # Wipe everything after the equal sign
+        arg = re.sub(r'=.*$', '', arg)
+        
+        if not ' ' in arg and not '\t' in arg:
+            return False
+            
+    return True
+    
+def parseFunction(text):
+    """
+    Find the function name in the text. It is the word before the opening parenthesis.
+    Return an empty string if not found.
+    """
+    
+    # Wipe any comments so it does not interfere with the match
+    (comments, text) = splitByTopComments(text)
+    
+    # Match across multiple lines
+    prefix = ""
+    funName = ""
+    (prefix, funName, args, other) = ('', '', '', '')
+    m = re.match(r'^(.*?)(\w+)\s*(\(.*?)$', text, re.DOTALL)
+    if not m:
+        return (prefix, funName, args, other)
+        
+    prefix = m.group(1)
+    funName = m.group(2)
+    other = m.group(3)
+    
+    prefix = comments + prefix
+    (args, other) = findBalancedBlock(other)
+    
+    hasDecl = hasDeclaration(args)
+    if not hasDecl:
+        return ('', '', '', '')
+        
+    return (prefix, funName, args, other)
+  
+def parseFunctions(text):
+    """
+    Parse the text and find all the functions in it.
+    Return a dictionary from function name to arguments.
+    """
+    
+    # Split the text by empty lines
+    blocks = splitByEmptyLines(text)
 
-(before, after) = split_by_closing_parenthesis(a)
+    # Have a dictionary from function name to function body
+    # For now every function name must be unique
+    functions = {}
+    for block in blocks:
+        (prefix, fname, args, other) = parseFunction(block)
+        if fname == '':
+            continue
 
-# Match the part until opening parenthesis. Match over multiple lines.
-m = re.match(r'^(.*?\()(.*)$', before, re.DOTALL)
-if not m:
-    print("No match")
-    sys.exit(1)
-before = m.group(1)
-args = m.group(2)
+        if fname in functions:
+            print("Duplicate function name: " + fname)
+            sys.exit(1)
+        
+        # print("\n\n===============================")
+        # print("prefix = " + prefix)
+        # print("fname = " + fname)
+        # print("args = " + args)
+        # print("other = " + other)
+        # print("block = " + block)
+        
+        functions[fname] = args
+    
+    return functions
 
-# This is important to handle comments properly
-blocks = split_by_comments(args)
+def replaceArgs(text, functions):
+    """
+    Parse the text in the cc file and find all the functions in it.
+    Replace the function arguments with what is in the input.
+    That came from the header file.
+    """
+    
+    # Split the text by empty lines
+    blocks = splitByEmptyLines(text)
+    
+    # Have a dictionary from function name to function body
+    # For now every function name must be unique
+    for i in range(len(blocks)):
+    
+        block = blocks[i]
+        (prefix, fname, args, other) = parseFunction(block)
+        if fname == '':
+            continue
 
-# Iterate over blocks. Non-comment blocks are split by comma with balanced parentheses.
-args = []
-for block in blocks:
-    if block.startswith('//'):
-        args.append(block)
-    else:
-        args.extend(split_into_balanced_args(block))
+        if fname not in functions:
+            continue
+        
+        args = functions[fname]
+        blocks[i] = prefix + fname + args + other
+    
+    text = '\n\n'.join(blocks)
 
-args = remove_default_vals(args)
+    return text
+    
+def readText(filename):
+    """
+    Read the text from a file.
+    """
+    text = ''
+    with open(filename, 'r') as f:
+        text = f.read()
+    return text
 
-# Now we have: before, args, after    
-#print("before = " + before)
-#for barg in args:
-#    print("barg = ", barg)
-#print("after = " + after)
+def updateCcBasedOnHeader(headerFile, ccFile):
+    """
+    Update the cc file based on the header file.
+    """
 
-# join back the args
-args = ''.join(args)
+    # Check that the header file ends in .h
+    if not headerFile.endswith('.h'):
+        print("Expecting a header file with extension .h")
+        sys.exit(1)
+        
+    # Parse the functions in the header file
+    text = readText(headerFile)
+    functions = parseFunctions(text)
+    
+    # Replace the arguments with the ones from the header file
+    text = readText(ccFile)
+    text = replaceArgs(text, functions)
 
-# Put back the text
-text = before + args + after
-print("after=\n" + text)
+    # Save the text to the cc file
+    print("Updating: " + ccFile)
+    with open(ccFile, 'w') as f:
+        f.write(text)
+    
+# Main code
+if __name__ == '__main__':
+
+    # Ensure there is at least one arg
+    if len(sys.argv) < 2:
+        print("Usage: update_cpp.py header.h")
+        sys.exit(1)
+        
+    # Read the header file
+    headerFile = sys.argv[1]
+
+    # Let the cc file end in .cc instead of .h
+    ccFile = headerFile.replace('.h', '.cc')
+
+    updateCcBasedOnHeader(headerFile, ccFile)
+    
 
