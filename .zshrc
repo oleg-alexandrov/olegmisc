@@ -6,7 +6,7 @@ if [[ -f ~/.bashrc     ]]; then source ~/.bashrc;     fi
 # autoload -U promptinit; promptinit
 
 # # Disable completion with these as it is too slow
-# compdef -d svn make git vim
+compdef -d svn make git vim
 
 export HISTFILE=~/.zsh_history
 export HISTSIZE=10000
