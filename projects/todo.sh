@@ -1,3 +1,6 @@
+# It appears that bundle_adjust does not respect the --threads option in all steps.
+# Maybe in FLANN it does not.
+
 #See point2dem issues in David's email in my work inbox. 
 
 # Implement point2dem with --min-count (per output grid cell).

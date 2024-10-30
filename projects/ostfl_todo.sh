@@ -12,7 +12,7 @@ Each year a new release is being produced. The release is tested on a regression
 
 # Task 3: Tutorials
 
-The ASP documentation is being updated with detailed examples for how to use the tools in various scnearios that we support. The commands are listed, together with things to note, illustrations of output, and links to other relevant sections.
+The ASP documentation is being updated with detailed examples for how to use the tools in various scenarios that we support. The commands are listed, together with things to note, illustrations of output, and links to other relevant sections.
 
 To go into more detail, many examples were added for how to use the bundle_adjust, jitter_solve, and parallel_stereo programs. Many existing examples were also updated and illustration added.
 
@@ -105,7 +105,7 @@ Documentation: https://stereopipeline.readthedocs.io/en/latest/tools/bundle_adju
 
 Task 4b: Moved from the deprecated LibLAS library to the PDAL library for manipulating LAS files. Contributed to the PDAL library documentation and examples for how to process clouds in streaming mode.
 
-Added the ability to filter point clouds using varous outlier removal schemes before saving them to LAS.
+Added the ability to filter point clouds using various outlier removal schemes (Tukey and percentile-based) before saving them to LAS.
 
 Added the ability to export to LAS the triangulation error of point clouds produced by ASP. 
 
