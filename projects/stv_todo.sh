@@ -1,4 +1,4 @@
-# FY25 plan
+# FY25 plan 
 
 Oct 1 - 15 OSTFL, 16 - 30 STV
 November: STV
@@ -14,6 +14,25 @@ June: half CSM, half vacation
 July: all STV
 Aug: all STV
 Sept: half STV, half vacation
+
+# STV work: October 2024
+
+# - Produced a report summarizing last two years of work
+
+# - Careful study and an improvement in the camera uncertainty constraint in the
+#   jitter solver
+
+# Thoroughly validated that ASP can process Umbra mono-static radar data
+# produced with spotlight mode. Can create pinhole camera approximations based
+# on their metadata, and also can use the provided RPC cameras. In either case,
+# feature detection and stereo correlation is shown to work. When using the RPC
+# cameras produced many terrain models for a hilly Panama site, compared with
+# the a reference DEM, and found that the results are very good. Also evaluated
+# the effect of using or not ASP's bundle adjustment, using or not alignment to
+# prior terrain, and whether one needs rotation + translation alignment or
+# translation-only. An important observation is that then the view angle is
+# different by more than 3 degrees or so, the images are too dissimilar and
+# feature matching fails.
 
 # STV work: September 2024
 
@@ -36,7 +55,7 @@ Performed a study of a rig consisting of a linescan camera looking nadir and a
 linescan camera looking backward. It was shown that if one of the cameras is
 rotated around its view axes so that the scanned image lines meet at an angle
 with the other camera, that results in improved solving for jitter. An
-empirical relationship between rotation angle and jitter frquency to produce
+empirical relationship between rotation angle and jitter frequency to produce
 best results was determined and validated.
 
 Added the ability to simulate a blur in images created with sat_sim. 
@@ -44,7 +63,7 @@ Added the ability to simulate a blur in images created with sat_sim.
 Made the jitter solver do two passes of camera refinement. This was shown 
 to remove residual jitter in the cameras.
 
-Added to the jitter solver the ability to respect user-specified horizintal
+Added to the jitter solver the ability to respect user-specified horizontal
 and vertical camera position uncertainties. 
 
 Modeled a rig having two linescan sensors at an angle to each other. This was
@@ -53,10 +72,10 @@ in the other sensor.
 
 Validated that given a linescan camera rig with parallel scan lines, the rig constraint
 greatly helps solve correcting the jitter, as opposed to not using it, but not all
-jitter gets eliminated, but only for some frequences depending on the spacing between
+jitter gets eliminated, but only for some frequencies depending on the spacing between
 the rig sensor footprints on the ground.
 
-Added the ability for the jiter solver to use a sparse set of lidar measurements
+Added the ability for the jitter solver to use a sparse set of lidar measurements
 as a constraint.
 
 # ASP maintanence work: August 2024
