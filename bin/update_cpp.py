@@ -3,8 +3,6 @@
 # Replace the function arguments in the .cc file with the ones from the .h file
 # which presumably is more up-to-date. 
 
-# TODO(oalexan1): This does not yet wipe default values for arguments.
-
 import os, re, sys, textwrap
 
 def findBalancedBlock(a):
@@ -12,13 +10,14 @@ def findBalancedBlock(a):
     Split into two blocks, so that in the first block the parentheses are balanced.
     This should ignore any text in comments without wiping it. 
     """
-
+    # TODO(oalexan1): This does not handle well an argument like: "https://www.google.com",
+    # as it is seen as a comment. Below have a temporary workaround.
     count = 0
     num = len(a)
     i = 0
     while i < num:
 
-        if a[i] == '/':
+        if a[i] == '/' and (i == 0 or a[i - 1] != ':'): # workaround
             if i + 1 < num and a[i + 1] == '/':
                 # Skip the comment
                 while i < num and a[i] != '\n':
@@ -85,7 +84,7 @@ def is_balanced(s):
     return not stack
 
 # Remove default values for function arguments
-def remove_default_vals(args):
+def removeDefaultArgs(args):
     num = len(args)
     for i in range(num):
         m = re.match(r'^(.*?)(\s*=\s*.*?)(,\s*$|$)', args[i], re.DOTALL)
@@ -94,8 +93,12 @@ def remove_default_vals(args):
     
     return args
     
-def split_into_balanced_args(args):
-
+def balancedSplitByComma(args):
+    """
+       Split by comma in such a way that each resulting entity has a balanced number
+       of parentheses, brackets, angles, and braces.
+    """
+         
     # Swap comma and newline as we want to keep each newline together with the preceding
     # text.
     args = args.replace(',\n', '\n,')
@@ -104,14 +107,16 @@ def split_into_balanced_args(args):
         
     # Split the arguments by comma
     args = args.split(',')
-
+    
     # make each arg balanced
     num = len(args)
+    
     i = 0
     while True:
         # Stop if processed all arguments
         if i >= num:
             break
+            
         # Append tokens till balanced
         arg = ''
         isBalanced = False
@@ -120,7 +125,7 @@ def split_into_balanced_args(args):
                 arg = arg + ',' # put back the comma
             arg = arg + args[j]
             if is_balanced(arg):
-                bargs.append(arg + ',') # put back the comma
+                bargs += [arg + ','] # put back the comma
                 i = j + 1
                 break
     
@@ -134,6 +139,32 @@ def split_into_balanced_args(args):
         
     return bargs
 
+def rmDefaultInArgStr(args):
+    """
+    Remove default values for arguments. First split by comma with balanced parentheses.
+    Then wipe the default values.
+    """
+    
+    # Separate the starting and ending parentheses
+    m = re.match(r'^(\()(.*)(\).*?)$', args, re.DOTALL)
+    if not m:
+      raise Exception("Expecting a string having parentheses.")
+    
+    beg = m.group(1)
+    mid = m.group(2)
+    end = m.group(3)
+    
+    mid = balancedSplitByComma(mid)
+    mid = removeDefaultArgs(mid)
+    
+    # Join back into a string
+    mid = ''.join(mid)
+    
+    # Append back the parentheses
+    args = beg + mid + end
+    
+    return args
+    
 def splitByEmptyLines(text):
     """
     Split by text by a an empty line that may have some spaces.
@@ -233,7 +264,7 @@ def parseFunction(text):
     hasDecl = hasDeclaration(args)
     if not hasDecl:
         return ('', '', '', '')
-        
+     
     return (prefix, funName, args, other)
   
 def parseFunctions(text):
@@ -253,14 +284,42 @@ def parseFunctions(text):
         if fname == '':
             continue
 
-        if fname in functions:
-            print("Duplicate function name: " + fname)
-            sys.exit(1)
-        
-        functions[fname] = args
+        if not fname in functions:
+            functions[fname] = []
+        functions[fname] += [args]
     
     return functions
 
+def numCommas(s):
+    """
+        Return the number of commas in a string.
+    """
+    return s.count(',')
+
+def replaceWithMostSimilar(s, arr):
+    """
+        Replace the string s with the one from the array arr that has the most
+        similar number of commas. This is not fully robust.
+    """
+    num = len(arr)
+    if num == 0:
+        # Nothing to compare to
+        return s
+
+    # Find the number of commas in s
+    numCommasS = numCommas(s)
+
+    # Find the entry in arr that has the most similar number of commas
+    best = arr[0]
+    bestDiff = abs(numCommasS - numCommas(best))
+    for i in range(1, num):
+        diff = abs(numCommasS - numCommas(arr[i]))
+        if diff < bestDiff:
+            best = arr[i]
+            bestDiff = diff
+
+    return best
+        
 def replaceArgs(text, functions):
     """
     Parse the text in the cc file and find all the functions in it.
@@ -283,7 +342,12 @@ def replaceArgs(text, functions):
         if fname not in functions:
             continue
         
-        args = functions[fname]
+        # Replace with the most similar match from the header file
+        args = replaceWithMostSimilar(args, functions[fname])
+        
+        # Remove default
+        args = rmDefaultInArgStr(args)
+        
         blocks[i] = prefix + fname + args + other
     
     text = '\n\n'.join(blocks)
@@ -306,8 +370,7 @@ def updateCcBasedOnHeader(headerFile, ccFile):
 
     # Check that the header file ends in .h
     if not headerFile.endswith('.h'):
-        print("Expecting a header file with extension .h")
-        sys.exit(1)
+        raise Exception("Expecting a header file with extension .h")
         
     # Parse the functions in the header file
     text = readText(headerFile)
