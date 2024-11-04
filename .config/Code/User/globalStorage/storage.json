@@ -89,8 +89,7 @@
                             "items": [
                                 {
                                     "id": "workbench.action.reopenClosedEditor",
-                                    "label": "&&Reopen Closed Editor",
-                                    "enabled": false
+                                    "label": "&&Reopen Closed Editor"
                                 },
                                 {
                                     "id": "vscode.menubar.separator"
@@ -105,6 +104,20 @@
                                     },
                                     "enabled": true,
                                     "label": "/home/oalexan1"
+                                },
+                                {
+                                    "id": "vscode.menubar.separator"
+                                },
+                                {
+                                    "id": "openRecentFile",
+                                    "uri": {
+                                        "$mid": 1,
+                                        "external": "file:///home/oalexan1/.zshrc",
+                                        "path": "/home/oalexan1/.zshrc",
+                                        "scheme": "file"
+                                    },
+                                    "enabled": true,
+                                    "label": "~/.zshrc"
                                 },
                                 {
                                     "id": "vscode.menubar.separator"
@@ -151,7 +164,8 @@
                     },
                     {
                         "id": "saveAll",
-                        "label": "Save A&&ll"
+                        "label": "Save A&&ll",
+                        "enabled": false
                     },
                     {
                         "id": "vscode.menubar.separator"
@@ -275,7 +289,7 @@
                     },
                     {
                         "id": "workbench.action.closeFolder",
-                        "label": "Close &&Folder"
+                        "label": "Close &&Workspace"
                     },
                     {
                         "id": "workbench.action.closeWindow",
@@ -810,7 +824,8 @@
                     },
                     {
                         "id": "workbench.action.navigateToLastEditLocation",
-                        "label": "&&Last Edit Location"
+                        "label": "&&Last Edit Location",
+                        "enabled": false
                     },
                     {
                         "id": "vscode.menubar.separator"
@@ -1733,28 +1748,20 @@
     },
     "windowsState": {
         "lastActiveWindow": {
-            "folder": "file:///home/oalexan1",
-            "backupPath": "/home/oalexan1/.config/Code/Backups/f130e4f34eb5283c00b3db74236a0282",
+            "workspaceIdentifier": {
+                "id": "93b9ba6abc02ddd6f3e0409ba970b376",
+                "configURIPath": "file:///home/oalexan1/.config/Code/Workspaces/1730751482453/workspace.json"
+            },
+            "backupPath": "/home/oalexan1/.config/Code/Backups/93b9ba6abc02ddd6f3e0409ba970b376",
             "uiState": {
                 "mode": 1,
                 "x": 3846,
                 "y": 21,
-                "width": 3652,
-                "height": 2126
+                "width": 3638,
+                "height": 2111
             }
         },
         "openedWindows": [
-            {
-                "folder": "file:///home/oalexan1",
-                "backupPath": "/home/oalexan1/.config/Code/Backups/f130e4f34eb5283c00b3db74236a0282",
-                "uiState": {
-                    "mode": 1,
-                    "x": 3846,
-                    "y": 21,
-                    "width": 3652,
-                    "height": 2126
-                }
-            },
             {
                 "workspaceIdentifier": {
                     "id": "93b9ba6abc02ddd6f3e0409ba970b376",
@@ -1763,10 +1770,10 @@
                 "backupPath": "/home/oalexan1/.config/Code/Backups/93b9ba6abc02ddd6f3e0409ba970b376",
                 "uiState": {
                     "mode": 1,
-                    "x": 5027,
-                    "y": 2764,
-                    "width": 1024,
-                    "height": 768
+                    "x": 3846,
+                    "y": 21,
+                    "width": 3638,
+                    "height": 2111
                 }
             },
             {
@@ -1777,10 +1784,21 @@
                 "backupPath": "/home/oalexan1/.config/Code/Backups/e32472e89a51261aa5c1c0eb51c04de4",
                 "uiState": {
                     "mode": 1,
-                    "x": 7686,
-                    "y": 21,
+                    "x": 3846,
+                    "y": 2181,
                     "width": 3643,
                     "height": 2116
+                }
+            },
+            {
+                "folder": "file:///home/oalexan1",
+                "backupPath": "/home/oalexan1/.config/Code/Backups/f130e4f34eb5283c00b3db74236a0282",
+                "uiState": {
+                    "mode": 1,
+                    "x": 7686,
+                    "y": 21,
+                    "width": 3652,
+                    "height": 2126
                 }
             }
         ]
