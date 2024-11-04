@@ -119,7 +119,7 @@ DesktopName 3 Desk 3
 ######################### Keyboard binding###########################
 Key F1    A   C   Exec /usr/bin/gnome-terminal --geometry 150x85+0+0 --tab --tab -- zsh & 
 Key F1    A   M   Exec /usr/bin/gnome-terminal --geometry--geometry 81x40+0+0  -- zsh & 
-Key F3    A   C   Exec  ~/projects/VSCode-linux-x64/bin/code-insiders ~/ &
+Key F3    A   C   Exec  code ~/ &
 Key F4    A   C   Exec  firefox&
 
 Key End    A   CM  Exec /usr/bin/X11/xlock
@@ -304,7 +304,7 @@ AddToMenu Programs   "+++Programs+++"   Title
 +   ""   Nop
 +   "gnome-terminal"   Exec exec /usr/bin/gnome-terminal  --geometry 103x55+0+0  -- zsh & 
 +   ""   Nop
-+   "VSCode"   Exec exec ~/projects/VSCode-linux-x64/bin/code-insiders ~/ &
++   "VSCode"   Exec exec code ~/ &
 #+   ""   Nop
 #+   "Firefox"   Exec exec  firefox&
 +   ""   Nop

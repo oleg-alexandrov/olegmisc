@@ -619,10 +619,10 @@
 			"path": "projects/todo.sh",
 			"bookmarks": [
 				{
-					"line": 7,
+					"line": 0,
 					"column": 0,
 					"label": "td"
-				}
+				},
 			]
 		}
 	]

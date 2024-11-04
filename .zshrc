@@ -189,3 +189,9 @@ if [ -d "$FNM_PATH" ]; then
   eval "`fnm env`"
 fi
 
+# fnm
+FNM_PATH="/home/oalexan1/.local/share/fnm"
+if [ -d "$FNM_PATH" ]; then
+  export PATH="/home/oalexan1/.local/share/fnm:$PATH"
+  eval "`fnm env`"
+fi

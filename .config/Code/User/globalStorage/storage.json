@@ -18,7 +18,11 @@
                 "folderUri": "file:///home/oalexan1"
             }
         ],
-        "emptyWindows": []
+        "emptyWindows": [
+            {
+                "backupFolder": "1730752865874"
+            }
+        ]
     },
     "profileAssociations": {
         "workspaces": {
@@ -26,7 +30,9 @@
             "file:///home/oalexan1/.config/Code/Workspaces/1730751482453/workspace.json": "__default__profile__",
             "file:///home/oalexan1/.config/Code/Workspaces/1730751488589/workspace.json": "__default__profile__"
         },
-        "emptyWindows": {}
+        "emptyWindows": {
+            "1730752865874": "__default__profile__"
+        }
     },
     "lastKnownMenubarData": {
         "menus": {
@@ -824,8 +830,7 @@
                     },
                     {
                         "id": "workbench.action.navigateToLastEditLocation",
-                        "label": "&&Last Edit Location",
-                        "enabled": false
+                        "label": "&&Last Edit Location"
                     },
                     {
                         "id": "vscode.menubar.separator"
