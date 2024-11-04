@@ -3,7 +3,7 @@
 # Replace the function arguments in the .cc file with the ones from the .h file
 # which presumably is more up-to-date. 
 
-import os, re, sys, textwrap
+import os, re, sys, textwrap, glob
 
 def findBalancedBlock(a):
     """
@@ -397,8 +397,13 @@ if __name__ == '__main__':
     headerFile = sys.argv[1]
 
     # Let the cc file end in .cc instead of .h
-    ccFile = headerFile.replace('.h', '.cc')
+    ccPref = headerFile.replace('.h', '')
+    
+    # Do a glob over *cc as sometimes there can be several cc files
+    ccFiles = glob.glob(ccPref + '*.cc')
 
-    updateCcBasedOnHeader(headerFile, ccFile)
+    for ccFile in ccFiles:
+        updateCcBasedOnHeader(headerFile, ccFile)
+        
     
 
