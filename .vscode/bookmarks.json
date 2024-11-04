@@ -576,16 +576,6 @@
 			]
 		},
 		{
-			"path": "projects/todo.m",
-			"bookmarks": [
-				{
-					"line": 0,
-					"column": 0,
-					"label": "td"
-				},
-			]
-		},
-		{
 			"path": "projects/StereoPipeline/src/asp/Tools/pc_align.cc",
 			"bookmarks": [
 				{
@@ -619,9 +609,19 @@
 			"path": "projects/StereoPipeline/NEWS.rst",
 			"bookmarks": [
 				{
-					"line": 0,
+					"line": 28,
 					"column": 0,
 					"label": "n"
+				}
+			]
+		},
+		{
+			"path": "projects/todo.sh",
+			"bookmarks": [
+				{
+					"line": 7,
+					"column": 0,
+					"label": "td"
 				}
 			]
 		}

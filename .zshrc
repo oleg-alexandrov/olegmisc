@@ -2,7 +2,7 @@
 if [[ -f ~/.bash_login ]]; then source ~/.bash_login; fi
 if [[ -f ~/.bashrc     ]]; then source ~/.bashrc;     fi
 
-# autoload -U compinit;   compinit
+autoload -U compinit;   compinit
 # autoload -U promptinit; promptinit
 
 # # Disable completion with these as it is too slow
@@ -180,4 +180,12 @@ if [ -f "/home/oalexan1/miniforge3/etc/profile.d/mamba.sh" ]; then
 fi
 }
 # <<< conda initialize <<<
+
+
+# fnm
+FNM_PATH="/home/oalexan1/.local/share/fnm"
+if [ -d "$FNM_PATH" ]; then
+  export PATH="/home/oalexan1/.local/share/fnm:$PATH"
+  eval "`fnm env`"
+fi
 
