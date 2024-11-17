@@ -24,9 +24,11 @@ text = re.sub(r'[ \t]+\n', '\n', text)
 # No space/tab before comma
 text = re.sub(r'[ \t]+,', ',', text)
 # Awlays a space between if/for/while and the following parenthesis
-text = re.sub(r'(if|for|while|try)\s*\(', r'\1 (', text)
+text = re.sub(r'(if|for|while)\s*\(', r'\1 (', text)
 # A space between } and else
 text = re.sub(r'}\s*else', '} else', text)
+# Same for catch
+text = re.sub(r'}\s*catch', '} catch', text)
 # A space between else and {
 text = re.sub(r'else\s*{', 'else {', text)
 # No ) { on its own line
