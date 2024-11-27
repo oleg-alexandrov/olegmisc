@@ -561,7 +561,7 @@ function sgc {
 function sgi {
     min=$1; shift
     max=$1; shift
-    stereo_gui --window-size 1600 1100 --colorbar --colormap-style inferno \
+    stereo_gui --window-size 1600 1100 --colorbar --colormap-style plasma \
         --min $min --max $max $*
 }
 

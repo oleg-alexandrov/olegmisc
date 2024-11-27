@@ -74,7 +74,7 @@ MAIN:{
       
       my $imgTile = "$imgPref$tag.tif";
       
-      $cmd = "gdal_translate -co TILED=yes -co INTERLEAVE=BAND -co BLOCKXSIZE=256 -co BLOCKYSIZE=256 -co compress=lzw -co bigtiff=no -srcwin $begX $begY $widX $widY $img $imgTile";
+      $cmd = "gdal_translate -co TILED=yes -co INTERLEAVE=BAND -co BLOCKXSIZE=256 -co BLOCKYSIZE=256 -co compress=lzw -co BIGTIFF=YES -srcwin $begX $begY $widX $widY $img $imgTile";
       print "$cmd\n";
       print qx($cmd) . "\n";
       #rename_nicely($imgTile, $outDir);

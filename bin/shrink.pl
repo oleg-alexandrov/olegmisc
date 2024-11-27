@@ -97,7 +97,7 @@ sub tmp {
     print "Corrected srcwin bounds.\n";
   }
   
-  $cmd = "gdal_translate -co compress=lzw -co TILED=yes -co INTERLEAVE=BAND -co BLOCKXSIZE=256 -co BLOCKYSIZE=256 $bf $a $b $c $d $af";
+  $cmd = "gdal_translate -co compress=lzw -co TILED=yes -co INTERLEAVE=BAND -co BLOCKXSIZE=256 -co BLOCKYSIZE=256 -co BIGTIFF=YES $bf $a $b $c $d $af";
   print "$cmd\n";
   my $ans = qx($cmd);
   print "$ans";

@@ -11,7 +11,7 @@ MAIN:{
 
   #$ENV{'PATH'} = $ENV{'HOME'} . '/miniconda3/envs/asp/bin' . ':' . $ENV{'PATH'};
 
-  my $gdal_opts = "-co compress=lzw -co TILED=yes -co INTERLEAVE=BAND -co BLOCKXSIZE=256 -co BLOCKYSIZE=256";
+  my $gdal_opts = "-co compress=lzw -co TILED=yes -co INTERLEAVE=BAND -co BLOCKXSIZE=256 -co BLOCKYSIZE=256 -co BIGTIFF=YES";
   
   my $cmd = join(" ", @ARGV);
   $cmd =~ s/://g; # rm stray chars
