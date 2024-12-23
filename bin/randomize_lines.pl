@@ -7,10 +7,10 @@
 # Set the random seed, PP, p 188
 srand(time|$$);
 
-# Suck in everything in the file.
+# Read in everything in the file.
 @a = <>;
 
-# Get random lines, write 'em out, mark 'em done.
+# Get random lines
 while (@a) {
   $choice = splice(@a, rand @a, 1);
   print $choice;
