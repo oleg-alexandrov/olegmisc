@@ -34,6 +34,9 @@ text = re.sub(r'else\s*{', 'else {', text)
 # No ) { on its own line
 text = re.sub(r'\s*\)\s*{', ') {', text)
 
+# Replace the tab character with 4 spaces
+text = re.sub(r'\t', '    ', text)
+
 # Update the copyright year
 year = str(datetime.datetime.now().year)
 text = re.sub(r'(Copyright\s+\(C\)\s*\d\d\d\d)(.*?)(\d\d\d\d)', r'\1' + '-' + year, text, 
