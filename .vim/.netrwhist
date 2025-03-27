@@ -1,11 +1,2 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =9
-let g:netrw_dirhist_1='/home/oalexan1/.fvwm'
-let g:netrw_dirhist_2='/home/oalexan1/projects/usgscsm/build/csm/CMakeFiles'
-let g:netrw_dirhist_3='/home/oalexan1/projects/BinaryBuilder/build_asp/build/stereopipeline/stereopipeline-git/build_binarybuilder/src/asp/CMakeFiles'
-let g:netrw_dirhist_4='/home/oalexan1/projects/MultiView/mve/apps/bundle2pset'
-let g:netrw_dirhist_5='/home/oalexan1/projects/StereoPipelineTest/ss_bundle_adjust_rpc'
-let g:netrw_dirhist_6='/home/oalexan1/projects/StereoPipeline/src/asp'
-let g:netrw_dirhist_7='/home/oalexan1/projects/MultiView/TheiaSfM/libraries/akaze'
-let g:netrw_dirhist_8='/home/oalexan1/projects/BinaryBuilder/build_asp/build/stereopipeline/stereopipeline-git/build_binarybuilder/src/asp/Tools/CMakeFiles'
-let g:netrw_dirhist_9='/home/oalexan1/.config/Code'
+let g:netrw_dirhist_cnt =0

@@ -2,6 +2,7 @@
 
 # Read all lines from standard input. Print only those lines for which the value
 # of column col is at least equal to val. The first column is column 1. 
+# Can specify an operator to filter the values as the third argument.
 
 import sys
 

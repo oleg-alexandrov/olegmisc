@@ -25,7 +25,7 @@ while [ 1 ]; do
     echo Trying port $port
     ssh $machine -N -X -f -R ${port}:localhost:22
     # Updating the remote machine's port requires a second ssh command
-    ssh $machine -X "bin/set_port.sh $port"
+    ssh $machine "bin/set_port.sh $port"
     ans=$?
     if [ "$ans" -eq "0" ]; then
       echo Success

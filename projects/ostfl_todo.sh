@@ -4,7 +4,7 @@
 # Task 1: Maintenance
 
 This proposal has allowed ASP to be actively maintained. Issues raised on the mailing
-list are prompty addressed, bugs fixed, and documentation updated as need be. 
+list are promptly addressed, bugs fixed, and documentation updated as need be. 
 
 # Task 2: Software Release
 
@@ -149,7 +149,8 @@ https://stereopipeline.readthedocs.io/en/latest/tools/point2las.html
 # performance. We will also improve current approaches to detect input point
 # cloud density, and automatically select optimum processing options. 
 
-# TODO(oalexan1): Must add alignment algorithms to pc_align.
+Added to ASP the Nuth and Kaab (2011) algorithm for point cloud alignment. On the advice
+of colleagues who worked much on alignment problems, this is the best-performing method when the clouds are DEMs. Documentation: https://stereopipeline.readthedocs.io/en/latest/tools/pc_align.html#nuth
 
 # Task 4d: Bundle Adjustment Improvements ASP has a powerful set of tools for
 # performing bundle adjustment to collectively optimize position and pose
@@ -187,7 +188,7 @@ rig).
 
 A separate ASP tool for solving for jitter also implements rig constraint (for a mix of linescan and frame cameras). The satellite simulator program in ASP supports creating images with a rig constraint.
 
-Added to the bundle adjustment program the abiliity to divide the cameras
+Added to the bundle adjustment program the ability to divide the cameras
 into groups, by sensor, and during optimization, share the intrinsics of the
 cameras in the same group. For each group can specify which intrinsics to share
 or keep fixed.

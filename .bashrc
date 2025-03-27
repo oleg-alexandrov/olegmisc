@@ -111,7 +111,7 @@ function vt {
     # Clean up text like "file.cpp:123: other stuff" and keep only 
     # file.cpp:123, then call vscode on it.
     arg=$(echo "$*" | perl -p -e "s#^(.*?:\d+).*?\$#\$1#g")
-    ~/projects/VSCode-linux-x64/bin/code-insiders --goto "$arg"
+    code --goto "$arg"
 }
 
 function tg {
@@ -138,15 +138,15 @@ function cdls {
 }
 
 function ge {
-    gdalinfo $1 | tail -n 8 | grep --colour=auto Mean=
+    gdalinfo $1 | tail -n 8 | grep --color=auto Mean=
 }
 
 function gis {
-     gdalinfo $1 | grep -i --colour=auto size
+     gdalinfo $1 | grep -i --color=auto size
 }
 
 function gim {
-    gdalinfo -stats $1 | grep -i Maximum | grep -i --colour=auto mean
+    gdalinfo -stats $1 | grep -i Maximum | grep -i --color=auto mean
 }
 
 # Tail the latest file in current directory,
@@ -556,7 +556,6 @@ function sgc {
     max=$1; shift
     stereo_gui --window-size 1600 1100 --colorize --min $min --max $max $*
 }
-
 
 function sgi {
     min=$1; shift

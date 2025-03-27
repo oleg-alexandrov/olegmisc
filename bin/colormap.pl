@@ -21,7 +21,7 @@ MAIN:{
   my @options = ();
   # iterate over the arguments
   foreach my $arg (@ARGV){
-    if ($arg =~ /^\-/){
+    if ($arg =~ /^\-/ && $arg !~ /^\-[\d\.]+/) {
       push(@options, $arg);
     }else{
       push(@other, $arg);
