@@ -59,9 +59,9 @@ function add_to_path () {
 
 function mb {
     cmd='PATH=~/projects/meshlab/distrib:$PATH meshlab $*'
-    machine=$(uname -n | grep astrobeast)
+    machine=$(uname -n | grep mac_arm)
     if [  "$machine" != "" ]; then
-        # For astrobeast need to set the path to the right OpenGL libraries
+        # For mac_arm need to set the path to the right OpenGL libraries
         cmd='LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/mesa:$LD_LIBRARY_PATH '$cmd
     fi
     echo $cmd
@@ -448,11 +448,11 @@ function t6 {
 }
 
 function ta {
-    remote_copy.pl $* oalexan1@astrobeast
+    remote_copy.pl $* oalexan1@mac_arm
 }
 
 function fa {
-    remote_copy.pl oalexan1@astrobeast $*
+    remote_copy.pl oalexan1@mac_arm $*
 }
 
 function pco {
