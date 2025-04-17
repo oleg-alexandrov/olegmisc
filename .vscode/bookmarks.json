@@ -114,7 +114,7 @@
 					"label": "csrs"
 				},
 				{
-					"line": 463,
+					"line": 441,
 					"column": 0,
 					"label": "msrs"
 				}
@@ -556,16 +556,6 @@
 			]
 		},
 		{
-			"path": "projects/StereoPipeline/src/asp/Tools/cam_gen.cc",
-			"bookmarks": [
-				{
-					"line": 1,
-					"column": 0,
-					"label": "cg"
-				}
-			]
-		},
-		{
 			"path": "projects/StereoPipeline/docs/tools/pc_align.rst",
 			"bookmarks": [
 				{
@@ -609,7 +599,7 @@
 			"path": "projects/StereoPipeline/NEWS.rst",
 			"bookmarks": [
 				{
-					"line": 28,
+					"line": 43,
 					"column": 0,
 					"label": "n"
 				}
@@ -619,10 +609,30 @@
 			"path": "projects/todo.sh",
 			"bookmarks": [
 				{
-					"line": 0,
+					"line": 95,
 					"column": 0,
 					"label": "td"
-				},
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Tools/dem_mosaic.cc",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "dem"
+				}
+			]
+		},
+		{
+			"path": "projects/StereoPipeline/src/asp/Tools/parallel_bundle_adjust",
+			"bookmarks": [
+				{
+					"line": 0,
+					"column": 0,
+					"label": "parb"
+				}
 			]
 		}
 	]
