@@ -180,6 +180,7 @@ alias cr='chmod a+w -R'
 alias crl='crontab -l'
 alias crs='file=~/bin/crontab_$(hostname)".txt"; echo "Saving crontab to $file"; crontab -l > $file; tm $file'
 alias cs=connect_to_screen.sh
+alias csc='conda search -c conda-forge'
 alias csl='~/bin/clean_style.sh'
 alias css='cvs status | grep -i status | grep -v "Up-to-date"'
 alias cst='cvs status'
