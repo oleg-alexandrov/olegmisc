@@ -22,7 +22,7 @@ with open(log_file, 'r') as f:
     lines = f.readlines()
 
 # Iterate over lines using a for loop with l over range of lines
-#Search for:
+# Search for:
 # a pattern like: /path/to/file.cpp:117: Failure
 # Match the file name, line number
 

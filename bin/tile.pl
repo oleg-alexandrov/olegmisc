@@ -47,11 +47,11 @@ MAIN:{
   }
   mkdir $outDir;
   
-  my $numPix = $nTilesX*$nTilesY;
-  my $count = 1;
-  while ($count < $numPix){
-    $count *= 10;
-  }
+  my $count = 10000;
+  # my $numPix = $nTilesX*$nTilesY;
+  # while ($count < $numPix) {
+  #   $count *= 10;
+  # }
   
   my $list = "";
   for (my $x = 0; $x < $nTilesX; $x++){
@@ -70,9 +70,7 @@ MAIN:{
       my $widY = $endY - $begY;
       next if ($widY <= 0);
 
-      my $tag = "x$count"; $tag =~ s/x1//g;
-      
-      my $imgTile = "$imgPref$tag.tif";
+      my $imgTile = "$imgPref$count.tif";
       
       $cmd = "gdal_translate -co TILED=yes -co INTERLEAVE=BAND -co BLOCKXSIZE=256 -co BLOCKYSIZE=256 -co compress=lzw -co BIGTIFF=YES -srcwin $begX $begY $widX $widY $img $imgTile";
       print "$cmd\n";

@@ -210,7 +210,6 @@ function a {
             # We are actually setting an alias
             alias > ~/.bash_aliases;
             perl -pi -e "s#^([^\s]+=)#alias \$1#" ~/.bash_aliases
-            ssh m.ndc.nasa.gov "echo alias '$*' | ~/bin/add_alias.pl" 2>/dev/null
         fi
     else
         alias  # Just list the aliases

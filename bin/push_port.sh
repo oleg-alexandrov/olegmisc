@@ -35,7 +35,7 @@ while [ 1 ]; do
     fi
     
     ((port=port+1))
-    if [ "$port" -ge 9999 ]; then port=5000; fi
+    if [ "$port" -ge 5999 ]; then port=5000; fi
 done
 
 echo Updating the local machine time

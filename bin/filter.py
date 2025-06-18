@@ -4,6 +4,10 @@
 # of column col is at least equal to val. The first column is column 1. 
 # Can specify an operator to filter the values as the third argument.
 
+# Example:
+
+# cat file.txt | ~/bin/filter.py 3 10 ge
+
 import sys
 
 # Ensure that the correct number of arguments are provided
@@ -18,6 +22,7 @@ val = float(sys.argv[2])
 
 # If the operator exists, read it
 op = 'ge'
+
 if len(sys.argv) > 3:
     op = sys.argv[3]
 
