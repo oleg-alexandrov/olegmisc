@@ -1,0 +1,1175 @@
+#!/usr/bin/perl -w
+
+#
+# Copyright (C) 2007 United States Government as represented by the
+# Administrator of the National Aeronautics and Space Administration
+# (NASA).  All Rights Reserved.
+#
+# This software is distributed under the NASA Open Source Agreement
+# (NOSA), version 1.3.  The NOSA has been approved by the Open Source
+# Initiative.  See the file NOSA.txt at the top of the distribution
+# directory tree for the complete NOSA document.
+#
+# THE SUBJECT SOFTWARE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY OF ANY
+# KIND, EITHER EXPRESSED, IMPLIED, OR STATUTORY, INCLUDING, BUT NOT
+# LIMITED TO, ANY WARRANTY THAT THE SUBJECT SOFTWARE WILL CONFORM TO
+# SPECIFICATIONS, ANY IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR
+# A PARTICULAR PURPOSE, OR FREEDOM FROM INFRINGEMENT, ANY WARRANTY THAT
+# THE SUBJECT SOFTWARE WILL BE ERROR FREE, OR ANY WARRANTY THAT
+# DOCUMENTATION, IF PROVIDED, WILL CONFORM TO THE SUBJECT SOFTWARE.
+#
+
+###############################################################################
+#
+# bbscp
+#
+my $version = "1.0.6";
+#
+# author: Greg Matthews
+# email: gregory.matthews@nasa.gov
+#
+# please report any bugs or other issues to the author, thanks!
+#
+# changes since 1.0.5
+#   - -p is now set to 2 by default
+#
+# changes since 1.0.4
+#   - modified to return non-zero exit value when an error occurs in the
+#     script, and to propagate any non-zero return code from bbftp
+#
+# changes since 1.0.3
+#   - added NOSA license header text
+#   - added disclaimer output regarding bbscp's lack of data encryption
+#   - added -z commandline option to suppress the above disclaimer
+#
+# changes since 1.0.2
+#   - thanks to Sherry Chang for pointing out the documentation difference
+#     between the POD text and the -h text
+#   - added support for bbftp's -r commandline option
+#
+# changes since 1.0.1
+#   - added -X and -Y commandline options to allow changes to send/receive
+#     window sizes
+#   - annoyance fix: if the bbftp executable wasn't found by system(), and
+#     quiet output mode was in effect, the error message displayed by bbftp was
+#     cryptic (would report that the bbftp results file wasn't found). this
+#     scenario will now result in bbscp's message stating that bbftp had a
+#     non-zero exit status
+#
+# changes since 1.0.0
+#   - added -p and -R bbftp option support, -p is set to 8 by default but can
+#     be overridden. the default output mode has been modified to no longer
+#     filter out the ssh banner
+#
+# changes since 0.1.4
+#   - minor changes to documentation -- mostly this is just a version number
+#     change
+#
+# changes since 0.1.3
+#   - default output mode of the script is now much more quiet - for the most
+#     part the only output given is a filtered OK/FAILURE report from bbftp.
+#     the script switches to more verbose output if the user provides 1 or
+#     more of the verbose output commandline options (-l, -t, -V, and -W)
+#
+# changes since 0.1.2
+#   - added -E and -L bbftp option support (thanks to Paul Kolano pointing out
+#     my overuse of quoting, which had caused previous attempts to fail)
+#
+# changes since 0.1.1
+#   - added -l commandline option to support extra verbose output from bbftp
+#
+# changes since 0.1.0
+#   - added -N commandline option to support transferring a single file, and to
+#     rename that file at the destination (both local-to-remote and
+#     remote-to-local are supported)
+#
+# changes since 0.0.4
+#   - bbscp now only allows sending files to an existing directory (or to a
+#     symlink that points to one)
+#   - "setoption nocreatedir" is now default, used to be "setoption createdir"
+#   - "-r 1" is now a default option given to bbftp, in order to avoid retries
+#     due to errors
+#   - the -D option for bbftp is now supported
+#
+# changes since 0.0.3
+#   - supports syntax "[user@]host:" for specifying transfer into a remote home
+#     directory
+#   - more effort to make sure a trailing "/" is added to remote directories
+#
+# changes since 0.0.2
+#   - added perl POD documentation
+#   - added support for recursive directory transfer from localhost to a remote
+#     host
+#   - added more handling of symlinks
+#
+# changes since 0.0.1
+#   - the -s option for bbftp is now on by default
+#   - added some more error checking
+#
+###############################################################################
+
+
+# begin perl POD documentation
+
+=head1 NAME
+
+bbscp - bbftp wrapper, provides an scp-like commandline interface
+
+=head1 SYNOPSIS
+
+    bbscp [OPTIONS] [[user@]host1:]file_or_dir1 [...] [[user@]host2:]dir2
+
+=head1 DESCRIPTION
+
+bbscp does I<unencrypted> copies of files either from the localhost to a directory on a remote host, or from a remote host to a directory on the localhost (see the -N option for the only exception to this). It assembles the proper commandline for bbftp (designed and tested for bbftp version 3.2.0, see I<RESTRICTIONS>) and then executes bbftp to perform the transfer(s).
+
+The "-s", "-p 2", and "-r 1" options for bbftp are set by default, along with the following options:
+
+  setoption keepaccess
+  setoption keepmode
+  setoption nocreatedir
+
+The options -p and -r can be overridden on the commandline.
+
+Note the following limitations and capabilities in different transfer scenarios:
+
+=over 4
+
+=item B<copying from localhost to remote host>
+
+=over 4
+
+=item - regular files
+
+bbftp will overwrite a pre-existing file of the same name on the remote host without asking for confirmation.
+
+=item - directories
+
+This script recursively transfers entire directories (I<only> for local-to-remote transfers!).
+
+=item - symbolic links (see I<RESTRICTIONS>)
+
+Symlinks on the localhost are treated just like the thing they point to, and are ignored if they point to something that doesn't exist.
+
+=back
+
+=item B<copying from remote host to localhost>
+
+=over 4
+
+=item - regular files
+
+bbftp will overwrite a pre-existing file of the same name on the localhost without asking for confirmation.
+
+=item - directories
+
+There is no way at this time to transfer entire directories from a remote host to the localhost.
+
+=item - symbolic links (see I<RESTRICTIONS>)
+
+Symlinks on the remote host are treated just like the thing they point to (which means they are ignored if they point to a directory or to something that doesn't exist).
+
+=back
+
+=back
+
+=head1 OUTPUT
+
+The default output mode of the script displays "OK" or "FAILURE" for each of the transfer operations that bbftp performs. This display occurs after bbftp has finished running, so it may be delayed for some time depending on the duration of the transfer(s).
+
+The script switches to more verbose output if the user provides 1 or more of the verbose output commandline options (-l, -t, -V, and -W).
+
+=head1 OPTIONS
+
+  -B    name/location of bbftp executable. default is "bbftp"
+
+  -d    dry-run. script performs its duty but does not actually execute bbftp.
+        the bbftp commandline is printed, along with the contents of the bbftp
+        control-file
+
+  -h    minimal help text
+
+  -k    keep bbftp command file that this script creates
+
+  -l    long-winded (extra verbose) output from bbftp. uses undocumented bbftp
+        option (-d)
+
+  -N    transfer a single file and rename it at the destination. both
+        local-to-remote and remote-to-local transfer is supported. see
+        RESTRICTIONS
+
+  -v    version of this script
+
+  -X    set the size of the TCP send window (in kilobytes). default is the
+        bbftp default size
+
+  -Y    set the size of the TCP receive window (in kilobytes). default is the
+        bbftp default size
+
+  -z    suppress the security disclaimer
+
+bbftp options that can be specified on the commandline of this script:
+
+  -D[min_port:max_port]   (e.g. "-D", "-D40000:40100")
+
+  -E <Server command to run>
+
+  -L <SSH command>
+
+  -p <number of parallel streams>
+
+  -R <bbftprc file>
+
+  -r <number of tries>
+
+  -t
+
+  -V
+
+  -W
+
+=head1 RESTRICTIONS
+
+=over 4
+
+=item B<Version of bbftp>
+
+It's very important to use bbftp version 3.2.0 with bbscp -- there's at least 1 known issue with using bbftp 3.1.0.
+
+=item B<Possible shell issues>
+
+bash and tcsh interpret commandline text in different ways, so you may need to use quotes or other delimiters to use bbscp. In particular, bash and tcsh are known to handle wildcards differently.
+
+=item B<Wildcards>
+
+If the -N option is not in use, wildcards can be used in remote host file specifications, but only for the names of files, not for directories. So, for example, "user@host:/tmp/file*" is acceptable, but "user@host:/tm*/file*" is not.
+
+=item B<Symbolic links>
+
+Symlinks are not bbftp's strong suit -- if you wish to transfer a collection of files that includes symlinks it is I<highly> recommended that you first make a tar-file and then transfer the tar-file.
+
+=item B<Use of -N option>
+
+Wildcards are not supported in remote host file specifications w/ -N.
+
+If the destination is a symlink it will be overwritten, regardless of what that symlink points to.
+
+=back
+
+=head1 EXAMPLES
+
+Note: these examples have been tested with bash, changes may be needed for them to work in tcsh (see I<RESTRICTIONS>).
+
+=item local file to remote directory (username must be the same on both machines)
+
+bbscp /u/username/data/file1 machine:target_dir
+
+=item local file to remote file w/ different name
+
+bbscp -N /u/username/data/file1 machine:file89
+
+=item multiple local files to remote directory
+
+bbscp /u/username1/data/*file username2@machine:/tmp
+
+=item local directory to remote home directory
+
+bbscp /u/username1/data username2@machine:
+
+=item remote file to local directory
+
+bbscp username1@machine:data/file5 /u/username2/source_dir
+
+=item remote file to local file w/ different name
+
+bbscp -N username1@machine:data/file5 /u/username2/source_dir/file93
+
+=item multiple remote files to local directory
+
+bbscp -V username1@machine:/u/username1/data/file* /tmp
+
+=item multiple remote files to local directory
+
+bbscp -V username1@machine:file1.txt username1@machine:stuff.dat /tmp
+
+=head1 AUTHOR
+
+Greg Matthews
+gregory.matthews@nasa.gov
+
+=cut
+
+# end perl POD documentation
+
+use strict;
+
+use Fcntl;
+use File::Find;
+use File::Temp "tempfile";
+use Getopt::Std;
+
+
+my $tmpFileNameTemplate = "/tmp/bbscp.XXXXXXX";
+my $tmpfileHandle;
+my $tmpfileName;
+my $keepTmpFile = 0;
+my $doingDryRun = 0;
+
+my $destinationFileSpec;
+
+my $startingFind = 0;
+my $pathPrefixToRemove;
+
+my $quietBbftpOutputMode = 1;
+my $keepBbftpResultsFile = 0;
+
+my $bbftpExec = "bbftp";
+my @bbftpExecExtraArgs = ("-s");
+
+
+Main();
+
+
+
+
+
+#--------------------------------------------------------------------------
+#
+# 
+#
+sub Main
+{
+    my %commandArgs;
+    my $capitalDoptionHasArgument = 0;
+
+    my @remoteUsers;
+    my @remoteHosts;
+    my @fileSpecs;
+
+    my $doTransferFromLocalToRemote;
+    my $commandlineWarning = 0;
+    my $changeFilename = 0;
+    my $suppressDisclaimer = 0;
+
+    my $bbftpReturnCode = 0;
+
+    # set the default number of parallel streams
+    my $numParallelStreams = 2;
+
+    # set the default number of tries (note: this is not the same as number of
+    # REtries)
+    my $numTries = 1;
+
+    # set default window sizes to indicate that bbscp shouldn't override the
+    # bbftp default
+    my $sendWindowSize = -1;
+    my $recvWindowSize = -1;
+
+    $SIG{'INT'}='sigHandler';
+
+    # bbftp's "-D" option can be given w/ and w/o an argument. here we see
+    # which it is, for later adjustment of option processing
+    foreach my $arg ( @ARGV ) {
+	if ( $arg =~ /^-D/ ) {
+	    if ( $arg =~ /^-D$/ ) {
+		$capitalDoptionHasArgument = 0;
+	    }
+	    else {
+		$capitalDoptionHasArgument = 1;
+	    }
+	}
+    }
+
+    if ( $capitalDoptionHasArgument ) {
+	getopts('B:D:dE:hkL:lNp:R:r:tVvWX:Y:z', \%commandArgs);
+    }
+    else {
+	getopts('B:DdE:hkL:lNp:R:r:tVvWX:Y:z', \%commandArgs);
+    }
+
+    # parse commandline args
+    {
+	if ( exists($commandArgs{h}) ) {
+	    printUsage();
+	    exit(0);
+	}
+
+	if ( exists($commandArgs{v}) ) {
+	    print("bbscp version: $version\n");
+	    exit(0);
+	}
+
+	foreach my $argLabel ( keys(%commandArgs) ) {
+	    # acts as a switch statement
+	    for ( $argLabel ) {
+		/^B$/    and do {
+		    $bbftpExec = $commandArgs{B};
+		    last;
+		};
+
+		/^D$/    and do {
+		    if ( $capitalDoptionHasArgument ) {
+			push(@bbftpExecExtraArgs, "-D" . $commandArgs{D});
+		    }
+		    else {
+			push(@bbftpExecExtraArgs, "-D");
+		    }
+
+		    last;
+		};
+
+		/^d$/    and do {
+		    $doingDryRun = 1;
+		    last;
+		};
+
+		/^E$/    and do {
+		    push(@bbftpExecExtraArgs, "-E");
+		    push(@bbftpExecExtraArgs, $commandArgs{E});
+		    last;
+		};
+
+		/^k$/    and do {
+		    $keepTmpFile = 1;
+		    last;
+		};
+
+		/^L$/    and do {
+		    push(@bbftpExecExtraArgs, "-L");
+		    push(@bbftpExecExtraArgs, $commandArgs{L});
+		    last;
+		};
+
+		/^l$/    and do {
+		    push(@bbftpExecExtraArgs, "-d");
+		    $quietBbftpOutputMode = 0;
+		    last;
+		};
+
+		/^N$/    and do {
+		    $changeFilename = 1;
+		    last;
+		};
+
+		/^p$/    and do {
+		    if ( $commandArgs{p} =~ m/^\d+$/ && $commandArgs{p} > 0 ) {
+			$numParallelStreams = $commandArgs{p};
+		    }
+		    else {
+			print("$0: Error - argument for -p must be " .
+			      "an integer - 1 or greater\n");
+			exit(1);
+		    }
+
+		    last;
+		};
+
+		/^R$/    and do {
+		    push(@bbftpExecExtraArgs, "-R");
+		    push(@bbftpExecExtraArgs, $commandArgs{R});
+		    last;
+		};
+
+		/^r$/    and do {
+		    if ( $commandArgs{r} =~ m/^\d+$/ && $commandArgs{r} > 0 ) {
+			$numTries = $commandArgs{r};
+		    }
+		    else {
+			print("$0: Error - argument for -r must be " .
+			      "an integer - 1 or greater\n");
+			exit(1);
+		    }
+
+		    last;
+		};
+
+		/^t$/    and do {
+		    push(@bbftpExecExtraArgs, "-t");
+		    $quietBbftpOutputMode = 0;
+		    last;
+		};
+
+		/^V$/    and do {
+		    push(@bbftpExecExtraArgs, "-V");
+		    $quietBbftpOutputMode = 0;
+		    last;
+		};
+
+		/^W$/    and do {
+		    push(@bbftpExecExtraArgs, "-W");
+		    $quietBbftpOutputMode = 0;
+		    last;
+		};
+
+		/^X$/    and do {
+		    if ( $commandArgs{X} =~ m/^\d+$/ && $commandArgs{X} > 0 ) {
+			$sendWindowSize = $commandArgs{X};
+		    }
+		    else {
+			print("$0: Error - argument for -X must be " .
+			      "an integer - 1 or greater\n");
+			exit(1);
+		    }
+
+		    last;
+		};
+
+		/^Y$/    and do {
+		    if ( $commandArgs{Y} =~ m/^\d+$/ && $commandArgs{Y} > 0 ) {
+			$recvWindowSize = $commandArgs{Y};
+		    }
+		    else {
+			print("$0: Error - argument for -Y must be " .
+			      "an integer - 1 or greater\n");
+			exit(1);
+		    }
+
+		    last;
+		};
+
+		/^z$/    and do {
+		    $suppressDisclaimer = 1;
+		    last;
+		};
+
+		print("$0: Error - unknown commandline arg '$argLabel'\n");
+		exit(1);
+	    }
+        }
+
+	push(@bbftpExecExtraArgs, "-p");
+	push(@bbftpExecExtraArgs, $numParallelStreams);
+
+	push(@bbftpExecExtraArgs, "-r");
+	push(@bbftpExecExtraArgs, $numTries);
+    }
+
+    if ( ! $suppressDisclaimer ) {
+	print("$0: DISCLAIMER - this program is different than scp in that " .
+	      "it does NOT encrypt files. If you require encrypted file " .
+	      "transfer then you must encrypt the file(s) yourself before " .
+	      "using this program. You can suppress this disclaimer message " .
+	      "by using the commandline argument -z\n\n");
+    }
+
+    # at a minimum we must at least have a source and a destination
+    if ( @ARGV < 2 ) {
+	print("$0: Error - no destination specified\n");
+	exit(1);
+    }
+
+    # parse and sanity check the source(s) and destination
+    {
+	# pieces of the regular expression used for each entry. we follow scp's
+	# model -- see scp's manpage for more info
+	my $user_V = '(?:(.+?) @)?';
+	my $userAndHost_V = '(?:' . $user_V . ' (.+?) :)?';
+
+	my $user;
+	my $host;
+	my $file;
+
+	# each entry is parsed into a fileSpec record
+	foreach my $arg ( @ARGV ) {
+	    my $fileSpec = {};
+
+	    if ( $arg =~ /^\s* ($userAndHost_V (.*?)) \s*$/x ) {
+		$file = $4;
+
+		if ( defined($2) ) {
+		    $user = $2;
+		    push(@remoteUsers, $user);
+		}
+		else {
+		    $user = "";
+		}
+
+		if ( defined($3) ) {
+		    $host = $3;
+		    push(@remoteHosts, $host);
+		}
+		else {
+		    $host = "";
+		}
+
+		$fileSpec->{fullText} = $1;
+		$fileSpec->{user} = $user;
+		$fileSpec->{host} = $host;
+		$fileSpec->{file} = $file;
+		push(@fileSpecs, $fileSpec);
+	    }
+	}
+
+	# last entry will of course be the destination
+	$destinationFileSpec = pop(@fileSpecs);
+
+	# if the filename is an empty string it means that either "user@host:"
+	# or "host:" was given, which is equivalent to "user@host:." so we use
+	# "." as the directory and add a trailing slash to let bbftp know it's
+	# a directory
+	if ( $destinationFileSpec->{file} eq "" ) {
+	    $destinationFileSpec->{file} = "./";
+	}
+	# we make sure there's a trailing slash in all other cases, _except_
+	# when the user has given the -N option to rename the transferred file
+	elsif ( ! $changeFilename && $destinationFileSpec->{file} !~ ?/$? ) {
+	    $destinationFileSpec->{file} .= "/";
+	}
+
+	# when the -N option is used the destination cannot be a directory, so
+	# we give an error and exit if the destination has a trailing slash
+	if ( $changeFilename && $destinationFileSpec->{file} =~ ?/$? ) {
+	    print("$0: Error - destination cannot be a directory when using " .
+		  "the -N option\n");
+	    exit(1);
+	}
+
+	# the -N option must be given w/ only 1 source and 1 destination
+	if ( $changeFilename && @fileSpecs > 1 ) {
+	    print("$0: Error - the -N option only supports the transfer of " .
+		  "1 file\n");
+	    exit(1);
+	}
+
+	# make sure we aren't dealing w/ more than 1 unique remote username
+	uniquifyList(\@remoteUsers);
+	if ( @remoteUsers > 1 ) {
+	    print("$0: Error - there should be at most 1 remote user " .
+		  "specified on commandline. you have: @remoteUsers\n");
+	    exit(1);
+	}
+
+	# make sure the number and use of remote host names is legal
+	uniquifyList(\@remoteHosts);
+	if ( @remoteHosts != 1 ) {
+	    if ( @remoteHosts > 1 ) {
+		print("$0: Error - there must be 1 remote host specified on " .
+		      "commandline. you have: @remoteHosts\n");
+	    }
+	    else {
+		print("$0: Error - there must be 1 remote host specified on " .
+		      "commandline. you have none\n");
+	    }
+
+	    exit(1);
+	}
+
+	# determine the direction of transfer (local->remote or remote->local)
+	if ( $destinationFileSpec->{host} eq "" ) {
+	    $doTransferFromLocalToRemote = 0;
+
+	    # do sanity checks on all the sources
+	    foreach my $fileSpec ( @fileSpecs ) {
+		if ( $fileSpec->{host} eq "" ) {
+		    print("$0: Error - all the files to be copied to the " .
+			  "local machine must come from the remote " .
+			  "machine. the following file does not fit that " .
+			  "requirement: $fileSpec->{fullText}\n");
+		    exit(1);
+		}
+		elsif ( $fileSpec->{file} eq "" ) {
+		    print("$0: Error - no file was specified for the " .
+			  "following remote host location: " .
+			  "$fileSpec->{fullText}\n");
+		    exit(1);
+		}
+	    }
+
+	    # since the destination is on the local machine we can directly
+	    # check that it's a directory. this check isn't needed if -N is
+	    # being used
+	    if ( ! $changeFilename && ! -d $destinationFileSpec->{file} ) {
+		print("$0: Error - destination must be a directory\n");
+		exit(1);
+	    }
+	}
+	else {
+	    $doTransferFromLocalToRemote = 1;
+
+	    foreach my $fileSpec ( @fileSpecs ) {
+		if ( $fileSpec->{host} ne "" ) {
+		    print("$0: Error - all the files to be copied to the " .
+			  "remote machine must come from the local " .
+			  "machine. the following file does not fit that " .
+			  "requirement: $fileSpec->{fullText}\n");
+		    exit(1);
+		}
+	    }
+	}
+    }
+
+    # open a temporary file to serve as the bbftp control file
+    {
+	# eval is used to trap any exceptions that are raised
+	eval {
+	    ($tmpfileHandle, $tmpfileName) = tempfile($tmpFileNameTemplate);
+	};
+
+	# exit if a temp file was requested but we weren't able to open one
+	if ( !defined($tmpfileHandle) ) {
+	    print("$0: Error - could not create a tempfile in /tmp\n");
+	    exit(1);
+	}
+    }
+
+    # set some options based on "bget" script from Steve Alter. note that
+    # Steve's script set 'createdir', but we've changed that to provide less
+    # dangerous operation of bbftp
+    {
+	print $tmpfileHandle ("setoption keepaccess\n");
+	print $tmpfileHandle ("setoption keepmode\n");
+	print $tmpfileHandle ("setoption nocreatedir\n");
+    }
+
+    # set send window size if requested by user
+    if ( $sendWindowSize > 0 ) {
+	print $tmpfileHandle ("setsendwinsize $sendWindowSize\n");
+    }
+
+    # set receive window size if requested by user
+    if ( $recvWindowSize > 0 ) {
+	print $tmpfileHandle ("setrecvwinsize $recvWindowSize\n");
+    }
+
+    # populate bbftp control file w/ actual transfer commands
+    if ( $doTransferFromLocalToRemote ) {
+	foreach my $fileSpec ( @fileSpecs ) {
+
+	    # source is a directory
+	    if ( -d $fileSpec->{file} ) {
+
+		# bail if user set -N
+		if ( $changeFilename ) {
+		    print("$0: Error - the -N option isn't supported when " .
+			  "transferring directories\n");
+		    deleteTempFile();
+		    exit(1);
+		}
+
+		# do a recursive lookup in the directory so as to transfer
+		# everything
+		$startingFind = 1;
+		eval {
+		    find({ wanted => \&findCallback,
+			   follow_fast => 1,
+			   no_chdir => 1 },
+			 $fileSpec->{file});
+		};
+		if ( $@ ) {
+		    print("$0: Error - problem with symlinks in the " .
+			  "following directory: $fileSpec->{file}\n");
+		    deleteTempFile();
+		    exit(1);
+		}
+	    }
+	    # source is a regular file
+	    elsif ( -f $fileSpec->{file} ) {
+		print $tmpfileHandle ("put $fileSpec->{file} " .
+				      "$destinationFileSpec->{file}\n");
+	    }
+	    # source doesn't exist
+	    elsif ( ! -e $fileSpec->{file} ) {
+#Todo: figure out if the user might want to pass in wild card file specs that
+#      aren't expanded by the shell (perhaps by quoting the file spec)
+#		print $tmpfileHandle ("mput $fileSpec->{file} " .
+#				      "$destinationFileSpec->{file}\n");
+
+		print("$0: Warning -- no such file or directory: " .
+		      "$fileSpec->{file}\n");
+		$commandlineWarning = 1;
+	    }
+	    else {
+		print("$0: Warning -- unable to transfer files of this type " .
+		      "($fileSpec->{file})\n");
+		$commandlineWarning = 1;
+	    }
+	}
+    }
+    else {
+	# -N has been given by user, so use transfer command that will rename
+	# file at the destination
+	if ( $changeFilename ) {
+	    foreach my $fileSpec ( @fileSpecs ) {
+		print $tmpfileHandle ("get $fileSpec->{file} " .
+				      "$destinationFileSpec->{file}\n");
+	    }
+	}
+	# otherwise, 'mget' handles all valid cases for remote-to-local
+	# transfer. this includes single files and multiple files through use
+	# of wildcards
+	else {
+	    foreach my $fileSpec ( @fileSpecs ) {
+		print $tmpfileHandle ("mget $fileSpec->{file} " .
+				      "$destinationFileSpec->{file}\n");
+	    }
+	}
+    }
+
+    # if a warning has been issued, pause to ask the user for guidance on
+    # whether to continue
+    if ( $commandlineWarning ) {
+	my $userResponse;
+
+	print("\n\n$0: ***** there were some warnings about files you'd " .
+	      "like to transfer...\n\n" .
+	      "do you want to continue? this will ignore those " .
+	      "files/directories\nthat raised warnings [default is no] : ");
+	$userResponse = <STDIN>;
+
+	if ( $userResponse !~ /^(y|Y|yes|YES)$/ ) {
+	    print("\n$0: exiting\n");
+	    exit(0);
+	}
+
+	print("\n$0: continuing...\n");
+    }
+
+    close($tmpfileHandle);
+
+    # form the actual bbftp commandline
+    my @cmdline;
+    if ( @remoteUsers ) {
+	@cmdline = ($bbftpExec, @bbftpExecExtraArgs, "-u", $remoteUsers[0],
+		    "-i", $tmpfileName, $remoteHosts[0]);
+    }
+    else {
+	@cmdline = ($bbftpExec, @bbftpExecExtraArgs, "-i", $tmpfileName,
+		    $remoteHosts[0]);
+    }
+
+    # this is the real deal
+    if ( !$doingDryRun ) {
+
+	# display the bbftp commandline and any bbftp output
+	if ( !$quietBbftpOutputMode ) {
+	    print("$0: will run commandline: @cmdline\n");
+	    print("$0: begin output of bbftp:\n");
+
+	    $bbftpReturnCode = system(@cmdline);
+
+	    print("\n$0: end output of bbftp\n");
+	}
+	# only show filtered bbftp output
+	else {
+	    my $resultFilename = $tmpfileName . ".res";
+	    my @resultsLines;
+	    my @filteredResultsLines;
+	    my $grepPid;
+
+	    # filter the stderr from bbftp through grep to remove the bbftp
+	    # error messages
+	    {
+		$grepPid = open(STDERR, "|-", "grep -v BBFTP-ERROR");
+
+		if ( !$grepPid ) {
+		    print("$0: Error - could not run grep. This problem can " .
+			  "be avoided by using any one of the following " .
+			  "bbscp options: -l, -t, -V, -W\n");
+		    exit(1);
+		}
+
+		$bbftpReturnCode = system(@cmdline);
+
+		# the grep process doesn't always die as expected, so we signal
+		# it just in case
+		kill('INT', $grepPid);
+	    }
+
+	    # attempt to open the results file that bbftp creates
+	    if ( !sysopen(RESULTFILE, $resultFilename, O_RDONLY) ) {
+		if ( $bbftpReturnCode == 0 ) {
+		    print("$0: couldn't open bbftp results " .
+			  "file '$resultFilename'\n");
+		}
+		else {
+		    $quietBbftpOutputMode = 0;
+		}
+
+		$keepBbftpResultsFile = 1;
+	    }
+	    else {
+		@resultsLines = <RESULTFILE>;
+
+		# the results file will contain all actions that bbftp was
+		# requested to take, including "setoption ..." and others. we
+		# strip out those lines that aren't important for the user to
+		# see.
+		#
+		# note that we strip out any lines with "mget ..." because
+		# 'mget' itself does not perform any transfers, rather it
+		# generates 0 or more 'get' commands that are each reported on
+		# a different result line
+		foreach my $line ( @resultsLines ) {
+		    if ( $line !~ m/^ (?:setoption | mget | setrecvwinsize |
+                                         setsendwinsize)/xs ) {
+			push(@filteredResultsLines, $line);
+		    }
+		}
+
+		if ( @filteredResultsLines ) {
+		    print(join("", @filteredResultsLines));
+		}
+		else {
+		    # if there turns out to not be any result lines that are
+		    # important for the user to see we warn them that it may be
+		    # the case that nothing happened
+		    print("$0: Warning -- bbftp appears to have not " .
+			  "transferred any files\n");
+		}
+	    }
+	}
+    }
+    # test run
+    else {
+	print("$0: would have run commandline: @cmdline\n");
+	print("$0: bbftp control-file ($tmpfileName) looks like:\n\n");
+	print(`cat $tmpfileName`);
+    }
+
+    if ( $bbftpReturnCode != 0 && !$quietBbftpOutputMode ) {
+	print("\n\n$0: bbftp had a non-zero exit status -- " .
+	      "an error might have occurred\n");
+    }
+
+    deleteTempFile();
+
+    exit($bbftpReturnCode >> 8);
+}
+
+
+#--------------------------------------------------------------------------
+#
+# signal handler. when a registered signal is caught we make note of the
+# signal in an error message. if we've opened a temp file we delete it
+#
+sub sigHandler
+{
+    my $sigName = $_[0];
+
+    print("\n$0: exiting with signal SIG$sigName\n");
+
+    deleteTempFile();
+
+    exit(1);
+}
+
+
+#--------------------------------------------------------------------------
+#
+# delete temp file if we've opened one
+#
+sub deleteTempFile
+{
+    if ( defined($tmpfileHandle) ) {
+	if ( !$keepTmpFile ) {
+	    unlink($tmpfileName);
+	}
+
+	# delete the bbftp results file, if it was created
+	if ( -o $tmpfileName . ".res" && !$keepBbftpResultsFile ) {
+	    unlink($tmpfileName . ".res");
+	}
+    }
+}
+
+
+#--------------------------------------------------------------------------
+#
+# routine called by find() for every entry in a directory tree
+#
+sub findCallback
+{
+    # this will be the filename or directory name, w/o any path
+#Todo: maybe use File::Spec for this?
+    $_ =~ /\/? ([^\/]+) $/x;
+    my $pathSuffix = defined($1) ? $1 : "";
+
+    if ( $startingFind ) {
+
+	# $File::Find::dir is the path of the directory the user has specified
+	# (the string for the path goes first through the shell, which does
+	# expansion if the user has specified it as such)
+	$pathPrefixToRemove = $File::Find::dir;
+
+	# we make sure the directory has a trailing forward slash
+	if ( $pathPrefixToRemove !~ ?/$? ) {
+	    $pathPrefixToRemove .= "/";
+	}
+
+	# if the user specifies a directory that is _not_ one of the following:
+	#
+	#  - the root directory (/)
+	#  - a directory specified with a relative path using "." or ".." as
+	#    the suffix
+	#
+	# then we want to make a directory with the same name on the remote
+	# machine. otherwise we just need to transfer everything in that
+	# directory to the remote destination
+	if ( $pathSuffix ne "" &&
+	     $pathSuffix ne "." &&
+	     $pathSuffix ne ".." ) {
+	    print $tmpfileHandle (
+                       "mkdir $destinationFileSpec->{file}/$pathSuffix\n");
+
+	    # to make sure we place all files/directories into that newly-made
+	    # remote directory we adjust accordingly
+	    $pathPrefixToRemove =~ s/(.*?) $pathSuffix \//$1/x;
+	}
+
+	$startingFind = 0;
+
+	return;
+    }
+
+    # if we suppose that the user is transferring directory "/u/user" and it
+    # looks like:
+    #
+    #   /u/user/
+    #           file1
+    #           file2
+    #           dir1/
+    #                file3
+    #
+    # as find() traverses /u/user it will set $File::Find::name to be the name
+    # of the current file/directory appended to the current location in the
+    # specified directory. so for our example, the below code will only be
+    # called four times, with $File::Find::name values:
+    #
+    #   /u/user/file1
+    #   /u/user/file2
+    #   /u/user/dir1
+    #   /u/user/dir1/file3
+    #
+    # and with $File::Find::dir values:
+    #
+    #   /u/user
+    #   /u/user
+    #   /u/user
+    #   /u/user/dir1
+    #
+    # if, however, the user specified a relative path, then all the above
+    # values would reflect that. so suppose the user specified "../user", now
+    # the $File::Find::name values would be:
+    #
+    #   ../user/file1
+    #   ../user/file2
+    #   ../user/dir1
+    #   ../user/dir1/file3
+    #
+    # and the $File::Find::dir values would be:
+    #
+    #   ../user
+    #   ../user
+    #   ../user
+    #   ../user/dir1
+    #
+    # Note about symlinks: they are treated just like the thing they point to,
+    # and are ignored if they point to something that doesn't exist
+
+    if ( ! -d $File::Find::name ) {
+	# remove prefix that is local-filesystem specific
+	my $relativeDirPath = $File::Find::dir . "/";
+	$relativeDirPath =~ s/^$pathPrefixToRemove//x;
+
+	print $tmpfileHandle (
+	             "put $File::Find::name " .
+	             "$destinationFileSpec->{file}/$relativeDirPath\n");
+    }
+    else {
+	# remove prefix that is local-filesystem specific
+	my $relativeFullPath = $File::Find::name;
+	$relativeFullPath =~ s/^$pathPrefixToRemove//x;
+
+	print $tmpfileHandle (
+		     "mkdir $destinationFileSpec->{file}/$relativeFullPath\n");
+    }
+}
+
+
+#--------------------------------------------------------------------------
+#
+# routine by Randal L. Schwartz, found at
+# http://www.stonehenge.com/merlyn/UnixReview/col11.html
+#
+sub uniquifyList  # ( listref )
+{
+    my $listRef = shift;
+    my %temp = ();
+
+    if ( !defined($listRef) ) {
+	return;
+    }
+
+    @$listRef = grep ++$temp{$_} < 2, @$listRef;
+}
+
+
+
+#--------------------------------------------------------------------------
+#
+# 
+#
+sub printUsage
+{
+    print << 'EOF';
+
+This script provides an scp-like interface to bbftp (designed and tested for
+bbftp version 3.2.0). It does NOT encrypt files before transferring them.
+Please see the man page for more information.
+
+EOF
+
+    print("Usage: $0 [-h] [-v] [-B <bbftp_executable>] [-d] [-k] " .
+	  "\n\t[-l] [-N] [-X <send_window_size>] [-Y <receive_window_size>] " .
+	  "\n\t[-z] <files-to-send> <destination>\n");
+    print << 'EOF';
+
+  -B    name/location of bbftp executable. default is "bbftp"
+
+  -d    dry-run. script performs its duty but does not actually execute bbftp.
+        the bbftp commandline is printed, along with the contents of the bbftp
+        control-file
+
+  -h    this help text
+
+  -k    keep bbftp command file that this script creates
+
+  -l    long-winded (extra verbose) output from bbftp. uses undocumented bbftp
+        option (-d)
+
+  -N    transfer a single file and rename it at the destination. both
+        local-to-remote and remote-to-local transfer is supported
+
+  -v    version of this script
+
+  -X    set the size of the TCP send window (in kilobytes). default is the
+        bbftp default size
+
+  -Y    set the size of the TCP receive window (in kilobytes). default is the
+        bbftp default size
+
+  -z    suppress the security disclaimer
+
+bbftp options that can be specified on the commandline of this script:
+
+  -D[min_port:max_port]   (e.g. "-D", "-D40000:40100")
+
+  -E <Server command to run>
+
+  -L <SSH command>
+
+  -p <number of parallel streams>
+
+  -R <bbftprc file>
+
+  -r <number of tries>
+
+  -t
+
+  -V
+
+  -W
+
+author: Greg Matthews    gregory.matthews@nasa.gov
+EOF
+}
