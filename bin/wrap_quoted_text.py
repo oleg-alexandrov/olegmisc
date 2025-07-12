@@ -85,7 +85,16 @@ def process_file(file, beg_line):
         lines[i] = re.sub(r'\s*' + tag + r'\s*', '', lines[i])
         text = text + lines[i]
 
-    # Wrap the text            
+    # Now search from beg_line backward, till we hit po::.
+    # This will collect the text for the given boost program
+    # option that needs to be wrapped.
+    for i in range(beg_line - 1, -1, -1):
+        if re.search(r'po::', lines[i]):
+            beg_line = i + 1
+            break
+        text = lines[i] + text
+
+    # Wrap the text
     text = wrap_text(text)
 
     # Replace the text. Join earlier line, current text, and later lines
