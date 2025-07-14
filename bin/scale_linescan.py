@@ -63,6 +63,11 @@ def write_json(file, header, j):
 
     # Convert the json to string
     data = json.dumps(j, indent = 2, sort_keys=True)
+    
+    # Create the directory having the output file, if it does not exist
+    outDir = os.path.dirname(file)
+    if not os.path.exists(outDir):
+        os.makedirs(outDir)
 
     # Write the header and the json data to the file
     print("Writing: ", file)
