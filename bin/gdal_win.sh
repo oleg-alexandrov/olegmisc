@@ -6,10 +6,17 @@
 if [ "$#" -lt 1 ]; then echo Usage: $0 argName; exit; fi
 
 dem=$1
+minmin=$2
 
 a=$(gdalinfo $dem |grep -i "Upper Left" | perl -p -e "s#^.*?\((.*?),.*?\).*?\n#\$1#g")
 b=$(gdalinfo $dem |grep -i "Upper Left" | perl -p -e "s#^.*?\(.*?,(.*?)\).*?\n#\$1#g")
 c=$(gdalinfo $dem |grep -i "Lower Right" | perl -p -e "s#^.*?\((.*?),.*?\).*?\n#\$1#g")
 d=$(gdalinfo $dem |grep -i "Lower Right" | perl -p -e "s#^.*?\(.*?,(.*?)\).*?\n#\$1#g")
 
-echo $a $b $c $d
+# if minmin is empty, print as minx maxy maxx miny. Else
+# print as minx miny maxx maxy
+if [ "$minmin" == "" ]; then
+  echo $a $b $c $d
+else
+  echo $a $d $c $b
+fi

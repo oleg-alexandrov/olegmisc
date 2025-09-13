@@ -555,6 +555,10 @@ function sgi {
         --min $min --max $max $*
 }
 
+function gv {
+    ~/bin/gdal_win.sh $1 minmin
+}
+
 # While this is an environment variable, it needs to be set here
 # because it is used only interactively
 if [ "$PS1" ]; then
@@ -565,7 +569,7 @@ if [ "$PS1" ]; then
  fi
 fi
 
-# Enviromental settings
+# Environmental settings
 
 # visualization and editing
 export EDITOR=vim
