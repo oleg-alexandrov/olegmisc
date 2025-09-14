@@ -158,6 +158,15 @@
         ],
         "description": ""
     },  
+    "cpp-vw": {
+		"scope": "cpp",
+        "prefix": "vvs",
+        "body": [
+            "vw::vw_out() << \"",
+        ],
+        "description": ""
+    },
+    
     "cpp-cout1": {
 		"scope": "cpp",
         "prefix": "cs",
