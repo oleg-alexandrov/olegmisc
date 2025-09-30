@@ -39,4 +39,4 @@ while [ 1 ]; do
 done
 
 echo Updating the local machine time
-sudo ntpdate pool.ntp.org
+sudo ntpdate time.google.com

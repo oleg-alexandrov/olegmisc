@@ -25,7 +25,6 @@ for filename in sys.argv[1:]:
 
 # Print each spreadsheet row
 for count in range(max_num_rows):
-
     row = ""
     for ptr in cols:
         if len(ptr) < count + 1:
