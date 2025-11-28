@@ -559,6 +559,19 @@ function gv {
     ~/bin/gdal_win.sh $1 minmin
 }
 
+function gh {
+    # Run gdaldem hillshade
+    f=$1
+    g=${f/.tif/_hill.tif}
+    # if f equals g, quit
+    if [ "$f" = "$g" ]; then
+        echo Input and output files are the same, quitting
+        return
+    fi
+    gdaldem hillshade -multidirectional -compute_edges $f $g
+    echo Wrote: $g
+}
+
 # While this is an environment variable, it needs to be set here
 # because it is used only interactively
 if [ "$PS1" ]; then
