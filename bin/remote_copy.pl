@@ -94,20 +94,19 @@ MAIN:{
 
       my $subDir = get_dirname($rel_path);
 
-      # Ensure that $subDir exists on remote machine
-      if ($subDir =~ /\// && $subDir ne "./") {
-        my $res = qx(ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $to mkdir -p $subDir 2>&1);
-        my $exitStatus = ($? >> 8);
-        if ($exitStatus != 0){
-          print "Failed: $res\n";
-        }
-      }
-
       $file = getcwd if ($file eq "."); # bugfix
 
       $subDir = clean_path($subDir);
-      # Stop complaining about untrusted host
-      my $cmd = "rsync -P -avz $opts $file  -e 'ssh $to -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' :~/$subDir 2>/dev/null";
+      
+      # We construct a special rsync-path option that runs mkdir before rsync starts.
+      # Do it only if $subDir is not empty
+      my $rsync_mkdir_opt = "";
+      if ($subDir ne "") {
+        $rsync_mkdir_opt = " --rsync-path='mkdir -p \"$subDir\" && rsync'";
+      }
+
+      # Stop complaining about untrusted host. Added $rsync_mkdir_opt to the command.
+      my $cmd = "rsync -P -avz $opts $rsync_mkdir_opt $file  -e 'ssh $to -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' :~/$subDir 2>/dev/null";
 
       if ($remoteDir ne ""){
         $cmd =~ s/$to:~\//$to:/g;

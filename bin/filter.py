@@ -44,4 +44,15 @@ for line in sys.stdin:
     if float(columns[col - 1]) <= val and op == 'le':
         print(line, end="")
         continue
+        
+    # same for gt, which is > rather than >=
+    if float(columns[col - 1]) > val and op == 'gt':
+        print(line, end="")
+        continue
+    
+    # same for lt, which is < rather than <=
+    if float(columns[col - 1]) < val and op == 'lt':
+        print(line, end="")
+        continue
+
 

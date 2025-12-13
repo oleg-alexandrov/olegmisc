@@ -17,68 +17,6 @@ sub clean_path{
   return $path;
 }
 
-sub set_path{
-  $ENV{'PATH'} = $ENV{'HOME'} . '/projects/BinaryBuilder/latest/bin:' . $ENV{'HOME'} . '/projects/base_system/bin:/byss/packages/gdal-1.8.1/bin/:' . $ENV{'PATH'};
-}
-
-sub maybe_call_itself_on_remote_host{
-
-  print $0 . " " . join(" ", @ARGV) . "\n\n";
-
-  my @args = @_;
-  my $u_host = get_u_host();
-
-  if ( !exists $ENV{"L2"} || $ENV{"L2"} !~ /\@/ ){
-    print "ERROR: Incorrect value of environmental variable: L2\n";
-    exit(1);
-  }
-  my $r_u_host = $ENV{"L2"};
-
-  if ($u_host ne $r_u_host){
-
-    # Connect to the right machine and relaunch itself
-    # But first copy the data there.
-
-    foreach my $arg (@args){
-      if (-e $arg){
-        print qx(remote_copy.pl $arg $r_u_host) . "\n";
-      }
-    }
-
-    # Use pwd -L, this avoids dereferencing sym links.
-    my $currDir=qx(/bin/pwd -L);
-    $currDir =~ s/\s*$//g; # wipe trailing white space
-
-    my $cmd = "ssh $r_u_host 'source .bashenv; nohup nice -20 " . basename($0) . " --dir " .
-       get_path_in_home_dir($currDir) . " " . join(" ", @args) . "' 2>/dev/null";
-    
-    print qx($cmd) . "\n";
-    exit(0);
-  }
-
-  # If on the right machine, but not in the right dir,
-  # fix that, and call itself
-  if (scalar(@args) >= 2 && $args[0] eq '--dir'){
-    shift @args;
-    my $dir = shift @args;
-    chdir $dir;
-    my $cmd = $0 . " " . join(" ", @args);
-    print qx($cmd) . "\n";
-    exit(0);
-  }
-
-}
-
-sub get_u_host{
-
-  my $host = qx(uname -n);
-  $host =~ s/\..*?$//g;
-
-  my $ans = qx(whoami) . '@' . $host;
-  $ans =~ s/\n//g;
-  return $ans;
-}
-
 sub get_path_in_home_dir{
 
   # Make the input path absolute. Then, from
@@ -147,21 +85,6 @@ sub get_path_in_home_dir{
   $path = clean_path($path);
 
   return $path;
-}
-
-sub generate_random_string{
-
-  my $len=shift;# the length of
-  # the random string to generate
-
-  my @chars=('a'..'z','A'..'Z','0'..'9','_');
-  my $random_string;
-  foreach (1..$len){
-    # rand @chars will generate a random
-    # number between 0 and scalar @chars
-    $random_string.=$chars[rand @chars];
-  }
-  return $random_string;
 }
 
 sub get_home_dir{
