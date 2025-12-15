@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Create a reverse SSH tunnel to the given machine, trying ports from 5001 to
-# 5999. Push the selected port to the remote machine using bin/set_port.sh so
-# that it can be used for the reverse SSH connection.
+# 5999. Record the selected port on the remote machine (via bin/set_port.sh)
+# so it knows which port connects back to this host.
 
 if [ "$#" -lt 1 ]; then echo Usage: $0 machine; exit; fi
 machine=$1; shift
