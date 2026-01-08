@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 
-# Take a csm linescan json file, and make it work for an image with 
-# the resolution that is 2x finer in resolution.
+# Take a csm linescan json file, and make it work for an image with the
+# resolution that is 2x finer. This expects as input the number of columns
+# (samples) and rows (lines) in the output image (which are roughly 2x the width
+# and height specified in the input camera that is to be modified).
+
+# Usage: scale_linescan.py <in.json> <out.json> <out samples> <out lines>
+
+# This is a research script that is not officially supported.
 
 import sys, json, os, re
 import numpy as np

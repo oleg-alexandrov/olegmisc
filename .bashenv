@@ -1,6 +1,6 @@
 export ISISDATA=$HOME/projects/isis3data
 export ISISROOT=$HOME/miniconda3/envs/asp_deps
-export PATH=$HOME/projects/StereoPipeline/install/bin:$ISISROOT/bin:$HOME/bin:/opt/homebrew/bin:$PATH:/usr/bin:/usr/local/bin:.
+export PATH=$HOME/projects/StereoPipeline/install/bin:$ISISROOT/bin:$HOME/bin:$HOME/projects/BinaryBuilder/StereoPipeline/bin:/opt/homebrew/bin:$PATH:/usr/bin:/usr/local/bin:.
 export PROJ_DATA=$ISISROOT/share/proj
 
 export PERL5LIB=$PERL5LIB:$HOME/bin
