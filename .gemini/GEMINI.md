@@ -1,23 +1,8 @@
 # Style Guidelines for Gemini Bot
 
-## Braces for Single-Line If Statements
+## Braces for Single-Line Statements
 
-**Do NOT use braces when an if statement has only one line afterwards.**
-
-Good:
-```cpp
-if (dist >= 0)
-  return cam->point_to_pixel(ecef_point);
-```
-
-Bad:
-```cpp
-if (dist >= 0) {
-  return cam->point_to_pixel(ecef_point);
-}
-```
-
-This applies to all single-line conditionals (if, else, for, while, etc.).
+Do NOT use braces when an if statement has only one line afterwards. This applies to all single-line conditionals (if, else, for, while, etc.).
 
 ## C++ Code Style Conventions (from Copilot)
 
@@ -35,6 +20,8 @@ This applies to all single-line conditionals (if, else, for, while, etc.).
 - **When function arguments are split across multiple lines, indent following lines to align with the first argument**
 
 ## VisionWorkbench Namespace Conventions
+
+vw stands for VisionWorkbench.
 
 - `vw::math::norm_2` - norm_2 is in vw::math namespace
 - `vw::math::subvector` - subvector is in vw::math namespace
@@ -72,3 +59,26 @@ Before writing to ANY file:
 **NEVER use `>` (overwrite) without explicit confirmation from the user.**
 
 This prevents accidental data loss of important configuration files or user data.
+
+## Whitespace Cleanup
+
+- **Always strip trailing whitespace at end of lines if found** - actively remove any spaces/tabs at line endings when editing code
+
+## Header Includes
+
+- **Always check if required headers are included** when adding code that uses new classes or functions
+- If compilation fails with "not a member of" or "was not declared" errors, add the appropriate header include
+- Common VW headers: vw/Math/NewtonRaphson.h, vw/Cartography/BathyStereoModel.h, vw/Math/Matrix.h
+
+## Namespace Verification
+
+- **Always verify the correct namespace for any function you use** - don't assume based on similar functions
+- Use grep or view existing code to confirm the exact namespace (e.g., `vw::math::select_col` for matrices vs `vw::select_col` for images)
+- Common mistakes: select_col, dot_prod, norm_2 - check if they need vw::math:: prefix for matrix/vector operations
+
+
+## Displaying Diffs
+- **When asked to "show diffs", display in unified diff format** with `-` and `+` lines
+- **Use the standard diff format** like git diff shows, with context lines and highlighting
+- Show what was removed (lines starting with `-`) and what was added (lines starting with `+`)
+- This is the preferred format, matching GitHub's default diff display
