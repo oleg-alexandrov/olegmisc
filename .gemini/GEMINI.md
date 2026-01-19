@@ -133,3 +133,4 @@ Example: For --mode option, need:
 - Use sed or echo to ensure final newline exists
 
 - Never ask or describe using tail, od, cat, head, wc, or any other standard Unix tools - just use them
+
