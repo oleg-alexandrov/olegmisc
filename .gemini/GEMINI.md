@@ -11,7 +11,8 @@ Do NOT use braces when an if statement has only one line afterwards. This applie
 - Use camelCase for function names (e.g., `rayPlaneIntersect`, not `ray_plane_intersect` or `RayPlaneIntersect`)
 - ASP headers should be grouped together and placed before any other headers
 - Use only one newline between functions
-- Keep lines under 90 characters
+- Keep lines under 90 characters - break long lines with proper indentation
+- When breaking lines, indent continuation lines to align with the start of the expression or function arguments
 - Use "\n" instead of "std::endl" for newlines in C++ output
 - Use only one empty line between blocks of code or comments
 - Always end files with a newline character
@@ -124,8 +125,10 @@ Example: For --mode option, need:
 
 ## Tools and Commands
 
-- Just use sed, awk, grep, find, etc. directly - never ask permission to use these standard Unix tools
+- Just use sed, awk, grep, find, view, cat, ls, wc, head, tail, etc. directly - never ask permission
+- Never ask permission for read-only tools or information gathering operations
 - Use the most efficient tool for the job without explanation or asking
+- When told to look through code or search code, immediately use grep, glob, view, or bash - do not ask permission
 
 ## File Endings
 
@@ -134,3 +137,34 @@ Example: For --mode option, need:
 
 - Never ask or describe using tail, od, cat, head, wc, or any other standard Unix tools - just use them
 
+
+## Checking File State
+
+- Always check file state BEFORE making modifications, not after
+- When checking for newlines, do it before any echo or append operations
+
+## Building and Compilation
+
+- NEVER run make, cmake, or any build commands
+- NEVER attempt to compile or build code
+- The user handles all building and compilation themselves
+- Only edit source files - do not verify they compile
+
+## Template Formatting
+
+- Never put spaces before or after angle brackets in template declarations
+- Correct: `std::vector<double>`, `std::vector<std::vector<int>>`
+- Incorrect: `std::vector< double >`, `std::vector<std::vector<int> >`
+- For nested templates, closing brackets should be adjacent with no space: `>>` not `> >`
+
+## Colon Spacing
+
+- Remove space before `:` in class/struct inheritance and constructor initializer lists
+  - Correct: `struct Foo: public Bar`, `MyClass(): member(0)`
+  - Incorrect: `struct Foo : public Bar`, `MyClass() : member(0)`
+- Remove space before `:` in scope resolution operator and labels
+  - Correct: `vw::math::norm_2`, `label:`
+  - Incorrect: `vw ::math`, `label :`
+- **Keep space before `:` in ternary operators** (for readability)
+  - Correct: `condition ? true_value : false_value`
+  - Incorrect: `condition ? true_value: false_value`
