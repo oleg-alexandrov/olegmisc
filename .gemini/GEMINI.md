@@ -1,5 +1,12 @@
 # Style Guidelines for Gemini Bot
 
+## Diff Display Convention
+
+When showing code changes:
+- Use **red (-)** for removed/old lines
+- Use **green (+)** for added/new lines
+- Follow standard diff format conventions
+
 ## Braces for Single-Line Statements
 
 Do NOT use braces when an if statement has only one line afterwards. This applies to all single-line conditionals (if, else, for, while, etc.).
@@ -19,6 +26,13 @@ Do NOT use braces when an if statement has only one line afterwards. This applie
 - Remove double newlines in any code you touch
 - No trailing whitespace at the end of any line
 - When function arguments are split across multiple lines, indent following lines to align with the first argument
+- **Option help text strings:** Wrap at ~90 characters per line. Split long help text into multiple quoted strings that are automatically concatenated:
+  ```cpp
+  ("left-bathy-mask", po::value(&global.left_bathy_mask),
+    "Mask to use for the left image when doing bathymetry. Pixels classified as "
+    "water must be either no data or have zero value in the mask, while land pixels "
+    "must have positive value.")
+  ```
 
 ## VisionWorkbench Namespace Conventions
 
@@ -168,3 +182,43 @@ Example: For --mode option, need:
 - **Keep space before `:` in ternary operators** (for readability)
   - Correct: `condition ? true_value : false_value`
   - Incorrect: `condition ? true_value: false_value`
+
+## User Interaction
+
+- Do NOT repeatedly ask "anything else I can help with?" or similar prompts
+- The user will tell you when they need work done
+- Wait for explicit requests before offering more help
+- Never ask permission to use standard Unix tools like xargs, chmod, find, etc.
+- Just use them directly when needed
+
+## Namespace Qualifiers
+
+- Don't do blind sed-style replacements when adding std:: or other namespace qualifiers
+- First understand the code context:
+  - Check what headers are included
+  - Look for using declarations/directives
+  - See what patterns surrounding code uses
+  - Understand the actual types and functions being used
+- Read and comprehend the code before making namespace changes
+- Avoid mechanical pattern matching - use holistic code understanding
+
+## RST Documentation Formatting
+
+- Section underlines must be exactly the same length as the section heading
+  - Correct: 
+    ```
+    Multispectral image bands
+    -------------------------
+    ```
+    (25 characters in heading = 25 dashes)
+  - Incorrect:
+    ```
+    Multispectral image bands
+    --------------------------
+    ```
+    (26 dashes for 25-character heading)
+- RST uses different characters for different heading levels:
+  - `=` for top-level sections
+  - `-` for subsections
+  - `~` for sub-subsections
+  - `^` for sub-sub-subsections
