@@ -2,17 +2,12 @@ export ISISDATA=$HOME/projects/isis3data
 export ISISROOT=$HOME/miniconda3/envs/asp_deps
 export PATH=$HOME/projects/StereoPipeline/install/bin:$ISISROOT/bin:$HOME/bin:$HOME/projects/BinaryBuilder/StereoPipeline/bin:/opt/homebrew/bin:$PATH:/usr/bin:/usr/local/bin:.
 export PATH="$PATH:/home/oalexan1/.local/bin" # for copilot
-
+export COPILOT_CUSTOM_INSTRUCTIONS_DIRS="$HOME/.gemini:$HOME/.copilot"
 export PROJ_DATA=$ISISROOT/share/proj
-
 export PERL5LIB=$PERL5LIB:$HOME/bin
 export VISUAL=~/bin/custom_vim.sh
-
-# These are workarounds for a XEmacs bug
 export LANG=C
-unset XMODIFIERS
 
-export M=oalexan1@m.ndc.nasa.gov
 export L1='oalexan1@lunokhod1'
 export L2='oalexan1@lunokhod2'
 export GIT_SSH_COMMAND='ssh -o "StrictHostKeyChecking no"' # so that git does not ask 
