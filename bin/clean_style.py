@@ -63,6 +63,9 @@ text = re.sub(r'\s*\)\s*{', ') {', text)
 # Replace the tab character with 4 spaces
 text = re.sub(r'\t', '    ', text)
 
+# Remove multiple consecutive empty lines (keep only one empty line max)
+text = re.sub(r'\n(\s*\n){2,}', '\n\n', text)
+
 # Restore the comments
 for placeholder, original_comment in comment_map.items():
     text = text.replace(placeholder, original_comment)

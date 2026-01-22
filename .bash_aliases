@@ -167,7 +167,7 @@ alias chm='cd ~smcmich1/projects/StereoPipelineTest; chown -R :ar-gg-ti-asp-main
 alias chpr='find . -type d -exec chmod u=rwx,go=rx {} +; find . -type f -exec chmod u=rw,go=r {} +'
 alias cic='conda install -c conda-forge'
 alias ck='cd $HOME/projects/csm/kc'
-alias cl='conda list'
+alias cl='copilot --allow-all --allow-all-tools --add-dir ~/ --allow-all-paths --allow-all-urls'
 alias cld='perl -p -e "s#(^.*?E).*(\s*)?\$#\$1\$2#g"'
 alias clda='perl -p -e "s#(^.*?E).*(\s*)?\$#\$1.cal.echo.map.tif\$2#g"'
 alias cll='perl -pi -e "s#.*?\]\s+:##g"'
