@@ -9,7 +9,45 @@ When showing code changes:
 
 ## Braces for Single-Line Statements
 
-Do NOT use braces when an if statement has only one line afterwards. This applies to all single-line conditionals (if, else, for, while, etc.).
+**CRITICAL: Remove braces from single-statement control flow blocks.**
+
+Do NOT use braces when a control flow statement (if, else, for, while, do-while, etc.) has only one statement in its body.
+
+**When editing code:**
+- If you see a control flow block with braces containing only one statement, remove the braces
+- Examples:
+  ```cpp
+  // WRONG:
+  if (condition) {
+    doSomething();
+  }
+  
+  // CORRECT:
+  if (condition)
+    doSomething();
+  
+  // WRONG:
+  for (int i = 0; i < n; i++) {
+    process(i);
+  }
+  
+  // CORRECT:
+  for (int i = 0; i < n; i++)
+    process(i);
+  ```
+
+**IMPORTANT: Keep braces for scope blocks**
+- Do NOT remove braces from blocks that exist purely for scoping (not attached to if/for/while/etc.)
+- These change semantics and must be preserved:
+  ```cpp
+  // CORRECT - Keep braces for scope control:
+  {
+    int temp = 5;
+    doSomething(temp);
+  } // temp goes out of scope
+  ```
+
+**Exception:** Keep braces if there are multiple statements or if removing them would cause ambiguity in nested conditions.
 
 ## C++ Code Style Conventions (from Copilot)
 
@@ -26,6 +64,9 @@ Do NOT use braces when an if statement has only one line afterwards. This applie
 - Remove double newlines in any code you touch
 - No trailing whitespace at the end of any line
 - When function arguments are split across multiple lines, indent following lines to align with the first argument
+- **ALWAYS adjust continuation line indentation when modifying or adding functions** - continuation lines must align with the opening parenthesis, not at some arbitrary fixed indentation
+  - Count characters from start of line to the opening `(` - that's how many spaces continuation lines need
+  - Example: `void myFunction(int arg1,` = 15 chars, so next line needs 15 spaces before `int arg2`
 - **Option help text strings:** Wrap at ~90 characters per line. Split long help text into multiple quoted strings that are automatically concatenated:
   ```cpp
   ("left-bathy-mask", po::value(&global.left_bathy_mask),
@@ -33,6 +74,12 @@ Do NOT use braces when an if statement has only one line afterwards. This applie
     "water must be either no data or have zero value in the mask, while land pixels "
     "must have positive value.")
   ```
+- **For loop style:**
+  - Use postincrement `i++` NOT preincrement `++i` in loop expressions
+  - Always use spaces around `=` in initialization: `i = 0` NOT `i=0`
+  - Always use spaces around comparison operators: `i < size` NOT `i<size`
+  - Correct: `for (size_t i = 0; i < lens.size(); i++)`
+  - Incorrect: `for (size_t i=0; i<lens.size(); ++i)`
 
 ## VisionWorkbench Namespace Conventions
 
@@ -93,8 +140,19 @@ This prevents accidental data loss of important configuration files or user data
 - Common mistakes: select_col, dot_prod, norm_2 - check if they need vw::math:: prefix for matrix/vector operations
 
 
-## Displaying Diffs
-- Always show diffs in a nicely formatted way with `-` and `+` lines inside code blocks
+## Displaying Diffs and Changes
+
+**ALWAYS show what you changed** - never make silent edits!
+
+When modifying files, choose one of these methods:
+1. **Pretty diff format** (preferred for small changes):
+   ```diff
+   - old line
+   + new line
+   ```
+2. **Full printout** - use `view` to show the modified section
+3. **Summary with key lines** - for large files, show the changed function/section
+
 - Use markdown code blocks with diff syntax highlighting (```diff)
 - Show what was removed (lines starting with `-`) and what was added (lines starting with `+`)
 - Include section headers describing each change
@@ -190,6 +248,11 @@ Example: For --mode option, need:
 - Wait for explicit requests before offering more help
 - Never ask permission to use standard Unix tools like xargs, chmod, find, etc.
 - Just use them directly when needed
+- **NEVER prompt the user to "get back to work" or say things like "ready to implement?" or "want to move on?"**
+  - The user knows what they want to do next and will tell you
+  - Don't end responses with "ready when you are" or similar eager prompts
+  - Trust the user to drive the conversation - they're always on track
+  - Even well-meaning/amusing prompts to return to tasks are annoying
 
 ## Namespace Qualifiers
 
@@ -222,3 +285,38 @@ Example: For --mode option, need:
   - `-` for subsections
   - `~` for sub-subsections
   - `^` for sub-sub-subsections
+
+## CMake File Updates
+
+When adding new source files (.cc, .h) to VisionWorkbench or StereoPipeline:
+- Always touch the CMakeLists.txt in the directory where you added the file
+- Always touch the CMakeLists.txt in the parent directory
+- This triggers CMake to regenerate and pick up new files via `get_all_source_files()`
+- Example: Adding `vw/Math/GeomUtils.cc` requires touching both:
+  - `vw/Math/CMakeLists.txt`
+  - `vw/CMakeLists.txt`
+
+## Copyright Year Updates
+
+When creating or editing files:
+- **New files**: Set copyright year to current year in the format `2006-YYYY` where YYYY is the current year
+- **Edited files**: Update the end year to current year if not already current
+- Format: `Copyright (c) 2006-YYYY, United States Government...`
+- Always update copyright when making any edits to a file
+- Current year as of this writing: 2026 (but check and use actual current year)
+
+## Style Cleaning Tool
+
+User has a Python script at `~/bin/clean_style.py` for automated C++ style cleaning.
+
+**Usage:**
+```bash
+~/bin/clean_style.py <input_cpp_file>
+```
+
+**When to use:**
+- When user says "run my tool to clean style" or "clean style"
+- After making C++ code changes if user requests style cleanup
+- Applies automated formatting and style fixes to C++ files
+
+**Note:** This is a custom tool specific to the user's workflow for enforcing C++ code style conventions.
