@@ -1,5 +1,114 @@
 # Style Guidelines for Gemini Bot
 
+## Line Boundary Calculations (CRITICAL)
+
+**You and Gemini are both prone to off-by-one errors when deleting or extracting code blocks.**
+
+**ALWAYS follow this strategy for bulk deletions/extractions:**
+
+1. **Find the boundaries with grep:**
+   ```bash
+   grep -n "^void function_name" file.cc  # Find start
+   grep -n "^} // End function" file.cc   # Find end marker
+   ```
+
+2. **VERIFY with view tool** - check 5-10 lines of context:
+   ```bash
+   view file.cc start_line-5 end_line+5
+   ```
+   - Verify the start line is correct
+   - Verify the end line doesn't belong to a different function
+   - Check for closing braces that might be for nested blocks
+
+3. **Double-check line count** after extraction:
+   ```bash
+   sed -n 'START,ENDp' file.cc | wc -l  # Should match expected size
+   ```
+
+4. **For sed deletions** - always view first, delete second:
+   ```bash
+   sed -n 'START,ENDp' file.cc  # Preview what will be deleted
+   # Check output carefully before proceeding
+   sed -i 'START,ENDd' file.cc  # Only after verification
+   ```
+
+**Common mistakes to avoid:**
+- Deleting the closing brace of the PREVIOUS function
+- Including the opening of the NEXT function
+- Missing nested closing braces at the end
+- Trusting grep output without viewing context
+
+**Remember:** One extra or missing line can break compilation. Always verify boundaries!
+
+## User's Workflow and Error Recovery (CRITICAL)
+
+**The user commits after each successful change as safety checkpoints.**
+
+**What this means:**
+- User builds, tests, and commits after each of your changes
+- User can easily rollback if you make mistakes
+- This is their safety net, NOT an excuse for you to be less careful
+
+**If you mess up:**
+- **ASK the user to undo** with `git checkout file` or `git reset --hard`
+- Don't try to "fix forward" by manually reverting your changes
+- You might make it worse or miss something
+- User can restore clean state faster than you can fix your mistakes
+
+**Stay disciplined:**
+- Follow all backup and verification strategies above
+- Don't get reckless just because user has git rollback
+- Aim for zero mistakes requiring rollback
+- User's commits are last resort, not primary error handling
+
+## Backup Strategy for Complex Operations (CRITICAL)
+
+**NEVER use old backups when doing complex work - they may not have recent changes!**
+
+**ALWAYS follow this strategy for complex operations (formatting, refactoring, bulk edits):**
+
+1. **Make a fresh backup RIGHT BEFORE the complex operation:**
+   ```bash
+   cp file.cc file.cc.backup_$(date +%s)  # Timestamped backup
+   ```
+
+2. **Perform the complex operation** (sed, awk, rebuild from temp file, etc.)
+
+3. **After completing the work, diff against the fresh backup:**
+   ```bash
+   diff -u file.cc.backup_TIMESTAMP file.cc
+   ```
+   - Verify ONLY the intended changes are present
+   - Check for accidentally reverted prior work
+   - Look for missing function renames or other recent modifications
+
+4. **If unintended changes detected:**
+   - Restore from the fresh backup immediately
+   - Redo the operation more carefully
+   - Never try to "fix forward" - start clean
+
+**Why this matters:**
+- Complex operations like "rebuild from temp file" can revert recent work
+- Old temp files may have outdated function names, variable names, etc.
+- Formatting fixes should never change logic or recent refactoring
+- A fresh backup lets you verify you preserved all prior work
+
+**Common scenarios requiring this:**
+- Fixing spacing/indentation across a file
+- Rebuilding a file from extracted sections
+- Complex sed/awk multi-line operations
+- Any operation that touches 50+ lines
+
+**Remember:** One minute making a backup prevents hours recovering lost work!
+
+**Backup file management:**
+- Always move backups to `/tmp/` not user's repo directory (keeps repo clean)
+- Periodically clean old backups from `/tmp/` to avoid disk clutter:
+  ```bash
+  ls -ltr /tmp/*.backup_* | head -20  # Review old backups
+  rm /tmp/*.backup_* # Clean when accumulating
+  ```
+
 ## Diff Display Convention
 
 When showing code changes:
@@ -96,6 +205,45 @@ vw stands for VisionWorkbench.
 - `vw::geometry::write_shapefile` - write_shapefile is in vw::geometry namespace
 - `vw::geometry::read_shapefile` - read_shapefile is in vw::geometry namespace
 - NEVER include 'vw/Math/LeastSquares.h' - this header does not exist and has been removed
+
+**Common VW types that need vw:: prefix (frequently missed by sed):**
+- `vw::ImageView<T>` - generic image view
+- `vw::ImageViewRef<T>` - reference-counted image view
+- `vw::BBox2`, `vw::BBox2i` - bounding boxes (note: both variants!)
+- `vw::Vector2`, `vw::Vector3` - vectors
+- `vw::PixelMask<T>`, `vw::PixelGray<T>`, `vw::PixelGrayA<T>`, `vw::PixelRGB<T>` - pixel types
+- `vw::DiskImageView<T>` - disk-backed image view
+- `vw::DiskImageResourceGDAL` - GDAL image resource (often missed!)
+- `vw::TerminalProgressCallback` - progress callback
+- `vw::ArgumentErr`, `vw::LogicErr`, `vw::IOErr` - exception types
+- `vw::vw_throw()`, `vw::vw_out()` - exception/output functions
+- `vw::crop()`, `vw::fill()`, `vw::edge_extend()` - image functions
+- `vw::create_mask()`, `vw::copy_mask()`, `vw::apply_mask()`, `vw::invalidate_mask()`, `vw::validate_mask()` - mask functions
+- `vw::gaussian_filter()`, `vw::compute_kernel_size()` - filtering functions
+- `vw::bounding_box()` - compute bounding box of image (often missed!)
+- `vw::cartography::GeoReference` - georeference type
+- `vw::cartography::read_georeference()`, `vw::cartography::write_georeference()` - georef I/O
+- `vw::cartography::block_write_gdal_image()` - GDAL write function
+
+**When removing `using namespace vw;` statements:**
+1. Make a fresh backup first
+2. Remove the using statements
+3. Use sed carefully to add prefixes, but check for:
+   - Don't add `vw::` if `vw::` already present (creates `vw::vw::`)
+   - Don't add `vw::cartography::` if already present (creates double prefix)
+   - **Don't forget type constructors**: `BBox2()` needs to become `vw::BBox2()`, not just `BBox2` in declarations
+   - **Don't forget template instantiations**: `DiskImageView<double>` needs `vw::` prefix
+4. Common sed patterns that miss things:
+   - `s/\bBBox2\b/vw::BBox2/g` - misses `BBox2()` constructors, need `s/\bBBox2/vw::BBox2/g` (no \b at end)
+   - `s/\bDiskImageView</vw::DiskImageView</g` - correct (matches template use)
+5. Fix double prefixes: `sed 's/vw::vw::/vw::/g'` and `sed 's/vw::cartography::vw::cartography::/vw::cartography::/g'`
+6. Run clean_style.py after
+7. Diff against backup to verify only intended changes
+
+**Specific patterns that trip up sed:**
+- Type constructors: `BBox2()`, `Vector2()`, `Vector3()` - need prefix even when not in declaration
+- Template variable declarations: `ImageView<T> var` vs `ImageView<T>(arg)` - both need prefix
+- Comparisons with default-constructed types: `if (bbox != BBox2())` - the `BBox2()` needs prefix
 
 ## Project Context
 
@@ -267,7 +415,19 @@ Example: For --mode option, need:
 
 ## RST Documentation Formatting
 
+**Documentation file locations:**
+- RST files can be in `docs/` subdirectories (`docs/tools/`, `docs/examples/`, etc.)
+- RST files can also be at repository root level (e.g., `NEWS.rst`, `AUTHORS.rst`, `README.rst`)
+- When searching for documentation references, check both locations:
+  ```bash
+  grep -rn "pattern" docs/ *.rst
+  ```
+
+**Formatting rules:**
 - Section underlines must be exactly the same length as the section heading
+  - **CRITICAL: Always count characters carefully - you are prone to off-by-one errors**
+  - Use `echo "Heading Text" | wc -c` to get character count (subtract 1 for newline)
+  - Or manually count: "Example heading" = 15 characters needs 15 underline characters
   - Correct: 
     ```
     Multispectral image bands
@@ -279,7 +439,17 @@ Example: For --mode option, need:
     Multispectral image bands
     --------------------------
     ```
-    (26 dashes for 25-character heading)
+    (26 dashes for 25-character heading - TOO MANY)
+  - Also Incorrect:
+    ```
+    Multispectral image bands
+    ------------------------
+    ```
+    (24 dashes for 25-character heading - TOO FEW)
+- **Before making any RST heading changes:**
+  1. Count the heading text character length explicitly
+  2. Verify the underline has exactly that many characters
+  3. Double-check your count before applying the edit
 - RST uses different characters for different heading levels:
   - `=` for top-level sections
   - `-` for subsections
@@ -295,6 +465,16 @@ When adding new source files (.cc, .h) to VisionWorkbench or StereoPipeline:
 - Example: Adding `vw/Math/GeomUtils.cc` requires touching both:
   - `vw/Math/CMakeLists.txt`
   - `vw/CMakeLists.txt`
+
+**When moving/renaming source files:**
+- Any time a file is moved or renamed, touch the CMakeLists.txt in that file's directory
+- Also touch the parent directory's CMakeLists.txt
+- This forces CMake to re-run `file(GLOB ...)` and update the cached file list
+- Example: Renaming `src/asp/Core/SatSimBase.cc` to `CamPoseUtils.cc` requires:
+  ```bash
+  touch src/asp/Core/CMakeLists.txt
+  touch src/asp/CMakeLists.txt
+  ```
 
 ## Copyright Year Updates
 
