@@ -160,6 +160,11 @@ Do NOT use braces when a control flow statement (if, else, for, while, do-while,
 
 ## C++ Code Style Conventions (from Copilot)
 
+- **NEVER use non-ASCII characters in code or comments** - terminal tools like `more` and `diff` don't handle them well
+  - Use `x` instead of `×` for multiplication
+  - Use `-` instead of `—` or `–` for dashes
+  - Use regular quotes `"` instead of smart quotes `"` or `"`
+  - Use regular apostrophes `'` instead of smart apostrophes `'` or `'`
 - No space before the :: scope resolution operator (e.g., `vw::math::norm_2` not `vw :: math :: norm_2`)
 - No space before the : in a constructor's initializer list
 - Use camelCase for function names (e.g., `rayPlaneIntersect`, not `ray_plane_intersect` or `RayPlaneIntersect`)
@@ -456,18 +461,54 @@ Example: For --mode option, need:
   - `~` for sub-subsections
   - `^` for sub-sub-subsections
 
+## Output Parameter Style
+
+When creating functions with output parameters:
+- **Group all outputs after inputs** in the parameter list
+- Put a **single comment `// Outputs`** on its own line before the output parameters
+- Do **NOT** put `// output` after each individual output parameter
+
+**Example:**
+```cpp
+void myFunction(int input1,
+                double input2,
+                std::string const& input3,
+                // Outputs
+                int& result1,
+                double& result2,
+                std::vector<int>& result3) {
+  // function body
+}
+```
+
+**NOT like this:**
+```cpp
+void myFunction(int input1,
+                double input2,
+                std::string const& input3,
+                int& result1,        // output
+                double& result2,     // output
+                std::vector<int>& result3) {  // output
+  // function body
+}
+```
+
+This keeps function signatures cleaner and makes the outputs section clear at a glance.
+
 ## CMake File Updates
 
-When adding new source files (.cc, .h) to VisionWorkbench or StereoPipeline:
+**ONLY touch CMakeLists.txt when the file listing changes:**
+
+When adding NEW source files (.cc, .h) to VisionWorkbench or StereoPipeline:
 - Always touch the CMakeLists.txt in the directory where you added the file
 - Always touch the CMakeLists.txt in the parent directory
-- This triggers CMake to regenerate and pick up new files via `get_all_source_files()`
+- This triggers CMake to regenerate and pick up new files via `file(GLOB ...)`
 - Example: Adding `vw/Math/GeomUtils.cc` requires touching both:
   - `vw/Math/CMakeLists.txt`
   - `vw/CMakeLists.txt`
 
-**When moving/renaming source files:**
-- Any time a file is moved or renamed, touch the CMakeLists.txt in that file's directory
+When moving/renaming source files:
+- Any time a file is moved or renamed, touch the CMakeLists.txt in the old and new directories
 - Also touch the parent directory's CMakeLists.txt
 - This forces CMake to re-run `file(GLOB ...)` and update the cached file list
 - Example: Renaming `src/asp/Core/SatSimBase.cc` to `CamPoseUtils.cc` requires:
@@ -475,6 +516,15 @@ When adding new source files (.cc, .h) to VisionWorkbench or StereoPipeline:
   touch src/asp/Core/CMakeLists.txt
   touch src/asp/CMakeLists.txt
   ```
+
+**DO NOT touch CMakeLists.txt when:**
+- Just editing existing .cc or .h files (build system detects changes automatically)
+- Adding/removing functions within existing files
+- Changing file contents without changing the file listing
+
+**Why:** The build system automatically tracks source file modifications. You only need
+to notify CMake when the list of files changes (add/remove/move), not when file
+contents change.
 
 ## Copyright Year Updates
 
@@ -500,3 +550,43 @@ User has a Python script at `~/bin/clean_style.py` for automated C++ style clean
 - Applies automated formatting and style fixes to C++ files
 
 **Note:** This is a custom tool specific to the user's workflow for enforcing C++ code style conventions.
+
+## Variable Initialization (CRITICAL)
+
+**NEVER create uninitialized variables - they are an eternal source of bugs.**
+
+**ALWAYS initialize variables with sensible default values:**
+
+```cpp
+// WRONG - uninitialized variable:
+double nodata_value;
+preprocessDem(..., nodata_value);  // output
+
+// CORRECT - initialized with sentinel, comment explains:
+double nodata_value = -std::numeric_limits<double>::max(); // will change
+preprocessDem(..., nodata_value);  // output
+```
+
+**Guidelines:**
+- Initialize numeric types with sensible defaults (0, -1, limits, NaN)
+- Initialize pointers with nullptr
+- Initialize booleans with false (or appropriate default)
+- Add comment "// will change" or "// output parameter" if value is immediately overwritten
+- Never rely on "will be set soon" - bugs happen when that assumption breaks
+
+**Common sensible defaults:**
+- Counts/sizes: `= 0`
+- Indices that must be valid: `= -1` (clearly invalid sentinel)
+- Floating point that will be set: `= std::numeric_limits<double>::quiet_NaN()`
+- Floating point sentinels: `= -std::numeric_limits<double>::max()`
+- Pointers: `= nullptr`
+- Booleans: `= false` (or true if that's the safe default)
+
+**Why this matters:**
+- Uninitialized variables can have garbage values
+- Garbage values cause non-deterministic bugs
+- Debugging uninitialized variables wastes hours
+- Static analyzers and sanitizers will flag this
+- It's a sign of careful, defensive programming
+
+**Remember:** The compiler won't always warn you, but uninitialized variables WILL bite you eventually.
