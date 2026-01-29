@@ -19,7 +19,7 @@
     "search.smartCase": true,
     "editor.codeLensFontFamily": "10",
     "editor.codeLensFontSize": 10,
-    "editor.inlayHints.fontSize": 10,
+    "editor.inlayHints.fontSize": 20,
     "editor.suggestFontSize": 20,
     "notebook.markup.fontSize": 10,
     "notebook.output.fontSize": 10,
@@ -410,7 +410,7 @@
     "esbonio.server.enabledInPyFiles": false,
     "esbonio.server.enableLivePreview": false,
     "esbonio.server.enableScrollSync": false,
-    "editor.inlayHints.fontFamily": "10",
+    "editor.inlayHints.fontFamily": "20",
     "terminal.integrated.customGlyphs": false,
     "github.copilot.enable": {
         "*": true,
@@ -537,7 +537,7 @@
         "strings": "off"
     },
     "terminal.integrated.suggest.quickSuggestions": false,
-    "editor.suggest.selectionMode": "never",
+    "editor.suggest.selectionMode": "always",
     "editor.snippetSuggestions": "inline",
     "editor.suggestOnTriggerCharacters": false,
     "terminal.integrated.suggest.suggestOnTriggerCharacters": false,
@@ -545,6 +545,8 @@
     "editor.tabCompletion": "on",
     "emmet.showExpandedAbbreviation": "always",
     "editor.suggest.preview": true,
-    "editor.suggest.showInlineDetails": true
+    "editor.suggest.showInlineDetails": true,
+    "editor.suggest.matchOnWordStartOnly": false,
+    "editor.suggest.filterGraceful": true
  	
 }
