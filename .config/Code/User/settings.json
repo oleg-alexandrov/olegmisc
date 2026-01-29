@@ -532,12 +532,19 @@
     "files.autoSave": "afterDelay",
     "cSpell.maxNumberOfProblems": 1000,
     "editor.quickSuggestions": {
-        "other": "off"
+        "other": "off",
+        "comments": "off",
+        "strings": "off"
     },
     "terminal.integrated.suggest.quickSuggestions": false,
     "editor.suggest.selectionMode": "never",
-    "editor.snippetSuggestions": "none",
+    "editor.snippetSuggestions": "inline",
     "editor.suggestOnTriggerCharacters": false,
-    "terminal.integrated.suggest.suggestOnTriggerCharacters": false
+    "terminal.integrated.suggest.suggestOnTriggerCharacters": false,
+    "emmet.triggerExpansionOnTab": true,
+    "editor.tabCompletion": "on",
+    "emmet.showExpandedAbbreviation": "always",
+    "editor.suggest.preview": true,
+    "editor.suggest.showInlineDetails": true
  	
 }
