@@ -256,6 +256,17 @@ vw stands for VisionWorkbench.
 - The VisionWorkbench repository is at /home/oalexan1/projects/visionworkbench
 - ASP stands for Ames Stereo Pipeline (refers to StereoPipeline)
 
+## Project Status Files
+
+**Work tracking files** in `/home/oalexan1/projects/`:
+- `mpr_todo.sh` - Records completed work for MPR project reports (not a TODO list)
+- `ostfl_todo.sh` - Records completed work for older OSTFL reports (not a TODO list)
+- `ostfl_2025_notes.sh` - Current OSTFL 2025 work tracking and status updates
+
+**Important:** These files are primarily for recording what was accomplished for 
+project reports, not for tracking future tasks. When user says to update "OSTFL 
+status", edit `ostfl_2025_notes.sh`, not `ostfl_todo.sh`.
+
 ## Output Statements
 
 - Do NOT remove vw_out() statements - these are for user-facing informational output, not debugging
