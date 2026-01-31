@@ -177,15 +177,8 @@ unset __conda_setup
 }
 
 
-# >>> mamba initialize >>>
-# !! Contents within this block are managed by 'micromamba shell init' !!
-export MAMBA_EXE='/home/oalexan1/miniconda3/envs/mamba/bin/micromamba';
-export MAMBA_ROOT_PREFIX='/home/oalexan1/micromamba';
-__mamba_setup="$("$MAMBA_EXE" shell hook --shell zsh --root-prefix "$MAMBA_ROOT_PREFIX" 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__mamba_setup"
-else
-    alias micromamba="$MAMBA_EXE"  # Fallback on help from micromamba activate
+
+# fzf integration
+if [ -f ~/.fzf.zsh ]; then
+    source ~/.fzf.zsh
 fi
-unset __mamba_setup
-# <<< mamba initialize <<<

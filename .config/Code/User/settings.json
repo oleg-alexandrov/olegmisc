@@ -334,6 +334,7 @@
         "skysat",
         "sortbycol",
         "spiceinit",
+        "sshdelay",
         "staircasing",
         "stddev",
         "stereogrammetry",
@@ -429,6 +430,7 @@
     "C_Cpp.vcFormat.indent.preserveWithinParentheses": true,
     "C_Cpp.vcFormat.indent.withinParentheses": "alignToParenthesis",
     "editor.folding": false,
+    "editor.glyphMargin": false,
     "editor.lineNumbers": "off",
     "breadcrumbs.enabled": false,
     "[restructuredtext]": {

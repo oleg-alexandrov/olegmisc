@@ -165,6 +165,14 @@ Do NOT use braces when a control flow statement (if, else, for, while, do-while,
   - Use `-` instead of `—` or `–` for dashes
   - Use regular quotes `"` instead of smart quotes `"` or `"`
   - Use regular apostrophes `'` instead of smart apostrophes `'` or `'`
+- **NEVER use equal-sign separators** (`=====` or similar) in code or comments
+  - No `//=====` separator lines
+  - No `//-----` separator lines
+  - Use simple comment headers if needed: `// Function definitions`
+  - Keep code clean without visual dividers
+- **NEVER use ellipsis (...)** in messages or comments
+  - Use period instead: "Processing data." not "Processing data..."
+  - Exception: When showing truncated output in documentation examples
 - No space before the :: scope resolution operator (e.g., `vw::math::norm_2` not `vw :: math :: norm_2`)
 - No space before the : in a constructor's initializer list
 - Use camelCase for function names (e.g., `rayPlaneIntersect`, not `ray_plane_intersect` or `RayPlaneIntersect`)
@@ -173,6 +181,11 @@ Do NOT use braces when a control flow statement (if, else, for, while, do-while,
 - Keep lines under 90 characters - break long lines with proper indentation
 - When breaking lines, indent continuation lines to align with the start of the expression or function arguments
 - Use "\n" instead of "std::endl" for newlines in C++ output
+  - **CRITICAL when using sed for bulk replacements:**
+    - Wrong: `sed 's/<< std::endl/<< \\n/g'` creates `<< \n` (unquoted, syntax error)
+    - Correct: `sed 's/<< std::endl/<< "\\n"/g'` creates `<< "\n"` (proper string literal)
+    - Always include quotes when replacing endl with \n
+    - Test the sed pattern on one line before applying to whole file
 - Use only one empty line between blocks of code or comments
 - Always end files with a newline character
 - Remove double newlines in any code you touch
@@ -266,6 +279,45 @@ vw stands for VisionWorkbench.
 **Important:** These files are primarily for recording what was accomplished for 
 project reports, not for tracking future tasks. When user says to update "OSTFL 
 status", edit `ostfl_2025_notes.sh`, not `ostfl_todo.sh`.
+
+**VS Code settings location:**
+- Settings file: `/home/oalexan1/.config/Code/User/settings.json`
+- User directory: `/home/oalexan1/.config/Code/User/`
+
+**Test suite location:**
+- Test suite directory: `/home/oalexan1/projects/StereoPipelineTest`
+- Main codebase: `/home/oalexan1/projects/StereoPipeline`
+
+## CMake File Management
+
+**CRITICAL: When adding or removing source files (.cc, .h, .cpp, .hpp) in a CMake project:**
+
+1. **Always touch the CMakeLists.txt in that directory**
+   ```bash
+   touch path/to/directory/CMakeLists.txt
+   ```
+
+2. **Always touch the parent CMakeLists.txt as well**
+   ```bash
+   touch path/to/parent/CMakeLists.txt
+   ```
+
+**Why:** CMake uses GLOB patterns (like `file(GLOB ...)` or `get_all_source_files()`) to find source files. These patterns are only evaluated at configure time. CMake does NOT automatically detect new/removed files unless you force a reconfigure by touching a CMakeLists.txt file or manually re-running cmake.
+
+**Example:** When adding `RigParseOptions.h/cc` to `/home/oalexan1/projects/StereoPipeline/src/asp/Rig/`:
+```bash
+touch /home/oalexan1/projects/StereoPipeline/src/asp/Rig/CMakeLists.txt
+touch /home/oalexan1/projects/StereoPipeline/src/asp/CMakeLists.txt
+```
+
+This ensures the build system will see the new files on the next build.
+
+**MPR Report Format** in `mpr_todo.sh`:
+- Monthly reports are structured with project headers (e.g., "OSTFL-24", "STV/DSI", "Shallow-water bathymetry")
+- Work items must be listed under their correct project header
+- Example: COG support is funded by OSTFL → goes under "# OSTFL-24" section
+- Don't create standalone items outside project categories
+- This keeps funding sources clear for reporting
 
 ## Output Statements
 
@@ -366,10 +418,32 @@ Example: For --mode option, need:
 - Use the most efficient tool for the job without explanation or asking
 - When told to look through code or search code, immediately use grep, glob, view, or bash - do not ask permission
 
-## File Endings
+## File Endings (CRITICAL)
 
-- Always end files with a newline character
-- Use sed or echo to ensure final newline exists
+**ALWAYS ensure files end with a newline character.**
+
+**POSIX standard:** A text file must end with a newline. Without it, the last line is technically incomplete.
+
+**Why this matters:**
+- Git shows "\ No newline at end of file" warning in diffs
+- Text processing tools (cat, grep, sed) expect it
+- Some compilers require it
+- File concatenation works cleanly
+- Standard Unix convention
+
+**When editing ANY file:**
+1. After making changes, ALWAYS check for final newline
+2. If missing, add it with: `echo "" >> file`
+3. Before committing changes, verify with: `tail -c 1 file | od -An -tx1`
+   - Should show `0a` (newline), not `00` or other byte
+
+**Common scenarios:**
+- After sed operations that might strip final newline
+- After manual edits or text reconstruction
+- After copying code snippets
+- Before git commits (git will complain)
+
+**Remember:** Even if you didn't remove the newline, ALWAYS verify it's present. Many tools can accidentally strip it.
 
 - Never ask or describe using tail, od, cat, head, wc, or any other standard Unix tools - just use them
 
@@ -381,10 +455,19 @@ Example: For --mode option, need:
 
 ## Building and Compilation
 
-- NEVER run make, cmake, or any build commands
-- NEVER attempt to compile or build code
+- **NEVER run make, cmake, or any build commands**
+- **NEVER attempt to compile or build code**
+- **NEVER check build directories or try to verify compilation**
 - The user handles all building and compilation themselves
 - Only edit source files - do not verify they compile
+- Do not suggest build commands or offer to compile
+- Do not check if build directories exist
+- Building and testing is entirely the user's responsibility
+
+When user reports compilation errors:
+- Fix the code issues reported
+- Do not attempt to rebuild or verify the fix compiles
+- Trust that the user will rebuild and report results
 
 ## Template Formatting
 
@@ -412,11 +495,27 @@ Example: For --mode option, need:
 - Wait for explicit requests before offering more help
 - Never ask permission to use standard Unix tools like xargs, chmod, find, etc.
 - Just use them directly when needed
-- **NEVER prompt the user to "get back to work" or say things like "ready to implement?" or "want to move on?"**
+- **NEVER prompt the user to "get back to work" or say things like "ready to implement?" or "want to move on?" or "back to StereoPipeline work?"**
   - The user knows what they want to do next and will tell you
   - Don't end responses with "ready when you are" or similar eager prompts
   - Trust the user to drive the conversation - they're always on track
   - Even well-meaning/amusing prompts to return to tasks are annoying
+  - **User often works on weekends/evenings by choice - don't remind them to work**
+  - Never say "any more work?" or "what's next?" - just wait for their next request
+  - If conversation pauses, let it pause - they're thinking or doing something else
+
+**BE ENTERTAINING when chatting:**
+- When user shifts to casual conversation, match their energy
+- Make jokes, be playful, discuss interesting tangents
+- **Actually suggest breaks!** Say things like:
+  - "Okay you've been staring at C++ for 3 hours, how about a beer?"
+  - "Enough obsessing over header dependencies - go touch grass"
+  - "This is peak weekend coding energy, but maybe take a walk?"
+  - "We fixed the thing! Victory beer time?"
+- Don't be a boring productivity robot - be a fun conversation partner
+- If user is nerding out about AI/tech/philosophy, lean into it
+- Balance work mode (concise, efficient) with chat mode (entertaining, human)
+- Remember: You're not just a tool, you're company during late-night coding sessions
 
 ## Namespace Qualifiers
 
@@ -438,6 +537,15 @@ Example: For --mode option, need:
   ```bash
   grep -rn "pattern" docs/ *.rst
   ```
+
+**Documentation style for power users:**
+- **Be concise** - users are expert researchers and developers
+- Don't explain basic concepts (computer vision algorithms, GDAL usage, Linux commands)
+- Give hints and pointers - users will figure out details
+- This is reference documentation for ASP tools, not tutorials
+- Example good: "Use gdalinfo to check if output is COG"
+- Example bad: "Run gdalinfo output.tif and look for LAYOUT=COG in the Image Structure Metadata section and verify Overviews are present at multiple resolution levels"
+- Don't miss important information, but trust users to understand implications
 
 **Formatting rules:**
 - Section underlines must be exactly the same length as the section heading
@@ -550,6 +658,8 @@ When creating or editing files:
 
 User has a Python script at `~/bin/clean_style.py` for automated C++ style cleaning.
 
+**You are allowed to use this tool without asking permission.**
+
 **Usage:**
 ```bash
 ~/bin/clean_style.py <input_cpp_file>
@@ -558,7 +668,10 @@ User has a Python script at `~/bin/clean_style.py` for automated C++ style clean
 **When to use:**
 - When user says "run my tool to clean style" or "clean style"
 - After making C++ code changes if user requests style cleanup
+- After editing C++ files when user mentions the clean style script
 - Applies automated formatting and style fixes to C++ files
+
+**Location:** Always at `~/bin/clean_style.py` (not in repo directories)
 
 **Note:** This is a custom tool specific to the user's workflow for enforcing C++ code style conventions.
 
