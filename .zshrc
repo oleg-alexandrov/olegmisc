@@ -179,6 +179,7 @@ unset __conda_setup
 
 
 # fzf integration
-if [ -f ~/.fzf.zsh ]; then
-    source ~/.fzf.zsh
+if [ -f ~/.fzf/.fzf.zsh ]; then
+    source ~/.fzf/.fzf.zsh
 fi
+

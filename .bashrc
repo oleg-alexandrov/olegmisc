@@ -385,7 +385,6 @@ function tw () {
     remote_copy.pl $* oalexan1@wow
 }
 
-
 function ts () {
     remote_copy.pl $* oalexan1@spherescheetah
 }
@@ -615,3 +614,9 @@ if [ -f ~/.unaliases ]; then source ~/.unaliases; fi
 
 # Aliases
 if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi
+
+# fzf integration (only for bash, not when sourced by zsh)
+if [ -n "$BASH_VERSION" ] && [ -f ~/.fzf/.fzf.bash ]; then
+    source ~/.fzf/.fzf.bash
+fi
+
