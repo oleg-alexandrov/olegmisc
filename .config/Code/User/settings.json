@@ -497,9 +497,9 @@
     "intelliSenseCacheSize": 0,
     "typescript.tsserver.web.projectWideIntellisense.suppressSemanticErrors": false,
     "files.watcherExclude": {
-     "**/miniconda3/**": true,
-     "**/.local/**": true,
-    "**/Desktop/**": true
+        "**/miniconda3/**": true,
+        "**/.*/**": true,
+        "**/Desktop/**": true
     },
     "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
     "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,

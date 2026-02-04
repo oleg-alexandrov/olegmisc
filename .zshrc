@@ -176,10 +176,3 @@ unset __conda_setup
 # <<< conda initialize <<<
 }
 
-
-
-# fzf integration
-if [ -f ~/.fzf/.fzf.zsh ]; then
-    source ~/.fzf/.fzf.zsh
-fi
-
