@@ -1,8 +1,37 @@
 # Style Guidelines for Gemini Bot
 
+## FILE CREATION NEWLINE REQUIREMENT (CRITICAL)
+
+**🚨 GEMINI REPEATEDLY FORGETS THIS: ALL FILES MUST END WITH NEWLINE 🚨**
+
+**EVERY TIME you create a file with the `create` tool:**
+1. **ALWAYS end the file_text parameter with `\n`**
+2. **NO EXCEPTIONS - this is a POSIX requirement**
+3. **Check your file_text - does it end with newline? If not, ADD IT**
+
+**Examples:**
+```
+// WRONG - no newline at end:
+file_text: "int main() {\n  return 0;\n}"
+
+// CORRECT - ends with newline:
+file_text: "int main() {\n  return 0;\n}\n"
+```
+
+**Why this is CRITICAL:**
+- Git shows "\ No newline at end of file" warning
+- Text processing tools (cat, grep, sed) expect it
+- Some compilers require it
+- File concatenation works cleanly
+- Standard Unix convention
+
+**MEMORY AID: Before calling create tool, mentally check "Does my file_text end with \\n?"**
+
 ## Line Boundary Calculations (CRITICAL)
 
 **You and Gemini are both prone to off-by-one errors when deleting or extracting code blocks.**
+
+**CRITICAL: This also applies to sed line ranges for bulk replacements!**
 
 **ALWAYS follow this strategy for bulk deletions/extractions:**
 
@@ -37,8 +66,15 @@
 - Including the opening of the NEXT function
 - Missing nested closing braces at the end
 - Trusting grep output without viewing context
+- **Using sed line ranges that are too narrow** - if function body starts at line 891, don't use `901,1046s/.../'`, use `'891,1046s/.../'` or wider
 
 **Remember:** One extra or missing line can break compilation. Always verify boundaries!
+
+**For sed bulk replacements:**
+- Always be generous with line ranges - it's safer to include a few extra lines than miss one
+- If replacing within a function that starts at line N, use N as the start, not N+10
+- Verify there are no stragglers just before or after your range
+- Example of what NOT to do: Function body starts line 891, but using `'901,1046s/...'` misses line 900
 
 ## User's Workflow and Error Recovery (CRITICAL)
 
@@ -431,6 +467,12 @@ Example: For --mode option, need:
 - File concatenation works cleanly
 - Standard Unix convention
 
+**⚠️ SPECIAL REMINDER FOR CREATE TOOL:**
+**When using the `create` tool, ALWAYS end the `file_text` parameter with `\n`**
+- This is the most common place Gemini forgets newlines
+- Double-check your file_text string before calling create
+- Example: `file_text: "content here\nmore content\n"` ← note final \n
+
 **When editing ANY file:**
 1. After making changes, ALWAYS check for final newline
 2. If missing, add it with: `echo "" >> file`
@@ -714,3 +756,24 @@ preprocessDem(..., nodata_value);  // output
 - It's a sign of careful, defensive programming
 
 **Remember:** The compiler won't always warn you, but uninitialized variables WILL bite you eventually.
+
+## Gemini Added Memories
+- The user prefers that I execute read-only commands (like 'ls', 'grep', 'cat', 'view') directly without asking for permission or announcing them.
+- The user wants me to stop warning them about running in their home directory.
+- The user prefers that I never search for git.
+
+
+## Code Review Best Practices
+
+When reviewing code changes:
+- Focus on logic, correctness, and potential issues
+- Check for proper error handling and edge cases
+- Verify that changes don't break existing functionality
+- Look for opportunities to improve code clarity or efficiency
+
+**IMPORTANT - Diff Review Guidelines:**
+- **Diffs show ALREADY APPLIED changes** - they represent the difference from previous version to current version, not proposed changes
+- **If something is unclear from the diff context**, always inspect the full file around that area using view tool
+- **Don't assume diffs are incomplete** - trust what is shown, but verify by examining full source when logic flow is complex
+
+
