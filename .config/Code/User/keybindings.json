@@ -72,4 +72,8 @@
         "command": "tab-emacs.reindentLines",
         "when": "editorTabMovesFocus && editorTextFocus || editorTextFocus && !inlineSuggestionHasIndentationLessThanTabSize || editorTextFocus && !inlineSuggestionVisible"
     },
+    {
+        "key": "ctrl+,",
+        "command": "workbench.action.openSettings"
+    }
 ]
