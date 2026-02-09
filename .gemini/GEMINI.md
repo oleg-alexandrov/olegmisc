@@ -762,6 +762,7 @@ preprocessDem(..., nodata_value);  // output
 - The user wants me to stop warning them about running in their home directory.
 - The user prefers that I never search for git.
 - When using :ref: for documentation, if the link text is the same as the target name, use the simplified syntax like `:ref:\`tool_name\`` instead of `:ref:\`tool_name <target_name>\``.
+- Review and practice proper shell quoting and escaping for `echo` commands to prevent bash errors in output.
 
 ## Code Review Best Practices
 
