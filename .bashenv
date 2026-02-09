@@ -1,7 +1,7 @@
 export ISISDATA=$HOME/projects/isis3data
 export ISISROOT=$HOME/miniconda3/envs/asp_deps
 export PATH=$HOME/projects/StereoPipeline/install/bin:$ISISROOT/bin:$HOME/bin:$HOME/projects/BinaryBuilder/StereoPipeline/bin:/opt/homebrew/bin:$PATH:/usr/bin:/usr/local/bin:.
-export PATH="$PATH:/home/oalexan1/.local/bin" # for copilot
+export PATH="$PATH:$HOME/.local/bin" # for copilot and claude
 export COPILOT_CUSTOM_INSTRUCTIONS_DIRS="$HOME/.gemini:$HOME/.copilot"
 export PROJ_DATA=$ISISROOT/share/proj
 export PERL5LIB=$PERL5LIB:$HOME/bin

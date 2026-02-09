@@ -159,7 +159,7 @@ alias cdwt='cd $HOME/projects/visionworkbench$BASE/src/vw/tools'
 alias cdx='cd $HOME/projects/ctx_calib'
 alias cdx2='cd $HOME/projects/data/CTX2'
 alias cdxc='cd $HOME/projects/ctx_calib'
-alias ce='crontab -e; crs'
+alias ce=claude
 alias ced='perl -pi -e "s#\s*\n#\n#g"'
 alias cel='conda env list'
 alias ch='export HOST=$(uname -n); ca asp; cd $(pwd); cd $(pwd)'
