@@ -230,13 +230,17 @@ Do NOT use braces when a control flow statement (if, else, for, while, do-while,
 - **ALWAYS adjust continuation line indentation when modifying or adding functions** - continuation lines must align with the opening parenthesis, not at some arbitrary fixed indentation
   - Count characters from start of line to the opening `(` - that's how many spaces continuation lines need
   - Example: `void myFunction(int arg1,` = 15 chars, so next line needs 15 spaces before `int arg2`
-- **Option help text strings:** Wrap at ~90 characters per line. Split long help text into multiple quoted strings that are automatically concatenated:
+- **Option help text strings:** Wrap at ~90 characters per line. Split long help text into multiple quoted strings that are automatically concatenated. **CRITICAL:** Ensure exactly one space between words at quote boundaries - put the space at the end of the preceding string, not at the start of the next:
   ```cpp
   ("left-bathy-mask", po::value(&global.left_bathy_mask),
     "Mask to use for the left image when doing bathymetry. Pixels classified as "
     "water must be either no data or have zero value in the mask, while land pixels "
     "must have positive value.")
   ```
+  Common mistakes:
+  - `"first part" "second"` - WRONG, becomes "first partsecond"
+  - `"first part " " second"` - WRONG, becomes "first part  second" (double space)
+  - `"first part " "second"` - CORRECT, becomes "first part second"
 - **For loop style:**
   - Use postincrement `i++` NOT preincrement `++i` in loop expressions
   - Always use spaces around `=` in initialization: `i = 0` NOT `i=0`
@@ -763,6 +767,8 @@ preprocessDem(..., nodata_value);  // output
 - The user prefers that I never search for git.
 - When using :ref: for documentation, if the link text is the same as the target name, use the simplified syntax like `:ref:\`tool_name\`` instead of `:ref:\`tool_name <target_name>\``.
 - Review and practice proper shell quoting and escaping for `echo` commands to prevent bash errors in output.
+- When user says to "remember" something, add it to this CLAUDE.md file.
+
 
 ## Code Review Best Practices
 
