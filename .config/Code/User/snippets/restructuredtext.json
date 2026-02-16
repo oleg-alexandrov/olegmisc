@@ -1,0 +1,16 @@
+{
+	"Numbered Reference": {
+		"prefix": "nr",
+		"body": [
+			":numref:`$1`$0"
+		],
+		"description": "Insert a numbered reference"
+	},
+	"Reference": {
+		"prefix": "rf",
+		"body": [
+			":ref:`$1`$0"
+		],
+		"description": "Insert a reference"
+	}
+}
