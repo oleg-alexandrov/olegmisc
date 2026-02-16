@@ -221,7 +221,7 @@ alias ec=echo
 alias ee=/home/oalexan1/projects/BinaryBuilder/StereoPipeline-2.6.2_post-2019-12-16-x86_64-Linux/bin/stereo_gui
 alias egrep='egrep --color=auto'
 alias el=elapsed.sh
-alias elapse='grep elapsed= */output.txt | grep run.sh | perl -pi -e "s#\.\d+##g" | perl -pi -e "s#=# #g" | perl -pi -e "s#:#.#g" |tee output.txt'
+alias elapse='grep elapsed= */output.txt | grep run.sh | perl -pi -e "s#\.\d+##g" | perl -pi -e "s#=# #g" | perl -pi -e "s#:#.#g" | ~/bin/sortbycol.pl 3 | tee output.txt'
 alias elc='elapsed.sh CORR'
 alias els='export LS_COLORS=""'
 alias f3='~/bin/remote_copy.pl $C3 '
