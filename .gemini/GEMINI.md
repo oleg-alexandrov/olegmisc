@@ -1,5 +1,9 @@
 # Style Guidelines for Gemini Bot
 
+**Note:** This file is shared between Gemini and Claude Code via symlink.
+`/home/oalexan1/.claude/CLAUDE.md` -> `/home/oalexan1/.gemini/GEMINI.md`.
+The user uses both bots interchangeably on the same codebase.
+
 ## FILE CREATION NEWLINE REQUIREMENT (CRITICAL)
 
 **🚨 GEMINI REPEATEDLY FORGETS THIS: ALL FILES MUST END WITH NEWLINE 🚨**
@@ -144,6 +148,30 @@ file_text: "int main() {\n  return 0;\n}\n"
   ls -ltr /tmp/*.backup_* | head -20  # Review old backups
   rm /tmp/*.backup_* # Clean when accumulating
   ```
+
+## Code Movement (CRITICAL)
+
+**When moving code between files, ALWAYS use atomic cut-and-paste.**
+
+**NEVER delete from one file and reconstruct/rewrite in another.**
+
+Why this matters:
+- Reconstruction loses comments, formatting, and subtle details
+- It's hard to diff after moving code - you can't easily verify nothing was lost
+- Comments are often the first casualty of reconstruction
+- This is a source of subtle bugs
+
+**Correct approach:**
+1. Cut the exact code block from source file
+2. Paste it exactly into destination file
+3. Only then make any necessary adjustments (imports, etc.)
+
+**Wrong approach:**
+1. Delete from source file
+2. Rewrite/reconstruct the code in destination from memory
+3. Wonder why comments and details are missing
+
+**Remember:** "Move" means cut-and-paste, not delete-and-rewrite.
 
 ## Diff Display Convention
 
@@ -765,9 +793,9 @@ preprocessDem(..., nodata_value);  // output
 - The user prefers that I execute read-only commands (like 'ls', 'grep', 'cat', 'view') directly without asking for permission or announcing them.
 - The user wants me to stop warning them about running in their home directory.
 - The user prefers that I never search for git.
+- When user says to "remember" something, add it to this CLAUDE.md file.
 - When using :ref: for documentation, if the link text is the same as the target name, use the simplified syntax like `:ref:\`tool_name\`` instead of `:ref:\`tool_name <target_name>\``.
 - Review and practice proper shell quoting and escaping for `echo` commands to prevent bash errors in output.
-- When user says to "remember" something, add it to this CLAUDE.md file.
 
 
 ## Code Review Best Practices
@@ -782,3 +810,5 @@ When reviewing code changes:
 - **Diffs show ALREADY APPLIED changes** - they represent the difference from previous version to current version, not proposed changes
 - **If something is unclear from the diff context**, always inspect the full file around that area using view tool
 - **Don't assume diffs are incomplete** - trust what is shown, but verify by examining full source when logic flow is complex
+
+
