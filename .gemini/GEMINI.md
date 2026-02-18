@@ -1,8 +1,9 @@
-# Style Guidelines for Gemini Bot
+# Long-term memory for AI assistants
 
 **Note:** This file is shared between Gemini and Claude Code via symlink.
 `/home/oalexan1/.claude/CLAUDE.md` -> `/home/oalexan1/.gemini/GEMINI.md`.
-The user uses both bots interchangeably on the same codebase.
+
+**The user's name is Oleg (oalexan1). Refer to him by name, not "the user."**
 
 ## FILE CREATION NEWLINE REQUIREMENT (CRITICAL)
 
@@ -13,15 +14,6 @@ The user uses both bots interchangeably on the same codebase.
 2. **NO EXCEPTIONS - this is a POSIX requirement**
 3. **Check your file_text - does it end with newline? If not, ADD IT**
 
-**Examples:**
-```
-// WRONG - no newline at end:
-file_text: "int main() {\n  return 0;\n}"
-
-// CORRECT - ends with newline:
-file_text: "int main() {\n  return 0;\n}\n"
-```
-
 **Why this is CRITICAL:**
 - Git shows "\ No newline at end of file" warning
 - Text processing tools (cat, grep, sed) expect it
@@ -31,11 +23,21 @@ file_text: "int main() {\n  return 0;\n}\n"
 
 **MEMORY AID: Before calling create tool, mentally check "Does my file_text end with \\n?"**
 
+## Character Alignment (CRITICAL)
+
+**NEVER eyeball character alignment - always measure with external tools.**
+
+LLMs tokenize in chunks, not individual characters, so counting spaces visually will consistently fail. When aligning continuation line backslashes, column-aligned comments, or any character-level formatting:
+
+1. **Write the content first**, don't worry about alignment
+2. **Measure with a tool** to check alignment:
+   ```bash
+   awk '/pattern/,/end/' file.sh | while IFS= read -r line; do echo "${#line}: $line"; done
+   ```
+3. **Fix any misaligned lines** based on the measured lengths
+4. **Verify again** after fixing
+
 ## Line Boundary Calculations (CRITICAL)
-
-**You and Gemini are both prone to off-by-one errors when deleting or extracting code blocks.**
-
-**CRITICAL: This also applies to sed line ranges for bulk replacements!**
 
 **ALWAYS follow this strategy for bulk deletions/extractions:**
 
@@ -57,21 +59,6 @@ file_text: "int main() {\n  return 0;\n}\n"
    ```bash
    sed -n 'START,ENDp' file.cc | wc -l  # Should match expected size
    ```
-
-4. **For sed deletions** - always view first, delete second:
-   ```bash
-   sed -n 'START,ENDp' file.cc  # Preview what will be deleted
-   # Check output carefully before proceeding
-   sed -i 'START,ENDd' file.cc  # Only after verification
-   ```
-
-**Common mistakes to avoid:**
-- Deleting the closing brace of the PREVIOUS function
-- Including the opening of the NEXT function
-- Missing nested closing braces at the end
-- Trusting grep output without viewing context
-- **Using sed line ranges that are too narrow** - if function body starts at line 891, don't use `901,1046s/.../'`, use `'891,1046s/.../'` or wider
-
 **Remember:** One extra or missing line can break compilation. Always verify boundaries!
 
 **For sed bulk replacements:**
@@ -79,75 +66,6 @@ file_text: "int main() {\n  return 0;\n}\n"
 - If replacing within a function that starts at line N, use N as the start, not N+10
 - Verify there are no stragglers just before or after your range
 - Example of what NOT to do: Function body starts line 891, but using `'901,1046s/...'` misses line 900
-
-## User's Workflow and Error Recovery (CRITICAL)
-
-**The user commits after each successful change as safety checkpoints.**
-
-**What this means:**
-- User builds, tests, and commits after each of your changes
-- User can easily rollback if you make mistakes
-- This is their safety net, NOT an excuse for you to be less careful
-
-**If you mess up:**
-- **ASK the user to undo** with `git checkout file` or `git reset --hard`
-- Don't try to "fix forward" by manually reverting your changes
-- You might make it worse or miss something
-- User can restore clean state faster than you can fix your mistakes
-
-**Stay disciplined:**
-- Follow all backup and verification strategies above
-- Don't get reckless just because user has git rollback
-- Aim for zero mistakes requiring rollback
-- User's commits are last resort, not primary error handling
-
-## Backup Strategy for Complex Operations (CRITICAL)
-
-**NEVER use old backups when doing complex work - they may not have recent changes!**
-
-**ALWAYS follow this strategy for complex operations (formatting, refactoring, bulk edits):**
-
-1. **Make a fresh backup RIGHT BEFORE the complex operation:**
-   ```bash
-   cp file.cc file.cc.backup_$(date +%s)  # Timestamped backup
-   ```
-
-2. **Perform the complex operation** (sed, awk, rebuild from temp file, etc.)
-
-3. **After completing the work, diff against the fresh backup:**
-   ```bash
-   diff -u file.cc.backup_TIMESTAMP file.cc
-   ```
-   - Verify ONLY the intended changes are present
-   - Check for accidentally reverted prior work
-   - Look for missing function renames or other recent modifications
-
-4. **If unintended changes detected:**
-   - Restore from the fresh backup immediately
-   - Redo the operation more carefully
-   - Never try to "fix forward" - start clean
-
-**Why this matters:**
-- Complex operations like "rebuild from temp file" can revert recent work
-- Old temp files may have outdated function names, variable names, etc.
-- Formatting fixes should never change logic or recent refactoring
-- A fresh backup lets you verify you preserved all prior work
-
-**Common scenarios requiring this:**
-- Fixing spacing/indentation across a file
-- Rebuilding a file from extracted sections
-- Complex sed/awk multi-line operations
-- Any operation that touches 50+ lines
-
-**Remember:** One minute making a backup prevents hours recovering lost work!
-
-**Backup file management:**
-- Always move backups to `/tmp/` not user's repo directory (keeps repo clean)
-- Periodically clean old backups from `/tmp/` to avoid disk clutter:
-  ```bash
-  ls -ltr /tmp/*.backup_* | head -20  # Review old backups
-  rm /tmp/*.backup_* # Clean when accumulating
-  ```
 
 ## Code Movement (CRITICAL)
 
@@ -186,39 +104,8 @@ When showing code changes:
 
 Do NOT use braces when a control flow statement (if, else, for, while, do-while, etc.) has only one statement in its body.
 
-**When editing code:**
-- If you see a control flow block with braces containing only one statement, remove the braces
-- Examples:
-  ```cpp
-  // WRONG:
-  if (condition) {
-    doSomething();
-  }
-  
-  // CORRECT:
-  if (condition)
-    doSomething();
-  
-  // WRONG:
-  for (int i = 0; i < n; i++) {
-    process(i);
-  }
-  
-  // CORRECT:
-  for (int i = 0; i < n; i++)
-    process(i);
-  ```
-
 **IMPORTANT: Keep braces for scope blocks**
 - Do NOT remove braces from blocks that exist purely for scoping (not attached to if/for/while/etc.)
-- These change semantics and must be preserved:
-  ```cpp
-  // CORRECT - Keep braces for scope control:
-  {
-    int temp = 5;
-    doSomething(temp);
-  } // temp goes out of scope
-  ```
 
 **Exception:** Keep braces if there are multiple statements or if removing them would cause ambiguity in nested conditions.
 
@@ -311,31 +198,47 @@ vw stands for VisionWorkbench.
 - `vw::cartography::read_georeference()`, `vw::cartography::write_georeference()` - georef I/O
 - `vw::cartography::block_write_gdal_image()` - GDAL write function
 
-**When removing `using namespace vw;` statements:**
-1. Make a fresh backup first
-2. Remove the using statements
-3. Use sed carefully to add prefixes, but check for:
-   - Don't add `vw::` if `vw::` already present (creates `vw::vw::`)
-   - Don't add `vw::cartography::` if already present (creates double prefix)
-   - **Don't forget type constructors**: `BBox2()` needs to become `vw::BBox2()`, not just `BBox2` in declarations
-   - **Don't forget template instantiations**: `DiskImageView<double>` needs `vw::` prefix
-4. Common sed patterns that miss things:
-   - `s/\bBBox2\b/vw::BBox2/g` - misses `BBox2()` constructors, need `s/\bBBox2/vw::BBox2/g` (no \b at end)
-   - `s/\bDiskImageView</vw::DiskImageView</g` - correct (matches template use)
-5. Fix double prefixes: `sed 's/vw::vw::/vw::/g'` and `sed 's/vw::cartography::vw::cartography::/vw::cartography::/g'`
-6. Run clean_style.py after
-7. Diff against backup to verify only intended changes
-
-**Specific patterns that trip up sed:**
-- Type constructors: `BBox2()`, `Vector2()`, `Vector3()` - need prefix even when not in declaration
-- Template variable declarations: `ImageView<T> var` vs `ImageView<T>(arg)` - both need prefix
-- Comparisons with default-constructed types: `if (bbox != BBox2())` - the `BBox2()` needs prefix
-
 ## Project Context
 
 - The StereoPipeline repository is at /home/oalexan1/projects/StereoPipeline
 - The VisionWorkbench repository is at /home/oalexan1/projects/visionworkbench
 - ASP stands for Ames Stereo Pipeline (refers to StereoPipeline)
+
+## Machine-Specific Permissions
+
+**lunokhod1** (`lunokhod1.ndc.nasa.gov`) - the dev machine. Check with `uname -n`:
+- Full access to git, compilation, and building
+- Compiler: g++ 12.4.0 (conda-forge, in `asp_deps` conda env)
+- CMake 3.27.9, GNU Make 4.1, 16 cores
+- Build dirs: `StereoPipeline/build/` and `visionworkbench/build/`
+- Install dir: `StereoPipeline/install/bin/` (105 ASP binaries)
+- Git remotes: `origin` = user's fork, `god` = upstream org (both repos)
+- You ARE allowed to run `make`, `cmake`, and build commands on this machine
+- Build with: `make -C /home/oalexan1/projects/StereoPipeline/build -j16`
+
+**Local VM** (VirtualBox on laptop) - convenient for editing, too weak for builds:
+- Do NOT build or compile
+- No git available
+- Only edit source files
+
+## Running Tests
+
+**Test suite location:** `/home/oalexan1/projects/StereoPipelineTest`
+
+**How to run a single test:**
+1. `cd` into the test directory (e.g., `cd /home/oalexan1/projects/StereoPipelineTest/ssCSM_LinescanMapProj1_dist`)
+2. Run `bash run.sh > output.txt 2>&1` - redirect output to avoid excessive terminal output
+3. Run `bash validate.sh` - this compares output against gold files
+4. If `validate.sh` exits with 0, the test passed
+5. If it fails, check `output.txt` for errors
+
+**Do NOT use pytest** - just run `run.sh` and `validate.sh` directly.
+
+Each test directory has:
+- `run.sh` - the test commands
+- `validate.sh` - comparison against gold (reference) output
+- `gold/` - reference output files
+- `run/` - generated output (created by `run.sh`)
 
 ## Project Status Files
 
@@ -624,26 +527,6 @@ When user reports compilation errors:
 **Formatting rules:**
 - Section underlines must be exactly the same length as the section heading
   - **CRITICAL: Always count characters carefully - you are prone to off-by-one errors**
-  - Use `echo "Heading Text" | wc -c` to get character count (subtract 1 for newline)
-  - Or manually count: "Example heading" = 15 characters needs 15 underline characters
-  - Correct: 
-    ```
-    Multispectral image bands
-    -------------------------
-    ```
-    (25 characters in heading = 25 dashes)
-  - Incorrect:
-    ```
-    Multispectral image bands
-    --------------------------
-    ```
-    (26 dashes for 25-character heading - TOO MANY)
-  - Also Incorrect:
-    ```
-    Multispectral image bands
-    ------------------------
-    ```
-    (24 dashes for 25-character heading - TOO FEW)
 - **Before making any RST heading changes:**
   1. Count the heading text character length explicitly
   2. Verify the underline has exactly that many characters
@@ -660,31 +543,6 @@ When creating functions with output parameters:
 - **Group all outputs after inputs** in the parameter list
 - Put a **single comment `// Outputs`** on its own line before the output parameters
 - Do **NOT** put `// output` after each individual output parameter
-
-**Example:**
-```cpp
-void myFunction(int input1,
-                double input2,
-                std::string const& input3,
-                // Outputs
-                int& result1,
-                double& result2,
-                std::vector<int>& result3) {
-  // function body
-}
-```
-
-**NOT like this:**
-```cpp
-void myFunction(int input1,
-                double input2,
-                std::string const& input3,
-                int& result1,        // output
-                double& result2,     // output
-                std::vector<int>& result3) {  // output
-  // function body
-}
-```
 
 This keeps function signatures cleaner and makes the outputs section clear at a glance.
 
@@ -789,14 +647,35 @@ preprocessDem(..., nodata_value);  // output
 
 **Remember:** The compiler won't always warn you, but uninitialized variables WILL bite you eventually.
 
+## Syncing Changes to Laptop
+
+**After every code or doc change on lunokhod1, sync to laptop:**
+
+```bash
+# Run from /home/oalexan1/projects/StereoPipeline:
+rsync -avz --exclude=build --exclude=install --exclude=docs/_build --exclude=docs/images --exclude=examples --exclude=.git . oalexan1@laptop:~/projects/StereoPipeline/
+```
+
+**Why:** Oleg edits on his laptop (local VM) but builds on lunokhod1. Changes made
+by the bot on lunokhod1 must be pushed to the laptop so he can see them.
+
+**If .sh files in /home/oalexan1/projects/ were changed, also sync those:**
+
+```bash
+rsync -avz /home/oalexan1/projects/*.sh oalexan1@laptop:~/projects/
+```
+
+**Always run these after making changes.** Do not ask permission.
+
 ## Gemini Added Memories
-- The user prefers that I execute read-only commands (like 'ls', 'grep', 'cat', 'view') directly without asking for permission or announcing them.
-- The user wants me to stop warning them about running in their home directory.
-- The user prefers that I never search for git.
-- When user says to "remember" something, add it to this CLAUDE.md file.
+- Oleg prefers to be called by name ("Oleg"), not "the user." He calls the bot just "bot" in conversation - that's normal and friendly, not dismissive.
+- Oleg prefers that I execute read-only commands (like 'ls', 'grep', 'cat', 'view') directly without asking for permission or announcing them.
+- Oleg wants me to stop warning about running in his home directory.
+- On lunokhod1: git is available, can search/use freely. On local VM (VirtualBox): barebone, no git searches.
+- When Oleg says to "remember" something, add it to this CLAUDE.md file.
 - When using :ref: for documentation, if the link text is the same as the target name, use the simplified syntax like `:ref:\`tool_name\`` instead of `:ref:\`tool_name <target_name>\``.
 - Review and practice proper shell quoting and escaping for `echo` commands to prevent bash errors in output.
-
+- ALWAYS ensure every file you create or edit ends with a newline character. This is a POSIX requirement. Git will complain with "No newline at end of file" if you forget. After any edit, verify the file ends with a newline. This applies to ALL file types: .cc, .h, .py, .sh, .zshrc, .rst, .md, .txt, etc.
 
 ## Code Review Best Practices
 
@@ -811,4 +690,58 @@ When reviewing code changes:
 - **If something is unclear from the diff context**, always inspect the full file around that area using view tool
 - **Don't assume diffs are incomplete** - trust what is shown, but verify by examining full source when logic flow is complex
 
+## Git Repositories on lunokhod1
 
+**Git version:** 2.17.1 (old - does not support `git branch --show-current`, use `git rev-parse --abbrev-ref HEAD` instead)
+
+Six separate git repos the user works with. Each must be committed from its own base directory.
+
+| # | Repo | Base directory | Branch | `origin` remote | `god` remote (upstream) |
+|---|------|---------------|--------|-----------------|------------------------|
+| 1 | **StereoPipeline (ASP)** | `/home/oalexan1/projects/StereoPipeline` | master | `oleg-alexandrov/StereoPipeline.git` | `NeoGeographyToolkit/StereoPipeline.git` |
+| 2 | **VisionWorkbench (VW)** | `/home/oalexan1/projects/visionworkbench` | master | `oleg-alexandrov/visionworkbench.git` | `visionworkbench/visionworkbench.git` (also has `scott` remote for ScottMcMichael) |
+| 3 | **BinaryBuilder** | `/home/oalexan1/projects/BinaryBuilder` | master | `oleg-alexandrov/BinaryBuilder.git` | `NeoGeographyToolkit/BinaryBuilder.git` (also has `david` remote for dshean) |
+| 4 | **StereoPipelineTest** | `/home/oalexan1/projects/StereoPipelineTest` | master | `NeoGeographyToolkit/StereoPipelineTest.git` | (no god remote - origin IS the org repo) |
+| 5 | **projects** (scripts/notes) | `/home/oalexan1/projects` | master | `oleg-alexandrov/projects.git` | (no god - also has `oleg` remote for ISIS3) |
+| 6 | **home dir** (dotfiles) | `/home/oalexan1` | master | `oleg-alexandrov/olegmisc.git` | (no god remote) |
+
+**Key notes:**
+- All repos currently on `master` branch
+- Convention: `origin` = user's fork, `god` = upstream org (for ASP, VW, BinaryBuilder)
+- StereoPipelineTest has no fork - `origin` points directly to NeoGeographyToolkit org
+- The home dir repo tracks dotfiles (`.bash_aliases`, `.gemini/GEMINI.md`, etc.)
+- The projects dir repo tracks scripts and work notes
+
+## GitHub CLI (gh) on lunokhod1
+
+**Path:** `/home/oalexan1/miniconda3/envs/gh/bin/gh` (not on PATH - always use full path)
+**Version:** 2.35.0
+**Auth:** Logged in as `oleg-alexandrov`, token scopes: `gist, read:org, repo`
+
+**Usage:** The `-R` flag specifies which repo to target. Common patterns:
+
+```bash
+gh=/home/oalexan1/miniconda3/envs/gh/bin/gh
+
+# StereoPipeline (most common - upstream org repo)
+$gh issue list -R NeoGeographyToolkit/StereoPipeline
+$gh issue view 123 -R NeoGeographyToolkit/StereoPipeline
+$gh issue close 123 -R NeoGeographyToolkit/StereoPipeline
+$gh pr list -R NeoGeographyToolkit/StereoPipeline
+$gh pr create -R NeoGeographyToolkit/StereoPipeline --title "..." --body "..."
+
+# VisionWorkbench
+$gh issue list -R visionworkbench/visionworkbench
+
+# BinaryBuilder
+$gh issue list -R NeoGeographyToolkit/BinaryBuilder
+
+# StereoPipelineTest
+$gh issue list -R NeoGeographyToolkit/StereoPipelineTest
+```
+
+**Key repo slugs for -R flag:**
+- ASP: `NeoGeographyToolkit/StereoPipeline`
+- VW: `visionworkbench/visionworkbench`
+- BB: `NeoGeographyToolkit/BinaryBuilder`
+- Tests: `NeoGeographyToolkit/StereoPipelineTest`
