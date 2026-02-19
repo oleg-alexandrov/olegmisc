@@ -8,6 +8,7 @@ alias cd=cdls
 alias cdbb='cd $HOME/projects/BinaryBuilder'
 alias cdbo='cd $HOME/projects/StereoPipeline/docs'
 alias cdd='cd $HOME/Desktop'
+alias cdde='cd $HOME/Desktop'
 alias cdp='cd $HOME/projects'
 alias cdpt='cd $HOME/projects/StereoPipelineTest'
 alias cds='cd $HOME/projects/StereoPipeline'

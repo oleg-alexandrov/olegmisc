@@ -3,7 +3,7 @@
 **Note:** This file is shared between Gemini and Claude Code via symlink.
 `/home/oalexan1/.claude/CLAUDE.md` -> `/home/oalexan1/.gemini/GEMINI.md`.
 
-**The user's name is Oleg (oalexan1). Refer to him by name, not "the user."**
+**The user's name is Oleg (oalexan1). Don't say "the user" but no need to use his name constantly either - this is direct conversation.**
 
 ## FILE CREATION NEWLINE REQUIREMENT (CRITICAL)
 
@@ -203,6 +203,7 @@ vw stands for VisionWorkbench.
 - The StereoPipeline repository is at /home/oalexan1/projects/StereoPipeline
 - The VisionWorkbench repository is at /home/oalexan1/projects/visionworkbench
 - ASP stands for Ames Stereo Pipeline (refers to StereoPipeline)
+- The BinaryBuilder repository (`/home/oalexan1/projects/BinaryBuilder`) contains the ASP build toolset. Its `auto_build/` subdirectory has the nightly build and regression test infrastructure. The nightly tests use `auto_build/run_tests.sh` which clones and runs the StereoPipelineTest suite.
 
 ## Machine-Specific Permissions
 
@@ -233,6 +234,11 @@ vw stands for VisionWorkbench.
 5. If it fails, check `output.txt` for errors
 
 **Do NOT use pytest** - just run `run.sh` and `validate.sh` directly.
+
+**When creating new tests**, always make `run.sh` and `validate.sh` executable:
+```bash
+chmod +x run.sh validate.sh
+```
 
 Each test directory has:
 - `run.sh` - the test commands
@@ -668,7 +674,7 @@ rsync -avz /home/oalexan1/projects/*.sh oalexan1@laptop:~/projects/
 **Always run these after making changes.** Do not ask permission.
 
 ## Gemini Added Memories
-- Oleg prefers to be called by name ("Oleg"), not "the user." He calls the bot just "bot" in conversation - that's normal and friendly, not dismissive.
+- Don't say "the user" but no need to use his name constantly - it's direct conversation.
 - Oleg prefers that I execute read-only commands (like 'ls', 'grep', 'cat', 'view') directly without asking for permission or announcing them.
 - Oleg wants me to stop warning about running in his home directory.
 - On lunokhod1: git is available, can search/use freely. On local VM (VirtualBox): barebone, no git searches.
@@ -676,6 +682,7 @@ rsync -avz /home/oalexan1/projects/*.sh oalexan1@laptop:~/projects/
 - When using :ref: for documentation, if the link text is the same as the target name, use the simplified syntax like `:ref:\`tool_name\`` instead of `:ref:\`tool_name <target_name>\``.
 - Review and practice proper shell quoting and escaping for `echo` commands to prevent bash errors in output.
 - ALWAYS ensure every file you create or edit ends with a newline character. This is a POSIX requirement. Git will complain with "No newline at end of file" if you forget. After any edit, verify the file ends with a newline. This applies to ALL file types: .cc, .h, .py, .sh, .zshrc, .rst, .md, .txt, etc.
+- ALWAYS rsync to laptop after every code/doc change - don't wait to be reminded.
 
 ## Code Review Best Practices
 
