@@ -753,14 +753,16 @@ $gh issue list -R NeoGeographyToolkit/StereoPipelineTest
 - BB: `NeoGeographyToolkit/BinaryBuilder`
 - Tests: `NeoGeographyToolkit/StereoPipelineTest`
 
-## Errata: Co-Authored-By Trailer
+## Co-Authored-By Trailer (CRITICAL)
 
-**Issue (2026-02-21):** ASP commit `c0931af03` ("Enable --random_seed=1 on Mac for
-reproducible Theia results") was created by Claude Code but is missing the
-`Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>` trailer. All AI-assisted
-commits should include this line. Investigating why it was omitted — hypothesis is
-that the session used a raw `git commit` command instead of the standard commit
-protocol that appends the trailer automatically.
+**Every commit made by an AI assistant MUST include this trailer:**
+```
+Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+```
+No exceptions. This applies to all repos (ASP, VW, BinaryBuilder, projects, home, etc.).
+
+**Errata (2026-02-21):** ASP commit `c0931af03` was missing this trailer.
+Always use a HEREDOC for commit messages to ensure the trailer is included.
 
 ## ~/projects Git Rule (CRITICAL)
 
