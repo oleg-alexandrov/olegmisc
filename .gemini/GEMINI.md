@@ -752,3 +752,29 @@ $gh issue list -R NeoGeographyToolkit/StereoPipelineTest
 - VW: `visionworkbench/visionworkbench`
 - BB: `NeoGeographyToolkit/BinaryBuilder`
 - Tests: `NeoGeographyToolkit/StereoPipelineTest`
+
+## Errata: Co-Authored-By Trailer
+
+**Issue (2026-02-21):** ASP commit `c0931af03` ("Enable --random_seed=1 on Mac for
+reproducible Theia results") was created by Claude Code but is missing the
+`Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>` trailer. All AI-assisted
+commits should include this line. Investigating why it was omitted — hypothesis is
+that the session used a raw `git commit` command instead of the standard commit
+protocol that appends the trailer automatically.
+
+## ~/projects Git Rule (CRITICAL)
+
+Files in `~/projects/` are tracked by `~/projects/.git` (NOT `~/.git`).
+Always use `git -C ~/projects` for add, commit, push, etc.
+Some subdirectories (e.g., StereoPipeline, BinaryBuilder) have their own
+`.git` — those are separate repos, not a concern for the top-level
+`~/projects/.git`.
+
+## Conda Build Environments (Mac ARM64)
+
+- **`boa`** - Build conda packages for osx-arm64 (native)
+- **`boa_x64`** - Build conda packages for osx-64 (cross-compile for Intel). Created with `CONDA_SUBDIR=osx-64`.
+- **`asp_deps`** - Development environment with all ASP dependencies for compiling ASP from source (arm64, CMake)
+- Initialize conda with `iz` alias (calls `init_conda_zsh` in `.zshrc`)
+
+**Cross-compile notes for x86_64** are in `~/projects/BinaryBuilder/install_asp_notes.sh` around line 1690. Covers creating `boa_x64`, building feedstock packages for osx-64, and uploading.
