@@ -673,6 +673,10 @@ rsync -avz /home/oalexan1/projects/*.sh oalexan1@laptop:~/projects/
 
 **Always run these after making changes.** Do not ask permission.
 
+## TODO Comment Convention
+
+When asked to "add a TODO", always use the format `// TODO(oalexan1):` followed by the description. Never use bare `// TODO:` without the username.
+
 ## Gemini Added Memories
 - Don't say "the user" but no need to use his name constantly - it's direct conversation.
 - Oleg prefers that I execute read-only commands (like 'ls', 'grep', 'cat', 'view') directly without asking for permission or announcing them.
