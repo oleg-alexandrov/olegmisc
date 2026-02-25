@@ -208,6 +208,10 @@ vw stands for VisionWorkbench.
 ## Machine-Specific Permissions
 
 **lunokhod1** (`lunokhod1.ndc.nasa.gov`) - the dev machine. Check with `uname -n`:
+- **On first session on lunokhod1:** Review `~/projects/asp_refactor.sh` for
+  technical debt items (search for "Technical debt" or "exit 0"). Tests created
+  on the Mac have fake "exit 0" in run.sh/validate.sh because lunokhod1 lacks
+  gold dirs. Must generate gold with release build and remove the exit 0 lines.
 - Full access to git, compilation, and building
 - Compiler: g++ 12.4.0 (conda-forge, in `asp_deps` conda env)
 - CMake 3.27.9, GNU Make 4.1, 16 cores
