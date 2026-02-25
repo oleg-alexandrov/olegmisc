@@ -728,16 +728,26 @@ Six separate git repos the user works with. Each must be committed from its own 
 - The home dir repo tracks dotfiles (`.bash_aliases`, `.gemini/GEMINI.md`, etc.)
 - The projects dir repo tracks scripts and work notes
 
-## GitHub CLI (gh) on lunokhod1
+## GitHub CLI (gh)
 
-**Path:** `/home/oalexan1/miniconda3/envs/gh/bin/gh` (not on PATH - always use full path)
-**Version:** 2.35.0
+Installed in a conda env named `gh`. Not on PATH - always use full path.
+Install with: `conda create -n gh -c conda-forge gh`
+
+**Portable path** (works on both machines): `$(ls -d $HOME/*conda3/envs/gh/bin/gh)`
+
+| Machine | Path | Version |
+|---------|------|---------|
+| **Mac (laptop)** | `/Users/oalexan1/anaconda3/envs/gh/bin/gh` | 2.70.0 |
+| **lunokhod1** | `/home/oalexan1/miniconda3/envs/gh/bin/gh` | 2.35.0 |
+
 **Auth:** Logged in as `oleg-alexandrov`, token scopes: `gist, read:org, repo`
 
 **Usage:** The `-R` flag specifies which repo to target. Common patterns:
 
 ```bash
-gh=/home/oalexan1/miniconda3/envs/gh/bin/gh
+# Use the right path for the machine
+gh=$HOME/miniconda3/envs/gh/bin/gh   # lunokhod1
+gh=$HOME/anaconda3/envs/gh/bin/gh    # Mac
 
 # StereoPipeline (most common - upstream org repo)
 $gh issue list -R NeoGeographyToolkit/StereoPipeline
@@ -761,6 +771,15 @@ $gh issue list -R NeoGeographyToolkit/StereoPipelineTest
 - VW: `visionworkbench/visionworkbench`
 - BB: `NeoGeographyToolkit/BinaryBuilder`
 - Tests: `NeoGeographyToolkit/StereoPipelineTest`
+
+**Triggering CI workflows:**
+```bash
+$gh workflow run build_test_mac_arm64.yml -R NeoGeographyToolkit/StereoPipeline
+$gh workflow run build_test_mac_x64.yml -R NeoGeographyToolkit/StereoPipeline
+$gh run list -R NeoGeographyToolkit/StereoPipeline --limit 5
+$gh run view <run-id> -R NeoGeographyToolkit/StereoPipeline
+$gh run view <run-id> --log-failed -R NeoGeographyToolkit/StereoPipeline
+```
 
 ## Co-Authored-By Trailer (CRITICAL)
 
