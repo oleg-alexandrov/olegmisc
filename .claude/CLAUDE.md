@@ -221,6 +221,23 @@ vw stands for VisionWorkbench.
 - You ARE allowed to run `make`, `cmake`, and build commands on this machine
 - Build with: `make -C /home/oalexan1/projects/StereoPipeline/build -j16`
 
+**Mac mini** (`Olegs-Mac-mini.local`) - secondary build machine:
+- Can build ASP: `make -C ~/projects/StereoPipeline/build -j10`
+- Conda init: `eval "$($HOME/anaconda3/bin/conda shell.zsh hook)" && conda activate asp_deps`
+- **After `make install`, fix duplicate rpaths (macOS dyld rejects duplicates):**
+  ```bash
+  cd ~/projects/StereoPipeline
+  for f in install/lib/libAsp*.dylib install/bin/*; do
+    count=$(otool -l "$f" 2>/dev/null | \
+      grep "path .*/miniconda3/envs/asp_deps/lib " | wc -l)
+    if [ "$count" -gt 1 ]; then
+      install_name_tool -delete_rpath \
+        $HOME/miniconda3/envs/asp_deps/lib "$f" 2>/dev/null
+    fi
+  done
+  ```
+- Run tests with dev build: `export PATH=~/projects/StereoPipeline/install/bin:$PATH`
+
 **Local VM** (VirtualBox on laptop) - convenient for editing, too weak for builds:
 - Do NOT build or compile
 - No git available
