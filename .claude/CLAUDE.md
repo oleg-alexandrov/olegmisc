@@ -121,6 +121,10 @@ Don't do blind sed-style namespace replacements - read and comprehend the code f
   technical debt items (search for "Technical debt" or "exit 0"). Tests created
   on the Mac have fake "exit 0" in run.sh/validate.sh because lunokhod1 lacks
   gold dirs. Must generate gold with release build and remove the exit 0 lines.
+- **On lunokhod1:** Enable `--nearest-neighbor` in `ss_mapproject_tr_bug/run.sh`
+  (uncomment the line, comment out the bicubic line), regenerate gold, and verify.
+  This gives nearest-neighbor test coverage that no other mapproject test has.
+  See the TODO in that file.
 - Full access to git, compilation, and building
 - Compiler: g++ 12.4.0 (conda-forge, in `asp_deps` conda env)
 - CMake 3.27.9, GNU Make 4.1, 16 cores
@@ -162,6 +166,10 @@ Don't do blind sed-style namespace replacements - read and comprehend the code f
 4. If it fails, check `output.txt`
 
 **Do NOT use pytest** - just run `run.sh` and `validate.sh` directly.
+
+**NEVER git add `run/` or `gold/` directories in StereoPipelineTest.** These contain
+large binary output files (~40 GB total). They are gitignored. Only `run.sh` and
+`validate.sh` are tracked in git.
 
 Each test directory has:
 - `run.sh` - the test commands
