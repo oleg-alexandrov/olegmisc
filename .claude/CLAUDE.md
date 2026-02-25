@@ -347,6 +347,29 @@ Always use a HEREDOC for commit messages to ensure the trailer is included.
 Files in `~/projects/` are tracked by `~/projects/.git` (NOT `~/.git`).
 Always use `git -C ~/projects` for add, commit, push, etc.
 
+## Safe Directory Cleanup (CRITICAL)
+
+**NEVER run `rm -rf` with absolute paths or variable-expanded paths to clean build dirs.**
+VW was wiped TWICE by agents doing `rm -rf /path/to/visionworkbench/build_linux` with
+bad variable expansion. The rule:
+
+1. `cd` into the project directory first
+2. Run `ls` to confirm you're in the right place
+3. Use **relative paths only**: `rm -rf ./build_linux`, never `rm -rf $bld`
+4. Never combine `rm -rf` with shell variables that could expand to empty or wrong paths
+
+**Example of what NOT to do:**
+```bash
+rm -rf $bld/CMakeCache.txt $bld/CMakeFiles  # if $bld is empty, wipes / !
+```
+
+**Correct:**
+```bash
+cd /Users/oalexan1/projects/visionworkbench
+ls  # confirm src/, cmake/, etc. are here
+rm -rf ./build_linux
+```
+
 ## Conda Build Environments (Mac ARM64)
 
 - **`boa`** - Build conda packages for osx-arm64 (native)
