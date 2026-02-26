@@ -125,6 +125,10 @@ Don't do blind sed-style namespace replacements - read and comprehend the code f
   (uncomment the line, comment out the bicubic line), regenerate gold, and verify.
   This gives nearest-neighbor test coverage that no other mapproject test has.
   See the TODO in that file.
+- **On lunokhod1:** No regression test covers `point2dem --orthoimage` (the DRG
+  path). Add `--orthoimage` to an existing point2dem test (e.g., ssCSM_FrameDawn),
+  regenerate gold, and verify. This exercises the `PixelGray<float>` texture path
+  in OrthoRasterizer which differs from the default elevation (`double`) path.
 - Full access to git, compilation, and building
 - Compiler: g++ 12.4.0 (conda-forge, in `asp_deps` conda env)
 - CMake 3.27.9, GNU Make 4.1, 16 cores
