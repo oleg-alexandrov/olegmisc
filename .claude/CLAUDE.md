@@ -6,6 +6,14 @@
 - When Oleg says to "remember" something, add it to this CLAUDE.md file.
 - "Project dir" or "projects dir" means `~/projects`.
 
+## Header Include Ordering (CRITICAL)
+
+In ASP source files, headers must be ordered: **ASP includes first, then VW includes.**
+- `#include <asp/...>` lines go above `#include <vw/...>` lines
+- This matches the existing convention in the ASP codebase (see CLAUDE.md global rule
+  "ASP headers should be grouped together and placed before any other headers")
+- When adding new includes, always respect this ordering
+
 ## Character Alignment (CRITICAL)
 
 **NEVER eyeball character alignment - always measure with external tools.**
@@ -373,6 +381,17 @@ cd /Users/oalexan1/projects/visionworkbench
 ls  # confirm src/, cmake/, etc. are here
 rm -rf ./build_linux
 ```
+
+## Cross-Compile Build Directories (CRITICAL)
+
+**Native builds use `build/` and `install/`. Cross-compile uses `build_linux/` and `install_linux/`.**
+
+Both VW and ASP follow this convention:
+- `build/` + `install/` = native Mac ARM64 (or native Linux on lunokhod1)
+- `build_linux/` + `install_linux/` = cross-compiled Linux x86_64 from Mac
+
+NEVER use `build/` or `install/` for cross-compilation. NEVER use `build_linux/` or
+`install_linux/` for native builds. Mixing these up destroys the other build.
 
 ## Conda Build Environments (Mac ARM64)
 
