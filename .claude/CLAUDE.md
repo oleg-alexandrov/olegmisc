@@ -288,9 +288,13 @@ When adding/modifying command-line options, always update all three consistently
 
 - New items go in the **first section** ("Changes since last release"), never
   in older release sections below it.
+- **CRITICAL: grep for all `^RELEASE` headers first** to find where the top
+  section ends. Do NOT assume a large line number is still in the top section.
+  The file has many `RELEASE X.Y.Z` headers and the top section may be short.
 - Entries are grouped by tool name (e.g., `stereo_gui (:numref:`stereo_gui`):`)
   with bullet points underneath. Create a new tool group if one doesn't exist
   yet in the current section, or append a bullet to an existing group.
+- The `Misc:` group always comes last in a section, after all tool entries.
 - Keep bullets concise - one or two sentences with a numref link.
 
 ## Output Parameter Style
