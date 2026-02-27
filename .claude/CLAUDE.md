@@ -282,6 +282,17 @@ When adding/modifying command-line options, always update all three consistently
 - Heading levels: `=` top, `-` subsection, `~` sub-sub, `^` sub-sub-sub
 - For `:ref:` links where text matches target, use simplified syntax: `` :ref:`tool_name` ``
 
+## NEWS.rst Conventions
+
+**Release notes live in `NEWS.rst` at the repo root** (included by `docs/news.rst`).
+
+- New items go in the **first section** ("Changes since last release"), never
+  in older release sections below it.
+- Entries are grouped by tool name (e.g., `stereo_gui (:numref:`stereo_gui`):`)
+  with bullet points underneath. Create a new tool group if one doesn't exist
+  yet in the current section, or append a bullet to an existing group.
+- Keep bullets concise - one or two sentences with a numref link.
+
 ## Output Parameter Style
 
 Group all outputs after inputs. Put a single `// Outputs` comment on its own line before them.
