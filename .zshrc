@@ -115,19 +115,6 @@ bindkey "\M-^?"              backward-delete-word
 bindkey "\M- "               _history-complete-older # completion from history
 bindkey "\M-/"               _history-complete-older # completion from history
 
-# function reread_aliases {
-#   if [ -f ~/.unaliases    ]; then source ~/.unaliases;    fi;
-#   if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi;
-# }
-# #add-zsh-hook preexec reread_aliases # older versions of zsh do not support this
-
-# function save_curr_cmd {
-#     # Copy the current command to byss, so that we can
-#     # execute it from other machines
-#     #ssh -f byss "echo \"$1\" > ~/.lastCmd" 1>/dev/null 2>&1
-# }
-# #add-zsh-hook preexec save_curr_cmd
-
 # Colors
 autoload -U colors
 for cFile in $HOME/.zsh_colors                 \
@@ -146,18 +133,6 @@ bindkey "^X^E" edit-command-line
 
 # Init the prompt
 proml
-
-# # Source the ROS settings
-# ros=/opt/ros/kinetic/setup.zsh
-# if [ -f "$ros" ] && [ $(uname -n) != "oleg-linux" ]; then
-#     source $ros
-# fi
-
-# PATH="/home/oalexan1/perl5/bin${PATH:+:${PATH}}"; export PATH;
-# PERL5LIB="/home/oalexan1/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
-# PERL_LOCAL_LIB_ROOT="/home/oalexan1/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
-# PERL_MB_OPT="--install_base \"/home/oalexan1/perl5\""; export PERL_MB_OPT;
-# PERL_MM_OPT="INSTALL_BASE=/home/oalexan1/perl5"; export PERL_MM_OPT;
 
 function init_conda_zsh {
 # >>> conda initialize >>>
