@@ -1,7 +1,8 @@
 #!/bin/sh
 #-*-tcl-*-
-# the next line restarts using wish \
-exec wish "$0" -- ${1+"$@"}
+# the next two lines restart using wish \
+WISH=$(if [ -x /Users/oalexan1/anaconda3/bin/wish8.6 ]; then echo /Users/oalexan1/anaconda3/bin/wish8.6; else echo wish; fi); \
+exec $WISH "$0" -- ${1+"$@"}
 
 ###############################################################################
 #
