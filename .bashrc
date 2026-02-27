@@ -292,7 +292,7 @@ function hg {
 
 function gr {
   # recursive grep
-  grep -r -i -n -E --colour=auto --exclude-dir=build --exclude-dir=install \
+  grep -r -i -n -E --colour=auto --exclude-dir=build --exclude-dir=build_linux --exclude-dir=install --exclude-dir=install_linux \
       "$*" . --include="*.cc"  --include="*.cpp"  \
       --include="*.cxx" --include="*.h"  --include="*.hpp" --include="*.tcc" \
       --include="*.tex" --include="*.py" --include="*.in"  --include="*.c"   \
@@ -302,12 +302,12 @@ function gr {
 
 function grr {
   # recursive grep every single file
-  grep -r -i -n -E --colour=auto --exclude-dir=build --exclude-dir=install "$*" .
+  grep -r -i -n -E --colour=auto --exclude-dir=build --exclude-dir=build_linux --exclude-dir=install --exclude-dir=install_linux "$*" .
 }
 
 function grf {
   # recursive grep every single file, then return the file names.
-    grep -r -i -n -E --colour=auto --exclude-dir=build --exclude-dir=install "$*" . | perl -p -e "s#:.*?\n#\n#g" | ~/bin/unique.pl
+    grep -r -i -n -E --colour=auto --exclude-dir=build --exclude-dir=build_linux --exclude-dir=install --exclude-dir=install_linux "$*" . | perl -p -e "s#:.*?\n#\n#g" | ~/bin/unique.pl
 }
 
 # List all files matching the given pattern
