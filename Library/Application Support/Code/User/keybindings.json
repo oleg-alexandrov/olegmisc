@@ -225,5 +225,14 @@
     "key": "cmd+end",
     "command": "-cursorBottom",
     "when": "textInputFocus"
+  },
+  {
+    "key": "cmd+q",
+    "command": "-workbench.action.quit"
+  },
+  {
+    "key": "alt+q",
+    "command": "rewrap.rewrapComment",
+    "when": "editorTextFocus"
   }
 ]
