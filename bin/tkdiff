@@ -2612,7 +2612,7 @@ proc pack-toolbuttons {toolbar} {
         set bp "tx"
     }
 
-    pack $toolbar.combo -side left -padx 2
+    #pack $toolbar.combo -side left -padx 2 ;# hide diff dropdown to save space
     pack $toolbar.sep1 -side left -fill y -pady 2 -padx 2
     pack $toolbar.rediff_$bp -side left -padx 2
     pack $toolbar.find_$bp -side left -padx 2
