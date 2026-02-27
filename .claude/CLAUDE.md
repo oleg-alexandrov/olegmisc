@@ -403,3 +403,14 @@ NEVER use `build/` or `install/` for cross-compilation. NEVER use `build_linux/`
 - Initialize conda with `iz` alias (calls `init_conda_zsh` in `.zshrc`)
 
 **Cross-compile notes for x86_64** are in `~/projects/BinaryBuilder/install_asp_notes.sh` around line 1690.
+
+## Nightly Build Status
+
+| Date | Platform | Status | Likely cause |
+|------|----------|--------|--------------|
+| 2026-02-26 | lunokhod1 | **FAIL** | OrthoRasterizer refactoring pushed 2026-02-25 (6 commits: de-templatize set_texture, move methods .h->.cc, snap_bbox, ImageChannels include, minz_as rename) |
+
+**On lunokhod1:** Investigate the 2026-02-26 nightly build/test failure. Inspect
+failed tests, compare output against gold, and determine if differences are
+acceptable float noise from the refactoring or actual bugs. Regenerate gold
+if the changes are correct.
