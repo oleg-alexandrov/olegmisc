@@ -7,6 +7,9 @@
 - "Project dir" or "projects dir" means `~/projects`.
 - **NEVER force push (`git push --force` or `git push -f`).** Always add on top.
   If an amend causes divergence, rebase or merge to reconcile, then push normally.
+- **NEVER push without explicit authorization.** Every `git push` must be
+  explicitly requested or approved. Especially `git push god` (upstream org).
+  Do not bundle pushes with other operations unless told to push.
 
 ## Header Include Ordering (CRITICAL)
 
