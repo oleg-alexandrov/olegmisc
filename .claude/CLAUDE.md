@@ -5,6 +5,8 @@
 - Always end files with a newline character (POSIX requirement).
 - When Oleg says to "remember" something, add it to this CLAUDE.md file.
 - "Project dir" or "projects dir" means `~/projects`.
+- **NEVER force push (`git push --force` or `git push -f`).** Always add on top.
+  If an amend causes divergence, rebase or merge to reconcile, then push normally.
 
 ## Header Include Ordering (CRITICAL)
 
