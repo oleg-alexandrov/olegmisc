@@ -4790,11 +4790,10 @@ proc update-display {} {
         $w(find_im) configure -state normal
         $w(find_tx) configure -state normal
 
-        # Hmmm.... on my Mac the combobox flashes if we don't add this
-        # check. Is this a bug in AquaTk, or in my combobox... :-|
-        if {[$w(combo) cget -state] != "normal"} {
-            $w(combo) configure -state normal
-        }
+        # combobox hidden - skip state update to avoid Mac flash
+        #if {[$w(combo) cget -state] != "normal"} {
+        #    $w(combo) configure -state normal
+        #}
     }
 
     # Update the toggles.
@@ -4806,13 +4805,12 @@ proc update-display {} {
     set g(statusCurrent) "$g(pos) of $g(count)"
     show-info $g(statusCurrent)
 
-    # update the combobox. We don't want its command to fire, so
-    # we'll disable it temporarily
-    $w(combo) configure -commandstate "disabled"
-    set i [expr {$g(pos) - 1}]
-    $w(combo) configure -value [lindex [$w(combo) list get 0 end] $i]
-    $w(combo) selection clear
-    $w(combo) configure -commandstate "normal"
+    # combobox hidden - skip update
+    #$w(combo) configure -commandstate "disabled"
+    #set i [expr {$g(pos) - 1}]
+    #$w(combo) configure -value [lindex [$w(combo) list get 0 end] $i]
+    #$w(combo) selection clear
+    #$w(combo) configure -commandstate "normal"
 
     # update the widgets
     if {$g(pos) <= 1} {
@@ -4957,7 +4955,7 @@ proc center {} {
 ###############################################################################
 proc buttons {{newstate "normal"}} {
     global w
-    $w(combo) configure -state $newstate
+    #$w(combo) configure -state $newstate
     foreach buttonpref {im tx} {
         $w(prevDiff_$buttonpref) configure -state $newstate
         $w(nextDiff_$buttonpref) configure -state $newstate
@@ -5018,7 +5016,7 @@ proc wipe-window {} {
         set g(destroy) ""
     }
 
-    $w(combo) list delete 0 end
+    #$w(combo) list delete 0 end
     buttons disabled
 
     diffmark clearall
@@ -5061,7 +5059,7 @@ proc mark-diffs {} {
             set g(pdiff,$g(count)) "$result"
             add-lines $g(count)
 
-            $w(combo) list insert end [format "%-6d: %s" $g(count) $d]
+            #$w(combo) list insert end [format "%-6d: %s" $g(count) $d]
 
             eval $hack
         }
@@ -5383,7 +5381,7 @@ proc watch-cursor {args} {
     . configure -cursor watch
     $w(LeftText) configure -cursor watch
     $w(RightText) configure -cursor watch
-    $w(combo) configure -cursor watch
+    #$w(combo) configure -cursor watch
     update idletasks
 }
 
@@ -5398,7 +5396,7 @@ proc restore-cursor {args} {
     . configure -cursor {}
     $w(LeftText) configure -cursor {}
     $w(RightText) configure -cursor {}
-    $w(combo) configure -cursor {}
+    #$w(combo) configure -cursor {}
     show-info ""
     update idletasks
 }
