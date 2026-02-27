@@ -58,6 +58,13 @@ LLMs tokenize in chunks, not individual characters, so counting spaces visually 
 - If replacing within a function that starts at line N, use N as the start, not N+10
 - Verify there are no stragglers just before or after your range
 
+## Preserving Comments When Refactoring (CRITICAL)
+
+**When reworking or cleaning up code, do NOT wipe per-block comments.**
+Comments above or beside code blocks exist for a reason. Only remove a comment
+if it describes code that was deleted. If unsure whether a comment is still
+relevant, keep it.
+
 ## Code Movement (CRITICAL)
 
 **When moving code between files, ALWAYS use atomic cut-and-paste.**
