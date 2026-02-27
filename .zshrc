@@ -161,18 +161,33 @@ proml
 
 function init_conda_zsh {
 # >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/Users/oalexan1/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+# Find the conda installation (anaconda3 on Mac, miniconda3 on Linux)
+local conda_dir=""
+if [ -d "$HOME/anaconda3" ]; then
+    conda_dir="$HOME/anaconda3"
+elif [ -d "$HOME/miniconda3" ]; then
+    conda_dir="$HOME/miniconda3"
+fi
+if [ -z "$conda_dir" ]; then
+    echo "No anaconda3 or miniconda3 found in $HOME"
+    return 1
+fi
+__conda_setup="$("$conda_dir/bin/conda" 'shell.zsh' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
     eval "$__conda_setup"
 else
-    if [ -f "/Users/oalexan1/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "/Users/oalexan1/anaconda3/etc/profile.d/conda.sh"
+    if [ -f "$conda_dir/etc/profile.d/conda.sh" ]; then
+        . "$conda_dir/etc/profile.d/conda.sh"
     else
-        export PATH="/Users/oalexan1/anaconda3/bin:$PATH"
+        export PATH="$conda_dir/bin:$PATH"
     fi
 fi
 unset __conda_setup
+# Set ISISROOT to the asp_deps conda env if it exists
+if [ -d "$conda_dir/envs/asp_deps" ]; then
+    export ISISROOT="$conda_dir/envs/asp_deps"
+fi
+export ISISDATA=$HOME/projects/isis3data
 # <<< conda initialize <<<
 }
 
