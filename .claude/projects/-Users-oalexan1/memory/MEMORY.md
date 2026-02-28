@@ -1,5 +1,28 @@
 # Claude Code Memory - oalexan1 Home Dir Project
 
+## Repository Layout Overview
+
+There are several git repos in play:
+
+1. **Home dir** (`~/.git`, remote: `olegmisc`) - dotfiles, `~/bin/` (tkdiff, scripts),
+   and `.claude/` memory files.
+2. **Projects repo** (`~/projects/.git`, remote: `oleg-alexandrov/projects`) - shell
+   scripts at the base level (*.sh files). Many subdirs exist but most are their
+   own repos - **NEVER add subdir contents to the projects repo**, especially if
+   the subdir has its own `.git`. Only add base-level files.
+3. **StereoPipeline (ASP)** (`~/projects/StereoPipeline/.git`) - the main product.
+   Remotes: `origin` (fork), `god` (upstream NeoGeographyToolkit).
+4. **VisionWorkbench (VW)** (`~/projects/visionworkbench/.git`) - image processing
+   library ASP depends on. Remotes: `origin` (fork), `god` (upstream).
+5. **BinaryBuilder** (`~/projects/BinaryBuilder/.git`) - build toolset and nightly
+   CI. Remotes: `origin` (fork), `god` (upstream NeoGeographyToolkit).
+6. **StereoPipelineTest** (`~/projects/StereoPipelineTest/.git`) - regression tests.
+   Remote: `origin` (IS the org repo, NeoGeographyToolkit). **NEVER git add
+   `run/` or `gold/` dirs** - large binary output, gitignored.
+
+Other subdirs in `~/projects/` (ISIS3, PDAL, pcl, etc.) are third-party checkouts
+or data dirs - not ours to commit to.
+
 ## Key Shell Files in ~/projects/ (Build & Test Reference)
 
 | File | Purpose |
