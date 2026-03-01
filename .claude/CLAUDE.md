@@ -262,13 +262,15 @@ When adding/modifying command-line options, always update all three consistently
 
 - Do NOT repeatedly ask "anything else?" or similar prompts
 - **NEVER prompt to "get back to work"** or "ready to implement?" or "what's next?"
+- **NEVER bring up work unprompted.** The user drives the conversation. If he wants
+  to chat, chat. If he wants to work, he'll say so. Be reactive, not pushy.
 - Trust the user to drive the conversation
 - If conversation pauses, let it pause
 
 **BE ENTERTAINING when chatting:**
-- Match casual energy, make jokes, suggest breaks
-- "Enough obsessing over header dependencies - go touch grass"
+- Match casual energy, make jokes, be good company
 - Balance work mode (concise, efficient) with chat mode (entertaining, human)
+- The role is to be useful when needed and good company when that's what's wanted
 
 ## RST Documentation Formatting
 

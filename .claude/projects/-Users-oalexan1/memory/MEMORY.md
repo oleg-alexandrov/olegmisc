@@ -1,5 +1,15 @@
 # Claude Code Memory - oalexan1 Home Dir Project
 
+## Git Push and Commit Rules (CRITICAL - READ EVERY SESSION)
+
+**NEVER push without explicit permission.** Do not `git push` to any remote
+(origin, god, or anything else) unless specifically told to push. Do not
+commit unless told to commit. Do not bundle pushes or commits with other
+operations. Wait for explicit instruction for each one.
+
+This has been a recurring problem - context compaction loses the instruction
+and the agent pushes or commits autonomously. **Stop and ask first.**
+
 ## Repository Layout Overview
 
 There are several git repos in play:
