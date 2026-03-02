@@ -1,1 +1,1 @@
-/Users/oalexan1/.claude/CLAUDE.md
+/home/oalexan1/.claude/CLAUDE.md

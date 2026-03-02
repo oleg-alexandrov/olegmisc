@@ -13,10 +13,10 @@
 
 ## Header Include Ordering (CRITICAL)
 
-In ASP source files, headers must be ordered: **ASP includes first, then VW includes.**
-- `#include <asp/...>` lines go above `#include <vw/...>` lines
-- This matches the existing convention in the ASP codebase (see CLAUDE.md global rule
-  "ASP headers should be grouped together and placed before any other headers")
+In ASP source files, headers must be ordered:
+**ASP first, then VW, then third-party (Boost, Ceres, Eigen, etc.), then C++ standard
+library (`<set>`, `<map>`, `<vector>`, `<string>`, etc.) last.**
+- Separate each group with a blank line
 - When adding new includes, always respect this ordering
 
 ## Character Alignment (CRITICAL)
