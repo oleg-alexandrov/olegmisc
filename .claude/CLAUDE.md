@@ -368,8 +368,19 @@ Installed in conda env `gh`. Not on PATH - use full path.
 - BB: `NeoGeographyToolkit/BinaryBuilder`
 - Tests: `NeoGeographyToolkit/StereoPipelineTest`
 
-**Triggering CI workflows:**
+**Common operations** (set `gh=/home/oalexan1/miniconda3/envs/gh/bin/gh`):
 ```bash
+# Issues
+$gh issue list -R NeoGeographyToolkit/StereoPipeline
+$gh issue view 123 -R NeoGeographyToolkit/StereoPipeline
+$gh issue close 123 -R NeoGeographyToolkit/StereoPipeline
+
+# Pull requests
+$gh pr list -R NeoGeographyToolkit/StereoPipeline
+$gh pr view 123 -R NeoGeographyToolkit/StereoPipeline
+$gh pr create -R NeoGeographyToolkit/StereoPipeline --title "..." --body "..."
+
+# CI workflows
 $gh workflow run build_test_mac_arm64.yml -R NeoGeographyToolkit/StereoPipeline
 $gh run list -R NeoGeographyToolkit/StereoPipeline --limit 5
 $gh run view <run-id> --log-failed -R NeoGeographyToolkit/StereoPipeline
