@@ -203,6 +203,17 @@ Each test directory has:
 
 When creating new tests, always `chmod +x run.sh validate.sh`.
 
+## Notes Files (.sh)
+
+Many `.sh` files in `~/projects/` are comment-only notes, not executable scripts.
+Do NOT `chmod +x` these. Only make a `.sh` file executable if it is actually
+meant to be run (has real commands, not just comments).
+
+**Project-specific notes in subdirs:** New projects get their own subdirectory
+under `~/projects/` with a notes file (e.g., `isis_mapproject/isis_mapproject_notes.sh`).
+These subdir notes files ARE tracked by the projects repo (`~/projects/.git`).
+Add them with `git -C ~/projects add subdir/file.sh`.
+
 ## Project Status Files
 
 **Work tracking files** in `/home/oalexan1/projects/`:
