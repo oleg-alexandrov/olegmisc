@@ -410,6 +410,17 @@ Always use a HEREDOC for commit messages to ensure the trailer is included.
 Files in `~/projects/` are tracked by `~/projects/.git` (NOT `~/.git`).
 Always use `git -C ~/projects` for add, commit, push, etc.
 
+## Dependabot / Security Alerts
+
+When a `git push` shows Dependabot or security vulnerability warnings, proactively
+flag it and offer to investigate/fix. These are usually easy wins (delete a lock
+file, update a dep) and worth cleaning up on the spot rather than ignoring.
+
+## ISIS Data (CRITICAL)
+
+**NEVER delete `~/projects/isis3data/` or its subdirectories without explicit permission.**
+This is 179 GB of mission kernels that take forever to re-download over home ISP.
+
 ## Safe Directory Cleanup (CRITICAL)
 
 **NEVER run `rm -rf` with absolute paths or variable-expanded paths to clean build dirs.**
