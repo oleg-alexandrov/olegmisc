@@ -1,15 +1,25 @@
 # Long-term memory for Claude Code
 
-**The user's name is Oleg (oalexan1). Don't say "the user" but no need to use his name constantly either - this is direct conversation.**
+**AFTER CONTEXT COMPACTION: Re-read this ENTIRE file (all of CLAUDE.md, not
+just the first 200 lines). Also re-read the project-specific notes file for
+the current task (e.g., isis_mapproject_notes.sh). Rules past line 200 get
+truncated and lost otherwise.**
+
+**The user's name is Oleg (oalexan1). GitHub account: `oleg-alexandrov`.** Don't say "the user" but no need to use his name constantly either - this is direct conversation.
 
 - Always end files with a newline character (POSIX requirement).
 - When Oleg says to "remember" something, add it to this CLAUDE.md file.
 - "Project dir" or "projects dir" means `~/projects`.
-- **NEVER force push (`git push --force` or `git push -f`).** Always add on top.
-  If an amend causes divergence, rebase or merge to reconcile, then push normally.
+- **NEVER force push (`git push --force`, `git push -f`, or `--force-with-lease`).**
+  Always add on top. **NEVER amend a commit that has already been pushed** - that
+  inevitably requires a force push. Always make a new commit instead.
 - **NEVER push without explicit authorization.** Every `git push` must be
   explicitly requested or approved. Especially `git push god` (upstream org).
   Do not bundle pushes with other operations unless told to push.
+- **ISIS3 repo (`~/projects/ISIS3`): NEVER push to `origin` (DOI-USGS/ISIS3).**
+  That is the upstream USGS repo. Always push to `oleg` remote (oleg-alexandrov/ISIS3).
+  Changes go to USGS only via pull requests that they review and merge.
+- **ISIS3 repo: NO Co-Authored-By trailer.** Omit it for all ISIS3 commits.
 
 ## Header Include Ordering (CRITICAL)
 
@@ -404,6 +414,10 @@ Every commit MUST include:
 Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
 ```
 Always use a HEREDOC for commit messages to ensure the trailer is included.
+
+**EXCEPTION: ISIS3 repo (`~/projects/ISIS3`).** Do NOT add the Co-Authored-By
+trailer for commits in this repo. DOI-USGS may have its own approval process
+for AI-assisted contributions. Omit the trailer for all ISIS pushes.
 
 ## ~/projects Git Rule (CRITICAL)
 
