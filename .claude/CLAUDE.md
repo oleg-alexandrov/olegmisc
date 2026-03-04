@@ -9,13 +9,19 @@ truncated and lost otherwise.**
 
 - Always end files with a newline character (POSIX requirement).
 - When Oleg says to "remember" something, add it to this CLAUDE.md file.
+- **When told to add/commit/push CLAUDE.md, always do the same for MEMORY.md
+  (`~/.claude/projects/-Users-oalexan1/memory/MEMORY.md`) too.** They travel together.
 - "Project dir" or "projects dir" means `~/projects`.
 - **NEVER force push (`git push --force`, `git push -f`, or `--force-with-lease`).**
   Always add on top. **NEVER amend a commit that has already been pushed** - that
   inevitably requires a force push. Always make a new commit instead.
 - **NEVER push without explicit authorization.** Every `git push` must be
-  explicitly requested or approved. Especially `git push god` (upstream org).
-  Do not bundle pushes with other operations unless told to push.
+  explicitly requested or approved. This applies to ALL repos: ISIS3, ASP,
+  VW, BinaryBuilder, StereoPipelineTest, projects, home dir — no exceptions.
+  Do not bundle pushes with other operations. Do not push as part of a
+  multi-step workflow unless explicitly told "and push". Do not assume
+  "git add and push" means push — wait for the word "push" as a separate
+  explicit instruction. Especially `git push god` (upstream org).
 - **ISIS3 repo (`~/projects/ISIS3`): NEVER push to `origin` (DOI-USGS/ISIS3).**
   That is the upstream USGS repo. Always push to `oleg` remote (oleg-alexandrov/ISIS3).
   Changes go to USGS only via pull requests that they review and merge.
@@ -90,6 +96,20 @@ Why: Reconstruction loses comments, formatting, and subtle details. "Move" means
 
 Remove braces from single-statement control flow blocks (if, else, for, while, do-while).
 Keep braces for scope blocks (not attached to control flow) and when needed for clarity with nested conditions.
+
+## Forward Declaration Style
+
+```cpp
+namespace vw { namespace cm {
+  class Colormap;
+}}
+```
+
+## ASP/VW Library Naming
+
+- ASP libraries: `libAsp*.so` (e.g., libAspCore.so, libAspCamera.so)
+- VW libraries: `libVw*.so` (e.g., libVwCore.so, libVwMath.so)
+- `libasprintf` is GNU gettext, NOT ASP - don't wipe it when cleaning ASP artifacts
 
 ## C++ Code Style Conventions
 
