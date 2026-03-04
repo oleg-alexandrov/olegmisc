@@ -87,6 +87,8 @@ case "$HOST" in
     echo "  ssh laptop    -> laptop (via pfe, needs laptop tunnels running)"
     echo "  ssh l1        -> lunokhod1 (via pfe+laptop, needs laptop tunnels + VPN)"
     echo ""
+    echo "From pfe: ssh mac_arm -> this Mac (reverse tunnel)"
+    echo ""
     echo "Note: 'laptop' and 'l1' only work after running tunnel.sh on the laptop."
     ;;
 

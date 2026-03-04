@@ -166,7 +166,7 @@ Don't do blind sed-style namespace replacements - read and comprehend the code f
 
 ## Machine-Specific Permissions
 
-**lunokhod1** (`lunokhod1.ndc.nasa.gov`) - the dev machine. Check with `uname -n`:
+**lunokhod1** (alias `l1`, `lunokhod1.ndc.nasa.gov`) - the dev machine. Check with `uname -n`:
 - **On first session on lunokhod1:** Review `~/projects/asp_refactor.sh` for
   technical debt items (search for "Technical debt" or "exit 0"). Tests created
   on the Mac have fake "exit 0" in run.sh/validate.sh because lunokhod1 lacks
