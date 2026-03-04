@@ -233,6 +233,18 @@ Each test directory has:
 
 When creating new tests, always `chmod +x run.sh validate.sh`.
 
+**ISIS environment for dev builds:** ASP links against ISIS, so `ISISROOT` must
+be set when running tests with an installed dev build. On Mac:
+```bash
+export ISISROOT=$HOME/anaconda3/envs/asp_deps
+export PATH=~/projects/StereoPipeline/install/bin:$HOME/anaconda3/envs/asp_deps/bin:$PATH
+```
+On lunokhod1:
+```bash
+export ISISROOT=$HOME/miniconda3/envs/asp_deps
+export PATH=~/projects/StereoPipeline/install/bin:$HOME/miniconda3/envs/asp_deps/bin:$PATH
+```
+
 ## Notes Files (.sh)
 
 Many `.sh` files in `~/projects/` are comment-only notes, not executable scripts.

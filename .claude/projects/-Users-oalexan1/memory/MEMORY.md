@@ -51,6 +51,16 @@ pytest -n 4 -q -s -r a --tb=no --config dev_mac_arm.conf
 
 Order matters: `nasa-ames-stereo-pipeline`, `usgs-astrogeology`, `conda-forge`, `defaults`
 
+## projwin_fix Work
+
+See `projwin_fix_notes.md` for baseline test results and l1 TODO.
+- Plan: `~/projects/projwin_fix.sh`
+- 7 tests: 3 tap (should not change), 4 non-tap (may change after fix)
+- New test `ss_point2dem_projwin` created, gold generated from dev build
+- `ss_dem_mosaic_gdal_tap` was missing gold/run.tif on Mac, created it
+- All 7 pass on Mac with dev build (pre-fix baseline)
+- Mac needs: `ISISROOT=$HOME/anaconda3/envs/asp_deps` + asp_deps/bin on PATH
+
 ## Float Tolerance in Test Validation
 
 Use `max_err.pl --relative --max-err 1e-6` for acceptable floating point diffs.
