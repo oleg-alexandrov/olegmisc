@@ -192,7 +192,9 @@ Don't do blind sed-style namespace replacements - read and comprehend the code f
 - Build with: `make -C /home/oalexan1/projects/StereoPipeline/build -j16`
 
 **Mac mini** (`Olegs-Mac-mini.local`) - secondary build machine:
-- Can build ASP: `make -C ~/projects/StereoPipeline/build -j10`
+- **ALWAYS use `make install`** for both VW and ASP, never bare `make`.
+  The installed libraries may be stale even when the build is up to date.
+- Can build ASP: `make -C ~/projects/StereoPipeline/build -j10 install`
 - Conda init: `eval "$($HOME/anaconda3/bin/conda shell.zsh hook)" && conda activate asp_deps`
 - **After `make install`, fix duplicate rpaths (macOS dyld rejects duplicates):**
   ```bash
@@ -513,6 +515,13 @@ NEVER use `build/` or `install/` for cross-compilation. NEVER use `build_linux/`
 - Initialize conda with `iz` alias (calls `init_conda_zsh` in `.zshrc`)
 
 **Cross-compile notes for x86_64** are in `~/projects/BinaryBuilder/install_asp_notes.sh` around line 1690.
+
+## TODO: ISIS Special Pixel Masking in Mapproject
+
+ASP mapproject does not mask ISIS special pixels (LIS, LRS, HIS, HRS) for
+.cub inputs. Only NULL is masked via nodata_value. Fix is in
+MapprojectImage.cc project_image_nodata(). Also review whether the CSM
+session has the same gap when map-projecting .cub files.
 
 ## Nightly Build Status
 
