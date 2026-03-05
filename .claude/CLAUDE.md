@@ -9,6 +9,10 @@ truncated and lost otherwise.**
 
 - Always end files with a newline character (POSIX requirement).
 - When Oleg says to "remember" something, add it to this CLAUDE.md file.
+- **Project work notes go in `~/projects/`, NOT in `.claude/` memory files.**
+  Use `.sh` files (comment-only) in `~/projects/` so they're tracked by the
+  projects repo. The `.claude/` memory is only for cross-project patterns
+  and preferences, not per-project notes.
 - **When told to add/commit/push CLAUDE.md, always do the same for MEMORY.md
   (`~/.claude/projects/-Users-oalexan1/memory/MEMORY.md`) too.** They travel together.
 - "Project dir" or "projects dir" means `~/projects`.
