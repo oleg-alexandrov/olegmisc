@@ -53,13 +53,10 @@ Order matters: `nasa-ames-stereo-pipeline`, `usgs-astrogeology`, `conda-forge`, 
 
 ## projwin_fix Work
 
-See `projwin_fix_notes.md` for baseline test results and l1 TODO.
-- Plan: `~/projects/projwin_fix.sh`
-- 7 tests: 3 tap (should not change), 4 non-tap (may change after fix)
-- New test `ss_point2dem_projwin` created, gold generated from dev build
-- `ss_dem_mosaic_gdal_tap` was missing gold/run.tif on Mac, created it
-- All 7 pass on Mac with dev build (pre-fix baseline)
-- Mac needs: `ISISROOT=$HOME/anaconda3/envs/asp_deps` + asp_deps/bin on PATH
+All plan and work notes in `~/projects/projwin_fix.sh` (parts 1-14).
+- 7 tests: 5 must not change on l1, 2 need gold regenerated
+- dem_mosaic changes reverted (not shipped)
+- All 7 pass on Mac with dev build
 
 ## Float Tolerance in Test Validation
 
