@@ -264,12 +264,25 @@ Add them with `git -C ~/projects add subdir/file.sh`.
 
 ## Project Status Files
 
-**Work tracking files** in `/home/oalexan1/projects/`:
-- `mpr_todo.sh` - Records completed work for MPR project reports (not a TODO list)
-- `ostfl_todo.sh` - Records completed work for older OSTFL reports (not a TODO list)
-- `ostfl_2025_notes.sh` - Current OSTFL 2025 work tracking and status updates
+**Work tracking files** in `~/projects/` (tracked by `~/projects/.git`):
+- `~/projects/mpr_todo.sh` - Monthly Progress Report. Records completed work
+  for MPR project reports (not a TODO list).
+- `~/projects/ostfl_2025_notes.sh` - Current OSTFL 2025 work tracking and status
+  updates. When told to update "OSTFL status" or "OSTFL doc", this is the file.
+- `~/projects/ostfl_todo.sh` - Older OSTFL reports (historical, not current).
+- `~/projects/todo.sh` - General TODO/notes file.
 
-When user says to update "OSTFL status", edit `ostfl_2025_notes.sh`, not `ostfl_todo.sh`.
+When told to update "the TODO doc" or "todo.sh", edit `~/projects/todo.sh`.
+
+**Finding recent work context:** When asked about recent work or needing context,
+sort `.sh` files by modification date in `~/projects/` and its subdirectories:
+```bash
+find ~/projects -maxdepth 2 -name "*.sh" -newer ~/projects/todo.sh -o \
+  -name "*.sh" -mtime -30 | head -20
+ls -lt ~/projects/*.sh | head -10
+```
+Pick the most relevant file by name. These `.sh` notes files serve as detailed
+memory beyond what fits in CLAUDE.md.
 
 **MPR Report Format** in `mpr_todo.sh`:
 - Monthly reports structured with project headers (e.g., "OSTFL-24", "STV/DSI")
