@@ -231,7 +231,12 @@
     "command": "-workbench.action.quit"
   },
   {
-    "key": "alt+q",
+    "key": "f13",
+    "command": "rewrap.rewrapComment",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+q",
     "command": "rewrap.rewrapComment",
     "when": "editorTextFocus"
   }
