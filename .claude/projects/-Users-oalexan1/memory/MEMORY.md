@@ -71,3 +71,9 @@ All plan and work notes in `~/projects/projwin_fix.sh` (parts 1-14).
 
 Use `max_err.pl --relative --max-err 1e-6` for acceptable floating point diffs.
 Refactoring often produces small float noise from evaluation order changes.
+
+## Workflow Discipline: Commit Real Fixes Before Debug Cycles
+
+When a debug session produces real fixes (not just debug prints), commit them
+immediately before continuing to the next debug cycle. That way "wipe debug
+stuff" is always safe and won't accidentally destroy uncommitted real work.
