@@ -1,9 +1,30 @@
 # Long-term memory for Claude Code
 
 **AFTER CONTEXT COMPACTION: Re-read this ENTIRE file (all of CLAUDE.md, not
-just the first 200 lines). Also re-read the project-specific notes file for
-the current task (e.g., isis_mapproject_notes.sh). Rules past line 200 get
-truncated and lost otherwise.**
+just the first 200 lines). Also re-read these project files - you WILL lose
+build/test instructions and current task context otherwise:
+- `~/projects/isis_mapproject/isis_mapproject_notes.sh` (work doc: build
+  instructions, env setup, test commands, architecture, known bugs)
+- `~/projects/isis_mapproject/isis_mapproject_log2.sh` (TODO list +
+  integration test plan with 13 test dirs, conventions, and test log)
+Rules past line 200 get truncated and lost otherwise.**
+
+**ISIS3 build/test quick reference (so you don't lose this after compaction):**
+```bash
+# Always use isis_dev, NEVER asp_deps for ISIS work
+eval "$($HOME/anaconda3/bin/conda shell.zsh hook)"
+conda activate isis_dev
+export ISISROOT=$HOME/projects/ISIS3/build
+export ISISDATA=$HOME/projects/isis3data
+export ISISTESTDATA=$HOME/projects/isis_test_data
+export SPICEQL_CACHE_DIR=/tmp/spiceql_cache
+# Build and install (always use install, it copies libisis to conda env)
+ninja -C ~/projects/ISIS3/build install
+# Parity test
+cd ~/projects/isis_mapproject/cam2map_eqc_mpp && bash run.sh
+# GTest
+cd ~/projects/ISIS3/build && ctest --test-dir . -R AspMap --output-on-failure
+```
 
 **The user's name is Oleg (oalexan1). GitHub account: `oleg-alexandrov`.** Don't say "the user" but no need to use his name constantly either - this is direct conversation.
 
@@ -524,7 +545,12 @@ NEVER use `build/` or `install/` for cross-compilation. NEVER use `build_linux/`
 
 - **`boa`** - Build conda packages for osx-arm64 (native)
 - **`boa_x64`** - Build conda packages for osx-64 (cross-compile for Intel). Created with `CONDA_SUBDIR=osx-64`.
-- **`asp_deps`** - Development environment with all ASP dependencies for compiling ASP from source
+- **`asp_deps`** - Development environment for compiling ASP/VW from source.
+  **Only for ASP/VW work.** For ISIS3 work use **`isis_dev`** instead.
+- **`isis_dev`** - Development environment for compiling ISIS3 from source.
+  **Always use this for ISIS3 builds, installs, and tests.**
+  See `~/projects/isis_mapproject/isis_mapproject_notes.sh` for env setup,
+  build/install commands, and test recipes.
 - Initialize conda with `iz` alias (calls `init_conda_zsh` in `.zshrc`)
 
 **Cross-compile notes for x86_64** are in `~/projects/BinaryBuilder/install_asp_notes.sh` around line 1690.
