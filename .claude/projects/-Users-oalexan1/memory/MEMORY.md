@@ -1,9 +1,18 @@
 # Claude Code Memory - oalexan1 Home Dir Project
 
+## Latest Work Doc
+
+`~/projects/isis_mapproject/isis_mapproject_notes.sh` - ISIS cam2map / ASP mapproject
+parity project with Kelvin Rodriguez (USGS). Adding ASP_MAP mode to cam2map for
+per-pixel exact projection. FY26 work (Mar/May 2026). Has test scripts, build
+instructions, known bugs, and TODO items. Related logs in same directory
+(isis_mapproject_log0.sh, isis_mapproject_log1.sh).
+
 ## Key Shell Files in ~/projects/ (Build & Test Reference)
 
 | File | Purpose |
 |------|---------|
+| `isis_mapproject/isis_mapproject_notes.sh` | **Latest active work** - ISIS/ASP map projection parity (see above) |
 | `install_asp_notes.sh` | **THE master build guide** - conda env setup, cmake flags, cross-compilation, ISIS versions, deps management |
 | `build_test_asp.sh` | Test infrastructure - gold generation workflow, pytest config, single/batch test running |
 | `asp_testing.sh` | Mac ARM64 test results summary - 234 pass / 58 expected fail out of 321 |
@@ -62,3 +71,4 @@ All plan and work notes in `~/projects/projwin_fix.sh` (parts 1-14).
 
 Use `max_err.pl --relative --max-err 1e-6` for acceptable floating point diffs.
 Refactoring often produces small float noise from evaluation order changes.
+

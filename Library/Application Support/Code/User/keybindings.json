@@ -231,8 +231,51 @@
     "command": "-workbench.action.quit"
   },
   {
-    "key": "alt+q",
+    "key": "f13",
     "command": "rewrap.rewrapComment",
     "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+q",
+    "command": "rewrap.rewrapComment",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "ctrl+b",
+    "command": "workbench.action.toggleSidebarVisibility"
+  },
+  {
+    "key": "cmd+b",
+    "command": "-workbench.action.toggleSidebarVisibility"
+  },
+  {
+    "key": "ctrl+]",
+    "command": "editor.action.indentLines",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "cmd+]",
+    "command": "-editor.action.indentLines",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+[",
+    "command": "editor.action.outdentLines",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "cmd+[",
+    "command": "-editor.action.outdentLines",
+    "when": "editorTextFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+delete",
+    "command": "deleteWordRight",
+    "when": "textInputFocus && !editorReadonly"
+  },
+  {
+    "key": "ctrl+backspace",
+    "command": "deleteWordLeft",
+    "when": "textInputFocus && !editorReadonly"
   }
 ]

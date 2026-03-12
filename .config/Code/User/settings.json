@@ -531,7 +531,7 @@
     "screencastMode.fontSize": 20,
     "chat.fontSize": 10,
     "terminal.integrated.rescaleOverlappingGlyphs": false,
-    "files.autoSave": "afterDelay",
+    "files.autoSave": "off",
     "cSpell.maxNumberOfProblems": 1000,
     "editor.quickSuggestions": {
         "other": "off",

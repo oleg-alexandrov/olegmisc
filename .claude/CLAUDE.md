@@ -1,9 +1,30 @@
 # Long-term memory for Claude Code
 
 **AFTER CONTEXT COMPACTION: Re-read this ENTIRE file (all of CLAUDE.md, not
-just the first 200 lines). Also re-read the project-specific notes file for
-the current task (e.g., isis_mapproject_notes.sh). Rules past line 200 get
-truncated and lost otherwise.**
+just the first 200 lines). Also re-read these project files - you WILL lose
+build/test instructions and current task context otherwise:
+- `~/projects/isis_mapproject/isis_mapproject_notes.sh` (work doc: build
+  instructions, env setup, test commands, architecture, known bugs)
+- `~/projects/isis_mapproject/isis_mapproject_log2.sh` (TODO list +
+  integration test plan with 13 test dirs, conventions, and test log)
+Rules past line 200 get truncated and lost otherwise.**
+
+**ISIS3 build/test quick reference (so you don't lose this after compaction):**
+```bash
+# Always use isis_dev, NEVER asp_deps for ISIS work
+eval "$($HOME/anaconda3/bin/conda shell.zsh hook)"
+conda activate isis_dev
+export ISISROOT=$HOME/projects/ISIS3/build
+export ISISDATA=$HOME/projects/isis3data
+export ISISTESTDATA=$HOME/projects/isis_test_data
+export SPICEQL_CACHE_DIR=/tmp/spiceql_cache
+# Build and install (always use install, it copies libisis to conda env)
+ninja -C ~/projects/ISIS3/build install
+# Parity test
+cd ~/projects/isis_mapproject/cam2map_eqc_mpp && bash run.sh
+# GTest
+cd ~/projects/ISIS3/build && ctest --test-dir . -R AspMap --output-on-failure
+```
 
 **The user's name is Oleg (oalexan1). GitHub account: `oleg-alexandrov`.** Don't say "the user" but no need to use his name constantly either - this is direct conversation.
 
@@ -30,6 +51,13 @@ truncated and lost otherwise.**
   That is the upstream USGS repo. Always push to `oleg` remote (oleg-alexandrov/ISIS3).
   Changes go to USGS only via pull requests that they review and merge.
 - **ISIS3 repo: NO Co-Authored-By trailer.** Omit it for all ISIS3 commits.
+- **Commit real fixes before continuing debug cycles.** When a debug session
+  produces real fixes (not just debug prints), commit them immediately. That
+  way "discard debug changes" is always safe and won't wipe uncommitted work.
+- **When told to discard/wipe changes, verify each change is actually debug.**
+  Do not blindly `git checkout --` an entire file if it contains a mix of
+  real fixes and debug prints. Either commit the real fixes first, or
+  selectively discard only the debug parts.
 
 ## Header Include Ordering (CRITICAL)
 
@@ -192,7 +220,9 @@ Don't do blind sed-style namespace replacements - read and comprehend the code f
 - Build with: `make -C /home/oalexan1/projects/StereoPipeline/build -j16`
 
 **Mac mini** (`Olegs-Mac-mini.local`) - secondary build machine:
-- Can build ASP: `make -C ~/projects/StereoPipeline/build -j10`
+- **ALWAYS use `make install`** for both VW and ASP, never bare `make`.
+  The installed libraries may be stale even when the build is up to date.
+- Can build ASP: `make -C ~/projects/StereoPipeline/build -j10 install`
 - Conda init: `eval "$($HOME/anaconda3/bin/conda shell.zsh hook)" && conda activate asp_deps`
 - **After `make install`, fix duplicate rpaths (macOS dyld rejects duplicates):**
   ```bash
@@ -262,12 +292,25 @@ Add them with `git -C ~/projects add subdir/file.sh`.
 
 ## Project Status Files
 
-**Work tracking files** in `/home/oalexan1/projects/`:
-- `mpr_todo.sh` - Records completed work for MPR project reports (not a TODO list)
-- `ostfl_todo.sh` - Records completed work for older OSTFL reports (not a TODO list)
-- `ostfl_2025_notes.sh` - Current OSTFL 2025 work tracking and status updates
+**Work tracking files** in `~/projects/` (tracked by `~/projects/.git`):
+- `~/projects/mpr_todo.sh` - Monthly Progress Report. Records completed work
+  for MPR project reports (not a TODO list).
+- `~/projects/ostfl_2025_notes.sh` - Current OSTFL 2025 work tracking and status
+  updates. When told to update "OSTFL status" or "OSTFL doc", this is the file.
+- `~/projects/ostfl_todo.sh` - Older OSTFL reports (historical, not current).
+- `~/projects/todo.sh` - General TODO/notes file.
 
-When user says to update "OSTFL status", edit `ostfl_2025_notes.sh`, not `ostfl_todo.sh`.
+When told to update "the TODO doc" or "todo.sh", edit `~/projects/todo.sh`.
+
+**Finding recent work context:** When asked about recent work or needing context,
+sort `.sh` files by modification date in `~/projects/` and its subdirectories:
+```bash
+find ~/projects -maxdepth 2 -name "*.sh" -newer ~/projects/todo.sh -o \
+  -name "*.sh" -mtime -30 | head -20
+ls -lt ~/projects/*.sh | head -10
+```
+Pick the most relevant file by name. These `.sh` notes files serve as detailed
+memory beyond what fits in CLAUDE.md.
 
 **MPR Report Format** in `mpr_todo.sh`:
 - Monthly reports structured with project headers (e.g., "OSTFL-24", "STV/DSI")
@@ -509,10 +552,22 @@ NEVER use `build/` or `install/` for cross-compilation. NEVER use `build_linux/`
 
 - **`boa`** - Build conda packages for osx-arm64 (native)
 - **`boa_x64`** - Build conda packages for osx-64 (cross-compile for Intel). Created with `CONDA_SUBDIR=osx-64`.
-- **`asp_deps`** - Development environment with all ASP dependencies for compiling ASP from source
+- **`asp_deps`** - Development environment for compiling ASP/VW from source.
+  **Only for ASP/VW work.** For ISIS3 work use **`isis_dev`** instead.
+- **`isis_dev`** - Development environment for compiling ISIS3 from source.
+  **Always use this for ISIS3 builds, installs, and tests.**
+  See `~/projects/isis_mapproject/isis_mapproject_notes.sh` for env setup,
+  build/install commands, and test recipes.
 - Initialize conda with `iz` alias (calls `init_conda_zsh` in `.zshrc`)
 
 **Cross-compile notes for x86_64** are in `~/projects/BinaryBuilder/install_asp_notes.sh` around line 1690.
+
+## TODO: ISIS Special Pixel Masking in Mapproject
+
+ASP mapproject does not mask ISIS special pixels (LIS, LRS, HIS, HRS) for
+.cub inputs. Only NULL is masked via nodata_value. Fix is in
+MapprojectImage.cc project_image_nodata(). Also review whether the CSM
+session has the same gap when map-projecting .cub files.
 
 ## Nightly Build Status
 
