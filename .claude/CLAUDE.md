@@ -255,6 +255,16 @@ Don't do blind sed-style namespace replacements - read and comprehend the code f
 
 **Do NOT use pytest** - just run `run.sh` and `validate.sh` directly.
 
+**MANDATORY: Run regression tests after every code change.** After modifying an
+ASP tool, find all matching test dirs in StereoPipelineTest:
+```bash
+ls -d /home/oalexan1/projects/StereoPipelineTest/ss_*toolname* 2>/dev/null
+grep -rl 'toolname' /home/oalexan1/projects/StereoPipelineTest/ss_*/run.sh | head -20
+```
+Run ALL of them, not just one. Also consider whether the change has test
+coverage at all - if a code path (e.g., integer input types, a specific flag)
+is not exercised by any test, flag this to the user before declaring success.
+
 **NEVER git add `run/` or `gold/` directories in StereoPipelineTest.** These contain
 large binary output files (~40 GB total). They are gitignored. Only `run.sh` and
 `validate.sh` are tracked in git.
