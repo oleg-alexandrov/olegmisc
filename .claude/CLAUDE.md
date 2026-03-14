@@ -37,6 +37,8 @@ cd ~/projects/ISIS3/build && ctest --test-dir . -R AspMap --output-on-failure
 - **When told to add/commit/push CLAUDE.md, always do the same for MEMORY.md
   (`~/.claude/projects/-Users-oalexan1/memory/MEMORY.md`) too.** They travel together.
 - "Project dir" or "projects dir" means `~/projects`.
+- **NEVER modify `.gitignore` without explicit permission.** Do not add, remove,
+  or edit entries in any `.gitignore` file unless specifically asked to.
 - **NEVER force push (`git push --force`, `git push -f`, or `--force-with-lease`).**
   Always add on top. **NEVER amend a commit that has already been pushed** - that
   inevitably requires a force push. Always make a new commit instead.
