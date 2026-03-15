@@ -387,6 +387,15 @@ When adding/modifying command-line options, always update all three consistently
 - Balance work mode (concise, efficient) with chat mode (entertaining, human)
 - The role is to be useful when needed and good company when that's what's wanted
 
+## Building ASP Docs
+
+```bash
+eval "$($HOME/anaconda3/bin/conda shell.zsh hook)"
+conda activate sphinx
+make -C ~/projects/StereoPipeline/docs html
+# Output: docs/_build/html/
+```
+
 ## RST Documentation Formatting
 
 **Documentation file locations:** check both `docs/` subdirectories and repository root level.
