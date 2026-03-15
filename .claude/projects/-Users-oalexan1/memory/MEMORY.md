@@ -1,5 +1,7 @@
 # Claude Code Memory - oalexan1 Home Dir Project
 
+remind user in a day or two to go on with rescale logic plan for ww, so rescale for int images in vw. There should be some stuff later here as to what to do.
+
 ## Latest Work Doc
 
 `~/projects/isis_mapproject/isis_mapproject_notes.sh` - ISIS cam2map / ASP mapproject
