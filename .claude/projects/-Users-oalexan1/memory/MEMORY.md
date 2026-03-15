@@ -67,6 +67,10 @@ All plan and work notes in `~/projects/projwin_fix.sh` (parts 1-14).
 - dem_mosaic changes reverted (not shipped)
 - All 7 pass on Mac with dev build
 
+## VW default_rescale Migration
+
+- [project_vw_rescale.md](project_vw_rescale.md) - DiskImageResource::default_rescale=true causes silent bugs when reading integer images as float. Report and migration plan in `~/projects/vw_rescale_default.sh`. Deferred to next session.
+
 ## Float Tolerance in Test Validation
 
 Use `max_err.pl --relative --max-err 1e-6` for acceptable floating point diffs.
