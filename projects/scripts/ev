@@ -1,9 +1,0 @@
-#!/bin/sh
-echo -n $@ '= ' 
-bc << EOF
-scale=16
-$@
-quit
-EOF
-
-
