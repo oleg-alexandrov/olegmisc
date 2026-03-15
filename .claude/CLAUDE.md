@@ -111,12 +111,15 @@ LLMs tokenize in chunks, not individual characters, so counting spaces visually 
 - If replacing within a function that starts at line N, use N as the start, not N+10
 - Verify there are no stragglers just before or after your range
 
-## Preserving Comments When Refactoring (CRITICAL)
+## Preserving Comments When Editing Code (CRITICAL)
 
-**When reworking or cleaning up code, do NOT wipe per-block comments.**
-Comments above or beside code blocks exist for a reason. Only remove a comment
-if it describes code that was deleted. If unsure whether a comment is still
-relevant, keep it.
+**NEVER remove or skip existing comments when editing code.** This applies to
+ALL edits, not just refactoring. When replacing a block of code that contains
+comments, the replacement MUST include those same comments. Comments above
+assertions, before code sections, and inline explanations exist for a reason.
+Only remove a comment if the code it describes was deleted. If unsure whether
+a comment is still relevant, keep it. This is a recurring issue - double-check
+every edit to ensure no comments were dropped.
 
 ## Code Movement (CRITICAL)
 
@@ -585,9 +588,4 @@ session has the same gap when map-projecting .cub files.
 
 | Date | Platform | Status | Likely cause |
 |------|----------|--------|--------------|
-| 2026-02-26 | lunokhod1 | **FAIL** | OrthoRasterizer refactoring pushed 2026-02-25 (6 commits: de-templatize set_texture, move methods .h->.cc, snap_bbox, ImageChannels include, minz_as rename) |
-
-**On lunokhod1:** Investigate the 2026-02-26 nightly build/test failure. Inspect
-failed tests, compare output against gold, and determine if differences are
-acceptable float noise from the refactoring or actual bugs. Regenerate gold
-if the changes are correct.
+| 2026-02-26 | lunokhod1 | **RESOLVED** | OrthoRasterizer refactoring. Gold regenerated, tests pass. |
