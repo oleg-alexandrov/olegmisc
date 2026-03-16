@@ -3,10 +3,11 @@
 **AFTER CONTEXT COMPACTION: Re-read this ENTIRE file (all of CLAUDE.md, not
 just the first 200 lines). Also re-read these project files - you WILL lose
 build/test instructions and current task context otherwise:
-- `~/projects/isis_mapproject/isis_mapproject_notes.sh` (work doc: build
-  instructions, env setup, test commands, architecture, known bugs)
-- `~/projects/isis_mapproject/isis_mapproject_log2.sh` (TODO list +
-  integration test plan with 13 test dirs, conventions, and test log)
+- `~/projects/isis_jp2/isis_jp2_notes.sh` (current main project: remove
+  Kakadu from ISIS, use GDAL for JPEG2000)
+- `~/projects/isis_mapproject/isis_mapproject_notes.sh` (recent project:
+  ISIS cam2map / ASP mapproject parity - build instructions, env setup,
+  test commands, architecture, known bugs)
 Rules past line 200 get truncated and lost otherwise.**
 
 **ISIS3 build/test quick reference (so you don't lose this after compaction):**
