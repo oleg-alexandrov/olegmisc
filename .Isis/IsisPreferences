@@ -1,4 +1,0 @@
-Group = UserInterface
-  ProgressBar        = Off
-  ProgressBarPercent = 10
-End_Group
