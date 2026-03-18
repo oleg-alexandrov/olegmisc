@@ -8,6 +8,8 @@ build/test instructions and current task context otherwise:
 - `~/projects/isis_mapproject/isis_mapproject_notes.sh` (recent project:
   ISIS cam2map / ASP mapproject parity - build instructions, env setup,
   test commands, architecture, known bugs)
+- `~/projects/csm_resample/csm_resample_notes.sh` (recent project:
+  ALE/CSM work for ISIS - reduce linescan ISD oversampling, PR #677)
 Rules past line 200 get truncated and lost otherwise.**
 
 **ISIS3 build/test quick reference (so you don't lose this after compaction):**
@@ -40,7 +42,7 @@ cd ~/projects/ISIS3/build && ctest --test-dir . -R AspMap --output-on-failure
 - "Project dir" or "projects dir" means `~/projects`.
 - **NEVER modify `.gitignore` without explicit permission.** Do not add, remove,
   or edit entries in any `.gitignore` file unless specifically asked to.
-- **NEVER force push (`git push --force`, `git push -f`, or `--force-with-lease`).**
+- **NEVER force push (`git push --force`, `git push -f`, or `--force-with-lease`) unless explicitly asked by the user.**
   Always add on top. **NEVER amend a commit that has already been pushed** - that
   inevitably requires a force push. Always make a new commit instead.
 - **NEVER push without explicit authorization.** Every `git push` must be
