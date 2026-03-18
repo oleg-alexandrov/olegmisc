@@ -40,6 +40,10 @@ cd ~/projects/ISIS3/build && ctest --test-dir . -R AspMap --output-on-failure
 - **When told to add/commit/push CLAUDE.md, always do the same for MEMORY.md
   (`~/.claude/projects/-Users-oalexan1/memory/MEMORY.md`) too.** They travel together.
 - "Project dir" or "projects dir" means `~/projects`.
+- **NEVER add binary or data files to git repos without explicit permission.**
+  This includes .cub, .tif, .img, .json (large), .bsp, .bc, .ply, .lbl, .dat,
+  and any file over ~100 KB. Only .sh, .py, .txt, .md, .rst, .cmake, .cc, .h,
+  and similar text/source files belong in git. If unsure, ask first.
 - **NEVER modify `.gitignore` without explicit permission.** Do not add, remove,
   or edit entries in any `.gitignore` file unless specifically asked to.
 - **NEVER force push (`git push --force`, `git push -f`, or `--force-with-lease`) unless explicitly asked by the user.**
