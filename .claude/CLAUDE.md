@@ -52,6 +52,10 @@ cd ~/projects/ISIS3/build && ctest --test-dir . -R AspMap --output-on-failure
   multi-step workflow unless explicitly told "and push". Do not assume
   "git add and push" means push — wait for the word "push" as a separate
   explicit instruction. Especially `git push god` (upstream org).
+- **When fixing code, ALWAYS pause for review before pushing.** Show local
+  test results and let the user review changes first. Do not push immediately
+  after committing — especially when the push triggers CI regressions that
+  are visible to reviewers. Commit locally, report results, wait for "push".
 - **ISIS3 repo (`~/projects/ISIS3`): NEVER push to `origin` (DOI-USGS/ISIS3).**
   That is the upstream USGS repo. Always push to `oleg` remote (oleg-alexandrov/ISIS3).
   Changes go to USGS only via pull requests that they review and merge.
