@@ -508,7 +508,10 @@ $gh issue close 123 -R NeoGeographyToolkit/StereoPipeline
 
 # Pull requests
 $gh pr list -R NeoGeographyToolkit/StereoPipeline
-$gh pr view 123 -R NeoGeographyToolkit/StereoPipeline
+# NOTE: "gh pr view" hits deprecated GraphQL Projects Classic API and errors.
+# Use the REST API instead:
+$gh api repos/OWNER/REPO/pulls/123 --jq '.body'           # PR body
+$gh api repos/OWNER/REPO/issues/123/comments --jq '.[].body'  # PR comments
 $gh pr create -R NeoGeographyToolkit/StereoPipeline --title "..." --body "..."
 
 # CI workflows
