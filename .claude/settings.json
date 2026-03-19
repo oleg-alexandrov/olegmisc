@@ -1,0 +1,11 @@
+{
+  "enabledPlugins": {
+    "clangd-lsp@claude-plugins-official": true
+  },
+  "permissions": {
+    "allow": [
+      "Edit(/Users/oalexan1/.bashrc)"
+    ]
+  },
+  "skipDangerousModePermissionPrompt": true
+}
