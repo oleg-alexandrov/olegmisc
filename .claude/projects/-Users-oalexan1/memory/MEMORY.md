@@ -83,3 +83,7 @@ All plan and work notes in `~/projects/projwin_fix.sh` (parts 1-14).
 Use `max_err.pl --relative --max-err 1e-6` for acceptable floating point diffs.
 Refactoring often produces small float noise from evaluation order changes.
 
+## Feedback
+
+- [feedback_stop_asking_permission.md](feedback_stop_asking_permission.md) - Don't ask permission to edit CLAUDE.md, config files, etc. Just do it.
+

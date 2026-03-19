@@ -301,7 +301,7 @@ function gr {
 
 function grr {
   # recursive grep every single file
-  grep -r -i -n -E --colour=auto "$*" . 
+  grep -r -i -n -E --colour=auto --exclude-dir=build --exclude-dir=build_linux --exclude-dir=build_isis_dev --exclude-dir=install --exclude-dir=install_linux --exclude-dir=.git "$*" .
 }
 
 function grf {
