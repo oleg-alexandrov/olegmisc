@@ -41,6 +41,9 @@ cd ~/projects/ISIS3/build && ctest --test-dir . -R AspMap --output-on-failure
 - **When told to add/commit/push CLAUDE.md, always do the same for MEMORY.md
   (`~/.claude/projects/-Users-oalexan1/memory/MEMORY.md`) too.** They travel together.
 - "Project dir" or "projects dir" means `~/projects`.
+- **NEVER `git commit` or `git push` without explicit instruction.** Show
+  what will be committed/pushed and wait for approval. But when told to
+  commit or push, do it immediately without hesitation or double-checking.
 - **Before every commit, run `git status` to check for new untracked files
   that need `git add`.** `git commit -a` only stages tracked files. Newly
   created `.cc`, `.h`, etc. must be explicitly added or they will be missing
@@ -65,6 +68,9 @@ cd ~/projects/ISIS3/build && ctest --test-dir . -R AspMap --output-on-failure
   test results and let the user review changes first. Do not push immediately
   after committing — especially when the push triggers CI regressions that
   are visible to reviewers. Commit locally, report results, wait for "push".
+- **USGSCSM repo (`~/projects/usgscsm`): do not touch existing spacing
+  conventions** (blank lines, indentation style, whitespace) unless modifying
+  that specific line. Keep diffs focused on logic changes only.
 - **ISIS3 repo (`~/projects/ISIS3`): NEVER push to `origin` (DOI-USGS/ISIS3).**
   That is the upstream USGS repo. Always push to `oleg` remote (oleg-alexandrov/ISIS3).
   Changes go to USGS only via pull requests that they review and merge.
