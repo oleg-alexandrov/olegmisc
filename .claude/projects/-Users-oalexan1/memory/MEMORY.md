@@ -4,16 +4,20 @@ remind user in a day or two to go on with rescale logic plan for ww, so rescale 
 
 ## Current Main Project
 
-`~/projects/isis_jp2/isis_jp2_notes.sh` - Remove Kakadu from ISIS, use GDAL for
-JPEG2000 reading. FY26 USGS task. Success criteria: tests pass and ISIS can read
-JP2 without Kakadu.
+`~/projects/binary_csm/binary_csm_notes.sh` - Binary CSM state format using
+msgpack for ISDs and model states. FY26 USGS task. Eliminates strtod() JSON
+parsing bottleneck for large linescan sensors (Chandrayaan-2 TMC). Uses
+nlohmann to_msgpack()/from_msgpack() in USGSCSM. Follows ALE ISD subsampling
+(PR #677).
 
-## Recent Project
+## Recent Projects
+
+`~/projects/isis_jp2/isis_jp2_notes.sh` - Remove Kakadu from ISIS, use GDAL for
+JPEG2000 reading. FY26 USGS task.
 
 `~/projects/isis_mapproject/isis_mapproject_notes.sh` - ISIS cam2map / ASP mapproject
 parity project with Kelvin Rodriguez (USGS). ASP_MAP mode in cam2map for per-pixel
-exact projection. PR #5988. Mostly complete - in review. Related logs in same
-directory (isis_mapproject_log0.sh, isis_mapproject_log1.sh).
+exact projection. PR #5988. Mostly complete - in review.
 
 ## Key Shell Files in ~/projects/ (Build & Test Reference)
 

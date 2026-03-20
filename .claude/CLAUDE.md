@@ -3,11 +3,12 @@
 **AFTER CONTEXT COMPACTION: Re-read this ENTIRE file (all of CLAUDE.md, not
 just the first 200 lines). Also re-read these project files - you WILL lose
 build/test instructions and current task context otherwise:
-- `~/projects/isis_jp2/isis_jp2_notes.sh` (current main project: remove
+- `~/projects/binary_csm/binary_csm_notes.sh` (current main project:
+  binary CSM state format - msgpack for ISDs/model states, FY26 USGS task)
+- `~/projects/isis_jp2/isis_jp2_notes.sh` (recent project: remove
   Kakadu from ISIS, use GDAL for JPEG2000)
 - `~/projects/isis_mapproject/isis_mapproject_notes.sh` (recent project:
-  ISIS cam2map / ASP mapproject parity - build instructions, env setup,
-  test commands, architecture, known bugs)
+  ISIS cam2map / ASP mapproject parity)
 - `~/projects/csm_resample/csm_resample_notes.sh` (recent project:
   ALE/CSM work for ISIS - reduce linescan ISD oversampling, PR #677)
 Rules past line 200 get truncated and lost otherwise.**
@@ -449,6 +450,12 @@ Format: `Copyright (c) 2006-YYYY, United States Government...` - update end year
 ## Style Cleaning Tool
 
 `~/bin/clean_style.py <input_cpp_file>` - automated C++ style cleanup. Use without asking when requested.
+
+## Column Alignment Tool
+
+`~/bin/align_columns.py <file> <start_line> <end_line> [--inplace]`
+Aligns columns in a range of lines. Detects columns by 2+ space gaps.
+Lines are 1-based. Without `--inplace`, prints aligned output to stdout.
 
 ## Variable Initialization (CRITICAL)
 
