@@ -74,7 +74,11 @@ cd ~/projects/ISIS3/build && ctest --test-dir . -R AspMap --output-on-failure
 - **ISIS3 repo (`~/projects/ISIS3`): NEVER push to `origin` (DOI-USGS/ISIS3).**
   That is the upstream USGS repo. Always push to `oleg` remote (oleg-alexandrov/ISIS3).
   Changes go to USGS only via pull requests that they review and merge.
-- **ISIS3 repo: NO Co-Authored-By trailer.** Omit it for all ISIS3 commits.
+- **USGSCSM repo (`~/projects/usgscsm`): NEVER push to `origin` (DOI-USGS/usgscsm).**
+  Same rule as ISIS3. Always push to `oleg` remote (oleg-alexandrov/usgscsm).
+  Changes go to USGS only via pull requests.
+- **All USGS repos (ISIS3, USGSCSM, ALE, and any other DOI-USGS repos):
+  NO Co-Authored-By trailer.** Omit it for all commits in these repos.
 - **Commit real fixes before continuing debug cycles.** When a debug session
   produces real fixes (not just debug prints), commit them immediately. That
   way "discard debug changes" is always safe and won't wipe uncommitted work.
