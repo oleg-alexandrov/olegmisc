@@ -639,6 +639,17 @@ NEVER use `build/` or `install/` for cross-compilation. NEVER use `build_linux/`
 
 **Cross-compile notes for x86_64** are in `~/projects/BinaryBuilder/install_asp_notes.sh` around line 1690.
 
+## TODO: Local ASP edits for Qt6 and ISIS migration (DO NOT PUSH YET)
+
+StereoPipeline has unpushed local edits on the Mac for the upcoming
+migration to latest ALE/USGSCSM/ISIS deps. These are tied to the
+env_update.sh work. Files changed:
+- `src/asp/CMakeLists.txt` (Qt5->Qt6, Core5Compat, OpenGLWidgets, isis;core linking)
+- `src/asp/SfmView/GlCommon.h` (QOpenGLExtraFunctions)
+- `src/asp/SfmView/GlWidget.h` (QtOpenGLWidgets include)
+- `src/asp/SfmView/SceneRenderer.cc` (glClearDepthf)
+Do not push until full regression testing is done. See `~/projects/env_update.sh`.
+
 ## TODO: ISIS Special Pixel Masking in Mapproject
 
 ASP mapproject does not mask ISIS special pixels (LIS, LRS, HIS, HRS) for
