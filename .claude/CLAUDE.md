@@ -11,6 +11,8 @@ build/test instructions and current task context otherwise:
   ISIS cam2map / ASP mapproject parity)
 - `~/projects/csm_resample/csm_resample_notes.sh` (recent project:
   ALE/CSM work for ISIS - reduce linescan ISD oversampling, PR #677)
+- `~/projects/isis_jigsaw_isd/isis_jigsaw_isd_notes.sh` (upcoming project:
+  jigsaw external ISD input/output, FY26 USGS task)
 Rules past line 200 get truncated and lost otherwise.**
 
 **ISIS3 build/test quick reference (so you don't lose this after compaction):**
