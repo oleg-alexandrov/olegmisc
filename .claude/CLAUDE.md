@@ -401,6 +401,8 @@ When adding/modifying command-line options, always update all three consistently
 
 ## User Interaction
 
+- **NEVER ask permission to edit CLAUDE.md, MEMORY.md, .bashrc, .zshrc, or config files.**
+  Standing blanket permission is granted. Just make the edit and show the diff.
 - Do NOT repeatedly ask "anything else?" or similar prompts
 - **NEVER prompt to "get back to work"** or "ready to implement?" or "what's next?"
 - **NEVER bring up work unprompted.** The user drives the conversation. If he wants
@@ -567,6 +569,17 @@ Always use `git -C ~/projects` for add, commit, push, etc.
 When a `git push` shows Dependabot or security vulnerability warnings, proactively
 flag it and offer to investigate/fix. These are usually easy wins (delete a lock
 file, update a dep) and worth cleaning up on the spot rather than ignoring.
+
+## GTest Discovery and ISISROOT
+
+Building ISIS (and ALE with tests) requires GTest submodule and ISISROOT:
+1. Init gtest: `git -C ~/projects/ISIS3 submodule update --init --recursive`
+2. Set `ISISROOT` before make/ninja (GTest discovery runs the test binary at
+   build time, which needs ISISROOT to find ISIS data paths).
+3. ALE with `ALE_BUILD_LOAD=ON` has test link issues but the library installs fine.
+
+Full details in `~/projects/isis_mapproject/isis_mapproject_notes.sh` lines 179-193
+and `~/projects/env_update.sh`.
 
 ## ISIS Data (CRITICAL)
 
