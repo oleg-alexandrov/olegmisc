@@ -19,6 +19,11 @@ JPEG2000 reading. FY26 USGS task.
 parity project with Kelvin Rodriguez (USGS). ASP_MAP mode in cam2map for per-pixel
 exact projection. PR #5988. Mostly complete - in review.
 
+`~/projects/isis_jigsaw_isd/isis_jigsaw_isd_notes.sh` - Jigsaw with external ISD
+support. Read/write ISDs separately from cubes. In-memory CSMState blob injection
+so jigsaw pipeline stays unchanged. Related to ISIS #5609. FY26 USGS task with
+Kelvin Rodriguez.
+
 ## Key Shell Files in ~/projects/ (Build & Test Reference)
 
 | File | Purpose |

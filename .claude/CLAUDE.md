@@ -11,6 +11,9 @@ build/test instructions and current task context otherwise:
   ISIS cam2map / ASP mapproject parity)
 - `~/projects/csm_resample/csm_resample_notes.sh` (recent project:
   ALE/CSM work for ISIS - reduce linescan ISD oversampling, PR #677)
+- `~/projects/env_update.sh` (current: update asp_deps env to match
+  ISIS, build ALE/USGSCSM/ISIS from source, Qt6 port, CGAL update.
+  Tied to binary CSM, ALE ephem_fix, and ISIS asp_map contributions.)
 - `~/projects/isis_jigsaw_isd/isis_jigsaw_isd_notes.sh` (upcoming project:
   jigsaw external ISD input/output, FY26 USGS task)
 Rules past line 200 get truncated and lost otherwise.**
