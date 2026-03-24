@@ -1,5 +1,18 @@
 # Long-term memory for Claude Code
 
+## TODO: Sync StereoPipelineTest data to l1 and pfe (by 2026-03-27)
+
+**Push recent test data changes from Mac to l1 and pfe.**
+- On l1, the `data/` dir was trimmed heavily (unused files removed). Only push
+  files added or changed in the last ~3 days. Do NOT rsync the full data dir
+  or it will re-add files that were intentionally deleted on l1.
+- Safe to push: `DIM_SYNTH_SPOT6_LEFT.XML`, `DIM_SYNTH_SPOT6_RIGHT.XML`,
+  `DIM_PNEO4_*_extended.XML`, `SPOT6_P_crop.tif`, `DIM_SPOT6_P_*.XML`,
+  `RPC_SPOT6_P_*.XML`, `small_mesh.ply`, and any new gold dirs.
+- pfe still has the full (unpurged) data set.
+- **After syncing, do the same data purge on Mac and pfe that was done on l1.**
+  Remove unused test data files to reclaim space. Match l1's trimmed state.
+
 **AFTER CONTEXT COMPACTION: Re-read this ENTIRE file (all of CLAUDE.md, not
 just the first 200 lines). Also re-read these project files - you WILL lose
 build/test instructions and current task context otherwise:
@@ -283,13 +296,33 @@ Don't do blind sed-style namespace replacements - read and comprehend the code f
 
 **Test suite location:** `/home/oalexan1/projects/StereoPipelineTest`
 
+**Environment setup before running tests (CRITICAL):** Tests need conda env
+activated, ISISROOT set, and dev build + tools on PATH. Do this once per shell:
+```bash
+# Mac:
+eval "$($HOME/anaconda3/bin/conda shell.zsh hook)"
+conda activate asp_deps
+export ISISROOT=$HOME/anaconda3/envs/asp_deps
+export PATH=~/projects/StereoPipeline/install/bin:$HOME/anaconda3/envs/asp_deps/bin:$PATH
+# lunokhod1: same but s/anaconda3/miniconda3/g
+```
+Without this, parallel_stereo/mapproject crash with "IsisPreferences not found"
+and validate.sh fails with "gdalinfo not found".
+
 **How to run a single test:**
-1. `cd` into the test directory
-2. Run `bash run.sh > output.txt 2>&1`
-3. Run `bash validate.sh` - exit 0 means pass
-4. If it fails, check `output.txt`
+1. Set up environment (see above)
+2. `cd` into the test directory
+3. Run `bash run.sh > output.txt 2>&1`
+4. Run `bash validate.sh` - exit 0 means pass
+5. If it fails, check `output.txt`
 
 **Do NOT use pytest** - just run `run.sh` and `validate.sh` directly.
+
+**Release tarballs for verification:** Recent release builds are saved in
+`~/projects/BinaryBuilder/asp_tarballs/`. When doing hard verification
+(e.g., confirming dev changes don't break existing behavior), run tests
+with the release build first, then with the dev build, and compare.
+Download the latest from the ASP GitHub releases page when needed.
 
 **MANDATORY: Run regression tests after every code change.** After modifying an
 ASP tool, find all matching test dirs in StereoPipelineTest:
@@ -312,18 +345,6 @@ Each test directory has:
 - `run/` - generated output (created by `run.sh`)
 
 When creating new tests, always `chmod +x run.sh validate.sh`.
-
-**ISIS environment for dev builds:** ASP links against ISIS, so `ISISROOT` must
-be set when running tests with an installed dev build. On Mac:
-```bash
-export ISISROOT=$HOME/anaconda3/envs/asp_deps
-export PATH=~/projects/StereoPipeline/install/bin:$HOME/anaconda3/envs/asp_deps/bin:$PATH
-```
-On lunokhod1:
-```bash
-export ISISROOT=$HOME/miniconda3/envs/asp_deps
-export PATH=~/projects/StereoPipeline/install/bin:$HOME/miniconda3/envs/asp_deps/bin:$PATH
-```
 
 ## Notes Files (.sh)
 
