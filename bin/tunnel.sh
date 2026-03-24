@@ -46,6 +46,7 @@
 
 # Port assignments:
 #   5955 - l1's sshd exposed on pfx (reverse tunnel from l1)
+#   6078 - pfx's sshd exposed on l1 (forward tunnel from l1)
 #   3102 - pfx's sshd exposed on Mac (forward tunnel from Mac)
 #   3079 - Mac's sshd exposed on pfx (reverse tunnel from Mac)
 #
@@ -55,6 +56,7 @@
 # Port assignments (single source of truth)
 # Override any of these with environment variables before running.
 L1_SSHD_ON_PFX=${L1_SSHD_ON_PFX:-5955}
+L1_TO_PFX=${L1_TO_PFX:-6078}
 MAC_SSHD_ON_PFX=${MAC_SSHD_ON_PFX:-3079}
 MAC_TO_PFX=${MAC_TO_PFX:-3102}
 
@@ -136,24 +138,34 @@ case "$HOST" in
   *lunokhod1*)
     echo "Lunokhod1: setting up reverse tunnel through pfx"
 
-    echo "Connecting to $PFX_HOST and creating reverse tunnel:"
-    echo "  pfx:$L1_SSHD_ON_PFX -> l1:22"
+    echo "Connecting to $PFX_HOST and creating tunnels:"
+    echo "  Reverse: pfx:$L1_SSHD_ON_PFX -> l1:22"
+    echo "  Forward: localhost:$L1_TO_PFX -> pfx:22"
+
+    kill_port $L1_TO_PFX
 
     ssh $PFX_HOST -N -f $SSH_ALIVE \
-      -R ${L1_SSHD_ON_PFX}:localhost:22
+      -R ${L1_SSHD_ON_PFX}:localhost:22 \
+      -L ${L1_TO_PFX}:localhost:22
 
     if [ $? -ne 0 ]; then
       echo "ERROR: Failed to connect to pfx. Check SSH keys and network."
       exit 1
     fi
 
-    echo "Reverse tunnel active on pfx ($PFX_HOST)."
+    echo "Tunnels active on pfx ($PFX_HOST)."
 
-    # Update pfx's ssh config so it knows about l1
-    update_remote_port "$PFX_HOST" l1 $L1_SSHD_ON_PFX
+    # Update local ssh config first so 'ssh pfx' uses the forward tunnel
+    ~/bin/set_port.py pfx $L1_TO_PFX
+
+    # Update pfx's ssh config via the forward tunnel (avoids second NAS auth)
+    update_remote_port "pfx" l1 $L1_SSHD_ON_PFX
 
     echo ""
-    echo "Done. From pfx ($PFX_HOST):"
+    echo "Done. From l1:"
+    echo "  ssh pfx       -> pfx ($PFX_HOST) via forward tunnel"
+    echo ""
+    echo "From pfx ($PFX_HOST):"
     echo "  ssh l1"
     echo ""
     echo "From Mac (after running tunnel.sh on Mac):"
