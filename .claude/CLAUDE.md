@@ -1,5 +1,13 @@
 # Long-term memory for Claude Code
 
+## TODO: VW default_rescale migration (deferred)
+
+Flip `DiskImageResource::default_rescale` from `true` to `false` in VW.
+Currently silently rescales integer pixels (uint8, int16, uint16) to [0,1]
+when read as float, causing bugs (e.g., colormap on .cub Int16 files).
+Full analysis and plan in `~/projects/vw_rescale_default.sh`. Low risk -
+most reads are float32 (no-op). Deferred from 2026-03-14 session.
+
 ## TODO: Sync StereoPipelineTest data to l1 and pfe (by 2026-03-27)
 
 **Push recent test data changes from Mac to l1 and pfe.**
@@ -16,14 +24,15 @@
 **AFTER CONTEXT COMPACTION: Re-read this ENTIRE file (all of CLAUDE.md, not
 just the first 200 lines). Also re-read these project files - you WILL lose
 build/test instructions and current task context otherwise:
-- `~/projects/binary_csm/binary_csm_notes.sh` (current main project:
-  binary CSM state format - msgpack for ISDs/model states, FY26 USGS task)
+- `~/projects/binary_csm/binary_csm_notes.sh` (binary CSM state format -
+  msgpack for ISDs/model states, PR usgscsm#501 merged 2026-03-25.
+  USGSCSM side done. ASP side TODO: update CsmModel.cc to use binary API.)
 - `~/projects/isis_jp2/isis_jp2_notes.sh` (recent project: remove
   Kakadu from ISIS, use GDAL for JPEG2000)
 - `~/projects/isis_mapproject/isis_mapproject_notes.sh` (recent project:
   ISIS cam2map / ASP mapproject parity)
-- `~/projects/csm_resample/csm_resample_notes.sh` (recent project:
-  ALE/CSM work for ISIS - reduce linescan ISD oversampling, PR #677)
+- `~/projects/csm_resample/csm_resample_notes.sh` (completed project:
+  ALE/CSM work for ISIS - reduce linescan ISD oversampling, PR #677 merged 2026-03-23)
 - `~/projects/env_update.sh` (current: update asp_deps env to match
   ISIS, build ALE/USGSCSM/ISIS from source, Qt6 port, CGAL update.
   Tied to binary CSM, ALE ephem_fix, and ISIS asp_map contributions.)

@@ -5,10 +5,9 @@ remind user in a day or two to go on with rescale logic plan for ww, so rescale 
 ## Current Main Project
 
 `~/projects/binary_csm/binary_csm_notes.sh` - Binary CSM state format using
-msgpack for ISDs and model states. FY26 USGS task. Eliminates strtod() JSON
-parsing bottleneck for large linescan sensors (Chandrayaan-2 TMC). Uses
-nlohmann to_msgpack()/from_msgpack() in USGSCSM. Follows ALE ISD subsampling
-(PR #677).
+msgpack for ISDs and model states. FY26 USGS task. PR usgscsm#501 **merged
+2026-03-25**. USGSCSM side complete. Remaining: update ASP CsmModel.cc to
+use populateModel()/getModelJson() binary API instead of string serialization.
 
 ## Recent Projects
 
@@ -18,6 +17,9 @@ JPEG2000 reading. FY26 USGS task.
 `~/projects/isis_mapproject/isis_mapproject_notes.sh` - ISIS cam2map / ASP mapproject
 parity project with Kelvin Rodriguez (USGS). ASP_MAP mode in cam2map for per-pixel
 exact projection. PR #5988. Mostly complete - in review.
+
+`~/projects/csm_resample/csm_resample_notes.sh` - ALE ISD subsampling.
+PR DOI-USGS/ale#677 **merged 2026-03-23**. Completed.
 
 `~/projects/isis_jigsaw_isd/isis_jigsaw_isd_notes.sh` - Jigsaw with external ISD
 support. Read/write ISDs separately from cubes. In-memory CSMState blob injection
