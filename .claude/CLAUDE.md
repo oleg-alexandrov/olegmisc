@@ -325,10 +325,21 @@ with the release build first, then with the dev build, and compare.
 Download the latest from the ASP GitHub releases page when needed.
 
 **MANDATORY: Run regression tests after every code change.** After modifying an
-ASP tool, find all matching test dirs in StereoPipelineTest:
+ASP tool, find all matching test dirs in StereoPipelineTest.
+
+**Test directory naming:** Test dirs start with `ss` or `ss_` (no consistent
+separator). Search with BOTH patterns, or just `ls | grep -i keyword`:
 ```bash
-ls -d /home/oalexan1/projects/StereoPipelineTest/ss_*toolname* 2>/dev/null
-grep -rl 'toolname' /home/oalexan1/projects/StereoPipelineTest/ss_*/run.sh | head -20
+ls ~/projects/StereoPipelineTest/ | grep -i toolname
+ls ~/projects/StereoPipelineTest/ | grep -i keyword
+```
+Do NOT use `ls -d ss_*keyword*` alone - it misses dirs like `ssPeruSat_*`,
+`ssCSM_*`, etc. that use `ss` without underscore. The `ls | grep -i` approach
+catches both patterns and is case-insensitive.
+
+Also search inside run.sh files for the tool name:
+```bash
+grep -rl 'toolname' ~/projects/StereoPipelineTest/ss*/run.sh | head -20
 ```
 Run ALL of them, not just one. Also consider whether the change has test
 coverage at all - if a code path (e.g., integer input types, a specific flag)
