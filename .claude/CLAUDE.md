@@ -8,6 +8,28 @@ when read as float, causing bugs (e.g., colormap on .cub Int16 files).
 Full analysis and plan in `~/projects/vw_rescale_default.sh`. Low risk -
 most reads are float32 (no-op). Deferred from 2026-03-14 session.
 
+## TODO: CSM camera creation efficiency (after jigsaw ISDLIST merges)
+
+Both USGSCSM and ISIS have unnecessary model instantiation, string
+conversion, and plugin iteration. The CSM API requires constructing a
+model from state string, but CSMCamera then reconstructs the same model
+from that string again. Also, `constructModelFromIsdOrState` and csminit
+iterate over all plugins with `canModelBeConstructedFromISD/State`, even
+though USGSCSM elsewhere hardcodes the known model names.
+
+Fix in two stages:
+1. **USGSCSM**: Add direct model creation API that returns a model from
+   ISD or state in one shot without plugin iteration. The plugin already
+   knows its own models.
+2. **ISIS**: Add a `CSMCamera` constructor that takes `csm::Model*`
+   directly (transfer ownership). Eliminates the model->state->model
+   round-trip in `CreateFromIsd`. The `init()` setup (lines 129-139:
+   sensor/platform names, reference time, setTarget) still runs but
+   skips plugin lookup and `constructModelFromState`.
+
+This removes ~3x redundant model construction per image in the ISDLIST
+path and ~2x in the blob path.
+
 ## TODO: Sync StereoPipelineTest data to l1 and pfe (by 2026-03-27)
 
 **Push recent test data changes from Mac to l1 and pfe.**
