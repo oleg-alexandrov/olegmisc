@@ -36,8 +36,10 @@ build/test instructions and current task context otherwise:
 - `~/projects/env_update.sh` (current: update asp_deps env to match
   ISIS, build ALE/USGSCSM/ISIS from source, Qt6 port, CGAL update.
   Tied to binary CSM, ALE ephem_fix, and ISIS asp_map contributions.)
-- `~/projects/isis_jigsaw_isd/isis_jigsaw_isd_notes.sh` (upcoming project:
-  jigsaw external ISD input/output, FY26 USGS task)
+- `~/projects/isis_jigsaw_isd/isis_jigsaw_isd_notes.sh` (active current project:
+  jigsaw external ISD input/output, FY26 USGS task. Implementation in progress
+  with Gemini - ISD loading, serial numbers, adjusted state output working.
+  Blocker resolved. GTests and shell tests pass.)
 Rules past line 200 get truncated and lost otherwise.**
 
 **ISIS3 build/test quick reference (so you don't lose this after compaction):**
@@ -384,6 +386,9 @@ meant to be run (has real commands, not just comments).
 under `~/projects/` with a notes file (e.g., `isis_mapproject/isis_mapproject_notes.sh`).
 These subdir notes files ARE tracked by the projects repo (`~/projects/.git`).
 Add them with `git -C ~/projects add subdir/file.sh`.
+**When creating new .sh scripts** (run.sh, notes, helpers) in `~/projects/`
+subdirs, always `git -C ~/projects add` them before committing, or remind
+the user to check. Easy to forget since they're in subdirs.
 
 ## Project Status Files
 
