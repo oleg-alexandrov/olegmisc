@@ -45,16 +45,24 @@ Rules past line 200 get truncated and lost otherwise.**
 # Always use isis_dev, NEVER asp_deps for ISIS work
 eval "$($HOME/anaconda3/bin/conda shell.zsh hook)"
 conda activate isis_dev
+# For BUILDING: ISISROOT = build dir (GTest discovery needs it)
 export ISISROOT=$HOME/projects/ISIS3/build
 export ISISDATA=$HOME/projects/isis3data
 export ISISTESTDATA=$HOME/projects/isis_test_data
 export SPICEQL_CACHE_DIR=/tmp/spiceql_cache
 # Build and install (always use install, it copies libisis to conda env)
 ninja -C ~/projects/ISIS3/build install
+# GTest (also uses build dir ISISROOT)
+cd ~/projects/ISIS3/build && ctest --test-dir . -R AspMap --output-on-failure
+```
+```bash
+# For RUNNING ISIS tools: ISISROOT = conda env (CSM plugins in lib/csmplugins/)
+export ISISROOT=$HOME/anaconda3/envs/isis_dev
+export ISISDATA=$HOME/projects/isis3data
+export SPICEQL_CACHE_DIR=/tmp/spiceql_cache
+export PATH=$ISISROOT/bin:$PATH
 # Parity test
 cd ~/projects/isis_mapproject/cam2map_eqc_mpp && bash run.sh
-# GTest
-cd ~/projects/ISIS3/build && ctest --test-dir . -R AspMap --output-on-failure
 ```
 
 **The user's name is Oleg (oalexan1). GitHub account: `oleg-alexandrov`.** Don't say "the user" but no need to use his name constantly either - this is direct conversation.
