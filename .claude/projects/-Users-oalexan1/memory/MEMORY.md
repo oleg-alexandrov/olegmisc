@@ -21,10 +21,11 @@ exact projection. PR #5988. Mostly complete - in review.
 `~/projects/csm_resample/csm_resample_notes.sh` - ALE ISD subsampling.
 PR DOI-USGS/ale#677 **merged 2026-03-23**. Completed.
 
-`~/projects/isis_jigsaw_isd/isis_jigsaw_isd_notes.sh` - Jigsaw with external ISD
-support. Read/write ISDs separately from cubes. In-memory CSMState blob injection
-so jigsaw pipeline stays unchanged. Related to ISIS #5609. FY26 USGS task with
-Kelvin Rodriguez.
+`~/projects/isis_jigsaw_isd/isis_jigsaw_isd_notes.sh` - **ACTIVE current project.**
+Jigsaw with external ISD support. Read/write ISDs separately from cubes. In-memory
+CSMState blob injection so jigsaw pipeline stays unchanged. Related to ISIS #5609,
+#5998. FY26 USGS task with Kelvin Rodriguez. PR DOI-USGS/ISIS3#6004 open,
+branch jigsaw_isdlist. Code reviewed and tested. Awaiting CI and review.
 
 ## Key Shell Files in ~/projects/ (Build & Test Reference)
 

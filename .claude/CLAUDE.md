@@ -59,9 +59,8 @@ build/test instructions and current task context otherwise:
   ISIS, build ALE/USGSCSM/ISIS from source, Qt6 port, CGAL update.
   Tied to binary CSM, ALE ephem_fix, and ISIS asp_map contributions.)
 - `~/projects/isis_jigsaw_isd/isis_jigsaw_isd_notes.sh` (active current project:
-  jigsaw external ISD input/output, FY26 USGS task. Implementation in progress
-  with Gemini - ISD loading, serial numbers, adjusted state output working.
-  Blocker resolved. GTests and shell tests pass.)
+  jigsaw external ISD input/output, FY26 USGS task. PR DOI-USGS/ISIS3#6004
+  open, branch jigsaw_isdlist. Code reviewed, tests pass. Awaiting CI and review.)
 Rules past line 200 get truncated and lost otherwise.**
 
 **ISIS3 build/test quick reference (so you don't lose this after compaction):**
