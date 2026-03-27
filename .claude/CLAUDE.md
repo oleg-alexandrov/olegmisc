@@ -106,6 +106,9 @@ cd ~/projects/isis_mapproject/cam2map_eqc_mpp && bash run.sh
   multi-step workflow unless explicitly told "and push". Do not assume
   "git add and push" means push — wait for the word "push" as a separate
   explicit instruction. Especially `git push god` (upstream org).
+- **NEVER open a pull request unless explicitly told to.** If asked to "review"
+  PR text, only review and show feedback — do not create the PR. Similarly,
+  NEVER comment on, close, or merge a pull request unless explicitly asked.
 - **When fixing code, ALWAYS pause for review before pushing.** Show local
   test results and let the user review changes first. Do not push immediately
   after committing — especially when the push triggers CI regressions that
