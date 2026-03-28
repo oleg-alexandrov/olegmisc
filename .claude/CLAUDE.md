@@ -14,6 +14,21 @@ USGSCSM: Add direct model creation API that returns a model from ISD or
 state in one shot without plugin iteration. The plugin already knows its
 own models. ISIS side done (CSMCamera takes csm::RasterGM* directly).
 
+## TODO: Migrate SPOT5 to CSM linescan (like PeruSat)
+
+SPOT5 (`SPOTCameraModel` in `LinescanSpotModel.h`) still uses the old VW
+linescan path with `LagrangianInterpolation` + `SLERPPoseInterpolation`.
+Migrate to CSM following the PeruSat pattern. This enables jitter_solve
+for SPOT5. Work notes in `~/projects/spot5_csm/spot_csm_notes.sh`.
+
+## TODO: Migrate ASTER to inherit from CsmModel directly
+
+ASTER currently wraps a CSM model (`m_csm_model` member) instead of
+inheriting from `asp::CsmModel`. Refactor `ASTERCameraModel` to inherit
+from `CsmModel` like Pleiades, DG, SPOT, and PeruSat do. This will
+remove the special-case ASTER handling in `csm_model()` and the
+`aster_use_csm` flag. Work notes in ~/projects/aster_csm/aster_csm_notes.sh.
+
 ## TODO: Sync StereoPipelineTest data to l1 and pfe (by 2026-03-27)
 
 **Push recent test data changes from Mac to l1 and pfe.**
@@ -390,13 +405,39 @@ Many `.sh` files in `~/projects/` are comment-only notes, not executable scripts
 Do NOT `chmod +x` these. Only make a `.sh` file executable if it is actually
 meant to be run (has real commands, not just comments).
 
-**Project-specific notes in subdirs:** New projects get their own subdirectory
-under `~/projects/` with a notes file (e.g., `isis_mapproject/isis_mapproject_notes.sh`).
+**Project-specific notes in subdirs:** Every project we work on together should
+have its own subdirectory under `~/projects/` with a notes `.sh` file (e.g.,
+`spot5_csm/spot_csm_notes.sh`). This keeps the paper trail. If a subdir already
+exists, read and update the existing notes file rather than creating a new one.
+Prompt the user about creating the subdir/notes if they haven't mentioned it.
 These subdir notes files ARE tracked by the projects repo (`~/projects/.git`).
 Add them with `git -C ~/projects add subdir/file.sh`.
 **When creating new .sh scripts** (run.sh, notes, helpers) in `~/projects/`
 subdirs, always `git -C ~/projects add` them before committing, or remind
 the user to check. Easy to forget since they're in subdirs.
+
+## Paper Trail on Disk (CRITICAL)
+
+**ALWAYS log thoughts, progress, decisions, and issues to the project's notes
+file on disk.** Do not rely on internal reasoning alone - write it down. This is
+the primary way to stay in sync with the user across sessions and within long
+sessions after context compaction.
+
+- **At the start of any non-trivial task:** open (or create) the project's notes
+  file and append what you're about to do, what approach you're taking, and why.
+- **During work:** log key findings, surprises, errors encountered, and decisions
+  made. Especially log anything that took multiple attempts or was non-obvious.
+- **After completing a step:** note what was done, what worked, what didn't.
+- **If no notes file exists for the current project:** create one in the
+  appropriate `~/projects/<subdir>/` and mention it to the user. Every project
+  gets a paper trail, no exceptions.
+- **If the user provides a notes file path:** use that file. Don't invent a
+  different one.
+
+The notes file is the shared brain between sessions. Without it, context is
+lost to token noise and compaction. With it, any future session (or the user
+reading the file) can pick up exactly where things left off. Err on the side
+of writing too much rather than too little.
 
 ## Project Status Files
 
