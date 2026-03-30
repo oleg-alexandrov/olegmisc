@@ -610,13 +610,26 @@ If .sh files in `/home/oalexan1/projects/` changed:
 rsync -avz /home/oalexan1/projects/*.sh oalexan1@laptop:~/projects/
 ```
 
+## ASP Builds on pfe/pfx (NAS/Pleiades)
+
+**Release build location:** `/u/oalexan1/projects/BinaryBuilder/StereoPipeline/`
+(`/u/oalexan1` and `/home6/oalexan1` are the same path, symlinked).
+Full release layout: `bin/` (wrapper scripts + Python), `libexec/` (C++ binaries),
+`lib/`, `plugins/`, `docs/`, etc. The nightly bot extracts directly into this dir
+(no tarballs on pfx - `asp_tarballs/` is empty). No `auto_build/` on pfx either.
+Conda/miniconda is at `/swbuild/oalexan1/miniconda3` (symlinked from `~/miniconda3`).
+
+**On l1:** Release tarballs saved in `~/projects/BinaryBuilder/asp_tarballs/`.
+Dev build is in `~/projects/StereoPipeline/install/`.
+
+**Dev build rsync from l1 overwrites lib/, libexec/, and Python scripts in bin/
+on top of the release install on pfx.** Use `--checksum` to avoid skipping files
+with same size but different content.
+
 ## Syncing Dev Build from l1 to pfe/pfx
 
-**After rebuilding ASP on lunokhod1, sync the dev install to pfe/pfx** (the `pfx`
-alias is defined in `~/.ssh/config`). In the release layout, C++ binaries go in
-`libexec/` and Python wrapper scripts go in `bin/`. **Always use `--checksum`** -
-without it, rsync skips files with matching size+mtime, and rebuilt binaries
-often keep the same size (due to alignment/padding), causing stale copies.
+In the release layout, C++ binaries go in `libexec/` and Python wrapper scripts
+go in `bin/`.
 
 ```bash
 ss=StereoPipeline
