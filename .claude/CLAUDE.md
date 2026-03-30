@@ -8,7 +8,7 @@ when read as float, causing bugs (e.g., colormap on .cub Int16 files).
 Full analysis and plan in `~/projects/vw_rescale_default.sh`. Low risk -
 most reads are float32 (no-op). Deferred from 2026-03-14 session.
 
-## TODO: CSM camera creation efficiency — USGSCSM direct model creation
+## TODO: CSM camera creation efficiency  - USGSCSM direct model creation
 
 USGSCSM: Add direct model creation API that returns a model from ISD or
 state in one shot without plugin iteration. The plugin already knows its
@@ -116,17 +116,17 @@ cd ~/projects/isis_mapproject/cam2map_eqc_mpp && bash run.sh
   inevitably requires a force push. Always make a new commit instead.
 - **NEVER push without explicit authorization.** Every `git push` must be
   explicitly requested or approved. This applies to ALL repos: ISIS3, ASP,
-  VW, BinaryBuilder, StereoPipelineTest, projects, home dir — no exceptions.
+  VW, BinaryBuilder, StereoPipelineTest, projects, home dir  - no exceptions.
   Do not bundle pushes with other operations. Do not push as part of a
   multi-step workflow unless explicitly told "and push". Do not assume
-  "git add and push" means push — wait for the word "push" as a separate
+  "git add and push" means push  - wait for the word "push" as a separate
   explicit instruction. Especially `git push god` (upstream org).
 - **NEVER open a pull request unless explicitly told to.** If asked to "review"
-  PR text, only review and show feedback — do not create the PR. Similarly,
+  PR text, only review and show feedback  - do not create the PR. Similarly,
   NEVER comment on, close, or merge a pull request unless explicitly asked.
 - **When fixing code, ALWAYS pause for review before pushing.** Show local
   test results and let the user review changes first. Do not push immediately
-  after committing — especially when the push triggers CI regressions that
+  after committing  - especially when the push triggers CI regressions that
   are visible to reviewers. Commit locally, report results, wait for "push".
 - **USGSCSM repo (`~/projects/usgscsm`): do not touch existing spacing
   conventions** (blank lines, indentation style, whitespace) unless modifying
@@ -310,7 +310,13 @@ Don't do blind sed-style namespace replacements - read and comprehend the code f
 - Git remotes: `origin` = user's fork, `god` = upstream org (both repos)
 - Build with: `make -C /home/oalexan1/projects/StereoPipeline/build -j16`
 
-**Mac mini** (`Olegs-Mac-mini.local`) - secondary build machine:
+**Mac mini** (`Olegs-Mac-mini.local`, reachable via `ssh mac_arm`) - the
+primary machine for tracking notes, docs, and project state. Accessible
+from NAS/Pleiades. When asked to push notes or files to the Mac, use
+`rsync` or `scp` to `mac_arm:`.
+- **From athfe nodes:** `mac_arm` tunnel (localhost:3079) is on pfe21. Hop
+  through pfe21: `ssh pfe21 "rsync -avz -e 'ssh -p 3079' /path/to/files localhost:~/dest/"`
+- Secondary build machine:
 - **ALWAYS use `make install`** for both VW and ASP, never bare `make`.
   The installed libraries may be stale even when the build is up to date.
 - Can build ASP: `make -C ~/projects/StereoPipeline/build -j10 install`
@@ -608,22 +614,24 @@ rsync -avz /home/oalexan1/projects/*.sh oalexan1@laptop:~/projects/
 
 **After rebuilding ASP on lunokhod1, sync the dev install to pfe/pfx** (the `pfx`
 alias is defined in `~/.ssh/config`). In the release layout, C++ binaries go in
-`libexec/` and Python wrapper scripts go in `bin/`.
+`libexec/` and Python wrapper scripts go in `bin/`. **Always use `--checksum`** -
+without it, rsync skips files with matching size+mtime, and rebuilt binaries
+often keep the same size (due to alignment/padding), causing stale copies.
 
 ```bash
 ss=StereoPipeline
 
 # Sync lib and libexec dirs
-rsync -avz ~/projects/StereoPipeline/install/lib \
+rsync -avz --checksum ~/projects/StereoPipeline/install/lib \
   ~/projects/StereoPipeline/install/libexec \
   pfx:/home6/oalexan1/projects/BinaryBuilder/${ss}/
 
 # Sync C++ binaries to libexec (release layout, not bin)
-rsync -avz ~/projects/StereoPipeline/install/bin/* \
+rsync -avz --checksum ~/projects/StereoPipeline/install/bin/* \
   pfx:/home6/oalexan1/projects/BinaryBuilder/${ss}/libexec/
 
 # Sync Python scripts to bin
-rsync -avz ~/projects/StereoPipeline/install/bin/*py \
+rsync -avz --checksum ~/projects/StereoPipeline/install/bin/*py \
   pfx:/home6/oalexan1/projects/BinaryBuilder/${ss}/bin/
 ```
 
@@ -646,7 +654,7 @@ Always use `// TODO(oalexan1):` format. Never bare `// TODO:`.
 
 Convention: `origin` = user's fork, `god` = upstream org (for ASP, VW, BinaryBuilder).
 
-## NASA NAS Supercomputer
+## NASA NAS / Pleiades Supercomputer
 
 **Front-ends for job submission:** `athfe01`-`athfe04` (ssh athfe01, NOT pfe).
 These are the Athena/Turin front-ends. Submit PBS jobs from there.
@@ -659,6 +667,13 @@ These are the Athena/Turin front-ends. Submit PBS jobs from there.
   but ssh to athfe01 for job submission.
 
 Primer with qsub examples: `~/projects/spot5_alps/spot5_alps_notes.sh`
+
+- **Symlinked project dirs on NAS/Pleiades (pfe/pfx/athfe):** Many subdirs under
+  `~/projects/` are symlinks on NAS (e.g., PeruSat, and others). Never
+  rsync a symlinked dir itself  - only rsync files and subdirs inside it.
+  Use a trailing slash (`rsync -avz src/ dest/dir/`) or rsync individual
+  items. Rsyncing the link itself would replace the symlink with a plain
+  directory. On other machines these are real dirs so it's not an issue there.
 
 ## GitHub CLI (gh)
 
