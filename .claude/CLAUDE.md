@@ -403,7 +403,9 @@ When creating new tests, always `chmod +x run.sh validate.sh`.
 
 Many `.sh` files in `~/projects/` are comment-only notes, not executable scripts.
 Do NOT `chmod +x` these. Only make a `.sh` file executable if it is actually
-meant to be run (has real commands, not just comments).
+meant to be run (has real commands, not just comments). Do NOT put `exit 0` at
+the end of notes files - they will never be run as scripts. The `.sh` extension
+is used because it's convenient for mixing comments with runnable command snippets.
 
 **Project-specific notes in subdirs:** Every project we work on together should
 have its own subdirectory under `~/projects/` with a notes `.sh` file (e.g.,
@@ -596,6 +598,29 @@ rsync -avz --exclude=build --exclude=install --exclude=docs/_build --exclude=doc
 If .sh files in `/home/oalexan1/projects/` changed:
 ```bash
 rsync -avz /home/oalexan1/projects/*.sh oalexan1@laptop:~/projects/
+```
+
+## Syncing Dev Build from l1 to pfe/pfx
+
+**After rebuilding ASP on lunokhod1, sync the dev install to pfe/pfx** (the `pfx`
+alias is defined in `~/.ssh/config`). In the release layout, C++ binaries go in
+`libexec/` and Python wrapper scripts go in `bin/`.
+
+```bash
+ss=StereoPipeline
+
+# Sync lib and libexec dirs
+rsync -avz ~/projects/StereoPipeline/install/lib \
+  ~/projects/StereoPipeline/install/libexec \
+  pfx:/home6/oalexan1/projects/BinaryBuilder/${ss}/
+
+# Sync C++ binaries to libexec (release layout, not bin)
+rsync -avz ~/projects/StereoPipeline/install/bin/* \
+  pfx:/home6/oalexan1/projects/BinaryBuilder/${ss}/libexec/
+
+# Sync Python scripts to bin
+rsync -avz ~/projects/StereoPipeline/install/bin/*py \
+  pfx:/home6/oalexan1/projects/BinaryBuilder/${ss}/bin/
 ```
 
 ## TODO Comment Convention
