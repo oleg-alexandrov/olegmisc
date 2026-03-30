@@ -682,11 +682,13 @@ These are the Athena/Turin front-ends. Submit PBS jobs from there.
 Primer with qsub examples: `~/projects/spot5_alps/spot5_alps_notes.sh`
 
 - **Symlinked project dirs on NAS/Pleiades (pfe/pfx/athfe):** Many subdirs under
-  `~/projects/` are symlinks on NAS (e.g., PeruSat, and others). Never
-  rsync a symlinked dir itself  - only rsync files and subdirs inside it.
-  Use a trailing slash (`rsync -avz src/ dest/dir/`) or rsync individual
-  items. Rsyncing the link itself would replace the symlink with a plain
-  directory. On other machines these are real dirs so it's not an issue there.
+  `~/projects/` are symlinks on NAS (e.g., PeruSat, spot5_alps, and others).
+  The actual data lives on the nobackup filesystem (large storage), but the
+  symlinks in `~/projects/` mirror the Mac directory structure for convenience.
+  **NEVER rsync a symlinked dir itself** - that would replace the symlink with
+  a plain directory, breaking the link to nobackup. Only rsync files or subdirs
+  *inside* the symlinked dir. Use a trailing slash (`rsync -avz src/ dest/dir/`)
+  or rsync individual items. On the Mac these are real dirs so it's not an issue.
 
 ## GitHub CLI (gh)
 
