@@ -166,3 +166,11 @@ export ISISDATA=$HOME/projects/isis3data
 # <<< conda initialize <<<
 }
 
+# On Mac mini, auto-activate asp_deps and set ASP dev build path
+if [[ "$(hostname)" == *"Mac-mini"* ]]; then
+    echo "Setting up conda asp_deps env and ASP path"
+    init_conda_zsh
+    conda activate asp_deps
+    export PATH=~/projects/StereoPipeline/install/bin:$HOME/anaconda3/envs/asp_deps/bin:$PATH
+fi
+

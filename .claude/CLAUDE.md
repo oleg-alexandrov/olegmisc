@@ -334,6 +334,10 @@ Don't do blind sed-style namespace replacements - read and comprehend the code f
 - No git available
 - Only edit source files
 
+## Common Aliases
+
+- `sg` = `stereo_gui --window-size 1500 1000 --font-size 12` (view images/DEMs)
+
 ## Running Tests
 
 **Test suite location:** `/home/oalexan1/projects/StereoPipelineTest`
@@ -641,6 +645,20 @@ Always use `// TODO(oalexan1):` format. Never bare `// TODO:`.
 | 6 | **home dir** (dotfiles) | `/home/oalexan1` | master | `oleg-alexandrov/olegmisc.git` | (no god) |
 
 Convention: `origin` = user's fork, `god` = upstream org (for ASP, VW, BinaryBuilder).
+
+## NASA NAS Supercomputer
+
+**Front-ends for job submission:** `athfe01`-`athfe04` (ssh athfe01, NOT pfe).
+These are the Athena/Turin front-ends. Submit PBS jobs from there.
+
+- **Compute nodes:** `tur_ath` (Turin Athens), 256 CPUs per node
+- **Queue:** `normal` (max walltime 8:00:00)
+- **GID (budget code):** `e2305` (personal allocation, used for SFS and SPOT5 work)
+- **Job status:** `qstat -u $(whoami)`
+- **Storage:** pfe and athfe share the same filesystem, so rsync to pfx
+  but ssh to athfe01 for job submission.
+
+Primer with qsub examples: `~/projects/spot5_alps/spot5_alps_notes.sh`
 
 ## GitHub CLI (gh)
 
