@@ -618,6 +618,15 @@ Full release layout: `bin/` (wrapper scripts + Python), `libexec/` (C++ binaries
 `lib/`, `plugins/`, `docs/`, etc. The nightly bot extracts directly into this dir
 (no tarballs on pfx - `asp_tarballs/` is empty). No `auto_build/` on pfx either.
 Conda/miniconda is at `/swbuild/oalexan1/miniconda3` (symlinked from `~/miniconda3`).
+Micromamba is at `~/micromamba` (real dir on home filesystem).
+
+**NAS storage tiers:** Software and build tools live on `/swbuild` (fast, backed up).
+Large data lives on nobackup (high capacity, not backed up). Key paths:
+- `/swbuild/oalexan1/miniconda3` - conda (symlinked from `~/miniconda3`)
+- `/vast_swbuild/swbuild/oalexan1/projects/BinaryBuilder` - BinaryBuilder repo
+  (symlinked from `~/projects/BinaryBuilder`)
+- `~/projects/` subdirs like PeruSat, spot5_alps, atlanta, casa_grande, etc.
+  are symlinks pointing to nobackup for data storage.
 
 **On l1:** Release tarballs saved in `~/projects/BinaryBuilder/asp_tarballs/`.
 Dev build is in `~/projects/StereoPipeline/install/`.
