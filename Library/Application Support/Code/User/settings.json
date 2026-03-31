@@ -591,5 +591,6 @@
     ],
     "claudeCode.useCtrlEnterToSend": true,
     "geminicodeassist.project": "solid-hawk-3z4b2",
-    "geminicodeassist.inlineSuggestions.enableAuto": true
+    "geminicodeassist.inlineSuggestions.enableAuto": true,
+    "geminicodeassist.displayInlineContextHint": false
 }
