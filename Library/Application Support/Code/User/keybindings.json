@@ -277,5 +277,15 @@
     "key": "ctrl+backspace",
     "command": "deleteWordLeft",
     "when": "textInputFocus && !editorReadonly"
+  },
+  {
+    "key": "cmd+a",
+    "command": "select-paragraph.selectParagraph",
+    "when": "editorTextFocus"
+  },
+  {
+    "key": "cmd+l",
+    "command": "align.by.regex",
+    "when": "editorHasSelection"
   }
 ]

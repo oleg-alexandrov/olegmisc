@@ -168,6 +168,7 @@
         "grayscale",
         "gridding",
         "Haswell",
+        "hecc",
         "hillshade",
         "hillshaded",
         "hillshades",
@@ -587,5 +588,8 @@
         "chat.fontSize",
         "screencastMode.fontSize",
         "editor.minimap.sectionHeaderFontSize"
-    ]
+    ],
+    "claudeCode.useCtrlEnterToSend": true,
+    "geminicodeassist.project": "solid-hawk-3z4b2",
+    "geminicodeassist.inlineSuggestions.enableAuto": true
 }

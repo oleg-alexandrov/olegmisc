@@ -524,6 +524,12 @@ Format: `Copyright (c) 2006-YYYY, United States Government...` - update end year
 
 `~/bin/clean_style.py <input_cpp_file>` - automated C++ style cleanup. Use without asking when requested.
 
+## Backslash Alignment Tool
+
+`~/bin/align_backslashes.py <file> <start_line> <end_line> [--inplace] [--column N]`
+Aligns trailing `\` continuation characters in shell scripts. Auto-detects
+target column from longest content line, or use `--column N` to fix it.
+
 ## Column Alignment Tool
 
 `~/bin/align_columns.py <file> <start_line> <end_line> [--inplace]`
