@@ -8,59 +8,9 @@ when read as float, causing bugs (e.g., colormap on .cub Int16 files).
 Full analysis and plan in `~/projects/vw_rescale_default.sh`. Low risk -
 most reads are float32 (no-op). Deferred from 2026-03-14 session.
 
-## TODO: CSM camera creation efficiency  - USGSCSM direct model creation
 
-USGSCSM: Add direct model creation API that returns a model from ISD or
-state in one shot without plugin iteration. The plugin already knows its
-own models. ISIS side done (CSMCamera takes csm::RasterGM* directly).
-
-## TODO: Migrate SPOT5 to CSM linescan (like PeruSat)
-
-SPOT5 (`SPOTCameraModel` in `LinescanSpotModel.h`) still uses the old VW
-linescan path with `LagrangianInterpolation` + `SLERPPoseInterpolation`.
-Migrate to CSM following the PeruSat pattern. This enables jitter_solve
-for SPOT5. Work notes in `~/projects/spot5_csm/spot_csm_notes.sh`.
-
-## TODO: Migrate ASTER to inherit from CsmModel directly
-
-ASTER currently wraps a CSM model (`m_csm_model` member) instead of
-inheriting from `asp::CsmModel`. Refactor `ASTERCameraModel` to inherit
-from `CsmModel` like Pleiades, DG, SPOT, and PeruSat do. This will
-remove the special-case ASTER handling in `csm_model()` and the
-`aster_use_csm` flag. Work notes in ~/projects/aster_csm/aster_csm_notes.sh.
-
-## TODO: Sync StereoPipelineTest data to l1 and pfe (by 2026-03-27)
-
-**Push recent test data changes from Mac to l1 and pfe.**
-- On l1, the `data/` dir was trimmed heavily (unused files removed). Only push
-  files added or changed in the last ~3 days. Do NOT rsync the full data dir
-  or it will re-add files that were intentionally deleted on l1.
-- Safe to push: `DIM_SYNTH_SPOT6_LEFT.XML`, `DIM_SYNTH_SPOT6_RIGHT.XML`,
-  `DIM_PNEO4_*_extended.XML`, `SPOT6_P_crop.tif`, `DIM_SPOT6_P_*.XML`,
-  `RPC_SPOT6_P_*.XML`, `small_mesh.ply`, and any new gold dirs.
-- pfe still has the full (unpurged) data set.
-- **After syncing, do the same data purge on Mac and pfe that was done on l1.**
-  Remove unused test data files to reclaim space. Match l1's trimmed state.
-
-**AFTER CONTEXT COMPACTION: Re-read this ENTIRE file (all of CLAUDE.md, not
-just the first 200 lines). Also re-read these project files - you WILL lose
-build/test instructions and current task context otherwise:
-- `~/projects/binary_csm/binary_csm_notes.sh` (binary CSM state format -
-  msgpack for ISDs/model states, PR usgscsm#501 merged 2026-03-25.
-  USGSCSM side done. ASP side TODO: update CsmModel.cc to use binary API.)
-- `~/projects/isis_jp2/isis_jp2_notes.sh` (recent project: remove
-  Kakadu from ISIS, use GDAL for JPEG2000)
-- `~/projects/isis_mapproject/isis_mapproject_notes.sh` (recent project:
-  ISIS cam2map / ASP mapproject parity)
-- `~/projects/csm_resample/csm_resample_notes.sh` (completed project:
-  ALE/CSM work for ISIS - reduce linescan ISD oversampling, PR #677 merged 2026-03-23)
-- `~/projects/env_update.sh` (current: update asp_deps env to match
-  ISIS, build ALE/USGSCSM/ISIS from source, Qt6 port, CGAL update.
-  Tied to binary CSM, ALE ephem_fix, and ISIS asp_map contributions.)
-- `~/projects/isis_jigsaw_isd/isis_jigsaw_isd_notes.sh` (active current project:
-  jigsaw external ISD input/output, FY26 USGS task. PR DOI-USGS/ISIS3#6004
-  open, branch jigsaw_isdlist. Code reviewed, tests pass. Awaiting CI and review.)
-Rules past line 200 get truncated and lost otherwise.**
+**AFTER CONTEXT COMPACTION:** Re-read this ENTIRE file (all of CLAUDE.md,
+not just the first 200 lines). Check MEMORY.md for active project notes files to re-read.
 
 **ISIS3 build/test quick reference (so you don't lose this after compaction):**
 ```bash
@@ -267,16 +217,7 @@ vw stands for VisionWorkbench.
 - `vw::geometry::write_shapefile`, `vw::geometry::read_shapefile`
 - NEVER include 'vw/Math/LeastSquares.h' - does not exist
 
-**Common VW types that need vw:: prefix (frequently missed by sed):**
-- `vw::ImageView<T>`, `vw::ImageViewRef<T>`, `vw::DiskImageView<T>`, `vw::DiskImageResourceGDAL`
-- `vw::BBox2`, `vw::BBox2i`, `vw::Vector2`, `vw::Vector3`
-- `vw::PixelMask<T>`, `vw::PixelGray<T>`, `vw::PixelGrayA<T>`, `vw::PixelRGB<T>`
-- `vw::TerminalProgressCallback`
-- `vw::ArgumentErr`, `vw::LogicErr`, `vw::IOErr`
-- `vw::crop()`, `vw::fill()`, `vw::edge_extend()`, `vw::bounding_box()`
-- `vw::create_mask()`, `vw::copy_mask()`, `vw::apply_mask()`, `vw::invalidate_mask()`, `vw::validate_mask()`
-- `vw::gaussian_filter()`, `vw::compute_kernel_size()`
-- `vw::cartography::GeoReference`, `vw::cartography::read_georeference()`, `vw::cartography::write_georeference()`
+**Common VW types needing vw:: prefix:** see `~/projects/vw_namespace_cheatsheet.sh`.
 
 Don't do blind sed-style namespace replacements - read and comprehend the code first. Check headers, using declarations, and surrounding patterns.
 
@@ -810,19 +751,6 @@ Both VW and ASP follow this convention:
 NEVER use `build/` or `install/` for cross-compilation. NEVER use `build_linux/` or
 `install_linux/` for native builds. Mixing these up destroys the other build.
 
-## Conda Build Environments (Mac ARM64)
-
-- **`boa`** - Build conda packages for osx-arm64 (native)
-- **`boa_x64`** - Build conda packages for osx-64 (cross-compile for Intel). Created with `CONDA_SUBDIR=osx-64`.
-- **`asp_deps`** - Development environment for compiling ASP/VW from source.
-  **Only for ASP/VW work.** For ISIS3 work use **`isis_dev`** instead.
-- **`isis_dev`** - Development environment for compiling ISIS3 from source.
-  **Always use this for ISIS3 builds, installs, and tests.**
-  See `~/projects/isis_mapproject/isis_mapproject_notes.sh` for env setup,
-  build/install commands, and test recipes.
-- Initialize conda with `iz` alias (calls `init_conda_zsh` in `.zshrc`)
-
-**Cross-compile notes for x86_64** are in `~/projects/BinaryBuilder/install_asp_notes.sh` around line 1690.
 
 ## TODO: Local ASP edits for Qt6 and ISIS migration (DO NOT PUSH YET)
 
