@@ -384,6 +384,7 @@
         "Traj",
         "tsai",
         "Unalign",
+        "unblended",
         "uncomputable",
         "uncorr",
         "Undistored",
@@ -437,7 +438,9 @@
         "shell": true,
         "python": true
     },
-    "workbench.colorCustomizations": {},
+    "workbench.colorCustomizations": {
+        "editorGhostText.foreground": "#888888"
+    },
     "workbench.colorTheme": "Default High Contrast",
     "editor.renderLineHighlight": "none",
     "editor.guides.indentation": false,
@@ -455,6 +458,8 @@
     "editor.copyWithSyntaxHighlighting": false,
     "indent-to-bracket.useDefaultIndentationAfterEmptyBracket": false,
     "editor.inlineSuggest.showToolbar": "always",
+    "editor.inlineSuggest.suppressSuggestions": true,
+    "github.copilot.editor.enableAutoCompletions": true,
     "editor.tabSize": 2,
     "merge-conflict.decorators.enabled": false,
     "miniDiff.styles": {
