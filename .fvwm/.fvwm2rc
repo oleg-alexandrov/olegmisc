@@ -13,8 +13,7 @@ Style "*"   MWMBorder, MWMButtons
 Style "*"   DecorateTransient
 Style "*"   IconBox 1200 750 1600 1400
 Style "*"   NoPPosition
-Style "*"   SmartPlacement
-#Style * MinOverlapPlacement, GrabFocusOff, !UsePPosition
+Style * MinOverlapPlacement, GrabFocusOff, !UsePPosition
 Style "*"   MouseFocus
 Style "*"   SloppyFocus
 Style "Fvwm*"   NoTitle, NoHandles, Sticky, WindowListSkip,

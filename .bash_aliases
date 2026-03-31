@@ -7,6 +7,7 @@ alias cav='cat ./validate.sh'
 alias cd=cdls
 alias cdbb='cd $HOME/projects/BinaryBuilder'
 alias cdbo='cd $HOME/projects/StereoPipeline/docs'
+alias cdc='cd $HOME/projects/sfs_m2m_ca'
 alias cdd='cd $HOME/Desktop'
 alias cdde='cd $HOME/Desktop'
 alias cdi='cd $HOME/projects/ISIS3'
