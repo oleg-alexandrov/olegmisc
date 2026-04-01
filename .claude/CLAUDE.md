@@ -627,6 +627,9 @@ Convention: `origin` = user's fork, `god` = upstream org (for ASP, VW, BinaryBui
 
 **Front-ends for job submission:** `athfe01`-`athfe04` (ssh athfe01, NOT pfe).
 These are the Athena/Turin front-ends. Submit PBS jobs from there.
+Turin (tur_ath) jobs MUST be submitted from athfe, not pfe (qsub fails with
+exit 32 from pfe). Direct SSH alias configured: `ssh athfe01` (ProxyJump
+through pfx in `~/.ssh/config`). So: `ssh athfe01 "cd ... && qsub ..."`.
 
 - **Compute nodes:** `tur_ath` (Turin Athens), 256 CPUs per node
 - **Queue:** `normal` (max walltime 8:00:00)
