@@ -704,6 +704,12 @@ for AI-assisted contributions. Omit the trailer for all ISIS pushes.
 Files in `~/projects/` are tracked by `~/projects/.git` (NOT `~/.git`).
 Always use `git -C ~/projects` for add, commit, push, etc.
 
+**Some subdirs under `~/projects/` have their own `.git` repos** (e.g.,
+StereoPipeline, visionworkbench, ISIS3, BinaryBuilder, ale, usgscsm,
+StereoPipelineTest). NEVER add these to the `~/projects/.git` repo.
+Only standalone `.sh`, `.py`, and similar files (and subdirs without
+their own `.git`) belong in the projects repo.
+
 ## Dependabot / Security Alerts
 
 When a `git push` shows Dependabot or security vulnerability warnings, proactively
