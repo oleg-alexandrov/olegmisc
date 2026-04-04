@@ -656,6 +656,10 @@ through pfx in `~/.ssh/config`). So: `ssh athfe01 "cd ... && qsub ..."`.
 
 Primer with qsub examples: `~/projects/spot5_alps/spot5_alps_notes.sh`
 
+- **Scripts submitted via qsub MUST be executable** (`chmod +x`). PBS fails
+  with "Permission denied" (exit 254) if the script lacks execute permission.
+  Always `chmod +x` after creating new `.sh` scripts intended for qsub.
+
 - **Symlinked project dirs on NAS/Pleiades (pfe/pfx/athfe):** Many subdirs under
   `~/projects/` are symlinks on NAS (e.g., PeruSat, spot5_alps, and others).
   The actual data lives on the nobackup filesystem (large storage), but the
