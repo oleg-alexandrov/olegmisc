@@ -292,11 +292,6 @@ from NAS/Pleiades. When asked to push notes or files to the Mac, use
   ```
 - Run tests with dev build: `export PATH=~/projects/StereoPipeline/install/bin:$PATH`
 
-**Local VM** (VirtualBox on laptop) - convenient for editing, too weak for builds:
-- Do NOT build or compile
-- No git available
-- Only edit source files
-
 ## Common Aliases
 
 - `sg` = `stereo_gui --window-size 1500 1000 --font-size 12` (view images/DEMs)
@@ -415,7 +410,6 @@ of writing too much rather than too little.
   for MPR project reports (not a TODO list).
 - `~/projects/ostfl_2025_notes.sh` - Current OSTFL 2025 work tracking and status
   updates. When told to update "OSTFL status" or "OSTFL doc", this is the file.
-- `~/projects/ostfl_todo.sh` - Older OSTFL reports (historical, not current).
 - `~/projects/todo.sh` - General TODO/notes file.
 
 When told to update "the TODO doc" or "todo.sh", edit `~/projects/todo.sh`.
@@ -435,7 +429,7 @@ memory beyond what fits in CLAUDE.md.
 - Work items must be listed under their correct project header
 - Don't create standalone items outside project categories
 
-**VS Code settings:** `/home/oalexan1/.config/Code/User/settings.json`
+**VS Code settings** are tracked in the home dir git repo (dotfiles).
 
 ## CMake File Management
 
@@ -558,20 +552,6 @@ Lines are 1-based. Without `--inplace`, prints aligned output to stdout.
 - Counts/sizes: `= 0`, indices: `= -1`, floats: `= NaN` or `= -max()`
 - Pointers: `= nullptr`, booleans: `= false`
 - Add `// will change` comment if value is immediately overwritten
-
-## Syncing Changes to Laptop
-
-**After every code or doc change on lunokhod1, sync to laptop:**
-
-```bash
-# From /home/oalexan1/projects/StereoPipeline:
-rsync -avz --exclude=build --exclude=install --exclude=docs/_build --exclude=docs/images --exclude=examples --exclude=.git . oalexan1@laptop:~/projects/StereoPipeline/
-```
-
-If .sh files in `/home/oalexan1/projects/` changed:
-```bash
-rsync -avz /home/oalexan1/projects/*.sh oalexan1@laptop:~/projects/
-```
 
 ## ASP Builds on pfe/pfx (NAS/Pleiades)
 
@@ -787,22 +767,7 @@ NEVER use `build/` or `install/` for cross-compilation. NEVER use `build_linux/`
 `install_linux/` for native builds. Mixing these up destroys the other build.
 
 
-## TODO: Local ASP edits for Qt6 and ISIS migration (DO NOT PUSH YET)
+## TODO: Sync ASP deps with latest USGSCSM, ALE, and ISIS
 
-StereoPipeline has unpushed local edits on the Mac for the upcoming
-migration to latest ALE/USGSCSM/ISIS deps. These are tied to the
-env_update.sh work. Files changed:
-- `src/asp/CMakeLists.txt` (Qt5->Qt6, Core5Compat, OpenGLWidgets, isis;core linking)
-- `src/asp/SfmView/GlCommon.h` (QOpenGLExtraFunctions)
-- `src/asp/SfmView/GlWidget.h` (QtOpenGLWidgets include)
-- `src/asp/SfmView/SceneRenderer.cc` (glClearDepthf)
-Do not push until full regression testing is done. See `~/projects/env_update.sh`.
-
-
-## Nightly Build Status
-
-| Date | Platform | Status | Notes |
-|------|----------|--------|-------|
-| 2026-04-04 | Mac ARM64 (CI) | **PASS** | |
-| 2026-04-04 | Mac x64 (CI) | **PASS** | |
-| 2026-04-04 | Linux (CI) | **WIP** | Still working on Linux build |
+Still need to update ASP to build against latest USGSCSM/ALE/ISIS.
+Qt6 migration edits are done locally. See `~/projects/env_update.sh`.
