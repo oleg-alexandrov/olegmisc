@@ -226,7 +226,23 @@ Don't do blind sed-style namespace replacements - read and comprehend the code f
 - The StereoPipeline repository is at /home/oalexan1/projects/StereoPipeline
 - The VisionWorkbench repository is at /home/oalexan1/projects/visionworkbench
 - ASP stands for Ames Stereo Pipeline (refers to StereoPipeline)
+- BB stands for BinaryBuilder
+- BA stands for bundle_adjust (or bundle adjustment)
 - The BinaryBuilder repository (`/home/oalexan1/projects/BinaryBuilder`) contains the ASP build toolset. Its `auto_build/` subdirectory has the nightly build and regression test infrastructure.
+
+## ASP Release Packaging
+
+```bash
+cd ~/projects/BinaryBuilder
+./make-dist.py ~/projects/StereoPipeline/install \
+  --asp-deps-dir /swbuild/oalexan1/miniconda3/envs/asp_deps \
+  --python-env /swbuild/oalexan1/miniconda3/envs/python_isis9
+```
+- First arg: dev build install dir (real ELF binaries in `bin/`). **NOT** an
+  already-packaged release (those have wrapper scripts in `bin/`).
+- `--asp-deps-dir`: conda env with ASP dependencies.
+- `--python-env`: small separate Python env (`python_isis9`, ~320 MB). **NOT**
+  the full `asp_deps` env (~6 GB) or the package will be bloated.
 
 ## Machine-Specific Permissions
 
@@ -767,8 +783,22 @@ NEVER use `build/` or `install/` for cross-compilation. NEVER use `build_linux/`
 `install_linux/` for native builds. Mixing these up destroys the other build.
 
 
+## TODO: Local ASP edits for Qt6 and ISIS migration (DO NOT PUSH YET)
+
+StereoPipeline has unpushed local edits on the Mac for the upcoming
+migration to latest ALE/USGSCSM/ISIS deps. These are tied to the
+env_update.sh work. Files changed:
+- `src/asp/CMakeLists.txt` (Qt5->Qt6, Core5Compat, OpenGLWidgets, isis;core linking)
+- `src/asp/SfmView/GlCommon.h` (QOpenGLExtraFunctions)
+- `src/asp/SfmView/GlWidget.h` (QtOpenGLWidgets include)
+- `src/asp/SfmView/SceneRenderer.cc` (glClearDepthf)
+Do not push until full regression testing is done. See `~/projects/env_update.sh`.
+
+
 ## Nightly Build Status
 
-| Date | Platform | Status | Likely cause |
-|------|----------|--------|--------------|
-| 2026-02-26 | lunokhod1 | **RESOLVED** | OrthoRasterizer refactoring. Gold regenerated, tests pass. |
+| Date | Platform | Status | Notes |
+|------|----------|--------|-------|
+| 2026-04-04 | Mac ARM64 (CI) | **PASS** | |
+| 2026-04-04 | Mac x64 (CI) | **PASS** | |
+| 2026-04-04 | Linux (CI) | **WIP** | Still working on Linux build |
