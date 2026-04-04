@@ -767,13 +767,6 @@ NEVER use `build/` or `install/` for cross-compilation. NEVER use `build_linux/`
 `install_linux/` for native builds. Mixing these up destroys the other build.
 
 
-## TODO: ISIS Special Pixel Masking in Mapproject
-
-ASP mapproject does not mask ISIS special pixels (LIS, LRS, HIS, HRS) for
-.cub inputs. Only NULL is masked via nodata_value. Fix is in
-MapprojectImage.cc project_image_nodata(). Also review whether the CSM
-session has the same gap when map-projecting .cub files.
-
 ## Nightly Build Status
 
 | Date | Platform | Status | Likely cause |
