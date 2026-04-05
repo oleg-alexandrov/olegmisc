@@ -574,11 +574,17 @@ Large data lives on nobackup (high capacity, not backed up). Key paths:
 **On l1:** Release tarballs saved in `~/projects/BinaryBuilder/asp_tarballs/`.
 Dev build is in `~/projects/StereoPipeline/install/`.
 
-**Dev build rsync from l1 overwrites lib/, libexec/, and Python scripts in bin/
+**Dev build rsync overwrites lib/, libexec/, and Python scripts in bin/
 on top of the release install on pfx.** Use `--checksum` to avoid skipping files
-with same size but different content.
+with same size but different content. Can rsync from Mac or l1.
 
-## Syncing Dev Build from l1 to pfe/pfx
+## Syncing Dev Build to pfe/pfx
+
+**Network topology:** Mac and l1 each connect independently to pfe/pfx via
+separate SSH tunnels through a pfe node. They do NOT route through each other.
+l1 may be down; Mac→pfx always works as long as the pfe master connection is
+alive. The specific pfe node and port numbers change over time - if in doubt,
+check `~/.ssh/config` or `~/tunnel.sh` for current values.
 
 In the release layout, C++ binaries go in `libexec/` and Python wrapper scripts
 go in `bin/`.
