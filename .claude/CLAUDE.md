@@ -646,6 +646,18 @@ Primer with qsub examples: `~/projects/spot5_alps/spot5_alps_notes.sh`
   with "Permission denied" (exit 254) if the script lacks execute permission.
   Always `chmod +x` after creating new `.sh` scripts intended for qsub.
 
+- **Always `sleep 1` (or more) between qsub calls** in loops or batch scripts.
+  Rapid-fire qsub can overwhelm the PBS scheduler. The
+  `batch_mapproject_clip.sh` script already has `sleep 2`.
+
+- **Watchdog scripts: check job completion robustly.** Do NOT rely solely on
+  counting output files (e.g., `*adjusted_state.json`) - jitter_solve writes
+  cameras after pass 0 but may still be running pass 1+. Always check BOTH:
+  (a) the final report file exists (`run-triangulation_offsets.txt`), AND
+  (b) the PBS job is gone from qstat (`grep -w` for exact job name match).
+  Use `grep -w` to avoid substring collisions (e.g., `jit_lo_s1` matching
+  `jit_lo_s10`).
+
 - **Symlinked project dirs on NAS/Pleiades (pfe/pfx/athfe):** Many subdirs under
   `~/projects/` are symlinks on NAS (e.g., PeruSat, spot5_alps, and others).
   The actual data lives on the nobackup filesystem (large storage), but the
