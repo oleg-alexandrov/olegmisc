@@ -633,7 +633,8 @@ Turin (tur_ath) jobs MUST be submitted from athfe, not pfe (qsub fails with
 exit 32 from pfe). Direct SSH alias configured: `ssh athfe01` (ProxyJump
 through pfx in `~/.ssh/config`). So: `ssh athfe01 "cd ... && qsub ..."`.
 
-- **Compute nodes:** `tur_ath` (Turin Athens), 256 CPUs per node
+- **Compute nodes:** `tur_ath` (Turin Athens, 256 CPUs) - submit from athfe only.
+  `bro_ele` (Broadwell Electra, 28 CPUs) - submit from pfe (not athfe).
 - **Queue:** `normal` (max walltime 8:00:00)
 - **GID (budget code):** `e2305` (personal allocation, used for SFS and SPOT5 work)
 - **Job status:** `qstat -u $(whoami)`
@@ -657,6 +658,13 @@ Primer with qsub examples: `~/projects/spot5_alps/spot5_alps_notes.sh`
   (b) the PBS job is gone from qstat (`grep -w` for exact job name match).
   Use `grep -w` to avoid substring collisions (e.g., `jit_lo_s1` matching
   `jit_lo_s10`).
+
+- **Monitoring long jobs: use BOTH watchdog scripts AND Claude self-timers.**
+  (1) A nohup watchdog script that checks every 30 min and launches the next
+  step when ready. (2) Claude background timers (`sleep 1800` via
+  `run_in_background`) where Claude wakes up, checks status, acts, and sets
+  another timer. Always use both in parallel - the watchdog survives if
+  Claude's session drops, and the timer gives interactive feedback.
 
 - **Symlinked project dirs on NAS/Pleiades (pfe/pfx/athfe):** Many subdirs under
   `~/projects/` are symlinks on NAS (e.g., PeruSat, spot5_alps, and others).
