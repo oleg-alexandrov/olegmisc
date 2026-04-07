@@ -647,6 +647,10 @@ Primer with qsub examples: `~/projects/spot5_alps/spot5_alps_notes.sh`
   with "Permission denied" (exit 254) if the script lacks execute permission.
   Always `chmod +x` after creating new `.sh` scripts intended for qsub.
 
+- **Always use FULL PATH for scripts in qsub commands.** PBS runs on compute
+  nodes where the working directory may differ. Use `${currDir}/script.sh`
+  not bare `script.sh`. Exit 254 = script not found.
+
 - **Always `sleep 1` (or more) between qsub calls** in loops or batch scripts.
   Rapid-fire qsub can overwhelm the PBS scheduler. The
   `batch_mapproject_clip.sh` script already has `sleep 2`.
