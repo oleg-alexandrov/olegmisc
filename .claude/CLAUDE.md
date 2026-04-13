@@ -643,6 +643,18 @@ through pfx in `~/.ssh/config`). So: `ssh athfe01 "cd ... && qsub ..."`.
 
 Primer with qsub examples: `~/projects/spot5_alps/spot5_alps_notes.sh`
 
+- **Launching ASP jobs on the supercomputer:** Never run compute on the head
+  node (pfe/pfx). Write a script and submit via qsub. Imitate existing scripts
+  in the project dir (e.g., `parallel_sfs_mm.sh`, `mapproj_geodiff_tile.sh`)
+  for the PATH/env setup pattern:
+  ```bash
+  export ISISDATA=$HOME/projects/isis3data
+  export ISISROOT=$HOME/miniconda3/envs/asp_deps
+  s=StereoPipeline
+  export PATH=$HOME/projects/BinaryBuilder/$s/bin:$ISISROOT/bin:$PATH
+  cd $currDir
+  ```
+
 - **Scripts submitted via qsub MUST be executable** (`chmod +x`). PBS fails
   with "Permission denied" (exit 254) if the script lacks execute permission.
   Always `chmod +x` after creating new `.sh` scripts intended for qsub.
