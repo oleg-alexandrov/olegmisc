@@ -586,6 +586,10 @@ l1 may be down; Mac→pfx always works as long as the pfe master connection is
 alive. The specific pfe node and port numbers change over time - if in doubt,
 check `~/.ssh/config` or `~/tunnel.sh` for current values.
 
+**If `ssh pfx` fails** with "Connection refused" or "Connection timed out"
+(tunnel port not listening), the master SSH connection has dropped. Rerun
+`~/bin/tunnel.sh` (or equivalent) to re-establish the tunnel, then retry.
+
 In the release layout, C++ binaries go in `libexec/` and Python wrapper scripts
 go in `bin/`.
 
