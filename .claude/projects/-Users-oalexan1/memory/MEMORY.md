@@ -98,4 +98,6 @@ Refactoring often produces small float noise from evaluation order changes.
 ## Feedback
 
 - [feedback_stop_asking_permission.md](feedback_stop_asking_permission.md) - Don't ask permission to edit CLAUDE.md, config files, etc. Just do it.
+- [feedback_batch_ssh_pfx.md](feedback_batch_ssh_pfx.md) - Batch all remote ops into ONE ssh pfx call; MOTD overhead is ~10s per call.
+- [feedback_qsub_log_realtime.md](feedback_qsub_log_realtime.md) - qsub scripts should redirect output to a project-dir log file (not /dev/null) so user can tail -f while job runs.
 

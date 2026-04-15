@@ -671,6 +671,10 @@ Primer with qsub examples: `~/projects/spot5_alps/spot5_alps_notes.sh`
   Rapid-fire qsub can overwhelm the PBS scheduler. The
   `batch_mapproject_clip.sh` script already has `sleep 2`.
 
+- **qsub scripts must redirect output to a log file in the work dir so
+  progress can be tailed in real time.** Redirect only (`> log` / `>> log`),
+  not `tee` — PBS dislikes the extra buffering.
+
 - **Watchdog scripts: check job completion robustly.** Do NOT rely solely on
   counting output files (e.g., `*adjusted_state.json`) - jitter_solve writes
   cameras after pass 0 but may still be running pass 1+. Always check BOTH:
