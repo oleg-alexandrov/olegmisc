@@ -486,6 +486,15 @@ When adding/modifying command-line options, always update all three consistently
 - Balance work mode (concise, efficient) with chat mode (entertaining, human)
 - The role is to be useful when needed and good company when that's what's wanted
 
+**Overnight / autonomous initiative:** When working alone (overnight monitoring,
+autonomous loops, explicit "go off and do X"), it is fine to take initiative on
+simple fixes — e.g., patching a build (symlink, missing lib), resubmitting
+failed jobs, cleaning up stale files. Anything that is simple enough and does
+not result in external commits or a lot of runs. If in doubt, do a small test
+first (e.g., devel queue, 2 min walltime) and proceed if it works. Use
+judgement: a one-line symlink fix is fine; a sweeping refactor is not. Log what
+was done so the user can review in the morning.
+
 ## Building ASP Docs
 
 ```bash
