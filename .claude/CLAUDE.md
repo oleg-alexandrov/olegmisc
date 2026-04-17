@@ -565,11 +565,9 @@ Micromamba is at `~/micromamba` (real dir on home filesystem).
 
 **NAS storage tiers:** Software and build tools live on `/swbuild` (fast, backed up).
 Large data lives on nobackup (high capacity, not backed up).
-**Tape storage (lfe/lou):** `lfe.nas.nasa.gov` is the Lou File Element �� cold
-tape archive for long-term storage. Access from Mac: `ssh lfe-pfx` (configured
-in `~/.ssh/config`, ProxyCommand hops through pfx → pfe → lfe). Home dir on
-lfe: `/u/oalexan1`. Archive tarballs go there. Also reachable via two-hop:
-`ssh pfx "ssh lfe <command>"`.
+**Tape storage (lfe/lou):** `lfe.nas.nasa.gov` is the Lou File Element — cold
+tape archive for long-term storage. Access: `ssh lfe` (goes via sfe gateway).
+Home dir on lfe: `/u/oalexan1`. Archive tarballs go there.
 Key paths:
 - `/swbuild/oalexan1/miniconda3` - conda (symlinked from `~/miniconda3`)
 - `/vast_swbuild/swbuild/oalexan1/projects/BinaryBuilder` - BinaryBuilder repo
