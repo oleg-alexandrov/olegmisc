@@ -174,3 +174,6 @@ if [[ "$(hostname)" == *"Mac-mini"* ]]; then
     export PATH=~/projects/StereoPipeline/install/bin:$HOME/anaconda3/envs/asp_deps/bin:$PATH
 fi
 
+
+# Disable Claude Code periodic feedback survey prompts
+export CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1
