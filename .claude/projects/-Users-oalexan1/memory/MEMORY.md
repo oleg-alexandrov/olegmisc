@@ -48,8 +48,8 @@ branch jigsaw_isdlist. Code reviewed and tested. Awaiting CI and review.
 |------|---------|
 | `isis_mapproject/isis_mapproject_notes.sh` | **Latest active work** - ISIS/ASP map projection parity (see above) |
 | `install_asp_notes.sh` | **THE master build guide** - conda env setup, cmake flags, cross-compilation, ISIS versions, deps management |
-| `build_test_asp.sh` | Test infrastructure - gold generation workflow, pytest config, single/batch test running |
-| `asp_testing.sh` | Mac ARM64 test results summary - 234 pass / 58 expected fail out of 321 |
+| `asp_regression_tests.sh` | **Canonical ASP test suite reference** - suite layout, configs, tolerances, failure triage, release-vs-dev workflow, gold regen. Extend this, don't spawn parallel docs. |
+| `update_cloud_tests.sh` | Mac nightly CI (GitHub Actions) - trigger flow, artifact download, tarball release update |
 | `asp_refactor.sh` | Active refactoring work - PreFilter de-templatization, CorrEval changes, technical debt items |
 | `vw_refactor.sh` | VW header splitting to reduce compile times (Manipulation, Algorithms, AlgorithmFunctions) |
 | `vw_stereo_refactor.sh` | vw/Stereo/ cleanup - dead code removal, de-templatization |

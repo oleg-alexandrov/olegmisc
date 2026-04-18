@@ -298,6 +298,11 @@ from NAS/Pleiades. When asked to push notes or files to the Mac, use
 
 ## Running Tests
 
+**Full reference:** `~/projects/asp_regression_tests.sh` — canonical ASP test
+suite guide (suite layout, configs, tolerances, failure triage, release-vs-dev
+workflow, gold regen). For Mac GitHub Actions CI specifics (trigger path,
+artifact/gold tarball updates) see `~/projects/update_cloud_tests.sh`.
+
 **Test suite location:** `/home/oalexan1/projects/StereoPipelineTest`
 
 **Environment setup before running tests (CRITICAL):** Tests need conda env
@@ -360,20 +365,6 @@ Each test directory has:
 - `run/` - generated output (created by `run.sh`)
 
 When creating new tests, always `chmod +x run.sh validate.sh`.
-
-**Comprehensive test suite reference:** `~/projects/asp_regression_tests.sh` covers
-config files, validation tools (cmp_stats.sh, max_err.pl), tolerance values,
-failure classification (TINY/SMALL/MEDIUM/LARGE/CRASH), gold regeneration,
-bulk failure patterns, and machine-specific invocations for both lunokhod1
-and Mac. Read this doc when triaging regression failures.
-
-## Mac Nightly CI (GitHub Actions)
-
-End-to-end flow (trigger, artifacts, gold update procedure) is documented in
-`~/projects/update_cloud_tests.sh`. Mac arm64 / x64 runs are fired from the
-BinaryBuilder `auto_build/launch_master.sh` -> `build.sh` on lunokhod1 (the
-yml itself is `workflow_dispatch` only). Read that doc before debugging a CI
-failure or regenerating gold.
 
 ## Notes Files (.sh)
 
