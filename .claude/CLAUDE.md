@@ -361,6 +361,12 @@ Each test directory has:
 
 When creating new tests, always `chmod +x run.sh validate.sh`.
 
+**Comprehensive test suite reference:** `~/projects/asp_regression_tests.sh` covers
+config files, validation tools (cmp_stats.sh, max_err.pl), tolerance values,
+failure classification (TINY/SMALL/MEDIUM/LARGE/CRASH), gold regeneration,
+bulk failure patterns, and machine-specific invocations for both lunokhod1
+and Mac. Read this doc when triaging regression failures.
+
 ## Mac Nightly CI (GitHub Actions)
 
 End-to-end flow (trigger, artifacts, gold update procedure) is documented in
