@@ -361,6 +361,14 @@ Each test directory has:
 
 When creating new tests, always `chmod +x run.sh validate.sh`.
 
+## Mac Nightly CI (GitHub Actions)
+
+End-to-end flow (trigger, artifacts, gold update procedure) is documented in
+`~/projects/update_cloud_tests.sh`. Mac arm64 / x64 runs are fired from the
+BinaryBuilder `auto_build/launch_master.sh` -> `build.sh` on lunokhod1 (the
+yml itself is `workflow_dispatch` only). Read that doc before debugging a CI
+failure or regenerating gold.
+
 ## Notes Files (.sh)
 
 Many `.sh` files in `~/projects/` are comment-only notes, not executable scripts.

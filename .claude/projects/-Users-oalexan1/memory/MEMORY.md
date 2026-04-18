@@ -18,6 +18,21 @@ JPEG2000 reading. FY26 USGS task.
 parity project with Kelvin Rodriguez (USGS). ASP_MAP mode in cam2map for per-pixel
 exact projection. PR #5988. Mostly complete - in review.
 
+`~/projects/spot5_csm/spot_csm_notes.sh` - SPOT5 CSM migration. **Merged
+2026-03-29** on master (13 commits). CSM is the default path; old
+SPOTCameraModel deleted. Uses TRANSVERSE distortion with f=1.0 angle-unit
+detector. Shared helpers landed: refineCsmLinescanFit, isLinescanCsmSession,
+CsmUtils resample. Reuse these for any SPOT 1-4 work.
+
+`~/projects/spot1/spot1_notes.sh` - SPOT 1-4 (HRV) camera support plan.
+Analysis of DIMAP v1.1 sample scene, comparison vs SPOT5/SPOT6, four
+transforms needed (quaternion rate integrator per handbook §4.5, linear
+look fit, HRV mirror boresight into m_mountingMatrix, optional 1B->raw
+pre-map), readiness inventory. Session name: "spot14". No destripe in
+first pass. Vendor doc at
+~/projects/spot1/SPOT_Geometry_Handbook_CNES_S-NT-73-12-SI.pdf (82 pp).
+Deferred; not started.
+
 `~/projects/csm_resample/csm_resample_notes.sh` - ALE ISD subsampling.
 PR DOI-USGS/ale#677 **merged 2026-03-23**. Completed.
 
@@ -103,4 +118,5 @@ Refactoring often produces small float noise from evaluation order changes.
 - [feedback_wipe_and_git_rm.md](feedback_wipe_and_git_rm.md) - When wiping scripts on pfx, always also git rm tracked paths on Mac in the same step.
 - [feedback_precise_instructions.md](feedback_precise_instructions.md) - Do exactly what was asked, no extras. When unsure, ASK rather than do extra.
 - [feedback_only_sh_and_metadata_in_git.md](feedback_only_sh_and_metadata_in_git.md) - Default tracking is .sh + metadata/docs only. Data files of ANY kind (including small JSON state files, per-image lists, .txt inventories) stay untracked unless explicitly requested.
+- [feedback_stop_when_in_ballpark.md](feedback_stop_when_in_ballpark.md) - Camera-model ports: stop at "plausible and pointing down" rather than churn through inherent vendor-doc/convention uncertainty.
 
