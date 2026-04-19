@@ -167,7 +167,7 @@ namespace vw { namespace cm {
 
 ## C++ Code Style Conventions
 
-- **NEVER use non-ASCII characters in code or comments** - use `x` not `*`, `-` not `--`, regular quotes not smart quotes
+- **NEVER use non-ASCII characters in code or comments** - use `x` not `*`, `-` not `--`, regular quotes not smart quotes, `-` not em dash
 - **NEVER use equal-sign or dash separators** (`//=====`, `//-----`) in code or comments
 - **NEVER use ellipsis (...)** in messages or comments - use period instead
 - No space before `::` scope resolution operator
