@@ -1,18 +1,6 @@
 # Long-term memory for Claude Code
 
-## TODO: VW default_rescale migration (deferred)
-
-Flip `DiskImageResource::default_rescale` from `true` to `false` in VW.
-Currently silently rescales integer pixels (uint8, int16, uint16) to [0,1]
-when read as float, causing bugs (e.g., colormap on .cub Int16 files).
-Full analysis and plan in `~/projects/vw_rescale_default.sh`. Low risk -
-most reads are float32 (no-op). Deferred from 2026-03-14 session.
-
-
-**AFTER CONTEXT COMPACTION:** Re-read this ENTIRE file (all of CLAUDE.md,
-not just the first 200 lines). Check MEMORY.md for active project notes files to re-read.
-
-**ISIS3 build/test quick reference (so you don't lose this after compaction):**
+**ISIS3 build/test quick reference:**
 ```bash
 # Always use isis_dev, NEVER asp_deps for ISIS work
 eval "$($HOME/anaconda3/bin/conda shell.zsh hook)"
@@ -33,8 +21,6 @@ export ISISROOT=$HOME/anaconda3/envs/isis_dev
 export ISISDATA=$HOME/projects/isis3data
 export SPICEQL_CACHE_DIR=/tmp/spiceql_cache
 export PATH=$ISISROOT/bin:$PATH
-# Parity test
-cd ~/projects/isis_mapproject/cam2map_eqc_mpp && bash run.sh
 ```
 
 **The user's name is Oleg (oalexan1). GitHub account: `oleg-alexandrov`.** Don't say "the user" but no need to use his name constantly either - this is direct conversation.
@@ -149,13 +135,8 @@ LLMs tokenize in chunks, not individual characters, so counting spaces visually 
 
 ## Preserving Comments When Editing Code (CRITICAL)
 
-**NEVER remove or skip existing comments when editing code.** This applies to
-ALL edits, not just refactoring. When replacing a block of code that contains
-comments, the replacement MUST include those same comments. Comments above
-assertions, before code sections, and inline explanations exist for a reason.
-Only remove a comment if the code it describes was deleted. If unsure whether
-a comment is still relevant, keep it. This is a recurring issue - double-check
-every edit to ensure no comments were dropped.
+**NEVER drop existing comments when editing code.** Only remove a comment if
+the code it describes was deleted. When in doubt, keep it.
 
 ## Code Movement (CRITICAL)
 
@@ -278,27 +259,18 @@ from NAS/Pleiades. When asked to push notes or files to the Mac, use
   The installed libraries may be stale even when the build is up to date.
 - Can build ASP: `make -C ~/projects/StereoPipeline/build -j10 install`
 - Conda init: `eval "$($HOME/anaconda3/bin/conda shell.zsh hook)" && conda activate asp_deps`
-- **After `make install`, fix duplicate rpaths (macOS dyld rejects duplicates):**
-  ```bash
-  cd ~/projects/StereoPipeline
-  for f in install/lib/libAsp*.dylib install/bin/*; do
-    count=$(otool -l "$f" 2>/dev/null | \
-      grep "path .*/miniconda3/envs/asp_deps/lib " | wc -l)
-    if [ "$count" -gt 1 ]; then
-      install_name_tool -delete_rpath \
-        $HOME/miniconda3/envs/asp_deps/lib "$f" 2>/dev/null
-    fi
-  done
-  ```
+- Duplicate rpath fix is baked into ASP's CMake (`src/asp/CMakeLists.txt` install block) - no manual step needed after `make install`.
 - Run tests with dev build: `export PATH=~/projects/StereoPipeline/install/bin:$PATH`
 
 ## Common Aliases
 
+Full list in `~/.bash_aliases` - check there if an unfamiliar short command shows up in logs or notes.
 - `sg` = `stereo_gui --window-size 1500 1000 --font-size 12` (view images/DEMs)
+- `swa` = `sg -w --hide-all` (single-window overlay, start hidden)
 
 ## Running Tests
 
-**Full reference:** `~/projects/asp_regression_tests.sh` — canonical ASP test
+**Full reference:** `~/projects/asp_regression_tests.sh` - canonical ASP test
 suite guide (suite layout, configs, tolerances, failure triage, release-vs-dev
 workflow, gold regen). For Mac GitHub Actions CI specifics (trigger path,
 artifact/gold tarball updates) see `~/projects/update_cloud_tests.sh`.
@@ -403,11 +375,6 @@ sessions after context compaction.
 - **If the user provides a notes file path:** use that file. Don't invent a
   different one.
 
-The notes file is the shared brain between sessions. Without it, context is
-lost to token noise and compaction. With it, any future session (or the user
-reading the file) can pick up exactly where things left off. Err on the side
-of writing too much rather than too little.
-
 ## Project Status Files
 
 **Work tracking files** in `~/projects/` (tracked by `~/projects/.git`):
@@ -493,7 +460,7 @@ When adding/modifying command-line options, always update all three consistently
 
 **Overnight / autonomous initiative:** When working alone (overnight monitoring,
 autonomous loops, explicit "go off and do X"), it is fine to take initiative on
-simple fixes — e.g., patching a build (symlink, missing lib), resubmitting
+simple fixes - e.g., patching a build (symlink, missing lib), resubmitting
 failed jobs, cleaning up stale files. Anything that is simple enough and does
 not result in external commits or a lot of runs. If in doubt, do a small test
 first (e.g., devel queue, 2 min walltime) and proceed if it works. Use
@@ -579,7 +546,7 @@ Micromamba is at `~/micromamba` (real dir on home filesystem).
 
 **NAS storage tiers:** Software and build tools live on `/swbuild` (fast, backed up).
 Large data lives on nobackup (high capacity, not backed up).
-**Tape storage (lfe/lou):** `lfe.nas.nasa.gov` is the Lou File Element — cold
+**Tape storage (lfe/lou):** `lfe.nas.nasa.gov` is the Lou File Element - cold
 tape archive for long-term storage. Access: `ssh lfe` (goes via sfe gateway).
 Home dir on lfe: `/u/oalexan1`. Archive tarballs go there.
 Key paths:
@@ -600,7 +567,7 @@ with same size but different content. Can rsync from Mac or l1.
 
 **Network topology:** Mac and l1 each connect independently to pfe/pfx via
 separate SSH tunnels through a pfe node. They do NOT route through each other.
-l1 may be down; Mac→pfx always works as long as the pfe master connection is
+l1 may be down; Mac->pfx always works as long as the pfe master connection is
 alive. The specific pfe node and port numbers change over time - if in doubt,
 check `~/.ssh/config` or `~/tunnel.sh` for current values.
 
@@ -691,7 +658,7 @@ Primer with qsub examples: `~/projects/spot5_alps/spot5_alps_notes.sh`
 
 - **qsub scripts must redirect output to a log file in the work dir so
   progress can be tailed in real time.** Redirect only (`> log` / `>> log`),
-  not `tee` — PBS dislikes the extra buffering.
+  not `tee` - PBS dislikes the extra buffering.
 
 - **Watchdog scripts: check job completion robustly.** Do NOT rely solely on
   counting output files (e.g., `*adjusted_state.json`) - jitter_solve writes
@@ -781,8 +748,7 @@ their own `.git`) belong in the projects repo.
 ## Dependabot / Security Alerts
 
 When a `git push` shows Dependabot or security vulnerability warnings, proactively
-flag it and offer to investigate/fix. These are usually easy wins (delete a lock
-file, update a dep) and worth cleaning up on the spot rather than ignoring.
+flag it and offer to investigate/fix.
 
 ## GTest Discovery and ISISROOT
 
@@ -833,9 +799,3 @@ Both VW and ASP follow this convention:
 
 NEVER use `build/` or `install/` for cross-compilation. NEVER use `build_linux/` or
 `install_linux/` for native builds. Mixing these up destroys the other build.
-
-
-## TODO: Sync ASP deps with latest USGSCSM, ALE, and ISIS
-
-Still need to update ASP to build against latest USGSCSM/ALE/ISIS.
-Qt6 migration edits are done locally. See `~/projects/env_update.sh`.
