@@ -231,18 +231,6 @@ cd ~/projects/BinaryBuilder
 ## Machine-Specific Permissions
 
 **lunokhod1** (alias `l1`, `lunokhod1.ndc.nasa.gov`) - the dev machine. Check with `uname -n`:
-- **On first session on lunokhod1:** Review `~/projects/asp_refactor.sh` for
-  technical debt items (search for "Technical debt" or "exit 0"). Tests created
-  on the Mac have fake "exit 0" in run.sh/validate.sh because lunokhod1 lacks
-  gold dirs. Must generate gold with release build and remove the exit 0 lines.
-- **On lunokhod1:** Enable `--nearest-neighbor` in `ss_mapproject_tr_bug/run.sh`
-  (uncomment the line, comment out the bicubic line), regenerate gold, and verify.
-  This gives nearest-neighbor test coverage that no other mapproject test has.
-  See the TODO in that file.
-- **On lunokhod1:** No regression test covers `point2dem --orthoimage` (the DRG
-  path). Add `--orthoimage` to an existing point2dem test (e.g., ssCSM_FrameDawn),
-  regenerate gold, and verify. This exercises the `PixelGray<float>` texture path
-  in OrthoRasterizer which differs from the default elevation (`double`) path.
 - Full access to git, compilation, and building
 - Compiler: g++ 12.4.0 (conda-forge, in `asp_deps` conda env)
 - CMake 3.27.9, GNU Make 4.1, 16 cores
@@ -537,7 +525,28 @@ Lines are 1-based. Without `--inplace`, prints aligned output to stdout.
 - Pointers: `= nullptr`, booleans: `= false`
 - Add `// will change` comment if value is immediately overwritten
 
-## ASP Builds on pfe/pfx (NAS/Pleiades)
+## TODO Comment Convention
+
+Always use `// TODO(oalexan1):` format. Never bare `// TODO:`.
+
+## Git Repositories on lunokhod1
+
+**Git version:** 2.17.1 (use `git rev-parse --abbrev-ref HEAD` not `git branch --show-current`)
+
+| # | Repo | Base directory | Branch | `origin` remote | `god` remote (upstream) |
+|---|------|---------------|--------|-----------------|------------------------|
+| 1 | **StereoPipeline (ASP)** | `/home/oalexan1/projects/StereoPipeline` | master | `oleg-alexandrov/StereoPipeline.git` | `NeoGeographyToolkit/StereoPipeline.git` |
+| 2 | **VisionWorkbench (VW)** | `/home/oalexan1/projects/visionworkbench` | master | `oleg-alexandrov/visionworkbench.git` | `visionworkbench/visionworkbench.git` |
+| 3 | **BinaryBuilder** | `/home/oalexan1/projects/BinaryBuilder` | master | `oleg-alexandrov/BinaryBuilder.git` | `NeoGeographyToolkit/BinaryBuilder.git` |
+| 4 | **StereoPipelineTest** | `/home/oalexan1/projects/StereoPipelineTest` | master | `NeoGeographyToolkit/StereoPipelineTest.git` | (origin IS the org repo) |
+| 5 | **projects** (scripts/notes) | `/home/oalexan1/projects` | master | `oleg-alexandrov/projects.git` | (no god) |
+| 6 | **home dir** (dotfiles) | `/home/oalexan1` | master | `oleg-alexandrov/olegmisc.git` | (no god) |
+
+Convention: `origin` = user's fork, `god` = upstream org (for ASP, VW, BinaryBuilder).
+
+## NASA NAS / Pleiades Supercomputer
+
+### ASP Builds on pfe/pfx
 
 **Release build location:** `/u/oalexan1/projects/BinaryBuilder/StereoPipeline/`
 (`/u/oalexan1` and `/home6/oalexan1` are the same path, symlinked).
@@ -566,7 +575,7 @@ Dev build is in `~/projects/StereoPipeline/install/`.
 on top of the release install on pfx.** Use `--checksum` to avoid skipping files
 with same size but different content. Can rsync from Mac or l1.
 
-## Syncing Dev Build to pfe/pfx
+### Syncing Dev Build to pfe/pfx
 
 **`pfx` is a local SSH alias.** The real head nodes are `pfeNN` (e.g. `pfe21`);
 `pfx` resolves to whichever one the current tunnel is bound to. `ssh pfx` only
@@ -611,26 +620,7 @@ rsync -avz --checksum ~/projects/StereoPipeline/install/bin/*py \
 A broken NAS release binary under `BinaryBuilder/StereoPipeline/` can be
 restored from the latest ASP GitHub release tarball - ask the user first.
 
-## TODO Comment Convention
-
-Always use `// TODO(oalexan1):` format. Never bare `// TODO:`.
-
-## Git Repositories on lunokhod1
-
-**Git version:** 2.17.1 (use `git rev-parse --abbrev-ref HEAD` not `git branch --show-current`)
-
-| # | Repo | Base directory | Branch | `origin` remote | `god` remote (upstream) |
-|---|------|---------------|--------|-----------------|------------------------|
-| 1 | **StereoPipeline (ASP)** | `/home/oalexan1/projects/StereoPipeline` | master | `oleg-alexandrov/StereoPipeline.git` | `NeoGeographyToolkit/StereoPipeline.git` |
-| 2 | **VisionWorkbench (VW)** | `/home/oalexan1/projects/visionworkbench` | master | `oleg-alexandrov/visionworkbench.git` | `visionworkbench/visionworkbench.git` |
-| 3 | **BinaryBuilder** | `/home/oalexan1/projects/BinaryBuilder` | master | `oleg-alexandrov/BinaryBuilder.git` | `NeoGeographyToolkit/BinaryBuilder.git` |
-| 4 | **StereoPipelineTest** | `/home/oalexan1/projects/StereoPipelineTest` | master | `NeoGeographyToolkit/StereoPipelineTest.git` | (origin IS the org repo) |
-| 5 | **projects** (scripts/notes) | `/home/oalexan1/projects` | master | `oleg-alexandrov/projects.git` | (no god) |
-| 6 | **home dir** (dotfiles) | `/home/oalexan1` | master | `oleg-alexandrov/olegmisc.git` | (no god) |
-
-Convention: `origin` = user's fork, `god` = upstream org (for ASP, VW, BinaryBuilder).
-
-## NASA NAS / Pleiades Supercomputer
+### Job submission and runtime rules
 
 **Front-ends for job submission:** `athfe01`-`athfe04` (ssh athfe01, NOT pfe).
 These are the Athena/Turin front-ends. Submit PBS jobs from there.
