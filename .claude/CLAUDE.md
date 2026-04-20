@@ -568,6 +568,10 @@ with same size but different content. Can rsync from Mac or l1.
 
 ## Syncing Dev Build to pfe/pfx
 
+**`pfx` is a local SSH alias.** The real head nodes are `pfeNN` (e.g. `pfe21`);
+`pfx` resolves to whichever one the current tunnel is bound to. `ssh pfx` only
+works while `~/bin/tunnel.sh` (or equivalent) has that connection open.
+
 **Network topology:** Mac and l1 each connect independently to pfe/pfx via
 separate SSH tunnels through a pfe node. They do NOT route through each other.
 l1 may be down; Mac->pfx always works as long as the pfe master connection is
@@ -581,22 +585,31 @@ check `~/.ssh/config` or `~/tunnel.sh` for current values.
 In the release layout, C++ binaries go in `libexec/` and Python wrapper scripts
 go in `bin/`.
 
+**CRITICAL: C++ binaries and `.so`/`.dylib` MUST come from l1 (real Linux ELF).**
+Mac `install/` is ARM64 Mach-O. Mac `install_linux/` is x86_64 Mach-O (Intel
+Mac), NOT Linux ELF despite the name. Pushing either to pfx breaks the binary.
+Always `file <binary>` before rsync to confirm `ELF 64-bit LSB`. Python scripts
+(arch-independent) and `.h`/`.cmake` text files are safe from any host.
+
 ```bash
 ss=StereoPipeline
 
-# Sync lib and libexec dirs
+# From l1 only: C++ binaries, libexec, lib (.so files)
 rsync -avz --checksum ~/projects/StereoPipeline/install/lib \
   ~/projects/StereoPipeline/install/libexec \
   pfx:/home6/oalexan1/projects/BinaryBuilder/${ss}/
 
-# Sync C++ binaries to libexec (release layout, not bin)
+# From l1 only: native C++ binaries from install/bin to libexec/
 rsync -avz --checksum ~/projects/StereoPipeline/install/bin/* \
   pfx:/home6/oalexan1/projects/BinaryBuilder/${ss}/libexec/
 
-# Sync Python scripts to bin
+# From Mac OK: Python scripts (arch-independent)
 rsync -avz --checksum ~/projects/StereoPipeline/install/bin/*py \
   pfx:/home6/oalexan1/projects/BinaryBuilder/${ss}/bin/
 ```
+
+A broken NAS release binary under `BinaryBuilder/StereoPipeline/` can be
+restored from the latest ASP GitHub release tarball - ask the user first.
 
 ## TODO Comment Convention
 
