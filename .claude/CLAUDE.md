@@ -57,6 +57,9 @@ export PATH=$ISISROOT/bin:$PATH
   multi-step workflow unless explicitly told "and push". Do not assume
   "git add and push" means push  - wait for the word "push" as a separate
   explicit instruction. Especially `git push god` (upstream org).
+- **Always `cd` into the correct repo directory in the SAME command** as any
+  git operation (fetch, pull, push, merge, checkout). Shell state does not
+  persist between tool calls - bare `git merge` runs in the home dir.
 - **NEVER open a pull request unless explicitly told to.** If asked to "review"
   PR text, only review and show feedback  - do not create the PR. Similarly,
   NEVER comment on, close, or merge a pull request unless explicitly asked.
