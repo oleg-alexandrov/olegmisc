@@ -4,12 +4,17 @@ remind user in a day or two to go on with rescale logic plan for ww, so rescale 
 
 ## Current Main Project
 
+- [project_sdb.md](project_sdb.md) - **SDB (shallow depth bathymetry)**, FY26
+  USGS task with PI Palaseanu, Co-Is Bhushan/Shean/Swinski. Work dir
+  `~/projects/sdb/`. Sites: KeyWest1/2, PR1, WCaboRojo, CocosLagoon (WorldView-3).
+  Allocation s3319. Masking benchmark (NDWI/RNDVI/OSI + Otsu) in progress.
+
+## Recent Projects
+
 `~/projects/binary_csm/binary_csm_notes.sh` - Binary CSM state format using
 msgpack for ISDs and model states. FY26 USGS task. PR usgscsm#501 **merged
 2026-03-25**. USGSCSM side complete. Remaining: update ASP CsmModel.cc to
 use populateModel()/getModelJson() binary API instead of string serialization.
-
-## Recent Projects
 
 `~/projects/isis_jp2/isis_jp2_notes.sh` - Remove Kakadu from ISIS, use GDAL for
 JPEG2000 reading. FY26 USGS task.

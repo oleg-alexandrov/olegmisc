@@ -648,6 +648,10 @@ Primer with qsub examples: `~/projects/spot5_alps/spot5_alps_notes.sh`
   with "Permission denied" (exit 254) if the script lacks execute permission.
   Always `chmod +x` after creating new `.sh` scripts intended for qsub.
 
+- **All NAS scripts MUST set `umask 022`** near the top (after PATH exports).
+  Persistent recurring issue: PBS jobs inherit a stricter default umask than
+  interactive shells, leaving outputs unreadable by collaborators.
+
 - **Always use FULL PATH for scripts in qsub commands.** PBS runs on compute
   nodes where the working directory may differ. Use `${currDir}/script.sh`
   not bare `script.sh`. Exit 254 = script not found.
