@@ -688,6 +688,13 @@ Primer with qsub examples: `~/projects/spot5_alps/spot5_alps_notes.sh`
   *inside* the symlinked dir. Use a trailing slash (`rsync -avz src/ dest/dir/`)
   or rsync individual items. On the Mac these are real dirs so it's not an issue.
 
+- **`~/projects` on pfe: avoid destructive git ops.** The dir is full of
+  symlinks to nobackup. Never `git reset --hard`, `git checkout .`, or similar
+  on pfe `~/projects` - it may materialize tracked content over symlinks and
+  overwrite nobackup state. Mac is source of truth; rsync **contents** of dirs
+  (trailing slash: `rsync -avz src/ dest/`) case by case, never the dir itself
+  (that would replace the pfe symlink with a plain directory).
+
 ## GitHub CLI (gh)
 
 Installed in conda env `gh`. Not on PATH - use full path.
