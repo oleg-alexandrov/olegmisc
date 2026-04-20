@@ -565,8 +565,6 @@ Key paths:
 - `/swbuild/oalexan1/miniconda3` - conda (symlinked from `~/miniconda3`)
 - `/vast_swbuild/swbuild/oalexan1/projects/BinaryBuilder` - BinaryBuilder repo
   (symlinked from `~/projects/BinaryBuilder`)
-- `~/projects/` subdirs like PeruSat, spot5_alps, atlanta, casa_grande, etc.
-  are symlinks pointing to nobackup for data storage.
 
 **On l1:** Release tarballs saved in `~/projects/BinaryBuilder/asp_tarballs/`.
 Dev build is in `~/projects/StereoPipeline/install/`.
@@ -577,22 +575,10 @@ with same size but different content. Can rsync from Mac or l1.
 
 ### Syncing Dev Build to pfe/pfx
 
-**`pfx` is a local SSH alias.** The real head nodes are `pfeNN` (e.g. `pfe21`);
-`pfx` resolves to whichever one the current tunnel is bound to. `ssh pfx` only
-works while `~/bin/tunnel.sh` (or equivalent) has that connection open.
-
-**Network topology:** Mac and l1 each connect independently to pfe/pfx via
-separate SSH tunnels through a pfe node. They do NOT route through each other.
-l1 may be down; Mac->pfx always works as long as the pfe master connection is
-alive. The specific pfe node and port numbers change over time - if in doubt,
-check `~/.ssh/config` or `~/tunnel.sh` for current values.
-
-**If `ssh pfx` fails** with "Connection refused" or "Connection timed out"
-(tunnel port not listening), the master SSH connection has dropped. Rerun
-`~/bin/tunnel.sh` (or equivalent) to re-establish the tunnel, then retry.
-
-In the release layout, C++ binaries go in `libexec/` and Python wrapper scripts
-go in `bin/`.
+**`pfx` is an SSH alias** to a `pfeNN` node via `~/bin/tunnel.sh`. Mac and l1
+each have their own independent tunnel (they do NOT route through each other).
+If `ssh pfx` fails with Connection refused/timeout, rerun `~/bin/tunnel.sh`.
+Ports and pfe node vary over time - check `~/.ssh/config` or `~/tunnel.sh`.
 
 **CRITICAL: C++ binaries and `.so`/`.dylib` MUST come from l1 (real Linux ELF).**
 Mac `install/` is ARM64 Mach-O. Mac `install_linux/` is x86_64 Mach-O (Intel
@@ -670,13 +656,10 @@ Primer with qsub examples: `~/projects/spot5_alps/spot5_alps_notes.sh`
   progress can be tailed in real time.** Redirect only (`> log` / `>> log`),
   not `tee` - PBS dislikes the extra buffering.
 
-- **Watchdog scripts: check job completion robustly.** Do NOT rely solely on
-  counting output files (e.g., `*adjusted_state.json`) - jitter_solve writes
-  cameras after pass 0 but may still be running pass 1+. Always check BOTH:
-  (a) the final report file exists (`run-triangulation_offsets.txt`), AND
-  (b) the PBS job is gone from qstat (`grep -w` for exact job name match).
-  Use `grep -w` to avoid substring collisions (e.g., `jit_lo_s1` matching
-  `jit_lo_s10`).
+- **Watchdog scripts: check job completion robustly.** Check BOTH (a) the
+  final output file exists AND (b) the PBS job is gone from qstat. Counting
+  intermediate outputs is unreliable - tools may write files mid-run. Use
+  `grep -w` for exact job-name match (avoids `jit_lo_s1` matching `jit_lo_s10`).
 
 - **Monitoring long jobs: use BOTH watchdog scripts AND Claude self-timers.**
   (1) A nohup watchdog script that checks every 30 min and launches the next
@@ -685,21 +668,13 @@ Primer with qsub examples: `~/projects/spot5_alps/spot5_alps_notes.sh`
   another timer. Always use both in parallel - the watchdog survives if
   Claude's session drops, and the timer gives interactive feedback.
 
-- **Symlinked project dirs on NAS/Pleiades (pfe/pfx/athfe):** Many subdirs under
-  `~/projects/` are symlinks on NAS (e.g., PeruSat, spot5_alps, and others).
-  The actual data lives on the nobackup filesystem (large storage), but the
-  symlinks in `~/projects/` mirror the Mac directory structure for convenience.
-  **NEVER rsync a symlinked dir itself** - that would replace the symlink with
-  a plain directory, breaking the link to nobackup. Only rsync files or subdirs
-  *inside* the symlinked dir. Use a trailing slash (`rsync -avz src/ dest/dir/`)
-  or rsync individual items. On the Mac these are real dirs so it's not an issue.
-
-- **`~/projects` on pfe: avoid destructive git ops.** The dir is full of
-  symlinks to nobackup. Never `git reset --hard`, `git checkout .`, or similar
-  on pfe `~/projects` - it may materialize tracked content over symlinks and
-  overwrite nobackup state. Mac is source of truth; rsync **contents** of dirs
-  (trailing slash: `rsync -avz src/ dest/`) case by case, never the dir itself
-  (that would replace the pfe symlink with a plain directory).
+- **Symlinks on NAS (pfe/pfx/athfe):** Many `~/projects/` subdirs (PeruSat,
+  spot5_alps, etc.) are symlinks to nobackup; Mac is source of truth. NEVER
+  rsync a symlinked dir itself - that replaces the symlink with a real dir
+  and breaks the nobackup link. Always use a trailing slash on the source
+  (`rsync -avz src/ dest/dir/`) or rsync individual items. Same reason: never
+  run destructive git ops (`reset --hard`, `checkout .`) in `~/projects` on
+  pfe - can materialize tracked content over symlinks.
 
 ## GitHub CLI (gh)
 
