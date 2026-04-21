@@ -525,7 +525,13 @@ Lines are 1-based. Without `--inplace`, prints aligned output to stdout.
 - Pointers: `= nullptr`, booleans: `= false`
 - Add `// will change` comment if value is immediately overwritten
 
-## TODO Comment Convention
+## Defensive Programming for Paired Lists (CRITICAL)
+
+Applies to both shell scripts and C++. When two (or more) input lists
+or arrays are supposed to be one-to-one, or at least of the same size,
+always validate. Minimum check: same size / line count. Stronger
+check when IDs are embedded in filenames or entries: verify the
+per-row ID matches. Fail fast with a clear error.
 
 Always use `// TODO(oalexan1):` format. Never bare `// TODO:`.
 
