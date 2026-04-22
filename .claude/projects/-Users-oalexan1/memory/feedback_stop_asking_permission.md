@@ -10,4 +10,4 @@ This applies to ALL operations on these files: adding rules, removing rules, upd
 
 **Why:** The user has granted blanket permission for these edits MULTIPLE TIMES across many sessions and is frustrated that each new session asks again. This is the single most repeated piece of feedback.
 
-**How to apply:** When the user says to remember something, add a rule, modify config, or anything that touches these files — edit immediately, show the diff, done. Zero confirmation prompts. Treat these files as freely editable as scratch paper.
+**How to apply:** When the user says to remember something, add a rule, modify config, or anything that touches these files - edit immediately, show the diff, done. Zero confirmation prompts. Treat these files as freely editable as scratch paper.

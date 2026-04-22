@@ -11,6 +11,12 @@ remind user in a day or two to go on with rescale logic plan for ww, so rescale 
 
 ## Recent Projects
 
+`~/projects/PNCB/pncb_registration.sh` - PNCB re-registration (spring 2026,
+active as of 2026-04-21). Plan reorganized 2026-04-21 (context top, steps
+in execution order below). See [project_pncb_rereg.md](project_pncb_rereg.md)
+for key paths: `ref/pncb_lola_gcp.gcp` (2.5M LOLA-aligned GCP, reusable),
+`ba_final/` (amended 301 cameras post re-reg).
+
 `~/projects/binary_csm/binary_csm_notes.sh` - Binary CSM state format using
 msgpack for ISDs and model states. FY26 USGS task. PR usgscsm#501 **merged
 2026-03-25**. USGSCSM side complete. Remaining: update ASP CsmModel.cc to
@@ -31,7 +37,7 @@ CsmUtils resample. Reuse these for any SPOT 1-4 work.
 
 `~/projects/spot1/spot1_notes.sh` - SPOT 1-4 (HRV) camera support plan.
 Analysis of DIMAP v1.1 sample scene, comparison vs SPOT5/SPOT6, four
-transforms needed (quaternion rate integrator per handbook §4.5, linear
+transforms needed (quaternion rate integrator per handbook section 4.5, linear
 look fit, HRV mirror boresight into m_mountingMatrix, optional 1B->raw
 pre-map), readiness inventory. Session name: "spot14". No destripe in
 first pass. Vendor doc at
@@ -124,4 +130,5 @@ Refactoring often produces small float noise from evaluation order changes.
 - [feedback_precise_instructions.md](feedback_precise_instructions.md) - Do exactly what was asked, no extras. When unsure, ASK rather than do extra.
 - [feedback_only_sh_and_metadata_in_git.md](feedback_only_sh_and_metadata_in_git.md) - Default tracking is .sh + metadata/docs only. Data files of ANY kind (including small JSON state files, per-image lists, .txt inventories) stay untracked unless explicitly requested.
 - [feedback_stop_when_in_ballpark.md](feedback_stop_when_in_ballpark.md) - Camera-model ports: stop at "plausible and pointing down" rather than churn through inherent vendor-doc/convention uncertainty.
+- [feedback_qsub_script_chmod.md](feedback_qsub_script_chmod.md) - After rsync Mac to pfx, verify `chmod +x` on the pfx copy; PBS exits 254 in ~2s if missing.
 

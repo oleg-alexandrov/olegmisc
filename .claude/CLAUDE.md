@@ -614,6 +614,8 @@ restored from the latest ASP GitHub release tarball - ask the user first.
 
 ### Job submission and runtime rules
 
+**Before launching any qsub, consult `~/projects/qsub_rules.sh` first.**
+
 **Front-ends for job submission:** `athfe01`-`athfe04` (ssh athfe01, NOT pfe).
 These are the Athena/Turin front-ends. Submit PBS jobs from there.
 Turin (tur_ath) jobs MUST be submitted from athfe, not pfe (qsub fails with
@@ -666,6 +668,10 @@ Primer with qsub examples: `~/projects/spot5_alps/spot5_alps_notes.sh`
   final output file exists AND (b) the PBS job is gone from qstat. Counting
   intermediate outputs is unreliable - tools may write files mid-run. Use
   `grep -w` for exact job-name match (avoids `jit_lo_s1` matching `jit_lo_s10`).
+
+- **Always verify expected output at end of a batch job.** PBS wall-time
+  kill and clean exit both show state F in `qstat -x`; count the actual
+  outputs against the expected count before declaring success.
 
 - **Monitoring long jobs: use BOTH watchdog scripts AND Claude self-timers.**
   (1) A nohup watchdog script that checks every 30 min and launches the next
