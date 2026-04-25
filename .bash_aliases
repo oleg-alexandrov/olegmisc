@@ -275,6 +275,7 @@ alias run-help=man
 alias rvv='rosrun rviz rviz'
 alias s='reset; ssh lunokhod1 -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -X 2>/dev/null'
 alias sbc='~/bin/sortbycol.pl'
+alias sdb='cd $HOME/projects/sdb'
 alias sg='stereo_gui --window-size 1500 1000 --font-size 12'
 alias sgh='sg --hillshade'
 alias sgp='stereo_gui --create-image-pyramids-only'
