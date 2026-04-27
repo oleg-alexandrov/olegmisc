@@ -50,6 +50,11 @@
 #   3102 - pfx's sshd exposed on Mac (forward tunnel from Mac)
 #   3079 - Mac's sshd exposed on pfx (reverse tunnel from Mac)
 #
+# SSH config note for l1:
+#   mac_arm lives on pfx (port 3079), not on l1. So l1's ~/.ssh/config
+#   needs "ProxyJump pfx" and Port 3079 in the mac_arm entry to chain
+#   through pfx. Without ProxyJump, ssh mac_arm from l1 won't work.
+#
 # Usage: bash ~/bin/tunnel.sh
 #   Or with port overrides: L1_SSHD_ON_PFX=5960 bash ~/bin/tunnel.sh
 
