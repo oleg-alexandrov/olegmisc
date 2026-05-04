@@ -734,9 +734,10 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
 ```
 Always use a HEREDOC for commit messages to ensure the trailer is included.
 
-**EXCEPTION: ISIS3 repo (`~/projects/ISIS3`).** Do NOT add the Co-Authored-By
-trailer for commits in this repo. DOI-USGS may have its own approval process
-for AI-assisted contributions. Omit the trailer for all ISIS pushes.
+**EXCEPTION: all DOI-USGS repos** (`~/projects/ISIS3`, `~/projects/usgscsm`,
+`~/projects/ale`, and any other DOI-USGS repo). Do NOT add the Co-Authored-By
+trailer for commits in these repos. DOI-USGS may have its own approval process
+for AI-assisted contributions. Omit the trailer for all USGS pushes.
 
 ## ~/projects Git Rule (CRITICAL)
 

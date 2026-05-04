@@ -131,4 +131,5 @@ Refactoring often produces small float noise from evaluation order changes.
 - [feedback_only_sh_and_metadata_in_git.md](feedback_only_sh_and_metadata_in_git.md) - Default tracking is .sh + metadata/docs only. Data files of ANY kind (including small JSON state files, per-image lists, .txt inventories) stay untracked unless explicitly requested.
 - [feedback_stop_when_in_ballpark.md](feedback_stop_when_in_ballpark.md) - Camera-model ports: stop at "plausible and pointing down" rather than churn through inherent vendor-doc/convention uncertainty.
 - [feedback_qsub_script_chmod.md](feedback_qsub_script_chmod.md) - After rsync Mac to pfx, verify `chmod +x` on the pfx copy; PBS exits 254 in ~2s if missing.
+- [feedback_full_libexec_rsync.md](feedback_full_libexec_rsync.md) - When syncing L1 ASP build to pfx, rsync the FULL install/bin → libexec, never selective. One stale stereo_* worker silently breaks the whole pipeline.
 
