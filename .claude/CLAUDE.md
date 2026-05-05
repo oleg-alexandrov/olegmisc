@@ -63,6 +63,12 @@ export PATH=$ISISROOT/bin:$PATH
 - **NEVER open a pull request unless explicitly told to.** If asked to "review"
   PR text, only review and show feedback  - do not create the PR. Similarly,
   NEVER comment on, close, or merge a pull request unless explicitly asked.
+- **NEVER file a GitHub issue unless explicitly told to.** Phrases like "track
+  this", "log this", "note this", or "add this as an issue" mean LOCAL notes
+  only - not `gh issue create`. Only file an issue on an explicit "file an
+  issue" / "open an issue" / "gh issue create" instruction. If unclear, ASK
+  ("file on GitHub or just log in our notes?"). Same applies to commenting
+  on, closing, or otherwise modifying existing issues.
 - **When fixing code, ALWAYS pause for review before pushing.** Show local
   test results and let the user review changes first. Do not push immediately
   after committing  - especially when the push triggers CI regressions that

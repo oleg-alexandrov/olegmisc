@@ -132,4 +132,5 @@ Refactoring often produces small float noise from evaluation order changes.
 - [feedback_stop_when_in_ballpark.md](feedback_stop_when_in_ballpark.md) - Camera-model ports: stop at "plausible and pointing down" rather than churn through inherent vendor-doc/convention uncertainty.
 - [feedback_qsub_script_chmod.md](feedback_qsub_script_chmod.md) - After rsync Mac to pfx, verify `chmod +x` on the pfx copy; PBS exits 254 in ~2s if missing.
 - [feedback_full_libexec_rsync.md](feedback_full_libexec_rsync.md) - When syncing L1 ASP build to pfx, rsync the FULL install/bin → libexec, never selective. One stale stereo_* worker silently breaks the whole pipeline.
+- [feedback_no_unprompted_issues.md](feedback_no_unprompted_issues.md) - Never `gh issue create` (or comment/close) without an explicit user instruction. "Track this" / "log this" means local notes only.
 
