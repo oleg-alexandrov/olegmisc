@@ -145,10 +145,6 @@
     "command": "workbench.action.gotoLine"
   },
   {
-    "key": "ctrl+g",
-    "command": "-workbench.action.gotoLine"
-  },
-  {
     "key": "ctrl+a",
     "command": "editor.action.selectAll"
   },
@@ -287,5 +283,15 @@
     "key": "cmd+l",
     "command": "align.by.regex",
     "when": "editorHasSelection"
+  },
+  {
+    "key": "ctrl+shift+g",
+    "command": "cloudcode.gemini.chatView.focus",
+    "when": "!inputFocus && !runningOnCloudShell"
+  },
+  {
+    "key": "alt+g",
+    "command": "-cloudcode.gemini.chatView.focus",
+    "when": "!inputFocus && !runningOnCloudShell"
   }
 ]

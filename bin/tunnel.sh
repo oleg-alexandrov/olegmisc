@@ -57,6 +57,13 @@
 #
 # Usage: bash ~/bin/tunnel.sh
 #   Or with port overrides: L1_SSHD_ON_PFX=5960 bash ~/bin/tunnel.sh
+#
+# Athfe fallback (Mac only): when pfe is down (e.g. monthly patching), run
+#   USE_ATHFE=1 bash ~/bin/tunnel.sh
+# to skip the tunnel and point Host pfx at athfe01.nas.nasa.gov:22 directly.
+# pfe and athfe share the NAS filesystem, so all rsync/ssh paths in scripts
+# still resolve to the same files. Re-run plain `bash ~/bin/tunnel.sh` to
+# restore the normal tunnel route once pfe is back.
 
 # Port assignments (single source of truth)
 # Override any of these with environment variables before running.
@@ -98,6 +105,18 @@ update_remote_port() {
 
 case "$HOST" in
   *Mac-mini*|*Olegs-Mac*)
+    if [ "${USE_ATHFE:-0}" = "1" ]; then
+      echo "Mac mini: athfe fallback mode (pfe assumed down)"
+      echo "Pointing Host pfx at athfe01.nas.nasa.gov:22 directly. No tunnel."
+      ~/bin/set_pfx_target.py athfe
+      echo ""
+      echo "Done. ssh pfx and rsync ... pfx:... now go to athfe01"
+      echo "(same NAS filesystem as pfe). Mac<->l1 chain is NOT restored;"
+      echo "wait for pfe to come back for that. To restore normal route:"
+      echo "  bash ~/bin/tunnel.sh"
+      exit 0
+    fi
+
     echo "Mac mini: connecting to pfx"
 
     # Set up forward tunnel to pfx (so we can talk to pfx directly)
@@ -121,8 +140,10 @@ case "$HOST" in
 
     echo "Tunnels up. Updating ssh config on this machine."
 
-    # Update local ssh config: pfx points to pfx via our forward tunnel
-    ~/bin/set_port.py pfx $MAC_TO_PFX
+    # Update local ssh config: pfx points to pfx via our forward tunnel.
+    # Use set_pfx_target.py (not set_port.py) so Hostname is also restored
+    # to localhost in case it was previously switched to athfe fallback.
+    ~/bin/set_pfx_target.py tunnel $MAC_TO_PFX
 
     # Update pfx's config so it knows how to reach this Mac
     ssh pfx "python3 ~/bin/set_port.py mac_arm $MAC_SSHD_ON_PFX" 2>/dev/null
