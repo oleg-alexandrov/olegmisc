@@ -712,19 +712,34 @@ Installed in conda env `gh`. Not on PATH - use full path.
 - Tests: `NeoGeographyToolkit/StereoPipelineTest`
 
 **Common operations** (set `gh=/home/oalexan1/miniconda3/envs/gh/bin/gh`):
-```bash
-# Issues
-$gh issue list -R NeoGeographyToolkit/StereoPipeline
-$gh issue view 123 -R NeoGeographyToolkit/StereoPipeline
-$gh issue close 123 -R NeoGeographyToolkit/StereoPipeline
 
-# Pull requests
+**CRITICAL gotcha:** Both `gh issue view` and `gh pr view` hit the deprecated
+GraphQL "Projects (classic)" API and ERROR OUT on every repo (DOI-USGS,
+NeoGeographyToolkit, etc.). The error message is misleading - the repo and
+issue/PR are fine, only the `view` subcommand is broken. ALWAYS use the REST
+API via `gh api` for fetching issue/PR body, comments, state, labels, etc.
+`gh issue list`, `gh issue close`, `gh issue create`, `gh pr list`,
+`gh pr create`, `gh workflow run`, `gh run list`, `gh run view` all work fine.
+
+```bash
+# Issues - LIST/CLOSE/CREATE work, VIEW does not
+$gh issue list -R NeoGeographyToolkit/StereoPipeline
+$gh issue close 123 -R NeoGeographyToolkit/StereoPipeline
+# Issue body / state / labels (replaces broken `gh issue view`):
+$gh api repos/OWNER/REPO/issues/123 \
+  --jq '{title, state, body, labels: [.labels[].name]}'
+# Issue comments:
+$gh api repos/OWNER/REPO/issues/123/comments --jq '.[].body'
+
+# Pull requests - LIST/CREATE work, VIEW does not
 $gh pr list -R NeoGeographyToolkit/StereoPipeline
-# NOTE: "gh pr view" hits deprecated GraphQL Projects Classic API and errors.
-# Use the REST API instead:
-$gh api repos/OWNER/REPO/pulls/123 --jq '.body'           # PR body
-$gh api repos/OWNER/REPO/issues/123/comments --jq '.[].body'  # PR comments
 $gh pr create -R NeoGeographyToolkit/StereoPipeline --title "..." --body "..."
+# PR body (replaces broken `gh pr view`):
+$gh api repos/OWNER/REPO/pulls/123 --jq '.body'
+# PR comments (issue-style review comments live on the issues endpoint):
+$gh api repos/OWNER/REPO/issues/123/comments --jq '.[].body'
+# PR review comments (inline diff comments) live on a different endpoint:
+$gh api repos/OWNER/REPO/pulls/123/comments --jq '.[].body'
 
 # CI workflows
 $gh workflow run build_test_mac_arm64.yml -R NeoGeographyToolkit/StereoPipeline
