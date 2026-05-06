@@ -765,9 +765,12 @@ for AI-assisted contributions. Omit the trailer for all USGS pushes.
 ## Commit Message Style
 
 Write like a human, not a robot. Short title; skip the body for trivial
-changes. Avoid pedantic precision in the title - no quoted exact wording,
-no full function signatures, no `(file: foo.cc:123)` references. "fix
-changelog wording" beats `replace "plumbing" with "approach"`.
+changes. Avoid pedantic precision in the title:
+- no quoted exact wording, no full function signatures, no `(file:foo.cc:123)`
+- no parameter syntax with equals sign - "add csm parameter" not "add CSM= parameter"
+- no `(#1234)` issue/PR number in the title - the body or PR cross-reference handles linking
+- "fix changelog wording" beats `replace "plumbing" with "approach"`
+- "added the csm parameter to campt" beats `Add CSM= parameter to campt (#6035)`
 
 ## ~/projects Git Rule (CRITICAL)
 
