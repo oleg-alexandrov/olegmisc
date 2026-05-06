@@ -10,7 +10,9 @@ export ISISROOT=$HOME/projects/ISIS3/build
 export ISISDATA=$HOME/projects/isis3data
 export ISISTESTDATA=$HOME/projects/isis_test_data
 export SPICEQL_CACHE_DIR=/tmp/spiceql_cache
-# Build and install (always use install, it copies libisis to conda env)
+# Build and install. ALWAYS run install, never bare ninja - runISISTests
+# resolves libisis from the conda env (rpath order), so ninja runISISTests
+# alone leaves your CSMCamera/etc edits invisible to ctest.
 ninja -C ~/projects/ISIS3/build install
 # GTest (also uses build dir ISISROOT)
 cd ~/projects/ISIS3/build && ctest --test-dir . -R AspMap --output-on-failure
