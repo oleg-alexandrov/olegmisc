@@ -760,6 +760,13 @@ Always use a HEREDOC for commit messages to ensure the trailer is included.
 trailer for commits in these repos. DOI-USGS may have its own approval process
 for AI-assisted contributions. Omit the trailer for all USGS pushes.
 
+## Commit Message Style
+
+Write like a human, not a robot. Short title; skip the body for trivial
+changes. Avoid pedantic precision in the title - no quoted exact wording,
+no full function signatures, no `(file: foo.cc:123)` references. "fix
+changelog wording" beats `replace "plumbing" with "approach"`.
+
 ## ~/projects Git Rule (CRITICAL)
 
 Files in `~/projects/` are tracked by `~/projects/.git` (NOT `~/.git`).
