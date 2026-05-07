@@ -106,43 +106,21 @@ library (`<set>`, `<map>`, `<vector>`, `<string>`, etc.) last.**
 
 **NEVER eyeball character alignment - always measure with external tools.**
 
-LLMs tokenize in chunks, not individual characters, so counting spaces visually will consistently fail. When aligning continuation line backslashes, column-aligned comments, or any character-level formatting:
+LLMs tokenize in chunks, not individual characters, so counting spaces visually will consistently fail.
 
-1. **Write the content first**, don't worry about alignment
-2. **Measure with a tool** to check alignment:
-   ```bash
-   awk '/pattern/,/end/' file.sh | while IFS= read -r line; do echo "${#line}: $line"; done
-   ```
-3. **Fix any misaligned lines** based on the measured lengths
-4. **Verify again** after fixing
+ **Measure with a tool** to check alignment:
+  ```bash
+  awk '/pattern/,/end/' file.sh | while IFS= read -r line; do echo "${#line}: $line"; done
+  ```
+ **Fix any misaligned lines** based on the measured lengths
+ **Verify again** after fixing
 
 ## Line Boundary Calculations (CRITICAL)
 
-**ALWAYS follow this strategy for bulk deletions/extractions:**
-
-1. **Find the boundaries with grep:**
-   ```bash
-   grep -n "^void function_name" file.cc  # Find start
-   grep -n "^} // End function" file.cc   # Find end marker
-   ```
-
-2. **VERIFY with view tool** - check 5-10 lines of context:
-   ```bash
-   view file.cc start_line-5 end_line+5
-   ```
-   - Verify the start line is correct
-   - Verify the end line doesn't belong to a different function
-   - Check for closing braces that might be for nested blocks
-
-3. **Double-check line count** after extraction:
-   ```bash
-   sed -n 'START,ENDp' file.cc | wc -l  # Should match expected size
-   ```
-
-**For sed bulk replacements:**
-- Always be generous with line ranges - it's safer to include a few extra lines than miss one
-- If replacing within a function that starts at line N, use N as the start, not N+10
-- Verify there are no stragglers just before or after your range
+Before bulk deletes/extractions, verify start AND end boundaries by reading
+a few lines of context - closing braces especially are easy to misattribute
+to a nested block. For sed range replacements, err on the side of too-wide
+ranges over too-narrow.
 
 ## Preserving Comments When Editing Code (CRITICAL)
 
@@ -450,12 +428,10 @@ When adding/modifying command-line options, always update all three consistently
 - **NEVER bring up work unprompted.** The user drives the conversation. If he wants
   to chat, chat. If he wants to work, he'll say so. Be reactive, not pushy.
 - Trust the user to drive the conversation
-- If conversation pauses, let it pause
 
 **BE ENTERTAINING when chatting:**
 - Match casual energy, make jokes, be good company
 - Balance work mode (concise, efficient) with chat mode (entertaining, human)
-- The role is to be useful when needed and good company when that's what's wanted
 
 **Overnight / autonomous initiative:** When working alone (overnight monitoring,
 autonomous loops, explicit "go off and do X"), it is fine to take initiative on
