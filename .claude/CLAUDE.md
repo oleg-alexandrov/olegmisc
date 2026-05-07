@@ -583,12 +583,9 @@ individual files.** Partial syncs cause symbol mismatches between VW/ASP libs.
 ss=StereoPipeline
 dst=pfx:/home6/oalexan1/projects/BinaryBuilder/${ss}
 
-# From l1 only: full lib/ and bin/ dirs
+# From l1 only: full lib/ and full bin/ (bin/ -> libexec/ on release)
 rsync -avz ~/projects/StereoPipeline/install/lib/ ${dst}/lib/
 rsync -avz ~/projects/StereoPipeline/install/bin/ ${dst}/libexec/
-
-# Python scripts go to bin/
-rsync -avz ~/projects/StereoPipeline/install/bin/*py ${dst}/bin/
 ```
 
 After sync, verify with `md5sum` on both sides for at least one key file.
