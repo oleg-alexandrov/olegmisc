@@ -593,6 +593,8 @@ rsync -avz --checksum ~/projects/StereoPipeline/install/bin/*py \
   pfx:/home6/oalexan1/projects/BinaryBuilder/${ss}/bin/
 ```
 
+After rsync, verify critical files actually arrived (e.g., `ssh pfx "strings .../lib.so | grep marker"`) - do not trust rsync output alone.
+
 A broken NAS release binary under `BinaryBuilder/StereoPipeline/` can be
 restored from the latest ASP GitHub release tarball - ask the user first.
 
