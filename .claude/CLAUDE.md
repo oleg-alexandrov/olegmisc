@@ -576,23 +576,19 @@ Mac), NOT Linux ELF despite the name. Pushing either to pfx breaks the binary.
 Always `file <binary>` before rsync to confirm `ELF 64-bit LSB`. Python scripts
 (arch-independent) and `.h`/`.cmake` text files are safe from any host.
 
-**CRITICAL: Always sync ALL libs and ALL binaries, not just changed ones.**
-Partial syncs cause symbol mismatches between VW/ASP libraries. Use `scp`
-(rsync has been unreliable on NAS).
+**CRITICAL: Always sync the full `lib/` and full `bin/` directories, not
+individual files.** Partial syncs cause symbol mismatches between VW/ASP libs.
 
 ```bash
 ss=StereoPipeline
 dst=pfx:/home6/oalexan1/projects/BinaryBuilder/${ss}
 
-# From l1 only: ALL .so files (VW + ASP)
-scp ~/projects/StereoPipeline/install/lib/libVw*.so \
-    ~/projects/StereoPipeline/install/lib/libAsp*.so ${dst}/lib/
+# From l1 only: full lib/ and bin/ dirs
+rsync -avz ~/projects/StereoPipeline/install/lib/ ${dst}/lib/
+rsync -avz ~/projects/StereoPipeline/install/bin/ ${dst}/libexec/
 
-# From l1 only: ALL native C++ binaries from install/bin to libexec/
-scp ~/projects/StereoPipeline/install/bin/!(*.py) ${dst}/libexec/
-
-# From Mac OK: Python scripts (arch-independent)
-scp ~/projects/StereoPipeline/install/bin/*py ${dst}/bin/
+# Python scripts go to bin/
+rsync -avz ~/projects/StereoPipeline/install/bin/*py ${dst}/bin/
 ```
 
 After sync, verify with `md5sum` on both sides for at least one key file.
