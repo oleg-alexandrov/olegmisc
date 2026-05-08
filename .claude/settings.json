@@ -7,5 +7,6 @@
   "enabledPlugins": {
     "clangd-lsp@claude-plugins-official": true
   },
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": true,
+  "feedbackSurveyRate": 0
 }
