@@ -536,141 +536,45 @@ Convention: `origin` = user's fork, `god` = upstream org (for ASP, VW, BinaryBui
 
 ## NASA NAS / Pleiades Supercomputer
 
-### ASP Builds on pfe/pfx
+**ALWAYS read `~/projects/pleiades_notes.sh` AND `~/projects/qsub_rules.sh`
+before any work that touches pfe / pfx / athfe / tur_ath / bro_ele / lfe.**
+Those notes hold the full machine map, ssh aliases, qsub examples per
+cluster, watchdog patterns, the symlink/-22 launcher trick, storage tiers,
+and the ASP-build deployment rules. CLAUDE.md keeps only the always-rules
+below. Worked qsub primer: `~/projects/spot5_alps/spot5_alps_notes.sh`.
 
-**Release build location:** `/u/oalexan1/projects/BinaryBuilder/StereoPipeline/`
-(`/u/oalexan1` and `/home6/oalexan1` are the same path, symlinked).
-Full release layout: `bin/` (wrapper scripts + Python), `libexec/` (C++ binaries),
-`lib/`, `plugins/`, `docs/`, etc. The nightly bot extracts directly into this dir
-(no tarballs on pfx - `asp_tarballs/` is empty). No `auto_build/` on pfx either.
-Conda/miniconda is at `/swbuild/oalexan1/miniconda3` (symlinked from `~/miniconda3`).
-Micromamba is at `~/micromamba` (real dir on home filesystem).
+CRITICAL always-rules:
 
-**NAS storage tiers:** Software and build tools live on `/swbuild` (fast, backed up).
-Large data lives on nobackup (high capacity, not backed up).
-**Tape storage (lfe/lou):** `lfe.nas.nasa.gov` is the Lou File Element - cold
-tape archive for long-term storage. Access: `ssh lfe` (goes via sfe gateway).
-Home dir on lfe: `/u/oalexan1`. Archive tarballs go there.
-Key paths:
-- `/swbuild/oalexan1/miniconda3` - conda (symlinked from `~/miniconda3`)
-- `/vast_swbuild/swbuild/oalexan1/projects/BinaryBuilder` - BinaryBuilder repo
-  (symlinked from `~/projects/BinaryBuilder`)
-
-**On l1:** Release tarballs saved in `~/projects/BinaryBuilder/asp_tarballs/`.
-Dev build is in `~/projects/StereoPipeline/install/`.
-
-**Dev build rsync overwrites lib/, libexec/, and Python scripts in bin/
-on top of the release install on pfx.** Use `--checksum` to avoid skipping files
-with same size but different content. Can rsync from Mac or l1.
-
-### Syncing Dev Build to pfe/pfx
-
-**`pfx` is an SSH alias** to a `pfeNN` node via `~/bin/tunnel.sh`. Mac and l1
-each have their own independent tunnel (they do NOT route through each other).
-If `ssh pfx` fails with Connection refused/timeout, rerun `~/bin/tunnel.sh`.
-Ports and pfe node vary over time - check `~/.ssh/config` or `~/tunnel.sh`.
-
-**CRITICAL: C++ binaries and `.so`/`.dylib` MUST come from l1 (real Linux ELF).**
-Mac `install/` is ARM64 Mach-O. Mac `install_linux/` is x86_64 Mach-O (Intel
-Mac), NOT Linux ELF despite the name. Pushing either to pfx breaks the binary.
-Always `file <binary>` before rsync to confirm `ELF 64-bit LSB`. Python scripts
-(arch-independent) and `.h`/`.cmake` text files are safe from any host.
-
-**CRITICAL: Always sync the full `lib/` and full `bin/` directories, not
-individual files.** Partial syncs cause symbol mismatches between VW/ASP libs.
-
-```bash
-ss=StereoPipeline
-dst=pfx:/home6/oalexan1/projects/BinaryBuilder/${ss}
-
-# From l1 only: full lib/ and full bin/ (C++ binaries -> libexec/)
-rsync -avz ~/projects/StereoPipeline/install/lib/ ${dst}/lib/
-rsync -avz ~/projects/StereoPipeline/install/bin/ ${dst}/libexec/
-
-# Python scripts also go to bin/
-rsync -avz ~/projects/StereoPipeline/install/bin/*py ${dst}/bin/
-```
-
-After sync, verify with `md5sum` on both sides for at least one key file.
-
-A broken NAS release binary under `BinaryBuilder/StereoPipeline/` can be
-restored from the latest ASP GitHub release tarball - ask the user first.
-
-### Job submission and runtime rules
-
-**Before launching any qsub, consult `~/projects/qsub_rules.sh` first.**
-
-**Front-ends for job submission:** `athfe01`-`athfe04` (ssh athfe01, NOT pfe).
-These are the Athena/Turin front-ends. Submit PBS jobs from there.
-Turin (tur_ath) jobs MUST be submitted from athfe, not pfe (qsub fails with
-exit 32 from pfe). Direct SSH alias configured: `ssh athfe01` (ProxyJump
-through pfx in `~/.ssh/config`). So: `ssh athfe01 "cd ... && qsub ..."`.
-
-- **Compute nodes:** `tur_ath` (Turin Athens, 256 CPUs) - submit from athfe only.
-  `bro_ele` (Broadwell Electra, 28 CPUs) - submit from pfe (not athfe).
-- **Queue:** `normal` (max walltime 8:00:00)
-- **GID (budget code):** `e2305` (personal allocation, used for SFS and SPOT5 work)
-- **Job status:** `qstat -u $(whoami)`
-- **Storage:** pfe and athfe share the same filesystem, so rsync to pfx
-  but ssh to athfe01 for job submission.
-
-Primer with qsub examples: `~/projects/spot5_alps/spot5_alps_notes.sh`
-
-- **Launching ASP jobs on the supercomputer:** Never run compute on the head
-  node (pfe/pfx). Write a script and submit via qsub. Imitate existing scripts
-  in the project dir (e.g., `parallel_sfs_mm.sh`, `mapproj_geodiff_tile.sh`)
-  for the PATH/env setup pattern:
-  ```bash
-  export ISISDATA=$HOME/projects/isis3data
-  export ISISROOT=$HOME/miniconda3/envs/asp_deps
-  s=StereoPipeline
-  export PATH=$HOME/projects/BinaryBuilder/$s/bin:$ISISROOT/bin:$PATH
-  cd $currDir
-  ```
-
-- **Scripts submitted via qsub MUST be executable** (`chmod +x`). PBS fails
-  with "Permission denied" (exit 254) if the script lacks execute permission.
-  Always `chmod +x` after creating new `.sh` scripts intended for qsub.
-
-- **All NAS scripts MUST set `umask 022`** near the top (after PATH exports).
-  Persistent recurring issue: PBS jobs inherit a stricter default umask than
-  interactive shells, leaving outputs unreadable by collaborators.
-
-- **Always use FULL PATH for scripts in qsub commands.** PBS runs on compute
-  nodes where the working directory may differ. Use `${currDir}/script.sh`
-  not bare `script.sh`. Exit 254 = script not found.
-
-- **Always `sleep 1` (or more) between qsub calls** in loops or batch scripts.
-  Rapid-fire qsub can overwhelm the PBS scheduler. The
-  `batch_mapproject_clip.sh` script already has `sleep 2`.
-
-- **qsub scripts must redirect output to a log file in the work dir so
-  progress can be tailed in real time.** Redirect only (`> log` / `>> log`),
-  not `tee` - PBS dislikes the extra buffering.
-
-- **Watchdog scripts: check job completion robustly.** Check BOTH (a) the
-  final output file exists AND (b) the PBS job is gone from qstat. Counting
-  intermediate outputs is unreliable - tools may write files mid-run. Use
-  `grep -w` for exact job-name match (avoids `jit_lo_s1` matching `jit_lo_s10`).
-
-- **Always verify expected output at end of a batch job.** PBS wall-time
-  kill and clean exit both show state F in `qstat -x`; count the actual
-  outputs against the expected count before declaring success.
-
-- **Monitoring long jobs: use BOTH watchdog scripts AND Claude self-timers.**
-  (1) A nohup watchdog script that checks every 30 min and launches the next
-  step when ready. (2) Claude background timers (`sleep 1800` via
-  `run_in_background`) where Claude wakes up, checks status, acts, and sets
-  another timer. Always use both in parallel - the watchdog survives if
-  Claude's session drops, and the timer gives interactive feedback.
-
-- **Symlinks on NAS (pfe/pfx/athfe):** Many `~/projects/` subdirs (PeruSat,
-  spot5_alps, etc.) are symlinks to nobackup; Mac is source of truth. NEVER
-  rsync a symlinked dir itself - that replaces the symlink with a real dir
-  and breaks the nobackup link. Always use a trailing slash on the source
-  (`rsync -avz src/ dest/dir/`) or rsync individual items. Same reason: never
-  run destructive git ops (`reset --hard`, `checkout .`) in `~/projects` on
-  pfe - can materialize tracked content over symlinks.
+- Never run heavy compute on the head node. qsub only. Head node is for
+  ~10 sec dry-runs (option parsing, `tool --help | grep -- '--flag'`).
+- Default to `bro_ele` (pfe, `/PBS/bin/qsub`, scheduler `pbspl1`). Do NOT
+  use `tur_ath` (athfe, `/opt/pbs/bin/qsub`, scheduler `pbs06a`) unless
+  explicitly asked - Turin is expensive and prone to flaky placement /
+  stuck nodes / Exit_status -22 / runs that won't `qdel -W force` away.
+- Budget (`-W group_list=`): `e2305` for personal/SFS/SPOT5/Chandrayaan-2/
+  ASP. NEVER `s3319` (SDB / Monica allocation - off limits).
+- Scripts in qsub MUST be `chmod +x` and use FULL paths (PBS exits 254
+  otherwise).
+- All NAS scripts MUST set `umask 022` near the top - PBS inherits a
+  stricter default that locks outputs from collaborators.
+- /home6 quota is ~10 GB. Anything in `~/projects/<subdir>/` that holds
+  data MUST be a symlink to `/nobackupp19/...`; verify with `readlink -f`
+  (resolved path must start with `/nobackup*`, not `/home6`).
+- NEVER rsync a symlinked dir itself - it replaces the link with a real
+  dir and severs the nobackup link. Always trailing slash on source.
+- C++ binaries / `.so` / `.dylib` for pfx MUST come from l1 (real Linux
+  ELF). Mac builds are Mach-O even when named `install_linux/`.
+- When syncing a dev build, rsync the FULL `lib/` and FULL `bin/` dirs,
+  not individual files - partial syncs cause VW/ASP symbol mismatches.
+- For stuck jobs / PBS Exit_status=-22 placement loops: full playbook in
+  pleiades_notes.sh. Pivot tur_ath → bro_ele after ~3 retries on a bad
+  node; submit anyway even if `qdel -W force` is ineffective.
+- Sleep 1+ between qsub calls in loops; redirect log only (`> log`), no
+  `tee`; verify expected output count at end of batch jobs (state F in
+  `qstat -x` covers both clean exit AND walltime kill).
+- For long jobs use BOTH a nohup watchdog AND Claude self-timers
+  (`sleep 1800` via `run_in_background`) - watchdog survives session
+  drop, timer gives interactive feedback.
 
 ## GitHub CLI (gh)
 
