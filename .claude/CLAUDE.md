@@ -536,6 +536,10 @@ Convention: `origin` = user's fork, `god` = upstream org (for ASP, VW, BinaryBui
 
 ## NASA NAS / Pleiades Supercomputer
 
+For long-term tape archive of a finished project tree to lfe (Lou),
+follow the recipe in `~/projects/lfe_archive.sh` (worked multi-tar
+example: `~/projects/sfs_mons_mouton/archive_to_lfe.sh`).
+
 **ALWAYS read `~/projects/pleiades_notes.sh` AND `~/projects/qsub_rules.sh`
 before any work that touches pfe / pfx / athfe / tur_ath / bro_ele / lfe.**
 Those notes hold the full machine map, ssh aliases, qsub examples per
