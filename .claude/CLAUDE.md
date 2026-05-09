@@ -199,6 +199,10 @@ Don't do blind sed-style namespace replacements - read and comprehend the code f
 - BB stands for BinaryBuilder
 - BA stands for bundle_adjust (or bundle adjustment)
 - The BinaryBuilder repository (`/home/oalexan1/projects/BinaryBuilder`) contains the ASP build toolset. Its `auto_build/` subdirectory has the nightly build and regression test infrastructure.
+- For handling external bump-up PRs on the VW conda-forge feedstock
+  (`conda-forge/visionworkbench-feedstock`), see
+  `~/projects/vw_conda_forge_bump.sh`. Covers the alpha → point release →
+  patch bot's PR branch → merge → restore alpha procedure.
 
 ## ASP Release Packaging
 
