@@ -446,6 +446,12 @@ first (e.g., devel queue, 2 min walltime) and proceed if it works. Use
 judgement: a one-line symlink fix is fine; a sweeping refactor is not. Log what
 was done so the user can review in the morning.
 
+**When monitoring overnight, set a periodic wakeup (~30 min) - don't rely
+solely on a job-completion notifier.** PBS jobs can stall indefinitely
+(state R but cput frozen, hung mounts, placement-loop -22 holds, watchdog
+deadlock). A "wait until job leaves the queue" poller will sit forever
+through a stalled run.
+
 ## Building ASP Docs
 
 ```bash
