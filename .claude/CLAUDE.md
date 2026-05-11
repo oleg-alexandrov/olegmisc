@@ -452,6 +452,22 @@ solely on a job-completion notifier.** PBS jobs can stall indefinitely
 deadlock). A "wait until job leaves the queue" poller will sit forever
 through a stalled run.
 
+**Whenever you start a long-running thing (qsub, build, big rsync, anything
+that may take > 5 min), set an INDEPENDENT wakeup timer at the same time -
+don't trust the completion notifier alone.** Pick an interval shorter than
+your patience for the task (e.g. 5 min for a build, 15-30 min for a stereo
+run). The timer fires regardless of job state - so you check in even if
+the job has stalled, hung in a remote ssh, or wedged a head node. You
+have routinely fallen asleep waiting for completions that never came;
+the wakeup timer is the safety net.
+
+**Every time you wake up (notification, monitor event, scheduled wakeup),
+the FIRST thing to do is run `date` and notice how long elapsed since
+your last action.** Long sessions especially overnight runs leave you
+stale on what time it is and what state things should be in. A `date`
+or `qstat -fx` timestamp keeps you grounded - "still evening" can
+silently turn into "next morning" if you don't check.
+
 ## Building ASP Docs
 
 ```bash
@@ -561,6 +577,12 @@ CRITICAL always-rules:
 
 - Never run heavy compute on the head node. qsub only. Head node is for
   ~10 sec dry-runs (option parsing, `tool --help | grep -- '--flag'`).
+- Any quick sanity check on pfe head node MUST have a hard guarantee
+  it gets killed within ~5 seconds. Use `timeout 5 <cmd>` or similar.
+  These checks are ONLY for verifying the script parses / args are OK -
+  never for actually running stereo / mapproject / bundle_adjust.
+  Direct `bash some_qsub_script.sh` over ssh starts a real run on the
+  head node and does NOT auto-kill. Avoid.
 - Default to `bro_ele` (pfe, `/PBS/bin/qsub`, scheduler `pbspl1`). Do NOT
   use `tur_ath` (athfe, `/opt/pbs/bin/qsub`, scheduler `pbs06a`) unless
   explicitly asked - Turin is expensive and prone to flaky placement /
