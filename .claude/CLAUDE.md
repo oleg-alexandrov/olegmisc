@@ -591,6 +591,13 @@ For lfe tape archive of a finished project: `~/projects/lfe_archive.sh`
 
 CRITICAL always-rules:
 
+- **NEVER wipe ANYTHING on lfe (Lou tape archive).** Read-only from
+  Claude's perspective. Even a single accidental `rm` on lfe
+  destroys archived science results that took CPU-years to produce
+  and gets the user fired. If a task involves freeing space on
+  lfe or "cleaning up an old lfe area", STOP and confirm explicitly
+  with the user, naming the exact paths.
+
 - **Before every qsub: 4-sec dry-run on head node.**
   `ssh pfe21 "timeout 4 bash /full/path/to/runner.sh; echo RC=\$?"`.
   RC=124 = clean timeout = PASS. Any other RC>0 = real error to fix
