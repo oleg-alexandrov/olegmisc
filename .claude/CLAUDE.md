@@ -581,27 +581,29 @@ chandrayaan2, mer, mex, dawn, etc.
 
 ## NASA NAS / Pleiades Supercomputer
 
-For long-term tape archive of a finished project tree to lfe (Lou),
-follow the recipe in `~/projects/lfe_archive.sh` (worked multi-tar
-example: `~/projects/sfs_mons_mouton/archive_to_lfe.sh`).
+**Before any pfe work — especially `qsub` — read `~/projects/pleiades_notes.sh`
+and `~/projects/qsub_rules.sh`.** They hold the machine map, qsub examples,
+the wedge/recovery playbook (R 00:00 jobs, --t_projwin failures), and
+storage rules. Worked primer: `~/projects/spot5_alps/spot5_alps_notes.sh`.
 
-**ALWAYS read `~/projects/pleiades_notes.sh` AND `~/projects/qsub_rules.sh`
-before any work that touches pfe / pfx / athfe / tur_ath / bro_ele / lfe.**
-Those notes hold the full machine map, ssh aliases, qsub examples per
-cluster, watchdog patterns, the symlink/-22 launcher trick, storage tiers,
-and the ASP-build deployment rules. CLAUDE.md keeps only the always-rules
-below. Worked qsub primer: `~/projects/spot5_alps/spot5_alps_notes.sh`.
+For lfe tape archive of a finished project: `~/projects/lfe_archive.sh`
+(worked example: `~/projects/sfs_mons_mouton/archive_to_lfe.sh`).
 
 CRITICAL always-rules:
 
+- **Before every qsub: 4-sec dry-run on head node.**
+  `ssh pfe21 "timeout 4 bash /full/path/to/runner.sh; echo RC=\$?"`.
+  RC=124 = clean timeout = PASS. Any other RC>0 = real error to fix
+  before submitting. Catches missing inputs, perms, --t_projwin
+  failures, env issues. Costs 4 sec, saves 10+ min of doomed queue time.
+  Per script (and per distinct env var combo if parameterized).
 - Never run heavy compute on the head node. qsub only. Head node is for
-  ~10 sec dry-runs (option parsing, `tool --help | grep -- '--flag'`).
-- Any quick sanity check on pfe head node MUST have a hard guarantee
-  it gets killed within ~5 seconds. Use `timeout 5 <cmd>` or similar.
-  These checks are ONLY for verifying the script parses / args are OK -
-  never for actually running stereo / mapproject / bundle_adjust.
-  Direct `bash some_qsub_script.sh` over ssh starts a real run on the
-  head node and does NOT auto-kill. Avoid.
+  the 4-sec dry-run above and `tool --help | grep -- '--flag'`-style
+  introspection only. Anything that would actually do work (read large
+  cubes, run mapproject past --query-projection, etc.) MUST be inside
+  the timeout 4. Direct `bash some_qsub_script.sh` over ssh without
+  timeout starts a real run on the head node and does NOT auto-kill.
+  Forbidden.
 - Default to `bro_ele` (pfe, `/PBS/bin/qsub`, scheduler `pbspl1`). Do NOT
   use `tur_ath` (athfe, `/opt/pbs/bin/qsub`, scheduler `pbs06a`) unless
   explicitly asked - Turin is expensive and prone to flaky placement /
