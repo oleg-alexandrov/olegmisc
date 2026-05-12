@@ -159,6 +159,7 @@ namespace vw { namespace cm {
 - **NEVER use non-ASCII characters in code or comments** - use `x` not `*`, `-` not `--`, regular quotes not smart quotes, `-` not em dash
 - **NEVER use equal-sign or dash separators** (`//=====`, `//-----`) in code or comments
 - **NEVER use ellipsis (...)** in messages or comments - use period instead
+- **Avoid the word "honor"** anywhere (code, docs, chat). Prefer "respect" or "follow".
 - No space before `::` scope resolution operator
 - No space before `:` in constructor initializer lists
 - Use camelCase for function names
@@ -559,6 +560,24 @@ Always use `// TODO(oalexan1):` format. Never bare `// TODO:`.
 | 6 | **home dir** (dotfiles) | `/home/oalexan1` | master | `oleg-alexandrov/olegmisc.git` | (no god) |
 
 Convention: `origin` = user's fork, `god` = upstream org (for ASP, VW, BinaryBuilder).
+
+## ISIS Mission Data and Kernels
+
+**LRO NAC end-to-end reference: `~/projects/lronac_processing.sh`.** Programmatic
+ODE search, candidate ranking by ground-frame sub-solar azimuth, full
+ingest pipeline (lronac2isis → spiceinit → lronaccal → lronacecho), CSM
+JSON via isd_generate, illumination/azimuth analysis, mapproject, sfs
+--query, common failure modes (missing CK, ALE driver auto-pick crash,
+sub-solar lon vs ground azimuth confusion). Worked example on the
+Chandrayaan-2 OHRC south polar site. Update this file whenever we
+re-discover any LRO NAC gotcha.
+
+**Generic ISIS kernel fetch (any mission): same file, section 5.** The
+canonical recipe is `downloadIsisData <mission> $ISISDATA` for a full
+sync, or targeted `rclone --config $ISISROOT/etc/isis/rclone.conf copy
+<mission>:kernels/ck/ ... --include="<file>" --no-traverse -P` for a
+single missing CK after spiceinit fails. Same recipe for lro, mro,
+chandrayaan2, mer, mex, dawn, etc.
 
 ## NASA NAS / Pleiades Supercomputer
 
