@@ -129,9 +129,9 @@ case "$HOST" in
     echo "  Remote: pfx:$MAC_SSHD_ON_PFX -> Mac:22 (reverse)"
 
     ssh $PFX_HOST -N -f $SSH_ALIVE \
-      -L ${MAC_TO_PFX}:localhost:22 \
-      -L ${L1_SSHD_ON_PFX}:localhost:${L1_SSHD_ON_PFX} \
-      -R ${MAC_SSHD_ON_PFX}:localhost:22
+      -L ${MAC_TO_PFX}:127.0.0.1:22 \
+      -L ${L1_SSHD_ON_PFX}:127.0.0.1:${L1_SSHD_ON_PFX} \
+      -R ${MAC_SSHD_ON_PFX}:127.0.0.1:22
 
     if [ $? -ne 0 ]; then
       echo "ERROR: Failed to connect to pfx. Check your SSH keys and network."
@@ -171,8 +171,8 @@ case "$HOST" in
     kill_port $L1_TO_PFX
 
     ssh $PFX_HOST -N -f $SSH_ALIVE \
-      -R ${L1_SSHD_ON_PFX}:localhost:22 \
-      -L ${L1_TO_PFX}:localhost:22
+      -R ${L1_SSHD_ON_PFX}:127.0.0.1:22 \
+      -L ${L1_TO_PFX}:127.0.0.1:22
 
     if [ $? -ne 0 ]; then
       echo "ERROR: Failed to connect to pfx. Check SSH keys and network."
