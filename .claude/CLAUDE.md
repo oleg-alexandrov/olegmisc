@@ -471,6 +471,11 @@ the job has stalled, hung in a remote ssh, or wedged a head node. You
 have routinely fallen asleep waiting for completions that never came;
 the wakeup timer is the safety net.
 
+**Wakeup cadence: relax when the job legitimately needs hours, but tighten
+when you've drifted past your own ETA without it being done.** Long polls
+(30+ min) are fine while you expect the job to keep running. The failure
+mode is sleeping through completion.
+
 **Every time you wake up (notification, monitor event, scheduled wakeup),
 the FIRST thing to do is run `date` and notice how long elapsed since
 your last action.** Long sessions especially overnight runs leave you
@@ -624,6 +629,9 @@ CRITICAL always-rules:
   use `tur_ath` (athfe, `/opt/pbs/bin/qsub`, scheduler `pbs06a`) unless
   explicitly asked - Turin is expensive and prone to flaky placement /
   stuck nodes / Exit_status -22 / runs that won't `qdel -W force` away.
+- `athfe normal` queue walltime cap is **8 hours**. `qsub -l
+  walltime=10:00:00` returns `qsub: Job violates queue and/or server
+  resource limits`. Use 8:00:00 max on athfe normal.
 - Budget (`-W group_list=`): `e2305` for personal/SFS/SPOT5/Chandrayaan-2/
   ASP. NEVER `s3319` (SDB / Monica allocation - off limits).
 - Scripts in qsub MUST be `chmod +x` and use FULL paths (PBS exits 254
