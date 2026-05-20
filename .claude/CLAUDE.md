@@ -205,6 +205,15 @@ Don't do blind sed-style namespace replacements - read and comprehend the code f
   `~/projects/vw_conda_forge_bump.sh`. Covers the alpha → point release →
   patch bot's PR branch → merge → restore alpha procedure.
 
+## Nightly Build and Regression Tests
+
+Cron job on lunokhod1 at 23:05 runs the full build/test/release pipeline
+for Linux (local) + macOS x64/arm64 (GitHub Actions). Full reference:
+`~/projects/nightly_regression.sh`. Key files in
+`~/projects/BinaryBuilder/auto_build/` (launch_master.sh, build.sh,
+run_tests.sh, utils.sh). Email via msmtp on completion. Mac CI gold
+updates: `~/projects/update_cloud_tests.sh`.
+
 ## ASP Release Packaging
 
 ```bash
