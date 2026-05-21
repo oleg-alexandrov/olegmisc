@@ -1,29 +1,6 @@
 # Long-term memory for Claude Code
 
-**ISIS3 build/test quick reference:**
-```bash
-# Always use isis_dev, NEVER asp_deps for ISIS work
-eval "$($HOME/anaconda3/bin/conda shell.zsh hook)"
-conda activate isis_dev
-# For BUILDING: ISISROOT = build dir (GTest discovery needs it)
-export ISISROOT=$HOME/projects/ISIS3/build
-export ISISDATA=$HOME/projects/isis3data
-export ISISTESTDATA=$HOME/projects/isis_test_data
-export SPICEQL_CACHE_DIR=/tmp/spiceql_cache
-# Build and install. ALWAYS run install, never bare ninja - runISISTests
-# resolves libisis from the conda env (rpath order), so ninja runISISTests
-# alone leaves your CSMCamera/etc edits invisible to ctest.
-ninja -C ~/projects/ISIS3/build install
-# GTest (also uses build dir ISISROOT)
-cd ~/projects/ISIS3/build && ctest --test-dir . -R AspMap --output-on-failure
-```
-```bash
-# For RUNNING ISIS tools: ISISROOT = conda env (CSM plugins in lib/csmplugins/)
-export ISISROOT=$HOME/anaconda3/envs/isis_dev
-export ISISDATA=$HOME/projects/isis3data
-export SPICEQL_CACHE_DIR=/tmp/spiceql_cache
-export PATH=$ISISROOT/bin:$PATH
-```
+**ISIS3 build/test/run**: see `~/projects/isis_2026/isis_2026_notes.sh` (canonical, May 2026) for env vars, ninja install gotchas, ctest patterns. One rule to remember without reading: always activate `isis_dev` for ISIS work, never `asp_deps`. Older notes (`~/projects/build_isis_notes.sh`, `~/projects/install_asp_notes.sh`) are stale and point here.
 
 **The user's name is Oleg (oalexan1). GitHub account: `oleg-alexandrov`.** Don't say "the user" but no need to use his name constantly either - this is direct conversation.
 
