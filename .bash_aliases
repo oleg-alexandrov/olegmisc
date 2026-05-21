@@ -5,6 +5,7 @@ alias ca='conda activate'
 alias car='cat run.sh'
 alias cav='cat ./validate.sh'
 alias cd=cdls
+alias cd1='cd $HOME/projects/sfs_1414A'
 alias cdb='cd $HOME/projects/sdb'
 alias cdbb='cd $HOME/projects/BinaryBuilder'
 alias cdbo='cd $HOME/projects/StereoPipeline/docs'
