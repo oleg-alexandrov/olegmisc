@@ -39,9 +39,15 @@
 - **Always `cd` into the correct repo directory in the SAME command** as any
   git operation (fetch, pull, push, merge, checkout). Shell state does not
   persist between tool calls - bare `git merge` runs in the home dir.
-- **NEVER open a pull request unless explicitly told to.** If asked to "review"
-  PR text, only review and show feedback  - do not create the PR. Similarly,
-  NEVER comment on, close, or merge a pull request unless explicitly asked.
+- **NEVER do ANY public-facing GitHub action unless explicitly told to.**
+  This includes: creating PRs, commenting on PRs or issues, closing/merging
+  PRs, filing issues, editing PR descriptions, posting reviews. When Oleg
+  discusses an issue or PR, he is thinking out loud - NOT instructing action.
+  "I want to say X" means "draft this for me to review", NOT "post it now".
+  Only act on explicit instructions like "post this comment", "create the PR",
+  "comment on the issue". If unclear, ASK ("want me to post this or just
+  draft it?"). Claude must never speak publicly on Oleg's behalf without
+  explicit go-ahead.
 - **NEVER file a GitHub issue unless explicitly told to.** Phrases like "track
   this", "log this", "note this", or "add this as an issue" mean LOCAL notes
   only - not `gh issue create`. Only file an issue on an explicit "file an

@@ -135,6 +135,7 @@ Refactoring often produces small float noise from evaluation order changes.
 - [feedback_no_unprompted_issues.md](feedback_no_unprompted_issues.md) - Never `gh issue create` (or comment/close) without an explicit user instruction. "Track this" / "log this" means local notes only.
 - [feedback_avoid_jargon_in_docs.md](feedback_avoid_jargon_in_docs.md) - In USGS/ISIS docs, changelogs, commits: avoid casual jargon. "spiceinit'd" -> "run through spiceinit"; "plumbing" -> "approach".
 - [feedback_nested_ssh_quoting.md](feedback_nested_ssh_quoting.md) - Doubly-hopped ssh (pfe21 -> athfe01) eats $N awk fields and quotes; write a heredoc-with-quoted-EOF script file instead of inlining.
+- [feedback_logs_at_workdir_top.md](feedback_logs_at_workdir_top.md) - Helper-script log files go at top of work dir (output_<jobName>.txt), not nested in subdirs - Oleg watches via ls+tail.
 
 ## Reference
 
