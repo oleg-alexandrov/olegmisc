@@ -659,13 +659,21 @@ Installed in conda env `gh`. Not on PATH - use full path.
 
 **Common operations** (set `gh=/home/oalexan1/miniconda3/envs/gh/bin/gh`):
 
-**CRITICAL gotcha:** Both `gh issue view` and `gh pr view` hit the deprecated
-GraphQL "Projects (classic)" API and ERROR OUT on every repo (DOI-USGS,
+**CRITICAL gotcha:** `gh issue view`, `gh pr view`, AND `gh pr edit` all hit the
+deprecated GraphQL "Projects (classic)" API and ERROR OUT on every repo (DOI-USGS,
 NeoGeographyToolkit, etc.). The error message is misleading - the repo and
-issue/PR are fine, only the `view` subcommand is broken. ALWAYS use the REST
+issue/PR are fine, only those subcommands are broken. ALWAYS use the REST
 API via `gh api` for fetching issue/PR body, comments, state, labels, etc.
 `gh issue list`, `gh issue close`, `gh issue create`, `gh pr list`,
 `gh pr create`, `gh workflow run`, `gh run list`, `gh run view` all work fine.
+
+`gh pr edit` looks like it succeeds but the GraphQL error aborts it - the body is
+NOT updated. To edit a PR body/title, PATCH via REST instead (read body from a
+file to preserve newlines):
+```bash
+jq -n --rawfile body /tmp/body.md '{body:$body}' | \
+  $gh api --method PATCH repos/OWNER/REPO/pulls/NUM --input -
+```
 
 ```bash
 # Issues - LIST/CLOSE/CREATE work, VIEW does not
