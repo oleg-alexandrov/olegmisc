@@ -445,14 +445,23 @@ solely on a job-completion notifier.** PBS jobs can stall indefinitely
 deadlock). A "wait until job leaves the queue" poller will sit forever
 through a stalled run.
 
-**Whenever you start a long-running thing (qsub, build, big rsync, anything
-that may take > 5 min), set an INDEPENDENT wakeup timer at the same time -
-don't trust the completion notifier alone.** Pick an interval shorter than
-your patience for the task (e.g. 5 min for a build, 15-30 min for a stereo
-run). The timer fires regardless of job state - so you check in even if
-the job has stalled, hung in a remote ssh, or wedged a head node. You
-have routinely fallen asleep waiting for completions that never came;
-the wakeup timer is the safety net.
+**Whenever you start a long-running thing (qsub, build, big rsync, cloud CI /
+PR checks, a backgrounded poll, anything you then wait on), IMMEDIATELY set
+your OWN independent self-wakeup loop (ScheduleWakeup) - don't trust the
+completion notifier alone.** This applies in NORMAL interactive sessions too,
+not just overnight. A backgrounded monitor or task-completion notifier is NOT
+sufficient by itself: the notification can be missed and the session just goes
+idle - you "fall asleep". The fix is a ScheduleWakeup timer that you
+RESCHEDULE every time it fires, and only stop once the thing is actually done
+(CI green/red, job left the queue, file appeared). Pick an interval shorter
+than your patience for the task and tuned to the cache window: ~270s for fast
+turnarounds like cloud CI you are actively iterating on, 5 min for a build,
+15-30 min for a long stereo/PBS run. The timer fires regardless of state - so
+you check in even if the job stalled, hung in a remote ssh, wedged a head
+node, or the notifier never came. You have repeatedly fallen asleep waiting on
+completions and had to be nudged awake; the self-rescheduling wakeup loop is
+the safety net. Do not wait passively - if there is nothing else to do this
+turn, the wakeup IS the work.
 
 **Wakeup cadence: relax when the job legitimately needs hours, but tighten
 when you've drifted past your own ETA without it being done.** Long polls
