@@ -456,12 +456,7 @@ RESCHEDULE every time it fires, and only stop once the thing is actually done
 (CI green/red, job left the queue, file appeared). Pick an interval shorter
 than your patience for the task and tuned to the cache window: ~270s for fast
 turnarounds like cloud CI you are actively iterating on, 5 min for a build,
-15-30 min for a long stereo/PBS run. The timer fires regardless of state - so
-you check in even if the job stalled, hung in a remote ssh, wedged a head
-node, or the notifier never came. You have repeatedly fallen asleep waiting on
-completions and had to be nudged awake; the self-rescheduling wakeup loop is
-the safety net. Do not wait passively - if there is nothing else to do this
-turn, the wakeup IS the work.
+15-30 min for a long stereo/PBS run.
 
 **Wakeup cadence: relax when the job legitimately needs hours, but tighten
 when you've drifted past your own ETA without it being done.** Long polls
