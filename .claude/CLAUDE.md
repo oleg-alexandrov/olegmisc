@@ -646,6 +646,10 @@ CRITICAL always-rules:
 
 ## GitHub CLI (gh)
 
+**When writing GitHub PR/issue bodies or comments, do NOT hard-wrap lines.**
+Write flowing paragraphs; GitHub's HTML wraps for you. Manual line breaks
+render as awkward mid-sentence breaks on the web page. (Code blocks excepted.)
+
 Installed in conda env `gh`. Not on PATH - use full path.
 
 **Portable path:** `$(ls -d $HOME/*conda3/envs/gh/bin/gh)`
