@@ -646,68 +646,17 @@ CRITICAL always-rules:
 
 ## GitHub CLI (gh)
 
-**When writing GitHub PR/issue bodies or comments, do NOT hard-wrap lines.**
-Write flowing paragraphs; GitHub's HTML wraps for you. Manual line breaks
-render as awkward mid-sentence breaks on the web page. (Code blocks excepted.)
+Full command reference (machine paths, repo slugs, the broken-GraphQL REST
+recipes, CI commands) lives in `~/projects/github_notes.sh`. Key facts:
 
-Installed in conda env `gh`. Not on PATH - use full path.
-
-**Portable path:** `$(ls -d $HOME/*conda3/envs/gh/bin/gh)`
-
-| Machine | Path |
-|---------|------|
-| **Mac** | `/Users/oalexan1/anaconda3/envs/gh/bin/gh` |
-| **lunokhod1** | `/home/oalexan1/miniconda3/envs/gh/bin/gh` |
-
-**Key repo slugs for -R flag:**
-- ASP: `NeoGeographyToolkit/StereoPipeline`
-- VW: `visionworkbench/visionworkbench`
-- BB: `NeoGeographyToolkit/BinaryBuilder`
-- Tests: `NeoGeographyToolkit/StereoPipelineTest`
-
-**Common operations** (set `gh=/home/oalexan1/miniconda3/envs/gh/bin/gh`):
-
-**CRITICAL gotcha:** `gh issue view`, `gh pr view`, AND `gh pr edit` all hit the
-deprecated GraphQL "Projects (classic)" API and ERROR OUT on every repo (DOI-USGS,
-NeoGeographyToolkit, etc.). The error message is misleading - the repo and
-issue/PR are fine, only those subcommands are broken. ALWAYS use the REST
-API via `gh api` for fetching issue/PR body, comments, state, labels, etc.
-`gh issue list`, `gh issue close`, `gh issue create`, `gh pr list`,
-`gh pr create`, `gh workflow run`, `gh run list`, `gh run view` all work fine.
-
-`gh pr edit` looks like it succeeds but the GraphQL error aborts it - the body is
-NOT updated. To edit a PR body/title, PATCH via REST instead (read body from a
-file to preserve newlines):
-```bash
-jq -n --rawfile body /tmp/body.md '{body:$body}' | \
-  $gh api --method PATCH repos/OWNER/REPO/pulls/NUM --input -
-```
-
-```bash
-# Issues - LIST/CLOSE/CREATE work, VIEW does not
-$gh issue list -R NeoGeographyToolkit/StereoPipeline
-$gh issue close 123 -R NeoGeographyToolkit/StereoPipeline
-# Issue body / state / labels (replaces broken `gh issue view`):
-$gh api repos/OWNER/REPO/issues/123 \
-  --jq '{title, state, body, labels: [.labels[].name]}'
-# Issue comments:
-$gh api repos/OWNER/REPO/issues/123/comments --jq '.[].body'
-
-# Pull requests - LIST/CREATE work, VIEW does not
-$gh pr list -R NeoGeographyToolkit/StereoPipeline
-$gh pr create -R NeoGeographyToolkit/StereoPipeline --title "..." --body "..."
-# PR body (replaces broken `gh pr view`):
-$gh api repos/OWNER/REPO/pulls/123 --jq '.body'
-# PR comments (issue-style review comments live on the issues endpoint):
-$gh api repos/OWNER/REPO/issues/123/comments --jq '.[].body'
-# PR review comments (inline diff comments) live on a different endpoint:
-$gh api repos/OWNER/REPO/pulls/123/comments --jq '.[].body'
-
-# CI workflows
-$gh workflow run build_test_mac_arm64.yml -R NeoGeographyToolkit/StereoPipeline
-$gh run list -R NeoGeographyToolkit/StereoPipeline --limit 5
-$gh run view <run-id> --log-failed -R NeoGeographyToolkit/StereoPipeline
-```
+- Not on PATH; full path `$(ls -d $HOME/*conda3/envs/gh/bin/gh)`.
+- **CRITICAL gotcha:** `gh issue view`, `gh pr view`, and `gh pr edit` error out
+  on the deprecated Projects-classic GraphQL API. Use `gh api` (REST) for any
+  fetch/edit of issue/PR body, comments, state, labels. List/close/create/CI
+  subcommands work fine. See the notes file for the PATCH/POST recipes.
+- **Writing PR/issue text:** plain prose. No hard-wrapped lines (GitHub wraps
+  for you; manual breaks look awkward) and go easy on markup - heavy backticks
+  and `<...>` read weird in an issue. Code blocks excepted.
 
 ## Co-Authored-By Trailer (CRITICAL)
 
