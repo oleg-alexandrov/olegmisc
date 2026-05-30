@@ -654,6 +654,8 @@ recipes, CI commands) lives in `~/projects/github_notes.sh`. Key facts:
   on the deprecated Projects-classic GraphQL API. Use `gh api` (REST) for any
   fetch/edit of issue/PR body, comments, state, labels. List/close/create/CI
   subcommands work fine. See the notes file for the PATCH/POST recipes.
+- **Never trust WebFetch summaries of GitHub issues/PRs - it hallucinates.**
+  Always pull the real body/comments with `gh api` (REST).
 - **Writing PR/issue text:** plain prose. No hard-wrapped lines (GitHub wraps
   for you; manual breaks look awkward) and go easy on markup - heavy backticks
   and `<...>` read weird in an issue. Code blocks excepted.
