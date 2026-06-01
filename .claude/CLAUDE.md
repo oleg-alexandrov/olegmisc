@@ -19,7 +19,8 @@
 - **Before every commit, run `git status` to check for new untracked files
   that need `git add`.** `git commit -a` only stages tracked files. Newly
   created `.cc`, `.h`, etc. must be explicitly added or they will be missing
-  from the commit.
+  from the commit. (Build dirs - `build/`, `build_linux/`, `build_isis/`, etc.
+  - are NEVER added, even if not explicitly gitignored.)
 - **NEVER add binary or data files to git repos without explicit permission.**
   This includes .cub, .tif, .img, .json (large), .bsp, .bc, .ply, .lbl, .dat,
   and any file over ~100 KB. Only .sh, .py, .txt, .md, .rst, .cmake, .cc, .h,
