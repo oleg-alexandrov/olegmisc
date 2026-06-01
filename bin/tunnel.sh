@@ -30,13 +30,16 @@
 
 # Auth setup (one-time):
 #   The reverse tunnel terminates at l1's sshd, so the connecting side
-#   (pfx or Mac) needs a private key that l1's authorized_keys accepts.
-#   l1's own key is used for this:
-#     From l1: scp ~/.ssh/id_rsa pfx:~/.ssh/id_rsa_l1
-#     From Mac: scp pfx:~/.ssh/id_rsa_l1 ~/.ssh/id_rsa_l1
-#   Then ~/.ssh/config on pfx and Mac must have:
-#     IdentityFile ~/.ssh/id_rsa_l1
-#   in their Host l1 entry.
+#   (pfx or Mac) needs a key that l1's authorized_keys accepts.
+#   Copy l1's public key to pfx and Mac:
+#     ssh-copy-id pfx                    # pfx/pfe share /home6 authorized_keys
+#     ssh pfx "ssh -p 3079 oalexan1@localhost 'cat >> ~/.ssh/authorized_keys'" \
+#       < ~/.ssh/id_rsa.pub              # mac_arm (via pfx tunnel)
+#   If l1's key is regenerated, repeat the mac_arm step (pfx picks it up
+#   automatically since /home6 is shared across NAS login/compute nodes).
+#
+#   Note: sfe uses keyboard-interactive (RSA token), not pubkey. The tunnel
+#   must be established from an interactive terminal. See tunnel_notes.sh.
 
 # SSH keep alive setup:
 #   ServerAliveInterval 60 + ServerAliveCountMax 300 (in ~/.ssh/config
