@@ -655,6 +655,13 @@ recipes, CI commands) lives in `~/projects/github_notes.sh`. Key facts:
   on the deprecated Projects-classic GraphQL API. Use `gh api` (REST) for any
   fetch/edit of issue/PR body, comments, state, labels. List/close/create/CI
   subcommands work fine. See the notes file for the PATCH/POST recipes.
+- **Editing PR/issue body/title/comments:** when EXPLICITLY told to (e.g. "go
+  edit", "fix the PR text"), do it directly with
+  `gh api --method PATCH repos/OWNER/REPO/{pulls,issues}/NUM ...` (recipes in
+  `github_notes.sh`). A body/title PATCH is SILENT (no email to subscribers),
+  unlike POSTing a comment. Still governed by the no-unprompted-public-action
+  rule: default is draft+confirm; an explicit "go" unlocks it. On USGS repos,
+  show the diff after for the record.
 - **Never trust WebFetch summaries of GitHub issues/PRs - it hallucinates.**
   Always pull the real body/comments with `gh api` (REST).
 - **Writing PR/issue text:** plain prose. No hard-wrapped lines (GitHub wraps
@@ -699,6 +706,17 @@ their own `.git`) belong in the projects repo.
 
 When a `git push` shows Dependabot or security vulnerability warnings, proactively
 flag it and offer to investigate/fix.
+
+## ISIS Builds Use Ninja, Not Make (CRITICAL - stop rediscovering this)
+
+ISIS3's CMake build dir uses the **Ninja** generator. Build/install with
+`ninja -j8 install` from the build dir, NOT `make install` (which errors
+"No rule to make target 'install'"). The CMake source root is `ISIS3/isis`
+(i.e. `cmake ../isis`), not the repo root. To build libs+apps WITHOUT tests
+you must set `-DBUILD_CORE_TESTS=OFF` - `-DBUILD_TESTING=OFF` and
+`-DbuildTests=OFF` alone are insufficient; gmock/gtest still build and fail
+to link. Full flags: `-DBUILD_CORE_TESTS=OFF -DBUILD_TESTING=OFF
+-DbuildTests=OFF -DJP2KFLAG=OFF -Dpybindings=OFF`.
 
 ## GTest Discovery and ISISROOT
 
