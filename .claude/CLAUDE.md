@@ -68,8 +68,13 @@
 - **USGSCSM repo (`~/projects/usgscsm`): NEVER push to `origin` (DOI-USGS/usgscsm).**
   Same rule as ISIS3. Always push to `oleg` remote (oleg-alexandrov/usgscsm).
   Changes go to USGS only via pull requests.
-- **All USGS repos (ISIS3, USGSCSM, ALE, and any other DOI-USGS repos):
-  NO Co-Authored-By trailer.** Omit it for all commits in these repos.
+- **All USGS repos (ISIS3, USGSCSM, ALE, SpiceQL, and any other DOI-USGS
+  repo): AI attribution is WELCOME.** These maintainers have made peace with
+  AI-assisted contributions. DO add the Co-Authored-By trailer to commits,
+  and DO mention Claude/AI assistance in any public text (PR descriptions,
+  issue comments, review replies, changelog notes). They also always want a
+  changelog entry in their own format. Full mechanics (changelog formats,
+  predicting the PR/issue number): see `~/projects/usgs_contrib_notes.sh`.
 - **Commit real fixes before continuing debug cycles.** When a debug session
   produces real fixes (not just debug prints), commit them immediately. That
   way "discard debug changes" is always safe and won't wipe uncommitted work.
@@ -676,10 +681,10 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
 ```
 Always use a HEREDOC for commit messages to ensure the trailer is included.
 
-**EXCEPTION: all DOI-USGS repos** (`~/projects/ISIS3`, `~/projects/usgscsm`,
-`~/projects/ale`, and any other DOI-USGS repo). Do NOT add the Co-Authored-By
-trailer for commits in these repos. DOI-USGS may have its own approval process
-for AI-assisted contributions. Omit the trailer for all USGS pushes.
+**DOI-USGS repos** (`~/projects/ISIS3`, `~/projects/usgscsm`, `~/projects/ale`,
+SpiceQL, any DOI-USGS repo): AI attribution is now welcome - keep the trailer
+AND state Claude/AI assistance in public text. See the USGS-repos bullet near
+the top and `~/projects/usgs_contrib_notes.sh`.
 
 ## Commit Message Style
 
