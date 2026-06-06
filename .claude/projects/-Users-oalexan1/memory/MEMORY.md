@@ -128,6 +128,7 @@ Refactoring often produces small float noise from evaluation order changes.
 - [feedback_qsub_log_realtime.md](feedback_qsub_log_realtime.md) - qsub scripts should redirect output to a project-dir log file (not /dev/null) so user can tail -f while job runs.
 - [feedback_wipe_and_git_rm.md](feedback_wipe_and_git_rm.md) - When wiping scripts on pfx, always also git rm tracked paths on Mac in the same step.
 - [feedback_precise_instructions.md](feedback_precise_instructions.md) - Do exactly what was asked, no extras. When unsure, ASK rather than do extra.
+- [feedback_follow_explicit_plan.md](feedback_follow_explicit_plan.md) - When Oleg gives an explicit plan/directive, execute it; don't re-propose alternatives he already weighed.
 - [feedback_only_sh_and_metadata_in_git.md](feedback_only_sh_and_metadata_in_git.md) - Default tracking is .sh + metadata/docs only. Data files of ANY kind (including small JSON state files, per-image lists, .txt inventories) stay untracked unless explicitly requested.
 - [feedback_stop_when_in_ballpark.md](feedback_stop_when_in_ballpark.md) - Camera-model ports: stop at "plausible and pointing down" rather than churn through inherent vendor-doc/convention uncertainty.
 - [feedback_qsub_script_chmod.md](feedback_qsub_script_chmod.md) - After rsync Mac to pfx, verify `chmod +x` on the pfx copy; PBS exits 254 in ~2s if missing.

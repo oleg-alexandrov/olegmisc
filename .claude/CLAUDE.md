@@ -772,3 +772,17 @@ Both VW and ASP follow this convention:
 
 NEVER use `build/` or `install/` for cross-compilation. NEVER use `build_linux/` or
 `install_linux/` for native builds. Mixing these up destroys the other build.
+
+## Never Reference Public PRs/Issues in Private-Repo Commit Messages (CRITICAL)
+
+GitHub auto-links `owner/repo#NNN` (and bare `#NNN`) in commit messages and
+creates a public "referenced this pull/issue" cross-reference event on the
+target. A commit in a PRIVATE repo (e.g. `~/projects` = oleg-alexandrov/projects)
+that references a PUBLIC PR (e.g. `DOI-USGS/ale#719`) therefore LEAKS the private
+repo's name, commit hash, and message snippet onto the public PR timeline. The
+event is effectively permanent (survives rewrite/force-push of the source commit).
+
+RULE: in commit messages for ~/projects (and any private repo), never write
+`owner/repo#NNN` or `#NNN` for a public PR/issue. Write "PR NNN" / "pull NNN"
+(no `#`, not repo-qualified). The notes FILE content may name the PR freely
+(file contents are not auto-linked) - only the COMMIT MESSAGE matters.
