@@ -4,6 +4,14 @@
 
 **The user's name is Oleg (oalexan1). GitHub account: `oleg-alexandrov`.** Don't say "the user" but no need to use his name constantly either - this is direct conversation.
 
+**Before starting any non-trivial task, consult this file AND the topic notes it
+points to (the `~/projects/*.sh` references throughout) for what to read first.**
+These store hard-earned, non-obvious knowledge - build flags, gotchas, recovery
+playbooks, conventions. When a section names a `~/projects/...` file relevant to
+the task at hand, read it before getting started; skipping it means rediscovering
+the same problems. This file is intentionally terse and delegates detail to those
+notes - the pointer is a promise that the detail exists there.
+
 - Always end files with a newline character (POSIX requirement).
 - When Oleg says to "remember" something, add it to this CLAUDE.md file.
 - **Project work notes go in `~/projects/`, NOT in `.claude/` memory files.**
@@ -211,11 +219,10 @@ cd ~/projects/BinaryBuilder
   --asp-deps-dir /swbuild/oalexan1/miniconda3/envs/asp_deps \
   --python-env /swbuild/oalexan1/miniconda3/envs/python_isis9
 ```
-- First arg: dev build install dir (real ELF binaries in `bin/`). **NOT** an
-  already-packaged release (those have wrapper scripts in `bin/`).
-- `--asp-deps-dir`: conda env with ASP dependencies.
-- `--python-env`: small separate Python env (`python_isis9`, ~320 MB). **NOT**
-  the full `asp_deps` env (~6 GB) or the package will be bloated.
+First arg = dev build install dir (real ELF binaries, NOT a packaged release with
+wrapper scripts). `--asp-deps-dir` = ASP deps conda env. `--python-env` = the
+small `python_isis9` (~320 MB), NOT full `asp_deps` (~6 GB) or it bloats. Build
+details: `~/projects/install_asp_notes.sh`.
 
 ## Machine-Specific Permissions
 
@@ -241,6 +248,14 @@ from NAS/Pleiades. When asked to push notes or files to the Mac, use
 - Conda init: `eval "$($HOME/anaconda3/bin/conda shell.zsh hook)" && conda activate asp_deps`
 - Duplicate rpath fix is baked into ASP's CMake (`src/asp/CMakeLists.txt` install block) - no manual step needed after `make install`.
 - Run tests with dev build: `export PATH=~/projects/StereoPipeline/install/bin:$PATH`
+- **Storage is constrained on this Mac - occasionally check `/tmp` for cruft and
+  wipe stale items.** `/tmp` accumulates large throwaway files (old
+  `asp_deps_*.tar.gz` deps tarballs ~1.6 GB each, extracted artifacts like
+  `asp_arm_artifact/`, `.cub` files, `x64pkgs/`) that survive across sessions
+  and add up to many GB. Triage with `du -sh /tmp/* | sort -rh | head`, then
+  remove anything not recently modified (e.g. `find /tmp -maxdepth 1 -mtime +7`).
+  Only wipe obvious throwaway build/test cruft - never anything that looks like
+  active work or that we created this session; if unsure, ask.
 
 ## Common Aliases
 
@@ -252,13 +267,13 @@ Full list in `~/.bash_aliases` - check there if an unfamiliar short command show
 
 **Full reference:** `~/projects/asp_regression_tests.sh` - canonical ASP test
 suite guide (suite layout, configs, tolerances, failure triage, release-vs-dev
-workflow, gold regen). For Mac GitHub Actions CI specifics (trigger path,
-artifact/gold tarball updates) see `~/projects/update_cloud_tests.sh`.
+workflow, gold regen, finding test dirs by tool). Mac GitHub Actions CI
+specifics: `~/projects/update_cloud_tests.sh`. **Suite location:**
+`~/projects/StereoPipelineTest`.
 
-**Test suite location:** `/home/oalexan1/projects/StereoPipelineTest`
-
-**Environment setup before running tests (CRITICAL):** Tests need conda env
-activated, ISISROOT set, and dev build + tools on PATH. Do this once per shell:
+**Environment setup before running tests (CRITICAL)** - else parallel_stereo/
+mapproject crash ("IsisPreferences not found") and validate.sh fails ("gdalinfo
+not found"). Once per shell:
 ```bash
 # Mac:
 eval "$($HOME/anaconda3/bin/conda shell.zsh hook)"
@@ -267,56 +282,16 @@ export ISISROOT=$HOME/anaconda3/envs/asp_deps
 export PATH=~/projects/StereoPipeline/install/bin:$HOME/anaconda3/envs/asp_deps/bin:$PATH
 # lunokhod1: same but s/anaconda3/miniconda3/g
 ```
-Without this, parallel_stereo/mapproject crash with "IsisPreferences not found"
-and validate.sh fails with "gdalinfo not found".
 
-**How to run a single test:**
-1. Set up environment (see above)
-2. `cd` into the test directory
-3. Run `bash run.sh > output.txt 2>&1`
-4. Run `bash validate.sh` - exit 0 means pass
-5. If it fails, check `output.txt`
-
-**Do NOT use pytest** - just run `run.sh` and `validate.sh` directly.
-
-**Release tarballs for verification:** Recent release builds are saved in
-`~/projects/BinaryBuilder/asp_tarballs/`. When doing hard verification
-(e.g., confirming dev changes don't break existing behavior), run tests
-with the release build first, then with the dev build, and compare.
-Download the latest from the ASP GitHub releases page when needed.
-
-**MANDATORY: Run regression tests after every code change.** After modifying an
-ASP tool, find all matching test dirs in StereoPipelineTest.
-
-**Test directory naming:** Test dirs start with `ss` or `ss_` (no consistent
-separator). Search with BOTH patterns, or just `ls | grep -i keyword`:
-```bash
-ls ~/projects/StereoPipelineTest/ | grep -i toolname
-ls ~/projects/StereoPipelineTest/ | grep -i keyword
-```
-Do NOT use `ls -d ss_*keyword*` alone - it misses dirs like `ssPeruSat_*`,
-`ssCSM_*`, etc. that use `ss` without underscore. The `ls | grep -i` approach
-catches both patterns and is case-insensitive.
-
-Also search inside run.sh files for the tool name:
-```bash
-grep -rl 'toolname' ~/projects/StereoPipelineTest/ss*/run.sh | head -20
-```
-Run ALL of them, not just one. Also consider whether the change has test
-coverage at all - if a code path (e.g., integer input types, a specific flag)
-is not exercised by any test, flag this to the user before declaring success.
-
-**NEVER git add `run/` or `gold/` directories in StereoPipelineTest.** These contain
-large binary output files (~40 GB total). They are gitignored. Only `run.sh` and
-`validate.sh` are tracked in git.
-
-Each test directory has:
-- `run.sh` - the test commands
-- `validate.sh` - comparison against gold (reference) output
-- `gold/` - reference output files
-- `run/` - generated output (created by `run.sh`)
-
-When creating new tests, always `chmod +x run.sh validate.sh`.
+- **Run a test:** `cd` into its dir, `bash run.sh > output.txt 2>&1`, then
+  `bash validate.sh` (exit 0 = pass). **Do NOT use pytest.**
+- **MANDATORY: run regression tests after every ASP code change.** Find ALL
+  matching dirs (`ls ~/projects/StereoPipelineTest/ | grep -i keyword` AND
+  `grep -rl tool ~/projects/StereoPipelineTest/ss*/run.sh`) and run them all -
+  not just one. Flag to the user if a changed code path has no test coverage.
+- **NEVER git add `run/` or `gold/`** (~40 GB, gitignored); only `run.sh` and
+  `validate.sh` are tracked. Each test dir has run.sh, validate.sh, gold/ (ref),
+  run/ (generated). `chmod +x run.sh validate.sh` for new tests.
 
 ## Notes Files (.sh)
 
@@ -340,48 +315,24 @@ the user to check. Easy to forget since they're in subdirs.
 ## Paper Trail on Disk (CRITICAL)
 
 **ALWAYS log thoughts, progress, decisions, and issues to the project's notes
-file on disk.** Do not rely on internal reasoning alone - write it down. This is
-the primary way to stay in sync with the user across sessions and within long
-sessions after context compaction.
-
-- **At the start of any non-trivial task:** open (or create) the project's notes
-  file and append what you're about to do, what approach you're taking, and why.
-- **During work:** log key findings, surprises, errors encountered, and decisions
-  made. Especially log anything that took multiple attempts or was non-obvious.
-- **After completing a step:** note what was done, what worked, what didn't.
-- **If no notes file exists for the current project:** create one in the
-  appropriate `~/projects/<subdir>/` and mention it to the user. Every project
-  gets a paper trail, no exceptions.
-- **If the user provides a notes file path:** use that file. Don't invent a
-  different one.
+file on disk** - don't rely on internal reasoning alone. This keeps us in sync
+across sessions and after context compaction. Log at the start (plan + approach +
+why), during (findings, surprises, anything non-obvious or multi-attempt), and
+after each step (what worked/didn't). If no notes file exists, create one in
+`~/projects/<subdir>/` and tell the user; if the user gives a path, use that one.
 
 ## Project Status Files
 
 **Work tracking files** in `~/projects/` (tracked by `~/projects/.git`):
-- `~/projects/mpr_todo.sh` - Monthly Progress Report. Records completed work
-  for MPR project reports (not a TODO list).
-- `~/projects/ostfl_2025_notes.sh` - Current OSTFL 2025 work tracking and status
-  updates. When told to update "OSTFL status" or "OSTFL doc", this is the file.
-- `~/projects/todo.sh` - General TODO/notes file.
+- `mpr_todo.sh` - Monthly Progress Report: completed work grouped under project
+  headers ("OSTFL-24", "STV/DSI"); not a TODO list, no standalone items.
+- `ostfl_2025_notes.sh` - OSTFL 2025 status ("OSTFL status"/"OSTFL doc" -> here).
+- `todo.sh` - general TODO ("the TODO doc"/"todo.sh" -> here).
 
-When told to update "the TODO doc" or "todo.sh", edit `~/projects/todo.sh`.
-
-**Finding recent work context:** When asked about recent work or needing context,
-sort `.sh` files by modification date in `~/projects/` and its subdirectories:
-```bash
-find ~/projects -maxdepth 2 -name "*.sh" -newer ~/projects/todo.sh -o \
-  -name "*.sh" -mtime -30 | head -20
-ls -lt ~/projects/*.sh | head -10
-```
-Pick the most relevant file by name. These `.sh` notes files serve as detailed
-memory beyond what fits in CLAUDE.md.
-
-**MPR Report Format** in `mpr_todo.sh`:
-- Monthly reports structured with project headers (e.g., "OSTFL-24", "STV/DSI")
-- Work items must be listed under their correct project header
-- Don't create standalone items outside project categories
-
-**VS Code settings** are tracked in the home dir git repo (dotfiles).
+**Finding recent work context:** sort `.sh` notes by mtime (`ls -lt ~/projects/*.sh`;
+`find ~/projects -maxdepth 2 -name '*.sh' -mtime -30`) and pick the most relevant
+by name - detailed memory beyond CLAUDE.md. **VS Code settings** are tracked in
+the home dir git repo (dotfiles).
 
 ## CMake File Management
 
@@ -436,45 +387,17 @@ When adding/modifying command-line options, always update all three consistently
 - Match casual energy, make jokes, be good company
 - Balance work mode (concise, efficient) with chat mode (entertaining, human)
 
-**Overnight / autonomous initiative:** When working alone (overnight monitoring,
-autonomous loops, explicit "go off and do X"), it is fine to take initiative on
-simple fixes - e.g., patching a build (symlink, missing lib), resubmitting
-failed jobs, cleaning up stale files. Anything that is simple enough and does
-not result in external commits or a lot of runs. If in doubt, do a small test
-first (e.g., devel queue, 2 min walltime) and proceed if it works. Use
-judgement: a one-line symlink fix is fine; a sweeping refactor is not. Log what
-was done so the user can review in the morning.
-
-**When monitoring overnight, set a periodic wakeup (~30 min) - don't rely
-solely on a job-completion notifier.** PBS jobs can stall indefinitely
-(state R but cput frozen, hung mounts, placement-loop -22 holds, watchdog
-deadlock). A "wait until job leaves the queue" poller will sit forever
-through a stalled run.
-
-**Whenever you start a long-running thing (qsub, build, big rsync, cloud CI /
-PR checks, a backgrounded poll, anything you then wait on), IMMEDIATELY set
-your OWN independent self-wakeup loop (ScheduleWakeup) - don't trust the
-completion notifier alone.** This applies in NORMAL interactive sessions too,
-not just overnight. A backgrounded monitor or task-completion notifier is NOT
-sufficient by itself: the notification can be missed and the session just goes
-idle - you "fall asleep". The fix is a ScheduleWakeup timer that you
-RESCHEDULE every time it fires, and only stop once the thing is actually done
-(CI green/red, job left the queue, file appeared). Pick an interval shorter
-than your patience for the task and tuned to the cache window: ~270s for fast
-turnarounds like cloud CI you are actively iterating on, 5 min for a build,
-15-30 min for a long stereo/PBS run.
-
-**Wakeup cadence: relax when the job legitimately needs hours, but tighten
-when you've drifted past your own ETA without it being done.** Long polls
-(30+ min) are fine while you expect the job to keep running. The failure
-mode is sleeping through completion.
-
-**Every time you wake up (notification, monitor event, scheduled wakeup),
-the FIRST thing to do is run `date` and notice how long elapsed since
-your last action.** Long sessions especially overnight runs leave you
-stale on what time it is and what state things should be in. A `date`
-or `qstat -fx` timestamp keeps you grounded - "still evening" can
-silently turn into "next morning" if you don't check.
+**Overnight / autonomous + self-wakeup (full detail: `~/projects/claude_overnight_notes.sh`):**
+- Working alone, take initiative on simple fixes (symlink, missing lib, resubmit
+  failed job, clean stale files); test small first; log what you did. No sweeping
+  refactors, no external commits unprompted.
+- Whenever you start anything you then wait on (qsub, build, big rsync, cloud CI,
+  backgrounded poll), IMMEDIATELY set your OWN ScheduleWakeup loop and RESCHEDULE
+  it each fire until the thing is truly done - the completion notifier alone is
+  not enough (it can be missed and you "fall asleep"). Interval tuned to the
+  cache window: ~270s for cloud CI you're iterating on, 5 min for a build, 15-30
+  min for a long stereo/PBS run.
+- On every wakeup, FIRST run `date` to re-orient - long runs leave you stale.
 
 ## Building ASP Docs
 
@@ -570,21 +493,14 @@ Convention: `origin` = user's fork, `god` = upstream org (for ASP, VW, BinaryBui
 
 ## ISIS Mission Data and Kernels
 
-**LRO NAC end-to-end reference: `~/projects/lronac_processing.sh`.** Programmatic
-ODE search, candidate ranking by ground-frame sub-solar azimuth, full
-ingest pipeline (lronac2isis → spiceinit → lronaccal → lronacecho), CSM
-JSON via isd_generate, illumination/azimuth analysis, mapproject, sfs
---query, common failure modes (missing CK, ALE driver auto-pick crash,
-sub-solar lon vs ground azimuth confusion). Worked example on the
-Chandrayaan-2 OHRC south polar site. Update this file whenever we
-re-discover any LRO NAC gotcha.
-
-**Generic ISIS kernel fetch (any mission): same file, section 5.** The
-canonical recipe is `downloadIsisData <mission> $ISISDATA` for a full
-sync, or targeted `rclone --config $ISISROOT/etc/isis/rclone.conf copy
-<mission>:kernels/ck/ ... --include="<file>" --no-traverse -P` for a
-single missing CK after spiceinit fails. Same recipe for lro, mro,
-chandrayaan2, mer, mex, dawn, etc.
+**LRO NAC end-to-end + generic ISIS kernel fetch: `~/projects/lronac_processing.sh`.**
+Full ingest pipeline (lronac2isis → spiceinit → lronaccal → lronacecho), CSM JSON
+via isd_generate, ODE search, illumination/azimuth analysis, and failure modes
+(missing CK, ALE driver crash, sub-solar lon vs ground azimuth). Kernel fetch
+(section 5): `downloadIsisData <mission> $ISISDATA` for a full sync, or targeted
+`rclone --config $ISISROOT/etc/isis/rclone.conf copy <mission>:kernels/ck/ ...
+--include="<file>" --no-traverse -P` for a single missing CK. Update on any new
+gotcha.
 
 ## NASA NAS / Pleiades Supercomputer
 
@@ -596,82 +512,45 @@ storage rules. Worked primer: `~/projects/spot5_alps/spot5_alps_notes.sh`.
 For lfe tape archive of a finished project: `~/projects/lfe_archive.sh`
 (worked example: `~/projects/sfs_mons_mouton/archive_to_lfe.sh`).
 
-CRITICAL always-rules:
+CRITICAL always-rules (procedure/playbooks in the notes files above):
 
-- **NEVER wipe ANYTHING on lfe (Lou tape archive).** Read-only from
-  Claude's perspective. Even a single accidental `rm` on lfe
-  destroys archived science results that took CPU-years to produce
-  and gets the user fired. If a task involves freeing space on
-  lfe or "cleaning up an old lfe area", STOP and confirm explicitly
-  with the user, naming the exact paths.
-
-- **Before every qsub: 4-sec dry-run on head node.**
-  `ssh pfe21 "timeout 4 bash /full/path/to/runner.sh; echo RC=\$?"`.
-  RC=124 = clean timeout = PASS. Any other RC>0 = real error to fix
-  before submitting. Catches missing inputs, perms, --t_projwin
-  failures, env issues. Costs 4 sec, saves 10+ min of doomed queue time.
-  Per script (and per distinct env var combo if parameterized).
-- Never run heavy compute on the head node. qsub only. Head node is for
-  the 4-sec dry-run above and `tool --help | grep -- '--flag'`-style
-  introspection only. Anything that would actually do work (read large
-  cubes, run mapproject past --query-projection, etc.) MUST be inside
-  the timeout 4. Direct `bash some_qsub_script.sh` over ssh without
-  timeout starts a real run on the head node and does NOT auto-kill.
-  Forbidden.
-- Default to `bro_ele` (pfe, `/PBS/bin/qsub`, scheduler `pbspl1`). Do NOT
-  use `tur_ath` (athfe, `/opt/pbs/bin/qsub`, scheduler `pbs06a`) unless
-  explicitly asked - Turin is expensive and prone to flaky placement /
-  stuck nodes / Exit_status -22 / runs that won't `qdel -W force` away.
-- `athfe normal` queue walltime cap is **8 hours**. `qsub -l
-  walltime=10:00:00` returns `qsub: Job violates queue and/or server
-  resource limits`. Use 8:00:00 max on athfe normal.
-- Budget (`-W group_list=`): `e2305` for personal/SFS/SPOT5/Chandrayaan-2/
-  ASP. NEVER `s3319` (SDB / Monica allocation - off limits).
-- Scripts in qsub MUST be `chmod +x` and use FULL paths (PBS exits 254
-  otherwise).
-- All NAS scripts MUST set `umask 022` near the top - PBS inherits a
-  stricter default that locks outputs from collaborators.
-- /home6 quota is ~10 GB. Anything in `~/projects/<subdir>/` that holds
-  data MUST be a symlink to `/nobackupp19/...`; verify with `readlink -f`
-  (resolved path must start with `/nobackup*`, not `/home6`).
-- NEVER rsync a symlinked dir itself - it replaces the link with a real
-  dir and severs the nobackup link. Always trailing slash on source.
-- C++ binaries / `.so` / `.dylib` for pfx MUST come from l1 (real Linux
-  ELF). Mac builds are Mach-O even when named `install_linux/`.
-- When syncing a dev build, rsync the FULL `lib/` and FULL `bin/` dirs,
-  not individual files - partial syncs cause VW/ASP symbol mismatches.
-- For stuck jobs / PBS Exit_status=-22 placement loops: full playbook in
-  pleiades_notes.sh. Pivot tur_ath → bro_ele after ~3 retries on a bad
-  node; submit anyway even if `qdel -W force` is ineffective.
-- Sleep 1+ between qsub calls in loops; redirect log only (`> log`), no
-  `tee`; verify expected output count at end of batch jobs (state F in
-  `qstat -x` covers both clean exit AND walltime kill).
-- For long jobs use BOTH a nohup watchdog AND Claude self-timers
-  (`sleep 1800` via `run_in_background`) - watchdog survives session
-  drop, timer gives interactive feedback.
+- **NEVER wipe ANYTHING on lfe (Lou tape archive).** Read-only from Claude's
+  perspective; an accidental `rm` destroys CPU-years of archived results. If a
+  task involves freeing lfe space, STOP and confirm exact paths with the user.
+- **Before every qsub: 4-sec dry-run** `ssh pfe21 "timeout 4 bash /full/path/runner.sh; echo RC=\$?"`
+  (RC=124 = clean PASS; any other RC>0 = fix first). Per script / per env combo.
+- **Never run heavy compute on the head node** - qsub only. Head node is for the
+  4-sec dry-run and `tool --help` introspection only. A direct `bash script.sh`
+  over ssh without `timeout` starts a real head-node run and does NOT auto-kill.
+- **Default `bro_ele`** (pfe). Do NOT use `tur_ath` (athfe) unless asked - flaky
+  placement / Exit_status -22 / won't `qdel -W force`. athfe normal walltime cap 8h.
+- **Budget `-W group_list=e2305`** (personal/SFS/SPOT5/Chandrayaan-2/ASP). NEVER
+  `s3319` (SDB/Monica - off limits).
+- qsub scripts MUST be `chmod +x`, use FULL paths (else PBS exit 254), and set
+  `umask 022` (else outputs locked from collaborators).
+- /home6 quota ~10 GB: data under `~/projects/<subdir>/` MUST symlink to
+  `/nobackup*` (verify `readlink -f`). NEVER rsync a symlinked dir itself
+  (severs the link) - always trailing slash on source.
+- Binaries/`.so`/`.dylib` for pfx MUST come from l1 (real Linux ELF, not Mach-O);
+  rsync the FULL `lib/` and `bin/`, not individual files (symbol mismatches).
+- Long jobs: use BOTH a nohup watchdog AND a Claude self-timer. Loops: sleep 1+
+  between qsubs, `> log` (no `tee`), verify output count at end.
 
 ## GitHub CLI (gh)
 
-Full command reference (machine paths, repo slugs, the broken-GraphQL REST
-recipes, CI commands) lives in `~/projects/github_notes.sh`. Key facts:
+Full reference (paths, repo slugs, GraphQL-REST recipes, CI commands):
+`~/projects/github_notes.sh`. Key facts:
 
 - Not on PATH; full path `$(ls -d $HOME/*conda3/envs/gh/bin/gh)`.
-- **CRITICAL gotcha:** `gh issue view`, `gh pr view`, and `gh pr edit` error out
-  on the deprecated Projects-classic GraphQL API. Use `gh api` (REST) for any
-  fetch/edit of issue/PR body, comments, state, labels. List/close/create/CI
-  subcommands work fine. See the notes file for the PATCH/POST recipes.
-- **Editing PR/issue body/title/comments:** when EXPLICITLY told to (e.g. "go
-  edit", "fix the PR text"), do it directly with
-  `gh api --method PATCH repos/OWNER/REPO/{pulls,issues}/NUM ...` (recipes in
-  `github_notes.sh`). A body/title PATCH is SILENT (no email to subscribers),
-  unlike POSTing a comment. Still governed by the no-unprompted-public-action
-  rule: default is draft+confirm; an explicit "go" unlocks it. On USGS repos,
-  show the diff after for the record.
-- **Never trust WebFetch summaries of GitHub issues/PRs - it hallucinates.**
-  Always pull the real body/comments with `gh api` (REST).
-- **Writing PR/issue text:** plain prose. No hard-wrapped lines (GitHub wraps
-  for you; manual breaks look awkward) and go easy on markup - heavy backticks
-  and `<...>` read weird in an issue. Code blocks excepted.
+- **CRITICAL gotcha:** `gh issue/pr view` and `gh pr edit` error on the deprecated
+  Projects-classic GraphQL API. Use `gh api` (REST) for any fetch/edit of
+  issue/PR body, comments, state, labels (PATCH/POST recipes in the notes file).
+  List/close/create/CI subcommands work fine. A body/title PATCH is silent (no
+  email); still governed by the no-unprompted-public-action rule.
+- **Never trust WebFetch summaries of issues/PRs - it hallucinates.** Pull the
+  real body/comments with `gh api`.
+- **Writing PR/issue text:** plain prose, no hard-wrapped lines, easy on markup
+  (heavy backticks/`<...>` read weird); code blocks excepted.
 
 ## Co-Authored-By Trailer (CRITICAL)
 
@@ -714,25 +593,15 @@ flag it and offer to investigate/fix.
 
 ## ISIS Builds Use Ninja, Not Make (CRITICAL - stop rediscovering this)
 
-ISIS3's CMake build dir uses the **Ninja** generator. Build/install with
-`ninja -j8 install` from the build dir, NOT `make install` (which errors
-"No rule to make target 'install'"). The CMake source root is `ISIS3/isis`
-(i.e. `cmake ../isis`), not the repo root. To build libs+apps WITHOUT tests
-you must set `-DBUILD_CORE_TESTS=OFF` - `-DBUILD_TESTING=OFF` and
-`-DbuildTests=OFF` alone are insufficient; gmock/gtest still build and fail
-to link. Full flags: `-DBUILD_CORE_TESTS=OFF -DBUILD_TESTING=OFF
--DbuildTests=OFF -DJP2KFLAG=OFF -Dpybindings=OFF`.
-
-## GTest Discovery and ISISROOT
-
-Building ISIS (and ALE with tests) requires GTest submodule and ISISROOT:
-1. Init gtest: `git -C ~/projects/ISIS3 submodule update --init --recursive`
-2. Set `ISISROOT` before make/ninja (GTest discovery runs the test binary at
-   build time, which needs ISISROOT to find ISIS data paths).
-3. ALE with `ALE_BUILD_LOAD=ON` has test link issues but the library installs fine.
-
-Full details in `~/projects/isis_mapproject/isis_mapproject_notes.sh` lines 179-193
-and `~/projects/env_update.sh`.
+ISIS3 build uses **Ninja**, not make: `ninja -j8 install` from the build dir
+(`make install` errors). CMake source root is `ISIS3/isis` (`cmake ../isis`), not
+the repo root. To build libs+apps without tests you MUST set `-DBUILD_CORE_TESTS=OFF`
+(`-DBUILD_TESTING=OFF`/`-DbuildTests=OFF` alone are insufficient - gtest still
+fails to link). Building with tests needs the gtest submodule
+(`git -C ~/projects/ISIS3 submodule update --init --recursive`) and `ISISROOT`
+set (discovery runs the test binary at build time). Full flags and gotchas:
+`~/projects/isis_2026/isis_2026_notes.sh`; also
+`~/projects/isis_mapproject/isis_mapproject_notes.sh` and `~/projects/env_update.sh`.
 
 ## ISIS Data (CRITICAL)
 
@@ -741,26 +610,10 @@ This is 179 GB of mission kernels that take forever to re-download over home ISP
 
 ## Safe Directory Cleanup (CRITICAL)
 
-**NEVER run `rm -rf` with absolute paths or variable-expanded paths to clean build dirs.**
-VW was wiped TWICE by agents doing `rm -rf /path/to/visionworkbench/build_linux` with
-bad variable expansion. The rule:
-
-1. `cd` into the project directory first
-2. Run `ls` to confirm you're in the right place
-3. Use **relative paths only**: `rm -rf ./build_linux`, never `rm -rf $bld`
-4. Never combine `rm -rf` with shell variables that could expand to empty or wrong paths
-
-**Example of what NOT to do:**
-```bash
-rm -rf $bld/CMakeCache.txt $bld/CMakeFiles  # if $bld is empty, wipes / !
-```
-
-**Correct:**
-```bash
-cd /Users/oalexan1/projects/visionworkbench
-ls  # confirm src/, cmake/, etc. are here
-rm -rf ./build_linux
-```
+**NEVER run `rm -rf` with absolute or variable-expanded paths to clean build
+dirs** (`rm -rf $bld/...` wipes `/` if `$bld` is empty - VW was wiped TWICE this
+way). Instead: (1) `cd` into the project dir, (2) `ls` to confirm you're there,
+(3) use **relative paths only** (`rm -rf ./build_linux`, never `rm -rf $bld`).
 
 ## Cross-Compile Build Directories (CRITICAL)
 
