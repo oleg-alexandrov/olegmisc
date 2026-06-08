@@ -157,6 +157,7 @@ namespace vw { namespace cm {
 - **NEVER use equal-sign or dash separators** (`//=====`, `//-----`) in code or comments
 - **NEVER use ellipsis (...)** in messages or comments - use period instead
 - **Avoid the word "honor"** anywhere (code, docs, chat). Prefer "respect" or "follow".
+- **Never cite specific line numbers in code comments** (source or data lines, e.g. "line 633") - they drift. Explain the concept instead.
 - No space before `::` scope resolution operator
 - No space before `:` in constructor initializer lists
 - Use camelCase for function names
@@ -223,6 +224,14 @@ First arg = dev build install dir (real ELF binaries, NOT a packaged release wit
 wrapper scripts). `--asp-deps-dir` = ASP deps conda env. `--python-env` = the
 small `python_isis9` (~320 MB), NOT full `asp_deps` (~6 GB) or it bloats. Build
 details: `~/projects/install_asp_notes.sh`.
+
+## Building the asp_deps Conda Build Env
+
+Make a clean `asp_deps` build env from a fresh `stereo-pipeline` conda package
+(all deps + compiler, then strip vw/asp): `~/projects/make_asp_deps_env.sh`.
+One rule to remember without reading: strip via `conda remove --force-remove
+stereo-pipeline visionworkbench`, never manual rm (most `bin` tools are deps',
+not ours).
 
 ## Machine-Specific Permissions
 
