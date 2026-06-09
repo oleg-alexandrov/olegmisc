@@ -233,6 +233,13 @@ One rule to remember without reading: strip via `conda remove --force-remove
 stereo-pipeline visionworkbench`, never manual rm (most `bin` tools are deps',
 not ours).
 
+**Conda channel_priority MUST be `flexible`** on every machine (l1, pfe, Mac).
+`strict` blocks cross-channel resolution (e.g. bullet from conda-forge when
+our channel is listed first). Our `=asp*` build-string pins protect against
+conda-forge swapping our packages; `flexible` just lets deps like bullet
+resolve from whichever channel has them. Check: `conda config --show
+channel_priority`. Fix: `conda config --set channel_priority flexible`.
+
 ## Machine-Specific Permissions
 
 **lunokhod1** (alias `l1`, `lunokhod1.ndc.nasa.gov`) - the dev machine. Check with `uname -n`:
