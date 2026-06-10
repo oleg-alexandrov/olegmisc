@@ -91,6 +91,10 @@ notes - the pointer is a promise that the detail exists there.
   real fixes and debug prints. Either commit the real fixes first, or
   selectively discard only the debug parts.
 
+## git rm --cached, never bare git rm (CRITICAL)
+
+Never add `.ssh/` to git (dangerous). To untrack a file but keep it on disk, always `git rm --cached`, never bare `git rm` (which deletes the working file too - this once wiped `~/.ssh/config`; recover via `git show <commit>^:path > path`).
+
 ## Header Include Ordering (CRITICAL)
 
 In ASP source files, headers must be ordered:
