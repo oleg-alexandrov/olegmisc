@@ -237,6 +237,16 @@ One rule to remember without reading: strip via `conda remove --force-remove
 stereo-pipeline visionworkbench`, never manual rm (most `bin` tools are deps',
 not ours).
 
+## Conda Channel Cleanup (prune old asp_N builds)
+
+After a re-spin, prune superseded `asp_N` conda builds on the
+nasa-ames-stereo-pipeline channel with `~/projects/wipe_old_asp_conda.sh`:
+keeps ONLY the highest `asp_N` per (package, platform), dry-run by default
+(`--go` to apply). Guarded so it never removes a build unless the keeper exists
+(`anaconda show && anaconda remove`), and removals are subdir-qualified so it
+never crosses platforms. Always wipe per-platform, never touch non-asp/older
+stable builds.
+
 **Conda channel_priority MUST be `flexible`** on every machine (l1, pfe, Mac).
 `strict` blocks cross-channel resolution (e.g. bullet from conda-forge when
 our channel is listed first). Our `=asp*` build-string pins protect against
