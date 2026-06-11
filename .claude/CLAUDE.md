@@ -549,6 +549,10 @@ For lfe tape archive of a finished project: `~/projects/lfe_archive.sh`
 
 CRITICAL always-rules (procedure/playbooks in the notes files above):
 
+- **lfe access from l1:** `ssh pfx` (lands on pfe21), then `ssh lfe` from there.
+  Direct `ssh lfe` from l1 fails (sfe gateway needs interactive RSA token).
+  Claude cannot do interactive auth, so lfe commands require two hops via pfx.
+  `pfx` = SSH alias for pfe21 (the specific node our reverse tunnel lands on).
 - **NEVER wipe ANYTHING on lfe (Lou tape archive).** Read-only from Claude's
   perspective; an accidental `rm` destroys CPU-years of archived results. If a
   task involves freeing lfe space, STOP and confirm exact paths with the user.
