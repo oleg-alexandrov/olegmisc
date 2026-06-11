@@ -570,6 +570,13 @@ CRITICAL always-rules (procedure/playbooks in the notes files above):
 - /home6 quota ~10 GB: data under `~/projects/<subdir>/` MUST symlink to
   `/nobackup*` (verify `readlink -f`). NEVER rsync a symlinked dir itself
   (severs the link) - always trailing slash on source.
+- **Wiping a /home6->/nobackup symlinked project (CRITICAL):** first
+  `ls -ld` + `readlink` to see which is the symlink and which is the real
+  dir. Free space by removing the REAL `/nobackup*` target: `cd` into its
+  parent, confirm with `ls`, then `rm -rf ./<dir>` (relative). Remove the
+  `/home6` symlink with bare `rm -f <link>` - NO `-r`, NO trailing slash
+  (a trailing slash can make rm -rf delete THROUGH the link into the
+  target). Never `rm -rf` a path that is itself a symlink.
 - Binaries/`.so`/`.dylib` for pfx MUST come from l1 (real Linux ELF, not Mach-O);
   rsync the FULL `lib/` and `bin/`, not individual files (symbol mismatches).
 - Long jobs: use BOTH a nohup watchdog AND a Claude self-timer. Loops: sleep 1+
@@ -646,6 +653,11 @@ set (discovery runs the test binary at build time). Full flags and gotchas:
 
 **NEVER delete `~/projects/isis3data/` or its subdirectories without explicit permission.**
 This is 179 GB of mission kernels that take forever to re-download over home ISP.
+
+**NEVER delete `~/projects/isis_test_data/` (~19 GB) without explicit permission.**
+This is `$ISISTESTDATA`, used by every ISIS ctest run (alongside `$ISISDATA` =
+isis3data). It looks like stale bulk data in a cleanup pass but is in constant
+active use and takes a long time to re-fetch. See `~/projects/isis_2026/isis_2026_notes.sh`.
 
 ## Safe Directory Cleanup (CRITICAL)
 
