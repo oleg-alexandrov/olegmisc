@@ -539,6 +539,11 @@ and `~/projects/qsub_rules.sh`.** They hold the machine map, qsub examples,
 the wedge/recovery playbook (R 00:00 jobs, --t_projwin failures), and
 storage rules. Worked primer: `~/projects/spot5_alps/spot5_alps_notes.sh`.
 
+High-level convention + our allocations (which group_list is whose): see
+`~/projects/qsub_convention.sh` (e2305 = personal/SFS, s3319 = SDB/Monica
+off-limits, David's earth/Casa-Grande ones). It cross-links the two pfe docs
+above for the mechanics (dry-run, umask, /nobackup symlink etiquette).
+
 For lfe tape archive of a finished project: `~/projects/lfe_archive.sh`
 (worked example: `~/projects/sfs_mons_mouton/archive_to_lfe.sh`).
 

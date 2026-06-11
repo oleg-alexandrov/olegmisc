@@ -11,6 +11,14 @@ remind user in a day or two to go on with rescale logic plan for ww, so rescale 
 
 ## Recent Projects
 
+`~/projects/cassis_asp/cassis_notes.sh` - TGO CaSSIS (Mars, push-frame, treated
+as FRAMING not linescan) stereo in ASP. Started 2026-06-10. Jezero target pair
+MY37_028515_017_1/2. ISIS/ALE/USGSCSM + kernels already exist; effort is wiring
++ validation + docs, not a camera port. Key gap: ALE tgo driver is NoDistortion
+while ISIS has TgoCassisDistortionMap - cam_test will show the error; fix needs
+distortion in USGSCSM/ALE. Alloc e2305 (SFS). Reference DTMs (OAPD/PSA) are
+browser-only, not curl-able. General qsub convention: `~/projects/qsub_convention.sh`.
+
 `~/projects/PNCB/pncb_registration.sh` - PNCB re-registration (spring 2026,
 active as of 2026-04-21). Plan reorganized 2026-04-21 (context top, steps
 in execution order below). See [project_pncb_rereg.md](project_pncb_rereg.md)
