@@ -95,6 +95,14 @@ notes - the pointer is a promise that the detail exists there.
 
 Never add `.ssh/` to git (dangerous). To untrack a file but keep it on disk, always `git rm --cached`, never bare `git rm` (which deletes the working file too - this once wiped `~/.ssh/config`; recover via `git show <commit>^:path > path`).
 
+## NEVER `git add .` / `-A` in the home repo - add NAMED files only (CRITICAL)
+
+The home dir (`~`, repo = olegmisc) working tree holds private files (`.ssh/`,
+`.claude/.credentials.json`, `.bash_history`, ...). `git add .`/`-A`/`-u`/a dir
+there LEAKS secrets. In `~`, add ONE named path at a time, and `git status` /
+inspect the staged set before EVERY commit. Sync with `git pull --rebase
+--autostash`. Full git hygiene policy: `~/projects/git_notes.sh`.
+
 ## Header Include Ordering (CRITICAL)
 
 In ASP source files, headers must be ordered:
@@ -488,6 +496,13 @@ target column from longest content line, or use `--column N` to fix it.
 `~/bin/align_columns.py <file> <start_line> <end_line> [--inplace]`
 Aligns columns in a range of lines. Detects columns by 2+ space gaps.
 Lines are 1-based. Without `--inplace`, prints aligned output to stdout.
+
+## Visual Raster Inspection - "Claude has eyes"
+
+Claude can SEE images - use vision to verify rasters (orthos, DEMs, geodiffs,
+camera/rotation alignment). Technique, the warp-to-a-common-grid-before-overlay
+rule, and where preview files live (with the data on pfe, not /tmp):
+`~/projects/visual_raster_inspection.sh`.
 
 ## Variable Initialization (CRITICAL)
 
