@@ -144,6 +144,9 @@ Refactoring often produces small float noise from evaluation order changes.
 - [feedback_full_libexec_rsync.md](feedback_full_libexec_rsync.md) - When syncing L1 ASP build to pfx, rsync the FULL install/bin → libexec, never selective. One stale stereo_* worker silently breaks the whole pipeline.
 - [feedback_no_unprompted_issues.md](feedback_no_unprompted_issues.md) - Never `gh issue create` (or comment/close) without an explicit user instruction. "Track this" / "log this" means local notes only.
 - [feedback_avoid_jargon_in_docs.md](feedback_avoid_jargon_in_docs.md) - In USGS/ISIS docs, changelogs, commits: avoid casual jargon. "spiceinit'd" -> "run through spiceinit"; "plumbing" -> "approach".
+- [feedback_concise_vs_impl_detail.md](feedback_concise_vs_impl_detail.md) - PR bodies/summaries want what+why+validation, not algorithm derivation; impl detail lives in code. Lead concise, expand on request.
+- [feedback_one_ai_disclaimer_per_pr.md](feedback_one_ai_disclaimer_per_pr.md) - One AI-assistance disclaimer per PR (in the body); don't repeat it on each comment.
+- [feedback_say_passes_not_green.md](feedback_say_passes_not_green.md) - Say "the tests pass"/"the PR passes", not "CI is green".
 - [feedback_nested_ssh_quoting.md](feedback_nested_ssh_quoting.md) - Doubly-hopped ssh (pfe21 -> athfe01) eats $N awk fields and quotes; write a heredoc-with-quoted-EOF script file instead of inlining.
 - [feedback_logs_at_workdir_top.md](feedback_logs_at_workdir_top.md) - Helper-script log files go at top of work dir (output_<jobName>.txt), not nested in subdirs - Oleg watches via ls+tail.
 
