@@ -519,6 +519,11 @@ always validate. Minimum check: same size / line count. Stronger
 check when IDs are embedded in filenames or entries: verify the
 per-row ID matches. Fail fast with a clear error.
 
+**ASP image-list/camera-list/mapproj-list (bundle_adjust, jitter_solve, stereo)
+MUST be in identical order. Build the camera list FROM the image list (e.g.
+`perl -pe 's/\.cub$/.json/'`), never independently - a mismatch runs fine but
+yields junk.**
+
 Always use `// TODO(oalexan1):` format. Never bare `// TODO:`.
 
 ## Git Repositories on lunokhod1
