@@ -131,6 +131,14 @@ a few lines of context - closing braces especially are easy to misattribute
 to a nested block. For sed range replacements, err on the side of too-wide
 ranges over too-narrow.
 
+## Shell Arrays: zsh is 1-Indexed (CRITICAL)
+
+The Bash tool's default shell is **zsh**, where arrays are **1-indexed**
+(`${a[0]}` is empty), unlike bash (0-indexed). This has silently mislabeled
+outputs more than once. Rule: any snippet using indexed arrays must run under
+explicit `bash -c '...'`, OR avoid index math entirely (iterate with
+`while read`/positional args, pair items by `paste`, or hardcode the calls).
+
 ## Preserving Comments When Editing Code (CRITICAL)
 
 **NEVER drop existing comments when editing code.** Only remove a comment if
@@ -615,8 +623,13 @@ Full reference (paths, repo slugs, GraphQL-REST recipes, CI commands):
   email); still governed by the no-unprompted-public-action rule.
 - **Never trust WebFetch summaries of issues/PRs - it hallucinates.** Pull the
   real body/comments with `gh api`.
-- **Writing PR/issue text:** plain prose, no hard-wrapped lines, easy on markup
-  (heavy backticks/`<...>` read weird); code blocks excepted.
+- **Writing PR/issue text:** plain prose, no hard-wrapped lines (GitHub's HTML
+  engine wraps; a mid-paragraph newline becomes an awkward break - only blank
+  lines BETWEEN paragraphs). WIPE all inline markup - no backticks (the worst),
+  no bold/italics/inline-code for identifiers; the font change looks odd and
+  inserts stray spaces where they do not belong. Write identifiers as plain
+  words. Indented/fenced CODE BLOCKS are fine - those are the only exception.
+  To fix an already-posted body, PATCH via gh api REST (silent, no email).
 
 ## Co-Authored-By Trailer (CRITICAL)
 
