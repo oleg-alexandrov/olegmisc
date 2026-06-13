@@ -516,6 +516,12 @@ DEM (point2dem) lives at the coarse ~4x-GSD res. Do not downsample imagery to
 the DEM. (CaSSIS native GSD ~4.59 m; DEM ~18 m.) Repeatedly assumed the DEM
 res sets the mapproject res - it does NOT.
 
+## Relative Paths in a Project Work Dir
+
+In a project work dir, all paths (in scripts and when presenting to the user)
+must be RELATIVE to that work dir. Use absolute paths only for external files
+outside it.
+
 ## Visual Raster Inspection - "Claude has eyes"
 
 Claude can SEE images - use vision to verify rasters (orthos, DEMs, geodiffs,
