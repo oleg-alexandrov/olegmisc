@@ -493,6 +493,12 @@ Format: `Copyright (c) 2006-YYYY, United States Government...` - update end year
 
 `~/bin/clean_style.py <input_cpp_file>` - automated C++ style cleanup. Use without asking when requested.
 
+## Multi-Option Commands in Scripts
+
+In shell scripts, put each command-line option (and each `export`) on its own
+line for readability, with trailing `\` continuation backslashes aligned to one
+column (use the backslash alignment tool below).
+
 ## Backslash Alignment Tool
 
 `~/bin/align_backslashes.py <file> <start_line> <end_line> [--inplace] [--column N]`
