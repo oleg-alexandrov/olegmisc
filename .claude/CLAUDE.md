@@ -644,6 +644,13 @@ SpiceQL, any DOI-USGS repo): AI attribution is now welcome - keep the trailer
 AND state Claude/AI assistance in public text. See the USGS-repos bullet near
 the top and `~/projects/usgs_contrib_notes.sh`.
 
+**AI disclaimer = describe the bot only, never the user.** When stating
+Claude/AI assistance in any public GitHub text (commit, PR, comment, review),
+say only that a bot/Claude did the work. NEVER mention the user's
+circumstances - not the hour, schedule, being asleep/awake, mood, or any
+personal context. That is none of the reader's business. Keep it minimal:
+"Done with Claude/AI assistance." and stop.
+
 ## Commit Message Style
 
 Write like a human, not a robot. Short title; skip the body for trivial

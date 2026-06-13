@@ -146,6 +146,7 @@ Refactoring often produces small float noise from evaluation order changes.
 - [feedback_avoid_jargon_in_docs.md](feedback_avoid_jargon_in_docs.md) - In USGS/ISIS docs, changelogs, commits: avoid casual jargon. "spiceinit'd" -> "run through spiceinit"; "plumbing" -> "approach".
 - [feedback_concise_vs_impl_detail.md](feedback_concise_vs_impl_detail.md) - PR bodies/summaries want what+why+validation, not algorithm derivation; impl detail lives in code. Lead concise, expand on request.
 - [feedback_one_ai_disclaimer_per_pr.md](feedback_one_ai_disclaimer_per_pr.md) - One AI-assistance disclaimer per PR (in the body); don't repeat it on each comment.
+- [feedback_ai_disclaimer_bot_only.md](feedback_ai_disclaimer_bot_only.md) - AI disclaimer describes the bot only; never mention the user's circumstances (hour, schedule, asleep).
 - [feedback_say_passes_not_green.md](feedback_say_passes_not_green.md) - Say "the tests pass"/"the PR passes", not "CI is green".
 - [feedback_no_caps_for_emphasis.md](feedback_no_caps_for_emphasis.md) - Don't ALL-CAPS words for emphasis (reads like shouting); real identifiers like PATH stay.
 - [feedback_nested_ssh_quoting.md](feedback_nested_ssh_quoting.md) - Doubly-hopped ssh (pfe21 -> athfe01) eats $N awk fields and quotes; write a heredoc-with-quoted-EOF script file instead of inlining.
