@@ -508,13 +508,13 @@ Lines are 1-based. Without `--inplace`, prints aligned output to stdout.
 ## Stereo/Photogrammetry Resolution (CRITICAL - screwed this up MULTIPLE TIMES)
 
 For stereo/photogrammetry, ALWAYS mapproject (and correlate) at near-native
-image resolution, and put ALL images on the SAME resolution (even if per-image
-native GSD differs slightly - stereo later needs matched res). The DEM is only
-an interpolated draping surface and is usually ~4x coarser than the images;
-its coarseness must NEVER set the mapproject/correlation grid. Only the OUTPUT
-DEM (point2dem) lives at the coarse ~4x-GSD res. Do not downsample imagery to
-the DEM. (CaSSIS native GSD ~4.59 m; DEM ~18 m.) Repeatedly assumed the DEM
-res sets the mapproject res - it does NOT.
+image resolution, with ONE pinned `--tr` so every image (left, right, all)
+shares the SAME GSD - auto (no `--tr`) drifts per image and parallel_stereo
+correlator-mode then errors on mismatched GSD. The DEM is only an interpolated
+draping surface, usually ~4x coarser; its coarseness must NEVER set the
+mapproject/correlation grid. Only the OUTPUT DEM (point2dem) lives at the coarse
+~4x-GSD res. Do not downsample imagery to the DEM. (CaSSIS native GSD ~4.59 m;
+DEM ~18 m.) Repeatedly assumed the DEM res sets the mapproject res - it does NOT.
 
 ## Relative Paths in a Project Work Dir
 
