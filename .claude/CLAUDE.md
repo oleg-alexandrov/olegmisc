@@ -390,6 +390,16 @@ When adding/removing/moving source files (.cc, .h):
 
 **DO NOT touch when just editing existing files** - build system detects content changes automatically.
 
+## Inspect BA/Jitter Stats After Every Run
+
+After any bundle_adjust or jitter_solve run, inspect the residual/stats output
+files (initial AND final per-camera residual stats, convergence_angles,
+camera_offsets, triangulation_offsets, pointmap) - listed in the output-files
+section of the bundle_adjust and jitter_solve RST docs. Judge by the MEDIAN (the
+mean is outlier-driven). Skip the per-residual raw_pixels files (too big). These
+tell you whether the solve behaved (sub-pixel medians, bounded offsets, cameras
+multiply-tied).
+
 ## Output Statements
 
 - Do NOT remove vw_out() statements - these are for user-facing informational output, not debugging
