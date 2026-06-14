@@ -18,9 +18,17 @@ MY37_028515_017_1/2. ISIS/ALE/USGSCSM + kernels already exist; effort is wiring
 to ALE - the CaSSIS distortion (USGSCSM DistortionType CASSIS = 9, the
 TgoCassisDistortionMap equivalent) is now emitted; the decomposed "baby" frame
 cameras carry m_distortionType=9 with real coeffs. The old "ALE tgo is
-NoDistortion" gap is CLOSED. Residual cross-track dishing (~40 m bowl vs CTX,
-edges high) may be imperfect distortion calibration - candidate for a BA
-intrinsics solve. Alloc e2305 (SFS). Reference DTMs (OAPD/PSA) are
+NoDistortion" gap is CLOSED. DISHING DIAGNOSED (2026-06-13): a long-wavelength
+cross-track BOWL dominates (ours ~11 m vs CTX, vendor OPD ~15 m, OPPOSITE signs,
+ours-vendor ~30 m = largest) - so it is PIPELINE-SPECIFIC, not CTX's error and
+not a shared CaSSIS systematic. It is a near-degeneracy of two-look self-
+consistent BA (the cross-track bowl is ~null-space of reprojection). Distortion
+self-cal makes it WORSE (overfit: reproj halves but bowl grows 11->27 m); ASP
+already solves CASSIS distortion generically (no code change, like the Kaguya
+doc example). Real fix needs EXTERNAL low-freq control (LOLA/CTX), keeping our
+high-freq detail. Also fixed a pc_align bug (high/NaN no-data voided match-file
+matches; create_mask fix + test ss_pc_align_match_high_nodata pushed). Alloc
+e2305 (SFS). Reference DTMs (OAPD/PSA) are
 browser-only, not curl-able. General qsub convention: `~/projects/qsub_convention.sh`.
 
 `~/projects/PNCB/pncb_registration.sh` - PNCB re-registration (spring 2026,
