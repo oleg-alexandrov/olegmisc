@@ -14,9 +14,13 @@ remind user in a day or two to go on with rescale logic plan for ww, so rescale 
 `~/projects/cassis_asp/cassis_notes.sh` - TGO CaSSIS (Mars, push-frame, treated
 as FRAMING not linescan) stereo in ASP. Started 2026-06-10. Jezero target pair
 MY37_028515_017_1/2. ISIS/ALE/USGSCSM + kernels already exist; effort is wiring
-+ validation + docs, not a camera port. Key gap: ALE tgo driver is NoDistortion
-while ISIS has TgoCassisDistortionMap - cam_test will show the error; fix needs
-distortion in USGSCSM/ALE. Alloc e2305 (SFS). Reference DTMs (OAPD/PSA) are
++ validation + docs, not a camera port. UPDATE 2026-06-13: distortion was added
+to ALE - the CaSSIS distortion (USGSCSM DistortionType CASSIS = 9, the
+TgoCassisDistortionMap equivalent) is now emitted; the decomposed "baby" frame
+cameras carry m_distortionType=9 with real coeffs. The old "ALE tgo is
+NoDistortion" gap is CLOSED. Residual cross-track dishing (~40 m bowl vs CTX,
+edges high) may be imperfect distortion calibration - candidate for a BA
+intrinsics solve. Alloc e2305 (SFS). Reference DTMs (OAPD/PSA) are
 browser-only, not curl-able. General qsub convention: `~/projects/qsub_convention.sh`.
 
 `~/projects/PNCB/pncb_registration.sh` - PNCB re-registration (spring 2026,
