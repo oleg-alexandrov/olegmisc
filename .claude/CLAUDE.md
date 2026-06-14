@@ -684,6 +684,12 @@ circumstances - not the hour, schedule, being asleep/awake, mood, or any
 personal context. That is none of the reader's business. Keep it minimal:
 "Done with Claude/AI assistance." and stop.
 
+## Writing Style
+
+Never write "TL;DR" anywhere (notes, docs, chat, commits) - it is an ugly
+macro-hack abbreviation. Use plain English: "Summary" (or just write the
+summary). Keep summaries brief and to the point.
+
 ## Commit Message Style
 
 Write like a human, not a robot. Short title; skip the body for trivial
