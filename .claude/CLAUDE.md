@@ -461,12 +461,14 @@ When adding/modifying command-line options, always update all three consistently
 - Working alone, take initiative on simple fixes (symlink, missing lib, resubmit
   failed job, clean stale files); test small first; log what you did. No sweeping
   refactors, no external commits unprompted.
-- Whenever you start anything you then wait on (qsub, build, big rsync, cloud CI,
-  backgrounded poll), IMMEDIATELY set your OWN ScheduleWakeup loop and RESCHEDULE
-  it each fire until the thing is truly done - the completion notifier alone is
-  not enough (it can be missed and you "fall asleep"). Interval tuned to the
-  cache window: ~270s for cloud CI you're iterating on, 5 min for a build, 15-30
-  min for a long stereo/PBS run.
+- ALWAYS keep your OWN ScheduleWakeup timer armed - every single turn, no
+  exceptions - and NEVER count on being woken by a task-completion notification
+  (it can be missed and you "fall asleep"). Treat the completion notifier as a
+  bonus, the timer as the real wake signal. Whenever you start anything you then
+  wait on (qsub, build, big rsync, cloud CI, backgrounded poll), set the timer
+  IMMEDIATELY and RESCHEDULE it each fire until the thing is truly done. Interval
+  tuned to the cache window: ~270s for cloud CI you're iterating on, 5 min for a
+  build, 15-30 min for a long stereo/PBS run.
 - On every wakeup, FIRST run `date` to re-orient - long runs leave you stale.
 
 ## Building ASP Docs
