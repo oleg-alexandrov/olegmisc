@@ -661,6 +661,29 @@ CRITICAL always-rules (procedure/playbooks in the notes files above):
 - Long jobs: use BOTH a nohup watchdog AND a Claude self-timer. Loops: sleep 1+
   between qsubs, `> log` (no `tee`), verify output count at end.
 
+## ASP Dev Build on pfe (packaged release, patchable)
+
+The working ASP installation on pfe lives at:
+`/home6/oalexan1/projects/BinaryBuilder/StereoPipeline/`
+(= `pfx:~/projects/BinaryBuilder/StereoPipeline/`). This is a **packaged
+release** (wrapper scripts in `bin/`, real ELF binaries in `libexec/`, shared
+libs in `lib/`). Currently 3.8.0-alpha (built 2026-06-10).
+
+**Patching from l1 (rebuild + rsync):** rebuild only the changed ASP/VW libs
+and tools on l1 (`make -C ~/projects/StereoPipeline/build -j16`), then rsync
+the dev install over the packaged build. Key paths:
+```
+ss=StereoPipeline
+dst=pfx:/home6/oalexan1/projects/BinaryBuilder/${ss}
+# .so libs:
+rsync -avz ~/projects/StereoPipeline/install/lib/ ${dst}/lib/
+# ELF binaries (dev install/bin -> packaged libexec/):
+rsync -avz ~/projects/StereoPipeline/install/bin/ ${dst}/libexec/
+# Python scripts go to bin/:
+rsync -avz ~/projects/StereoPipeline/install/bin/*py ${dst}/bin/
+```
+Full details: `~/projects/pleiades_notes.sh` section "Syncing dev build to pfe".
+
 ## GitHub CLI (gh)
 
 Full reference (paths, repo slugs, GraphQL-REST recipes, CI commands):
