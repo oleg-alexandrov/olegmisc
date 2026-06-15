@@ -702,13 +702,10 @@ Full reference (paths, repo slugs, GraphQL-REST recipes, CI commands):
   email); still governed by the no-unprompted-public-action rule.
 - **Never trust WebFetch summaries of issues/PRs - it hallucinates.** Pull the
   real body/comments with `gh api`.
-- **Writing PR/issue text:** plain prose, no hard-wrapped lines (GitHub's HTML
-  engine wraps; a mid-paragraph newline becomes an awkward break - only blank
-  lines BETWEEN paragraphs). WIPE all inline markup - no backticks (the worst),
-  no bold/italics/inline-code for identifiers; the font change looks odd and
-  inserts stray spaces where they do not belong. Write identifiers as plain
-  words. Indented/fenced CODE BLOCKS are fine - those are the only exception.
-  To fix an already-posted body, PATCH via gh api REST (silent, no email).
+- **Writing PR/issue/comment/review text:** full prose-style rules (no inline
+  markup, single-line paragraphs, no leading paragraph whitespace, real links,
+  AI disclaimer, word choices, how to fix an already-posted body) live in
+  `~/projects/github_text_style.sh`. Read it before composing any GitHub-facing text.
 
 ## Co-Authored-By Trailer (CRITICAL)
 
