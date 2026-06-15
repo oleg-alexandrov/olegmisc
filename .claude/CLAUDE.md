@@ -263,9 +263,11 @@ details: `~/projects/install_asp_notes.sh`.
 
 Make a clean `asp_deps` build env from a fresh `stereo-pipeline` conda package
 (all deps + compiler, then strip vw/asp): `~/projects/make_asp_deps_env.sh`.
-One rule to remember without reading: strip via `conda remove --force-remove
-stereo-pipeline visionworkbench`, never manual rm (most `bin` tools are deps',
-not ours).
+One rule to remember without reading: do NOT use `conda remove --force-remove`
+(it also removes bundled third-party libs like libnabo that can't be reinstalled).
+Instead, surgically `rm` only `libAsp*.so`, `libVw*.so`, `include/{asp,vw}`, and
+ASP tools from `bin/` (using the dev install as the reference list). See the
+notes file for the exact commands.
 
 ## Conda Channel Cleanup (prune old asp_N builds)
 
