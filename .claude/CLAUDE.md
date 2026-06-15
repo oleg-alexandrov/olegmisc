@@ -684,6 +684,11 @@ rsync -avz ~/projects/StereoPipeline/install/bin/*py ${dst}/bin/
 ```
 Full details: `~/projects/pleiades_notes.sh` section "Syncing dev build to pfe".
 
+**NFS gotcha:** The packaged release has sticky NFS metadata on /vast_swbuild.
+rsync mkstemp fails even after chmod. Fix: move old dir aside, mkdir fresh,
+`rsync -a old/ new/`, `chmod -R u+w new/`, set standard perms (755 dirs, 755
+exec files, 644 non-exec), rm old. If individual files still fail, scp them.
+
 ## GitHub CLI (gh)
 
 Full reference (paths, repo slugs, GraphQL-REST recipes, CI commands):
