@@ -171,6 +171,20 @@ namespace vw { namespace cm {
 - VW libraries: `libVw*.so` (e.g., libVwCore.so, libVwMath.so)
 - `libasprintf` is GNU gettext, NOT ASP - don't wipe it when cleaning ASP artifacts
 
+## Derived Raster Product Naming (DEMs, diffs, cmaps, hillshades, pngs)
+
+When producing many derived rasters across processing stages (DEM comparison work
+etc.), name them so they stay trackable later. Pattern:
+`<stage>_<product>[_<modifier>].<ext>`
+
+- `<stage>` = the processing stage / source identity that made the DEM:
+  `vendor`, `deband`, `dem2gcp`, `ba_htdem`, `ba_nodem`, ... with `_vN` for
+  iterations (`ba_htdem_v2`). NEVER use vague tags like `before`/`after`/`new`/`tmp`.
+- `<product>` chains left to right as products build on each other:
+  `dem` -> `hs` -> `<ref>diff` (e.g. `ctxdiff`) -> `<ref>diff_cmap`. A derived
+  product borrows its parent's name and just extends it (the `.png` viewer copy
+  keeps the same basename as its `.tif`).
+
 ## C++ Code Style Conventions
 
 - **NEVER use non-ASCII characters in code or comments** - use `x` not `*`, `-` not `--`, regular quotes not smart quotes, `-` not em dash
