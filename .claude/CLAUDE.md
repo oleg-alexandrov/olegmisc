@@ -738,7 +738,7 @@ Never write "TL;DR" anywhere (notes, docs, chat, commits) - it is an ugly
 macro-hack abbreviation. Use plain English: "Summary" (or just write the
 summary). Keep summaries brief and to the point.
 
-- Avoid semicolons, especially joining full sentences - use a period and short sentences (per Google/Microsoft/Apple style guides).
+- Avoid semicolons and sentence-joining dashes, especially with full sentences. Use a period and short sentences (per Google/Microsoft/Apple style guides).
 
 ## Commit Message Style
 
