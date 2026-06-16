@@ -614,53 +614,16 @@ gotcha.
 
 ## NASA NAS / Pleiades Supercomputer
 
-**Before any pfe work — especially `qsub` — read `~/projects/pleiades_notes.sh`
-and `~/projects/qsub_rules.sh`.** They hold the machine map, qsub examples,
-the wedge/recovery playbook (R 00:00 jobs, --t_projwin failures), and
-storage rules. Worked primer: `~/projects/spot5_alps/spot5_alps_notes.sh`.
+**Before any pfe work, read these notes files first:**
+- `~/projects/pleiades_notes.sh` - machine map, storage, ASP build layout, lfe access/safety, symlink-wipe procedure
+- `~/projects/qsub_rules.sh` - qsub arg rules, dry-run, umask, error codes
+- `~/projects/qsub_convention.sh` - allocations (e2305 ours, s3319 off-limits), checklist, runner template
+- `~/projects/lfe_archive.sh` - lfe tape archive procedure
 
-High-level convention + our allocations (which group_list is whose): see
-`~/projects/qsub_convention.sh` (e2305 = personal/SFS, s3319 = SDB/Monica
-off-limits, David's earth/Casa-Grande ones). It cross-links the two pfe docs
-above for the mechanics (dry-run, umask, /nobackup symlink etiquette).
-
-For lfe tape archive of a finished project: `~/projects/lfe_archive.sh`
-(worked example: `~/projects/sfs_mons_mouton/archive_to_lfe.sh`).
-
-CRITICAL always-rules (procedure/playbooks in the notes files above):
-
-- **lfe access from l1:** `ssh pfx` (lands on pfe21), then `ssh lfe` from there.
-  Direct `ssh lfe` from l1 fails (sfe gateway needs interactive RSA token).
-  Claude cannot do interactive auth, so lfe commands require two hops via pfx.
-  `pfx` = SSH alias for pfe21 (the specific node our reverse tunnel lands on).
-- **NEVER wipe ANYTHING on lfe (Lou tape archive).** Read-only from Claude's
-  perspective; an accidental `rm` destroys CPU-years of archived results. If a
-  task involves freeing lfe space, STOP and confirm exact paths with the user.
-- **Before every qsub: 4-sec dry-run** `ssh pfe21 "timeout 4 bash /full/path/runner.sh; echo RC=\$?"`
-  (RC=124 = clean PASS; any other RC>0 = fix first). Per script / per env combo.
-- **Never run heavy compute on the head node** - qsub only. Head node is for the
-  4-sec dry-run and `tool --help` introspection only. A direct `bash script.sh`
-  over ssh without `timeout` starts a real head-node run and does NOT auto-kill.
-- **Default `bro_ele`** (pfe). Do NOT use `tur_ath` (athfe) unless asked - flaky
-  placement / Exit_status -22 / won't `qdel -W force`. athfe normal walltime cap 8h.
-- **Budget `-W group_list=e2305`** (personal/SFS/SPOT5/Chandrayaan-2/ASP). NEVER
-  `s3319` (SDB/Monica - off limits).
-- qsub scripts MUST be `chmod +x`, use FULL paths (else PBS exit 254), and set
-  `umask 022` (else outputs locked from collaborators).
-- /home6 quota ~10 GB: data under `~/projects/<subdir>/` MUST symlink to
-  `/nobackup*` (verify `readlink -f`). NEVER rsync a symlinked dir itself
-  (severs the link) - always trailing slash on source.
-- **Wiping a /home6->/nobackup symlinked project (CRITICAL):** first
-  `ls -ld` + `readlink` to see which is the symlink and which is the real
-  dir. Free space by removing the REAL `/nobackup*` target: `cd` into its
-  parent, confirm with `ls`, then `rm -rf ./<dir>` (relative). Remove the
-  `/home6` symlink with bare `rm -f <link>` - NO `-r`, NO trailing slash
-  (a trailing slash can make rm -rf delete THROUGH the link into the
-  target). Never `rm -rf` a path that is itself a symlink.
-- Binaries/`.so`/`.dylib` for pfx MUST come from l1 (real Linux ELF, not Mach-O);
-  rsync the FULL `lib/` and `bin/`, not individual files (symbol mismatches).
-- Long jobs: use BOTH a nohup watchdog AND a Claude self-timer. Loops: sleep 1+
-  between qsubs, `> log` (no `tee`), verify output count at end.
+Bare minimum to remember without reading:
+- **4-sec dry-run before every qsub.** Default `bro_ele`, budget `e2305`. Never head-node compute.
+- **NEVER wipe anything on lfe.** lfe access from l1: `ssh pfx` then `ssh lfe`.
+- `/home6` data MUST symlink to `/nobackup*`. Symlink-wipe procedure in `pleiades_notes.sh`.
 
 ## ASP Dev Build on pfe (packaged release, patchable)
 
@@ -683,12 +646,8 @@ rsync -avz ~/projects/StereoPipeline/install/bin/ ${dst}/libexec/
 # Python scripts go to bin/:
 rsync -avz ~/projects/StereoPipeline/install/bin/*py ${dst}/bin/
 ```
-Full details: `~/projects/pleiades_notes.sh` section "Syncing dev build to pfe".
-
-**NFS gotcha:** The packaged release has sticky NFS metadata on /vast_swbuild.
-rsync mkstemp fails even after chmod. Fix: move old dir aside, mkdir fresh,
-`rsync -a old/ new/`, `chmod -R u+w new/`, set standard perms (755 dirs, 755
-exec files, 644 non-exec), rm old. If individual files still fail, scp them.
+Full details (including NFS permission gotcha and fix):
+`~/projects/pleiades_notes.sh` section "Syncing dev build to pfe".
 
 ## Sending Email to Oleg
 
