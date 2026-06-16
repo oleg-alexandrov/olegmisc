@@ -689,6 +689,11 @@ rsync mkstemp fails even after chmod. Fix: move old dir aside, mkdir fresh,
 `rsync -a old/ new/`, `chmod -R u+w new/`, set standard perms (755 dirs, 755
 exec files, 644 non-exec), rm old. If individual files still fail, scp them.
 
+## Sending Email to Oleg
+
+How to email Oleg (msmtp; recipient oleg.alexandrov@gmail.com) is described in
+`~/projects/send_email_notes.sh`.
+
 ## GitHub CLI (gh)
 
 Full reference (paths, repo slugs, GraphQL-REST recipes, CI commands):
