@@ -11,6 +11,17 @@ remind user in a day or two to go on with rescale logic plan for ww, so rescale 
 
 ## Recent Projects
 
+`~/projects/sli_fusion/sli_fusion_notes.sh` - **SLI fusion** (started 2026-06-16,
+with Shashank/sbhusha1). Orthoimage geolocation-assessment tool using ASP's
+ip-matching: take ref + source orthoimages, output match points in projected
+units with dx/dy offsets to a GeoPackage (like image_align but NO alignment).
+Eval lidar-intensity vs NAIP as reference basemaps vs WorldView/Planet sources;
+cross-wavelength matching is the hard part. Data (16 GB, read-only) at
+`/nobackup/sbhusha1/sli_fusion/data` - 12 sites, each lidar/ (ref) + src_img/wv_pan/
+(WV pan, 1.0 m); lidar already co-registered to source grid. Work dirs: Mac notes
+`~/projects/sli_fusion/`, pfe `~/projects/sli_fusion` -> nobackup. Inventory:
+`sli_fusion_inventory.sh`. Open: qsub group_list (data is s3319, off-limits to charge).
+
 `~/projects/cassis_asp/cassis_notes.sh` - TGO CaSSIS (Mars, push-frame, treated
 as FRAMING not linescan) stereo in ASP. Started 2026-06-10. Jezero target pair
 MY37_028515_017_1/2. ISIS/ALE/USGSCSM + kernels already exist; effort is wiring
