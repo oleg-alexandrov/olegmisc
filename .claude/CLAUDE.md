@@ -575,7 +575,7 @@ gotcha.
 - `~/projects/pleiades_notes.sh` - machine map, storage, ASP build layout, lfe access/safety, symlink-wipe procedure
 - `~/projects/qsub_rules.sh` - qsub arg rules, dry-run, umask, error codes
 - `~/projects/qsub_convention.sh` - allocations (e2305 ours, s3319 off-limits), checklist, runner template
-- `~/projects/lfe_archive.sh` - lfe tape archive procedure
+- `~/projects/lfe_archive.sh` - lfe tape archive AND restore procedure (DMF dmls/dmget: stage off tape before any tar/read)
 
 Bare minimum to remember without reading:
 - **4-sec dry-run before every qsub.** Default `bro_ele`, budget `e2305`. Never head-node compute.
