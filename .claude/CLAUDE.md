@@ -184,6 +184,11 @@ etc.), name them so they stay trackable later. Pattern:
   `dem` -> `hs` -> `<ref>diff` (e.g. `ctxdiff`) -> `<ref>diff_cmap`. A derived
   product borrows its parent's name and just extends it (the `.png` viewer copy
   keeps the same basename as its `.tif`).
+- WHERE it lands: write each derived product into the SAME dir as its source
+  dataset, right next to its parent - NEVER a throwaway `work_*`/`tmp` dir. A
+  regridded CTX lives by the CTX (`ref/.../ctx_regrid_10m.tif`); a resampled DEM
+  and its diff/cmap live by that DEM. General rule for any dataset you manipulate,
+  not just rasters: result goes home next to the input, since scratch dirs get wiped.
 
 ## C++ Code Style Conventions
 
