@@ -564,6 +564,8 @@ camera/rotation alignment). Technique, the warp-to-a-common-grid-before-overlay
 rule, and where preview files live (with the data on pfe, not /tmp):
 `~/projects/visual_raster_inspection.sh`.
 
+Match-point inspection: `~/projects/plot_matches.py` overlays an ASP .match file on both images and reports the residual to the best-fit translation (the real-vs-junk metric for co-registered pairs).
+
 ## Variable Initialization (CRITICAL)
 
 **NEVER create uninitialized variables.** Always initialize with sensible defaults:
