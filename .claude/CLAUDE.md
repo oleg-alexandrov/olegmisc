@@ -334,6 +334,23 @@ comment-only - never `chmod +x`; `git -C ~/projects add` new files in subdirs.
 Full conventions + the work-tracking file index (mpr_todo.sh, todo.sh,
 ostfl_2025_notes.sh): `~/projects/notes_conventions.sh`.
 
+## Resuming a Project: Read and Adapt, Never Improvise (CRITICAL)
+
+When picking up or extending an EXISTING project, the FIRST task - before
+designing or writing anything - is to find and read what is already there:
+the notes file(s), the precise scripts/runners, the sample and production
+invocations, the qsub launch lines, the logs. These projects log nearly
+everything: the exact workflow, parameters, tile sizes, node choices, gotchas.
+Read and UNDERSTAND that existing workflow, then make the SMALLEST surgical
+change that satisfies the request, reusing the existing scripts/invocation.
+NEVER hand-roll a new parallel workflow from scratch - it wastes effort and, far
+worse, produces results measured on the wrong setup, so diagnostics and numbers
+have to be thrown out and redone. Only deviate where physically forced (e.g. a
+node's RAM), and flag that as operational, not a recipe change. (Learned the
+hard way on lunamaps SfS covariance, 2026-06: improvised a raw-`sfs` per-tile
+pipeline instead of reading and adapting the existing `parallel_sfs` runner,
+took several redirects to get on track, and had to redo the OOM/SBU diagnosis.)
+
 ## CMake File Management
 
 **Touch CMakeLists.txt ONLY when file listing changes (add/remove/move files):**
