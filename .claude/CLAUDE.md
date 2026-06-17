@@ -383,6 +383,14 @@ why), during (findings, surprises, anything non-obvious or multi-attempt), and
 after each step (what worked/didn't). If no notes file exists, create one in
 `~/projects/<subdir>/` and tell the user; if the user gives a path, use that one.
 
+**Make the work REPRODUCIBLE and log the screw-ups, not just the wins.** Record
+the exact commands/invocations (qsub lines, args - a replication matrix in the
+notes) so any result can be redone later without guessing. Equally, log failed
+attempts, wrong turns, gotchas, and bad judgment we overlooked - dated, in plain
+words - alongside the good calls. Do NOT sanitize the record down to only what
+worked: later we can go back and pinpoint exactly where the bad judgment was, or
+where the genius spark happened. We forget fast otherwise.
+
 ## Project Status Files
 
 **Work tracking files** in `~/projects/` (tracked by `~/projects/.git`):
