@@ -355,54 +355,16 @@ export PATH=~/projects/StereoPipeline/install/bin:$HOME/anaconda3/envs/asp_deps/
   `validate.sh` are tracked. Each test dir has run.sh, validate.sh, gold/ (ref),
   run/ (generated). `chmod +x run.sh validate.sh` for new tests.
 
-## Notes Files (.sh)
+## Notes & Paper Trail (CRITICAL)
 
-Many `.sh` files in `~/projects/` are comment-only notes, not executable scripts.
-Do NOT `chmod +x` these. Only make a `.sh` file executable if it is actually
-meant to be run (has real commands, not just comments). Do NOT put `exit 0` at
-the end of notes files - they will never be run as scripts. The `.sh` extension
-is used because it's convenient for mixing comments with runnable command snippets.
-
-**Project-specific notes in subdirs:** Every project we work on together should
-have its own subdirectory under `~/projects/` with a notes `.sh` file (e.g.,
-`spot5_csm/spot_csm_notes.sh`). This keeps the paper trail. If a subdir already
-exists, read and update the existing notes file rather than creating a new one.
-Prompt the user about creating the subdir/notes if they haven't mentioned it.
-These subdir notes files ARE tracked by the projects repo (`~/projects/.git`).
-Add them with `git -C ~/projects add subdir/file.sh`.
-**When creating new .sh scripts** (run.sh, notes, helpers) in `~/projects/`
-subdirs, always `git -C ~/projects add` them before committing, or remind
-the user to check. Easy to forget since they're in subdirs.
-
-## Paper Trail on Disk (CRITICAL)
-
-**ALWAYS log thoughts, progress, decisions, and issues to the project's notes
-file on disk** - don't rely on internal reasoning alone. This keeps us in sync
-across sessions and after context compaction. Log at the start (plan + approach +
-why), during (findings, surprises, anything non-obvious or multi-attempt), and
-after each step (what worked/didn't). If no notes file exists, create one in
-`~/projects/<subdir>/` and tell the user; if the user gives a path, use that one.
-
-**Make the work REPRODUCIBLE and log the screw-ups, not just the wins.** Record
-the exact commands/invocations (qsub lines, args - a replication matrix in the
-notes) so any result can be redone later without guessing. Equally, log failed
-attempts, wrong turns, gotchas, and bad judgment we overlooked - dated, in plain
-words - alongside the good calls. Do NOT sanitize the record down to only what
-worked: later we can go back and pinpoint exactly where the bad judgment was, or
-where the genius spark happened. We forget fast otherwise.
-
-## Project Status Files
-
-**Work tracking files** in `~/projects/` (tracked by `~/projects/.git`):
-- `mpr_todo.sh` - Monthly Progress Report: completed work grouped under project
-  headers ("OSTFL-24", "STV/DSI"); not a TODO list, no standalone items.
-- `ostfl_2025_notes.sh` - OSTFL 2025 status ("OSTFL status"/"OSTFL doc" -> here).
-- `todo.sh` - general TODO ("the TODO doc"/"todo.sh" -> here).
-
-**Finding recent work context:** sort `.sh` notes by mtime (`ls -lt ~/projects/*.sh`;
-`find ~/projects -maxdepth 2 -name '*.sh' -mtime -30`) and pick the most relevant
-by name - detailed memory beyond CLAUDE.md. **VS Code settings** are tracked in
-the home dir git repo (dotfiles).
+Keep a per-project notes `.sh` in `~/projects/<subdir>/` and log to it as you go
+- plan/approach/why up front, findings and surprises during, what worked/didn't
+after. Don't rely on memory; this survives context compaction. Make work
+REPRODUCIBLE (record exact commands/invocations so results can be redone) and
+log the screw-ups and bad judgment too, not just the wins. Notes `.sh` are
+comment-only - never `chmod +x`; `git -C ~/projects add` new files in subdirs.
+Full conventions + the work-tracking file index (mpr_todo.sh, todo.sh,
+ostfl_2025_notes.sh): `~/projects/notes_conventions.sh`.
 
 ## CMake File Management
 
