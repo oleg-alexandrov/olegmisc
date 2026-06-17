@@ -187,27 +187,11 @@ etc.), name them so they stay trackable later. Pattern:
 
 ## C++ Code Style Conventions
 
-- **NEVER use non-ASCII characters in code or comments** - use `x` not `*`, `-` not `--`, regular quotes not smart quotes, `-` not em dash
-- **NEVER use equal-sign or dash separators** (`//=====`, `//-----`) in code or comments
-- **NEVER use ellipsis (...)** in messages or comments - use period instead
-- **Avoid the word "honor"** anywhere (code, docs, chat). Prefer "respect" or "follow".
-- **Never cite specific line numbers in code comments** (source or data lines, e.g. "line 633") - they drift. Explain the concept instead.
-- No space before `::` scope resolution operator
-- No space before `:` in constructor initializer lists
-- Use camelCase for function names
-- ASP headers grouped together, placed before other headers
-- One newline between functions, no double blank lines
-- Keep lines under 90 characters - break long lines with proper indentation
-- No trailing whitespace at end of lines
-- Use `"\n"` instead of `std::endl`
-  - **sed replacement:** `sed 's/<< std::endl/<< "\\n"/g'` (include quotes!)
-- **Continuation line indentation:** align with opening parenthesis
-  - Count characters from start of line to `(` - that's how many spaces continuation lines need
-- **Option help text strings:** Wrap at ~90 chars. Put space at end of preceding string, not start of next:
-  ```cpp
-  "first part " "second"  // CORRECT - "first part second"
-  ```
-- **For loops:** `for (size_t i = 0; i < lens.size(); i++)` - postincrement, spaces around operators
+ASCII only (no smart quotes/em dash); no `//====` / `//----` separators; no `...`
+(use a period); avoid "honor"; never cite line numbers in comments. camelCase
+functions; no space before `::` or initializer `:`; lines < 90 cols; `"\n"` not
+`std::endl`; continuation lines align with the opening paren. Full rules (sed
+recipes, option-help wrapping, for-loop form): `~/projects/cpp_style.sh`.
 
 ## VisionWorkbench Namespace Conventions
 
@@ -286,38 +270,17 @@ conda-forge swapping our packages; `flexible` just lets deps like bullet
 resolve from whichever channel has them. Check: `conda config --show
 channel_priority`. Fix: `conda config --set channel_priority flexible`.
 
-## Machine-Specific Permissions
+## Machines
 
-**lunokhod1** (alias `l1`, `lunokhod1.ndc.nasa.gov`) - the dev machine. Check with `uname -n`:
-- Full access to git, compilation, and building
-- Compiler: g++ 12.4.0 (conda-forge, in `asp_deps` conda env)
-- CMake 3.27.9, GNU Make 4.1, 16 cores
-- Build dirs: `StereoPipeline/build/` and `visionworkbench/build/`
-- Install dir: `StereoPipeline/install/bin/` (105 ASP binaries)
-- Git remotes: `origin` = user's fork, `god` = upstream org (both repos)
-- Build with: `make -C /home/oalexan1/projects/StereoPipeline/build -j16`
+- **lunokhod1** (`l1`) - primary dev/build/git box (g++ 12.4 in `asp_deps`, 16
+  cores). Build: `make -C ~/projects/StereoPipeline/build -j16`. Remotes:
+  `origin`=fork, `god`=org.
+- **Mac mini** (`ssh mac_arm`) - notes/docs machine + secondary build. **Always
+  `make install`** (never bare `make`; installed libs go stale). Storage is
+  tight - wipe stale `/tmp` cruft (never active/this-session work; if unsure ask).
 
-**Mac mini** (`Olegs-Mac-mini.local`, reachable via `ssh mac_arm`) - the
-primary machine for tracking notes, docs, and project state. Accessible
-from NAS/Pleiades. When asked to push notes or files to the Mac, use
-`rsync` or `scp` to `mac_arm:`.
-- **From athfe nodes:** `mac_arm` tunnel (localhost:3079) is on pfe21. Hop
-  through pfe21: `ssh pfe21 "rsync -avz -e 'ssh -p 3079' /path/to/files localhost:~/dest/"`
-- Secondary build machine:
-- **ALWAYS use `make install`** for both VW and ASP, never bare `make`.
-  The installed libraries may be stale even when the build is up to date.
-- Can build ASP: `make -C ~/projects/StereoPipeline/build -j10 install`
-- Conda init: `eval "$($HOME/anaconda3/bin/conda shell.zsh hook)" && conda activate asp_deps`
-- Duplicate rpath fix is baked into ASP's CMake (`src/asp/CMakeLists.txt` install block) - no manual step needed after `make install`.
-- Run tests with dev build: `export PATH=~/projects/StereoPipeline/install/bin:$PATH`
-- **Storage is constrained on this Mac - occasionally check `/tmp` for cruft and
-  wipe stale items.** `/tmp` accumulates large throwaway files (old
-  `asp_deps_*.tar.gz` deps tarballs ~1.6 GB each, extracted artifacts like
-  `asp_arm_artifact/`, `.cub` files, `x64pkgs/`) that survive across sessions
-  and add up to many GB. Triage with `du -sh /tmp/* | sort -rh | head`, then
-  remove anything not recently modified (e.g. `find /tmp -maxdepth 1 -mtime +7`).
-  Only wipe obvious throwaway build/test cruft - never anything that looks like
-  active work or that we created this session; if unsure, ask.
+Per-machine build commands, conda init, paths, the athfe tunnel hop, `/tmp`
+triage: `~/projects/machines.sh` (and `install_asp_notes.sh`).
 
 ## Common Aliases
 
