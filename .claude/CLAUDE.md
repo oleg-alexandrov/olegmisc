@@ -295,33 +295,17 @@ Full list in `~/.bash_aliases` - check there if an unfamiliar short command show
 
 ## Running Tests
 
-**Full reference:** `~/projects/asp_regression_tests.sh` - canonical ASP test
-suite guide (suite layout, configs, tolerances, failure triage, release-vs-dev
-workflow, gold regen, finding test dirs by tool). Mac GitHub Actions CI
-specifics: `~/projects/update_cloud_tests.sh`. **Suite location:**
-`~/projects/StereoPipelineTest`.
-
-**Environment setup before running tests (CRITICAL)** - else parallel_stereo/
-mapproject crash ("IsisPreferences not found") and validate.sh fails ("gdalinfo
-not found"). Once per shell:
-```bash
-# Mac:
-eval "$($HOME/anaconda3/bin/conda shell.zsh hook)"
-conda activate asp_deps
-export ISISROOT=$HOME/anaconda3/envs/asp_deps
-export PATH=~/projects/StereoPipeline/install/bin:$HOME/anaconda3/envs/asp_deps/bin:$PATH
-# lunokhod1: same but s/anaconda3/miniconda3/g
-```
-
-- **Run a test:** `cd` into its dir, `bash run.sh > output.txt 2>&1`, then
-  `bash validate.sh` (exit 0 = pass). **Do NOT use pytest.**
-- **MANDATORY: run regression tests after every ASP code change.** Find ALL
-  matching dirs (`ls ~/projects/StereoPipelineTest/ | grep -i keyword` AND
-  `grep -rl tool ~/projects/StereoPipelineTest/ss*/run.sh`) and run them all -
-  not just one. Flag to the user if a changed code path has no test coverage.
-- **NEVER git add `run/` or `gold/`** (~40 GB, gitignored); only `run.sh` and
-  `validate.sh` are tracked. Each test dir has run.sh, validate.sh, gold/ (ref),
-  run/ (generated). `chmod +x run.sh validate.sh` for new tests.
+**Suite:** `~/projects/StereoPipelineTest`. Full guide - layout, **the CRITICAL
+env setup** (conda + ISISROOT + PATH, else parallel_stereo/validate.sh crash),
+tolerances, triage, gold regen, finding test dirs by tool:
+`~/projects/asp_regression_tests.sh`. Mac CI: `~/projects/update_cloud_tests.sh`.
+Run a test: `cd` in, `bash run.sh > output.txt 2>&1`, then `bash validate.sh`
+(exit 0 = pass). NOT pytest.
+- **MANDATORY: run regression tests after every ASP code change** - find ALL
+  matching dirs (`grep -rl <tool> ~/projects/StereoPipelineTest/ss*/run.sh`) and
+  run them all, not just one; flag if a changed path has no test coverage.
+- **NEVER git add `run/` or `gold/`** (~40 GB, gitignored); only `run.sh` /
+  `validate.sh` are tracked. `chmod +x` new ones.
 
 ## Notes & Paper Trail (CRITICAL)
 
@@ -584,29 +568,13 @@ Bare minimum to remember without reading:
 - **NEVER wipe anything on lfe.** lfe access from l1: `ssh pfx` then `ssh lfe`.
 - `/home6` data MUST symlink to `/nobackup*`. Symlink-wipe procedure in `pleiades_notes.sh`.
 
-## ASP Dev Build on pfe (packaged release, patchable)
+## ASP Dev Build on pfe
 
-The working ASP installation on pfe lives at:
-`/home6/oalexan1/projects/BinaryBuilder/StereoPipeline/`
-(= `pfx:~/projects/BinaryBuilder/StereoPipeline/`). This is a **packaged
-release** (wrapper scripts in `bin/`, real ELF binaries in `libexec/`, shared
-libs in `lib/`). Currently 3.8.0-alpha (built 2026-06-10).
-
-**Patching from l1 (rebuild + rsync):** rebuild only the changed ASP/VW libs
-and tools on l1 (`make -C ~/projects/StereoPipeline/build -j16`), then rsync
-the dev install over the packaged build. Key paths:
-```
-ss=StereoPipeline
-dst=pfx:/home6/oalexan1/projects/BinaryBuilder/${ss}
-# .so libs:
-rsync -avz ~/projects/StereoPipeline/install/lib/ ${dst}/lib/
-# ELF binaries (dev install/bin -> packaged libexec/):
-rsync -avz ~/projects/StereoPipeline/install/bin/ ${dst}/libexec/
-# Python scripts go to bin/:
-rsync -avz ~/projects/StereoPipeline/install/bin/*py ${dst}/bin/
-```
-Full details (including NFS permission gotcha and fix):
-`~/projects/pleiades_notes.sh` section "Syncing dev build to pfe".
+Working ASP on pfe: `pfx:~/projects/BinaryBuilder/StereoPipeline/` - a packaged
+release (wrappers in `bin/`, ELF in `libexec/`, libs in `lib/`). Patch it from
+l1: rebuild changed libs/tools, then rsync dev `install/lib/` -> `lib/`,
+`install/bin/` -> `libexec/`, `*.py` -> `bin/`. Full recipe + NFS gotcha + scp
+fix: `~/projects/pleiades_notes.sh` section "Syncing dev build to pfe".
 
 ## Sending Email to Oleg
 
@@ -615,21 +583,12 @@ How to email Oleg (msmtp; recipient oleg.alexandrov@gmail.com) is described in
 
 ## GitHub CLI (gh)
 
-Full reference (paths, repo slugs, GraphQL-REST recipes, CI commands):
-`~/projects/github_notes.sh`. Key facts:
-
-- Not on PATH; full path `$(ls -d $HOME/*conda3/envs/gh/bin/gh)`.
-- **CRITICAL gotcha:** `gh issue/pr view` and `gh pr edit` error on the deprecated
-  Projects-classic GraphQL API. Use `gh api` (REST) for any fetch/edit of
-  issue/PR body, comments, state, labels (PATCH/POST recipes in the notes file).
-  List/close/create/CI subcommands work fine. A body/title PATCH is silent (no
-  email); still governed by the no-unprompted-public-action rule.
-- **Never trust WebFetch summaries of issues/PRs - it hallucinates.** Pull the
-  real body/comments with `gh api`.
-- **Writing PR/issue/comment/review text:** full prose-style rules (no inline
-  markup, single-line paragraphs, no leading paragraph whitespace, real links,
-  AI disclaimer, word choices, how to fix an already-posted body) live in
-  `~/projects/github_text_style.sh`. Read it before composing any GitHub-facing text.
+Full reference (paths, repo slugs, GraphQL/REST recipes, CI): `~/projects/github_notes.sh`.
+`gh` not on PATH: `$(ls -d $HOME/*conda3/envs/gh/bin/gh)`. **CRITICAL:** `gh
+issue/pr view` and `gh pr edit` error on the deprecated Projects-classic API -
+use `gh api` (REST) for any issue/PR body/comment/state/label fetch or edit; and
+**never trust WebFetch summaries of issues/PRs** (it hallucinates) - pull with
+`gh api`. PR/issue/comment/review prose-style rules: `~/projects/github_text_style.sh`.
 
 ## Co-Authored-By Trailer (CRITICAL)
 
