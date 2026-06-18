@@ -261,7 +261,7 @@ notes file for the exact commands.
 ## Conda Channel Cleanup (prune old asp_N builds)
 
 After a re-spin, prune superseded `asp_N` conda builds on the
-nasa-ames-stereo-pipeline channel with `~/projects/wipe_old_asp_conda.sh`:
+nasa-ames-stereo-pipeline channel with `~/bin/wipe_old_asp_conda.sh`:
 keeps ONLY the highest `asp_N` per (package, platform), dry-run by default
 (`--go` to apply). Guarded so it never removes a build unless the keeper exists
 (`anaconda show && anaconda remove`), and removals are subdir-qualified so it
@@ -519,7 +519,7 @@ camera/rotation alignment). Technique, the warp-to-a-common-grid-before-overlay
 rule, and where preview files live (with the data on pfe, not /tmp):
 `~/projects/visual_raster_inspection.sh`.
 
-Match-point inspection: `~/projects/plot_matches.py` overlays an ASP .match file on both images and reports the residual to the best-fit translation (the real-vs-junk metric for co-registered pairs).
+Match-point inspection: `~/bin/plot_matches.py` overlays an ASP .match file on both images and reports the residual to the best-fit translation (the real-vs-junk metric for co-registered pairs).
 
 ## Variable Initialization (CRITICAL)
 

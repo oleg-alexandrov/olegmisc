@@ -179,6 +179,7 @@ Refactoring often produces small float noise from evaluation order changes.
 - [feedback_no_blocking_questions_when_autonomous.md](feedback_no_blocking_questions_when_autonomous.md) - When autonomous, never blocking AskUserQuestion; log decisions + default. Non-mandatory prose questions when done are fine.
 - [feedback_docs_self_contained_sections.md](feedback_docs_self_contained_sections.md) - In RST/ASP docs, each section must stand alone; repeat key info in full + add a :numref: citation, don't slim to a bare cross-ref. Readers jump to one section and read in a hurry.
 - [feedback_adapt_existing_workflow.md](feedback_adapt_existing_workflow.md) - When a project already has scripts/workflow, read and adapt them surgically (smallest diff); never improvise a new parallel workflow from scratch.
+- [feedback_check_ground_truth_before_artifact.md](feedback_check_ground_truth_before_artifact.md) - Don't call a structured/repeating raster pattern a processing artifact without checking ground truth; it may be real (lunamaps painted-concrete target).
 
 ## Reference
 
