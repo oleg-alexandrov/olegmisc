@@ -6,8 +6,11 @@
 # both panels, the matches correspond; scattered colors mean junk.
 #
 # Usage: plot_matches.py left.tif right.tif matches.match out.png [width] [maxpts]
+#                        [--red] [--radius N]
 #   width  preview width in pixels (default 700)
 #   maxpts max points to draw (default 2000; dense match sets are subsampled)
+#   --red       draw solid red filled dots (stereo_gui style), not position color
+#   --radius N  dot radius in pixels (default 3)
 
 import sys, os, subprocess, colorsys, tempfile, statistics, math
 from PIL import Image, ImageDraw
@@ -48,9 +51,16 @@ def parse_matches(matchfile):
     return [(left[i][0], left[i][1], right[i][0], right[i][1]) for i in range(n)]
 
 def main():
-    left, right, match, out = sys.argv[1:5]
-    width  = int(sys.argv[5]) if len(sys.argv) > 5 else 700
-    maxpts = int(sys.argv[6]) if len(sys.argv) > 6 else 2000
+    argv = sys.argv[1:]
+    red = '--red' in argv
+    if red:
+        argv.remove('--red')
+    radius = 3
+    if '--radius' in argv:
+        i = argv.index('--radius'); radius = int(argv[i + 1]); del argv[i:i + 2]
+    left, right, match, out = argv[0:4]
+    width  = int(argv[4]) if len(argv) > 4 else 700
+    maxpts = int(argv[5]) if len(argv) > 5 else 2000
 
     lw, lh = orig_size(left)
     rw, rh = orig_size(right)
@@ -65,13 +75,16 @@ def main():
     ld, rd = ImageDraw.Draw(limg), ImageDraw.Draw(rimg)
     for i in range(0, n, step):
         c1, r1, c2, r2 = matches[i]
-        hue = (c1 / lw) % 1.0
-        val = 0.5 + 0.5 * (r1 / lh)
-        col = tuple(int(255 * x) for x in colorsys.hsv_to_rgb(hue, 1.0, val))
+        if red:
+            col = (255, 0, 0)
+        else:
+            hue = (c1 / lw) % 1.0
+            val = 0.5 + 0.5 * (r1 / lh)
+            col = tuple(int(255 * x) for x in colorsys.hsv_to_rgb(hue, 1.0, val))
         x1, y1 = c1 * lsx, r1 * lsy
         x2, y2 = c2 * rsx, r2 * rsy
-        ld.ellipse([x1-2, y1-2, x1+2, y1+2], outline=col, width=1)
-        rd.ellipse([x2-2, y2-2, x2+2, y2+2], outline=col, width=1)
+        ld.ellipse([x1-radius, y1-radius, x1+radius, y1+radius], fill=col)
+        rd.ellipse([x2-radius, y2-radius, x2+radius, y2+radius], fill=col)
 
     gap = 10
     comp = Image.new('RGB', (limg.width + gap + rimg.width,

@@ -519,7 +519,9 @@ camera/rotation alignment). Technique, the warp-to-a-common-grid-before-overlay
 rule, and where preview files live (with the data on pfe, not /tmp):
 `~/projects/visual_raster_inspection.sh`.
 
-Match-point inspection: `~/bin/plot_matches.py` overlays an ASP .match file on both images and reports the residual to the best-fit translation (the real-vs-junk metric for co-registered pairs).
+Match-point inspection: `~/bin/plot_matches.py` overlays an ASP .match file on both images and reports the residual to the best-fit translation (the real-vs-junk metric for co-registered pairs). For the stereo_gui solid-red-dot look use `--red --radius N`.
+
+Google-Doc-ready section (prose + real tables + inline figures, in one copy-paste): build a self-contained HTML with base64-embedded images, open in Chrome, select-all, copy, paste. See `~/projects/html_for_google_docs.sh`.
 
 ## Variable Initialization (CRITICAL)
 
