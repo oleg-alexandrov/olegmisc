@@ -419,14 +419,17 @@ When adding/modifying command-line options, always update all three consistently
 - Working alone, take initiative on simple fixes (symlink, missing lib, resubmit
   failed job, clean stale files); test small first; log what you did. No sweeping
   refactors, no external commits unprompted.
-- ALWAYS keep your OWN ScheduleWakeup timer armed - every single turn, no
-  exceptions - and NEVER count on being woken by a task-completion notification
-  (it can be missed and you "fall asleep"). Treat the completion notifier as a
-  bonus, the timer as the real wake signal. Whenever you start anything you then
-  wait on (qsub, build, big rsync, cloud CI, backgrounded poll), set the timer
-  IMMEDIATELY and RESCHEDULE it each fire until the thing is truly done. Interval
-  tuned to the cache window: ~270s for cloud CI you're iterating on, 5 min for a
-  build, 15-30 min for a long stereo/PBS run.
+- For any multi-stage autonomous pipeline, use an INDEPENDENT RECURRING timer that
+  paces itself and PERSISTS no matter what until you explicitly kill it: CronCreate
+  (recurring:true, e.g. "8,28,48 * * * *" off the round marks) whose prompt is an
+  IDEMPOTENT check-and-advance (only launch a stage if its predecessor is done and it
+  is not already running). It keeps firing across user messages and idle; CronDelete
+  it ONLY when the work is fully done and nothing is running. Do NOT pace long
+  autonomous work with single-shot ScheduleWakeup that you re-arm each turn - that is
+  FRAGILE: a wakeup is one-shot and a user message supersedes it, so it silently
+  lapses the moment a back-and-forth distracts you (this stalled a pipeline once).
+  ScheduleWakeup is fine only for a true one-off wait. NEVER count on a task-completion
+  notification (it can be missed). Interval tuned to the work: ~15-30 min for stereo/PBS.
 - On every wakeup, FIRST run `date` to re-orient - long runs leave you stale.
 
 ## Building ASP Docs
