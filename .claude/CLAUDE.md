@@ -318,6 +318,12 @@ comment-only - never `chmod +x`; `git -C ~/projects add` new files in subdirs.
 Full conventions + the work-tracking file index (mpr_todo.sh, todo.sh,
 ostfl_2025_notes.sh): `~/projects/notes_conventions.sh`.
 
+**Healthy project layout (read at project start):** keep logic in reusable
+SCRIPTS and specifics out of them (pass as args/env); keep logic OUT of notes -
+notes hold only the minimal paper trail (invocation, choices, results). Three
+layers: runner -> one generic launcher -> minimal notes. Full statement (cardinal
+rules, layers, litmus test): `~/projects/qsub_convention.sh` section 1.
+
 ## Resuming a Project: Read and Adapt, Never Improvise (CRITICAL)
 
 When picking up or extending an EXISTING project, the FIRST task - before
