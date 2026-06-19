@@ -318,6 +318,16 @@ comment-only - never `chmod +x`; `git -C ~/projects add` new files in subdirs.
 Full conventions + the work-tracking file index (mpr_todo.sh, todo.sh,
 ostfl_2025_notes.sh): `~/projects/notes_conventions.sh`.
 
+**Notes are the source of truth, the disk is not.** Reviews read the notes, never
+re-derive from files (NO archeology) - dirs and log files get wiped, so the notes
+alone must let anyone reconstruct the whole process later (wins, dead-ends, and
+screw-ups alike) and condense it into a user doc. Log every script's EXACT
+invocation - the qsub command, input AND output paths - and the rationale. Each
+experiment gets its OWN versioned peer dir (e.g. `dem2gcp_v7` -> `dem2gcp_transverse_v8`),
+kept SEPARATE from `ref/` and `input/`, so experiments stay findable, comparable,
+and wipeable. Hierarchical memory: this file is a condensed INDEX of triggers - a
+task matching a pointer here is the cue to READ the deeper notes BEFORE acting.
+
 **Healthy project layout (read at project start):** keep logic in reusable
 SCRIPTS and specifics out of them (pass as args/env); keep logic OUT of notes -
 notes hold only the minimal paper trail (invocation, choices, results). Three
