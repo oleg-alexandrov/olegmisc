@@ -38,6 +38,12 @@ notes - the pointer is a promise that the detail exists there.
 - **NEVER force push (`git push --force`, `git push -f`, or `--force-with-lease`) unless explicitly asked by the user.**
   Always add on top. **NEVER amend a commit that has already been pushed** - that
   inevitably requires a force push. Always make a new commit instead.
+- **STRONGLY prefer rebase over a merge/branching history.** When the remote has
+  advanced and a push is rejected, integrate with `git pull --rebase` (or
+  `git fetch` then `git rebase origin/master`), never a plain `git pull` that
+  creates a merge commit and branchy history. Replay our local, not-yet-pushed
+  commits on top of upstream to keep history linear. (Rebasing local unpushed
+  commits is fine and is NOT a force push.)
 - **NEVER push without explicit authorization.** Every `git push` must be
   explicitly requested or approved. This applies to ALL repos: ISIS3, ASP,
   VW, BinaryBuilder, StereoPipelineTest, projects, home dir  - no exceptions.
@@ -351,15 +357,17 @@ hard way on lunamaps SfS covariance, 2026-06: improvised a raw-`sfs` per-tile
 pipeline instead of reading and adapting the existing `parallel_sfs` runner,
 took several redirects to get on track, and had to redo the OOM/SBU diagnosis.)
 
-## CMake File Management
+## CMake and Build Mechanics
 
-**Touch CMakeLists.txt ONLY when file listing changes (add/remove/move files):**
-
-When adding/removing/moving source files (.cc, .h):
-- Touch the CMakeLists.txt in that directory AND the parent directory
-- This triggers CMake to re-run `file(GLOB ...)` and pick up changes
-
-**DO NOT touch when just editing existing files** - build system detects content changes automatically.
+Full cmake/build mechanics (glob/touch rules, native vs cross-compile build
+dirs, building docs): `~/projects/cmake_build_notes.sh`. Read it before
+non-trivial build work. Bare minimum to remember without reading:
+- Adding/removing/moving a source file: `touch` the CMakeLists in that dir AND
+  the parent to force a re-glob. Don't touch for content-only edits.
+- That touch is LOCAL only - NEVER commit a CMakeLists change just to force a
+  re-glob for others (git ignores mtime; other contributors don't build like us).
+- Native = `build/` + `install/`; cross-compile = `build_linux/` + `install_linux/`.
+  NEVER mix them - it destroys the other build.
 
 ## Inspect BA/Jitter Stats After Every Run
 
@@ -434,12 +442,8 @@ When adding/modifying command-line options, always update all three consistently
 
 ## Building ASP Docs
 
-```bash
-eval "$($HOME/anaconda3/bin/conda shell.zsh hook)"
-conda activate sphinx
-make -C ~/projects/StereoPipeline/docs html
-# Output: docs/_build/html/
-```
+`conda activate sphinx; make -C ~/projects/StereoPipeline/docs html` (output in
+`docs/_build/html/`). Full build/cmake mechanics: `~/projects/cmake_build_notes.sh`.
 
 ## RST Documentation Formatting
 
@@ -695,17 +699,6 @@ use RELATIVE paths only. Prefer GRADUAL per-file deletion (`cd` in, scoped loop
 `rmdir` - it fails safely if non-empty) over sweeping `rm -rf <dir>`, which trips
 the harness and stalls autonomous runs. Avoid `rm -f "$VAR/file"` (flagged even
 when safe) - `cd "$VAR"` first, then `rm -f file`.
-
-## Cross-Compile Build Directories (CRITICAL)
-
-**Native builds use `build/` and `install/`. Cross-compile uses `build_linux/` and `install_linux/`.**
-
-Both VW and ASP follow this convention:
-- `build/` + `install/` = native Mac ARM64 (or native Linux on lunokhod1)
-- `build_linux/` + `install_linux/` = cross-compiled Linux x86_64 from Mac
-
-NEVER use `build/` or `install/` for cross-compilation. NEVER use `build_linux/` or
-`install_linux/` for native builds. Mixing these up destroys the other build.
 
 ## Never Reference Public PRs/Issues in Private-Repo Commit Messages (CRITICAL)
 
