@@ -289,6 +289,10 @@ channel_priority`. Fix: `conda config --set channel_priority flexible`.
 - **Mac mini** (`ssh mac_arm`) - notes/docs machine + secondary build. **Always
   `make install`** (never bare `make`; installed libs go stale). Storage is
   tight - wipe stale `/tmp` cruft (never active/this-session work; if unsure ask).
+  **No `timeout`/`gtimeout` on this Mac** - never wrap commands in `timeout` (it
+  exits 127 "command not found", which silently looks like the wrapped command
+  failed - cost a whole night of false "pfe down"). To bound an `ssh` probe use
+  `ssh -o ConnectTimeout=N`. Detail: `~/projects/pleiades_notes.sh`.
 
 Per-machine build commands, conda init, paths, the athfe tunnel hop, `/tmp`
 triage: `~/projects/machines.sh` (and `install_asp_notes.sh`).
