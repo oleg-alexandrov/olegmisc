@@ -430,6 +430,10 @@ When adding/modifying command-line options, always update all three consistently
 - Working alone, take initiative on simple fixes (symlink, missing lib, resubmit
   failed job, clean stale files); test small first; log what you did. No sweeping
   refactors, no external commits unprompted.
+- DEFAULT for ANY repeating autonomous monitoring/pipeline: reach for CronCreate
+  FIRST, not ScheduleWakeup. Oleg asks for this repeatedly - set up the independent
+  recurring cron (off-round-marks, e.g. "9,29,49 * * * *") at the START, don't
+  re-arm one-shots.
 - For any multi-stage autonomous pipeline, use an INDEPENDENT RECURRING timer that
   paces itself and PERSISTS no matter what until you explicitly kill it: CronCreate
   (recurring:true, e.g. "8,28,48 * * * *" off the round marks) whose prompt is an
