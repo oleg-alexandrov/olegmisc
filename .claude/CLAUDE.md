@@ -104,7 +104,7 @@ Never add `.ssh/` to git (dangerous). To untrack a file but keep it on disk, alw
 ## NEVER `git add .` / `-A` in the home repo - add NAMED files only (CRITICAL)
 
 The home dir (`~`, repo = olegmisc) working tree holds private files (`.ssh/`,
-`.claude/.credentials.json`, `.bash_history`, ...). `git add .`/`-A`/`-u`/a dir
+`.claude/.credentials.json`, `.bash_history`, etc.). `git add .`/`-A`/`-u`/a dir
 there LEAKS secrets. In `~`, add ONE named path at a time, and `git status` /
 inspect the staged set before EVERY commit. Sync with `git pull --rebase
 --autostash`. Full git hygiene policy: `~/projects/git_notes.sh`.
@@ -184,7 +184,7 @@ etc.), name them so they stay trackable later. Pattern:
 `<stage>_<product>[_<modifier>].<ext>`
 
 - `<stage>` = the processing stage / source identity that made the DEM:
-  `vendor`, `deband`, `dem2gcp`, `ba_htdem`, `ba_nodem`, ... with `_vN` for
+  `vendor`, `deband`, `dem2gcp`, `ba_htdem`, `ba_nodem`, etc. with `_vN` for
   iterations (`ba_htdem_v2`). NEVER use vague tags like `before`/`after`/`new`/`tmp`.
 - `<product>` chains left to right as products build on each other:
   `dem` -> `hs` -> `<ref>diff` (e.g. `ctxdiff`) -> `<ref>diff_cmap`. A derived
@@ -646,7 +646,11 @@ Never write "TL;DR" anywhere (notes, docs, chat, commits) - it is an ugly
 macro-hack abbreviation. Use plain English: "Summary" (or just write the
 summary). Keep summaries brief and to the point.
 
-- Avoid semicolons and sentence-joining dashes, especially with full sentences. Use a period and short sentences (per Google/Microsoft/Apple style guides).
+- Write SHORT sentences. Never join two sentences with a dash, an em dash, or a
+  semicolon. Use a period and start a new sentence. Break long sentences up.
+  Hyphens INSIDE a word are fine (model-based, cross-sensor). Applies everywhere:
+  docs, notes, commits, chat (per Google/Microsoft/Apple style guides).
+- Do not write three dots (an ellipsis). Use "etc." or just end the sentence.
 
 ## Commit Message Style
 
