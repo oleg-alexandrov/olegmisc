@@ -18,6 +18,12 @@ notes - the pointer is a promise that the detail exists there.
   Use `.sh` files (comment-only) in `~/projects/` so they're tracked by the
   projects repo. The `.claude/` memory is only for cross-project patterns
   and preferences, not per-project notes.
+- **Project-specific data, scratch, and outputs go in the relevant
+  `~/projects/<subdir>/`, never loose in the home dir or scattered around.** Do
+  not create scratch dirs or stray files in `~` (e.g. `~/sli_fusion_lr`, build
+  logs); stage work inside the project's own subdir so it stays findable and the
+  home dir stays clean. (`~/sli_fusion_report.html` is a tolerated exception: a
+  temp, paste-ready report Oleg keeps at home for convenience.)
 - **When told to add/commit/push CLAUDE.md, always do the same for MEMORY.md
   (`~/.claude/projects/-Users-oalexan1/memory/MEMORY.md`) too.** They travel together.
 - "Project dir" or "projects dir" means `~/projects`.
@@ -293,6 +299,10 @@ channel_priority`. Fix: `conda config --set channel_priority flexible`.
   failed - cost a whole night of false "pfe down"). To bound an `ssh` probe use
   `ssh -o ConnectTimeout=N`. Detail: `~/projects/pleiades_notes.sh`.
 
+- **Reachability check first (auto mode):** when a task depends on `l1` or
+  `pfe`, probe them BEFORE committing to a plan (`ssh -o ConnectTimeout=8`).
+  A dead host found mid-pipeline stalls an autonomous run. Cheap to test up front.
+
 Per-machine build commands, conda init, paths, the athfe tunnel hop, `/tmp`
 triage: `~/projects/machines.sh` (and `install_asp_notes.sh`).
 
@@ -445,6 +455,12 @@ When adding/modifying command-line options, always update all three consistently
   FIRST, not ScheduleWakeup. Oleg asks for this repeatedly - set up the independent
   recurring cron (off-round-marks, e.g. "9,29,49 * * * *") at the START, don't
   re-arm one-shots.
+- THE MOMENT a qsub/PBS job (or any long remote job) is submitted, IMMEDIATELY
+  CronCreate the recurring monitor in the SAME turn. Do NOT offer ("want me to set
+  up a cron?") and wait for a yes - that is the exact failure that "falls asleep on
+  the job": the job dies and no one is watching. Setting the cron is not optional and
+  needs no permission. Submit job -> set cron -> report, always in one turn. A job
+  with no watching cron is a bug.
 - For any multi-stage autonomous pipeline, use an INDEPENDENT RECURRING timer that
   paces itself and PERSISTS no matter what until you explicitly kill it: CronCreate
   (recurring:true, e.g. "8,28,48 * * * *" off the round marks) whose prompt is an
@@ -508,6 +524,11 @@ In shell scripts, put each command-line option (and each `export`) on its own
 line for readability, with trailing `\` continuation backslashes aligned to one
 column (use the backslash alignment tool below).
 
+**NEVER put a comment after a `\` line-continuation** (`cmd \  # note`): the `\`
+escapes the trailing space, the `#...` is a comment, and the command ENDS there
+(continuation broken). This applies to scripts AND to paste-able commands shown
+to Oleg. Keep comments on their own lines, or omit them.
+
 ## Backslash Alignment Tool
 
 `~/bin/align_backslashes.py <file> <start_line> <end_line> [--inplace] [--column N]`
@@ -543,6 +564,13 @@ Claude can SEE images - use vision to verify rasters (orthos, DEMs, geodiffs,
 camera/rotation alignment). Technique, the warp-to-a-common-grid-before-overlay
 rule, and where preview files live (with the data on pfe, not /tmp):
 `~/projects/visual_raster_inspection.sh`.
+**CARDINAL RULE (do not repeat the Oxia screwup): you are a PIXEL PNG viewer,
+NOT GIS - you CANNOT eyeball a georeferenced overlay; gdalwarp ALL rasters to ONE
+identical grid (-t_srs + -te + -ts) -> PNG, THEN look (a side-by-side at different
+framing is worthless). And geodiff std is BLIND to HORIZONTAL misregistration on
+low-relief terrain - a small geodiff std does NOT mean registered; judge
+registration ONLY by the red/green hillshade overlay. Full rule + failure record
+at the top of that file.**
 
 Match-point inspection: `~/bin/plot_matches.py` overlays an ASP .match file on both images and reports the residual to the best-fit translation (the real-vs-junk metric for co-registered pairs). For the stereo_gui solid-red-dot look use `--red --radius N`.
 
