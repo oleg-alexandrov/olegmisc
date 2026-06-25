@@ -352,7 +352,11 @@ ostfl_2025_notes.sh): `~/projects/notes_conventions.sh`.
 re-derive from files (NO archeology) - dirs and log files get wiped, so the notes
 alone must let anyone reconstruct the whole process later (wins, dead-ends, and
 screw-ups alike) and condense it into a user doc. Log every script's EXACT
-invocation - the qsub command, input AND output paths - and the rationale. Each
+invocation - the qsub command, input AND output paths - and the rationale.
+**After each stage completes, record the PRODUCED OUTPUT FILES by name** (the
+mosaicked DEMs, overlays, etc.), as an explicit list relative to the work dir, so
+they are never re-derived or dug up later. Output files are part of the work log,
+not an afterthought. No need to note on-Mac vs on-pfe - that is figure-out-able. Each
 experiment gets its OWN versioned peer dir (e.g. `dem2gcp_v7` -> `dem2gcp_transverse_v8`),
 kept SEPARATE from `ref/` and `input/`, so experiments stay findable, comparable,
 and wipeable. Hierarchical memory: this file is a condensed INDEX of triggers - a
