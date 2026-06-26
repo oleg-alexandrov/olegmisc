@@ -1,9 +1,9 @@
 {
   "permissions": {
+    "defaultMode": "bypassPermissions",
     "allow": [
       "Edit(/Users/oalexan1/.bashrc)"
-    ],
-    "defaultMode": "bypassPermissions"
+    ]
   },
   "enabledPlugins": {
     "clangd-lsp@claude-plugins-official": true
