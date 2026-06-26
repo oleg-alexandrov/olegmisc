@@ -2,11 +2,13 @@
   "permissions": {
     "allow": [
       "Edit(/Users/oalexan1/.bashrc)"
-    ]
+    ],
+    "defaultMode": "bypassPermissions"
   },
   "enabledPlugins": {
     "clangd-lsp@claude-plugins-official": true
   },
+  "feedbackSurveyRate": 0,
   "skipDangerousModePermissionPrompt": true,
-  "feedbackSurveyRate": 0
+  "tui": "default"
 }
