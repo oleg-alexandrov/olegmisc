@@ -640,6 +640,7 @@ Bare minimum to remember without reading:
 - **No heavy/parallel compute on the pfe head node** - `parallel_stereo`, anything multi-process/multi-thread or big-RAM goes to qsub (small/fast -> `devel`). Light single-thread `gdalinfo`/`gdal_translate`/`gdalwarp`/`ls`/`qstat` on the head node is fine (don't qsub a one-off gdalinfo - use common sense). 4-sec dry-run before qsub. Default `bro_ele`, budget `e2305`. Detail: `~/projects/qsub_rules.sh`.
 - **NEVER wipe anything on lfe.** lfe access from l1: `ssh pfx` then `ssh lfe`.
 - `/home6` data MUST symlink to `/nobackup*`. Symlink-wipe procedure in `pleiades_notes.sh`.
+- **Every qsub script: `exec >` redirect to a work-dir log (never PBS `-o`) AND `umask 022` (readable outputs). Details: `qsub_convention.sh` / `qsub_rules.sh`.**
 
 ## ASP Dev Build on pfe
 

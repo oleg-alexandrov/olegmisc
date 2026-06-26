@@ -159,6 +159,7 @@ Refactoring often produces small float noise from evaluation order changes.
 - [feedback_casual_out_of_docs.md](feedback_casual_out_of_docs.md) - Keep jokes/banter out of notes, commits, PRs, docs, anything public; chat can be playful, the record stays professional.
 - [feedback_batch_ssh_pfx.md](feedback_batch_ssh_pfx.md) - Batch all remote ops into ONE ssh pfx call; MOTD overhead is ~10s per call.
 - [feedback_qsub_log_realtime.md](feedback_qsub_log_realtime.md) - qsub scripts should redirect output to a project-dir log file (not /dev/null) so user can tail -f while job runs.
+- [feedback_qsub_umask_022.md](feedback_qsub_umask_022.md) - Every NAS qsub script needs `umask 022` (PBS default 0077 -> outputs 0600, owner-only); run the qsub_convention checklist when authoring/repurposing a script.
 - [feedback_wipe_and_git_rm.md](feedback_wipe_and_git_rm.md) - When wiping scripts on pfx, always also git rm tracked paths on Mac in the same step.
 - [feedback_precise_instructions.md](feedback_precise_instructions.md) - Do exactly what was asked, no extras. When unsure, ASK rather than do extra.
 - [feedback_follow_explicit_plan.md](feedback_follow_explicit_plan.md) - When Oleg gives an explicit plan/directive, execute it; don't re-propose alternatives he already weighed.
