@@ -542,6 +542,11 @@ such as sigma=10. etc. Have rationale. Log all this rationale, var names and val
 precise stage actual script invocation including the qsub cmd for reproductibilty later.
 So basically a premable with all defined followed by precise invocation you will launch.
 
+## Inspect to Confirm Expectations
+
+Any time you assume or expect a certain result, inspect it (visually AND with
+stats) to verify the result actually conforms to that expectation. Never assume - check.
+
 ## Multi-Option Commands in Scripts
 
 In shell scripts, put each command-line option (and each `export`) on its own
@@ -662,7 +667,7 @@ gotcha.
 - `~/projects/lfe_archive.sh` - lfe tape archive AND restore procedure (DMF dmls/dmget: stage off tape before any tar/read)
 
 Bare minimum to remember without reading:
-- **No heavy/parallel compute on the pfe head node** - `parallel_stereo`, anything multi-process/multi-thread or big-RAM goes to qsub (small/fast -> `devel`). Light single-thread `gdalinfo`/`gdal_translate`/`gdalwarp`/`ls`/`qstat` on the head node is fine (don't qsub a one-off gdalinfo - use common sense). 4-sec dry-run before qsub. Models: `bro` is DECOMMISSIONED (2026-06-27) - use `cas_ait` (40c) or `rom_ait`/`mil` (128c); budget `e2305`. In a non-interactive ssh, qsub is not on PATH - use `/PBS/bin/qsub`. `devel` allows only 1 job/user (pack multiple sites into ONE serial job). POLICY: ALL qsub args (queue, model, walltime, select) live in the LAUNCHER + the plan/notes, NEVER in the worker/runner compute script (which holds only the tool commands + its exec-redirect log). Detail: `~/projects/qsub_rules.sh`, `qsub_convention.sh`.
+- **No heavy/parallel compute on the pfe head node** - `parallel_stereo`, anything multi-process/multi-thread or big-RAM goes to qsub (small/fast -> `devel`). Light single-thread `gdalinfo`/`gdal_translate`/`gdalwarp`/`ls`/`qstat` on the head node is fine (don't qsub a one-off gdalinfo - use common sense). 4-sec dry-run before qsub. budget `e2305`. **Models & node choice:** `cas_ait` (40c, Aitken), `rom_ait`/`mil_ait` (128c, Aitken), `bro_ele` (28c, Electra), `sky_ele` (40c, Electra). Broadwell is decommissioned ONLY on Pleiades - `bro_ele` (Electra) and `sky_ele` are FINE to use. **Our code is model-agnostic - it must run on ANY of them** (match `ncpus` to that model's cores). **Before launching, study load on ALL systems** (`/u/scicon/tools/bin/node_stats.sh` -> Free vs "Queued jobs want N nodes" per model) and pick the LEAST-CONTENDED (e.g. bro_ele was Free 292 / 12 queued while cas_ait was 379 queued). **For small single-node jobs Athena (Turin) nodes are also fine - but Athena Turin is only visible/submittable from the ATHENA front-end** (ssh to athena), NOT from pfe. **If a job sits queued too long, qdel it and resubmit on a less-contended system.** In a non-interactive ssh, qsub is not on PATH - use `/PBS/bin/qsub`. `devel` allows only 1 job/user (pack multiple sites into ONE serial job). POLICY: NO separate PBS launcher script (cannot afford one per stage). The PLAN/NOTES file holds ALL qsub args (queue, model, walltime, select) WITH their rationale + the named params, then launches the worker DIRECTLY via the qsub `--` form: `qsub <pbs args> -- $dir/script.sh <script args, workDir as the LAST arg>`. The worker self-handles umask/cd/tailable-log and cds into the passed workDir; it holds only tool commands, never qsub args. Detail: `~/projects/qsub_rules.sh`, `qsub_convention.sh`.
 - **NEVER wipe anything on lfe.** lfe access from l1: `ssh pfx` then `ssh lfe`.
 - `/home6` data MUST symlink to `/nobackup*`. Symlink-wipe procedure in `pleiades_notes.sh`.
 - **Every qsub script: `exec >` redirect to a work-dir log (never PBS `-o`) AND `umask 022` (readable outputs). Details: `qsub_convention.sh` / `qsub_rules.sh`.**
