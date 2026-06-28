@@ -647,6 +647,12 @@ Always use `// TODO(oalexan1):` format. Never bare `// TODO:`.
 
 Convention: `origin` = user's fork, `god` = upstream org (for ASP, VW, BinaryBuilder).
 
+## CSM Model-State JSON
+
+Parse CSM model-state / `.adjusted_state.json` files CAREFULLY - they are NOT plain
+JSON: a model-name line comes FIRST, then the JSON (so `json.load` fails; skip line 1).
+Frame center, linescan position interpolation, parsing recipe: `~/projects/csm_camera_notes.sh`.
+
 ## ISIS Mission Data and Kernels
 
 **LRO NAC end-to-end + generic ISIS kernel fetch: `~/projects/lronac_processing.sh`.**
@@ -667,7 +673,7 @@ gotcha.
 - `~/projects/lfe_archive.sh` - lfe tape archive AND restore procedure (DMF dmls/dmget: stage off tape before any tar/read)
 
 Bare minimum to remember without reading:
-- **No heavy/parallel compute on the pfe head node** - `parallel_stereo`, anything multi-process/multi-thread or big-RAM goes to qsub (small/fast -> `devel`). Light single-thread `gdalinfo`/`gdal_translate`/`gdalwarp`/`ls`/`qstat` on the head node is fine (don't qsub a one-off gdalinfo - use common sense). 4-sec dry-run before qsub. budget `e2305`. **Models & node choice:** `cas_ait` (40c, Aitken), `rom_ait`/`mil_ait` (128c, Aitken), `bro_ele` (28c, Electra), `sky_ele` (40c, Electra). Broadwell is decommissioned ONLY on Pleiades - `bro_ele` (Electra) and `sky_ele` are FINE to use. **Our code is model-agnostic - it must run on ANY of them** (match `ncpus` to that model's cores). **Before launching, study load on ALL systems** (`/u/scicon/tools/bin/node_stats.sh` -> Free vs "Queued jobs want N nodes" per model) and pick the LEAST-CONTENDED (e.g. bro_ele was Free 292 / 12 queued while cas_ait was 379 queued). **For small single-node jobs Athena (Turin) nodes are also fine - but Athena Turin is only visible/submittable from the ATHENA front-end** (ssh to athena), NOT from pfe. **If a job sits queued too long, qdel it and resubmit on a less-contended system.** In a non-interactive ssh, qsub is not on PATH - use `/PBS/bin/qsub`. `devel` allows only 1 job/user (pack multiple sites into ONE serial job). POLICY: NO separate PBS launcher script (cannot afford one per stage). The PLAN/NOTES file holds ALL qsub args (queue, model, walltime, select) WITH their rationale + the named params, then launches the worker DIRECTLY via the qsub `--` form: `qsub <pbs args> -- $dir/script.sh <script args, workDir as the LAST arg>`. The worker self-handles umask/cd/tailable-log and cds into the passed workDir; it holds only tool commands, never qsub args. This is GENERAL, INDEPENDENT of allocation (e2305/s3319/any) - it is about code structure. Only a LARGE fan-out (hundreds of jobs, rare) justifies a generic launcher; most work needs one qsub or a handful, so inline-in-notes is the default. Detail: `~/projects/qsub_rules.sh`, `qsub_convention.sh`.
+- **No heavy/parallel compute on the pfe head node** - `parallel_stereo`, anything multi-process/multi-thread or big-RAM goes to qsub (small/fast -> `devel`). Light single-thread `gdalinfo`/`gdal_translate`/`gdalwarp`/`ls`/`qstat` on the head node is fine (don't qsub a one-off gdalinfo - use common sense). **To run any gdal/ASP tool on pfe FIRST set the env** (non-interactive ssh has nothing on PATH, PROJ unset): `conda activate asp_deps` (PROJ data, so `-t_srs` works) + `export PATH=$HOME/projects/BinaryBuilder/StereoPipeline/bin:$PATH` (the packaged build has ALL tools); detail in `~/projects/pleiades_notes.sh`. **NEVER run heavy compute - `stereo_corr`/`parallel_stereo`/correlation (the eval dd) - on the Mac OR the pfe head node; it goes to a qsub compute node.** The eval (`cassis_eval_stage.sh`) is the last step inside each stage's qsub job, so its dd runs on the compute node - do not run it by hand on the Mac. 4-sec dry-run before qsub. budget `e2305`. **Models & node choice:** `cas_ait` (40c, Aitken), `rom_ait`/`mil_ait` (128c, Aitken), `bro_ele` (28c, Electra), `sky_ele` (40c, Electra). Broadwell is decommissioned ONLY on Pleiades - `bro_ele` (Electra) and `sky_ele` are FINE to use. **Our code is model-agnostic - it must run on ANY of them** (match `ncpus` to that model's cores). **Before launching, study load on ALL systems** (`/u/scicon/tools/bin/node_stats.sh` -> Free vs "Queued jobs want N nodes" per model) and pick the LEAST-CONTENDED (e.g. bro_ele was Free 292 / 12 queued while cas_ait was 379 queued). **For small single-node jobs Athena (Turin) nodes are also fine - but Athena Turin is only visible/submittable from the ATHENA front-end** (ssh to athena), NOT from pfe. **If a job sits queued too long, qdel it and resubmit on a less-contended system.** In a non-interactive ssh, qsub is not on PATH - use `/PBS/bin/qsub`. `devel` allows only 1 job/user (pack multiple sites into ONE serial job). POLICY: NO separate PBS launcher script (cannot afford one per stage). The PLAN/NOTES file holds ALL qsub args (queue, model, walltime, select) WITH their rationale + the named params, then launches the worker DIRECTLY via the qsub `--` form: `qsub <pbs args> -- $dir/script.sh <script args, workDir as the LAST arg>`. The worker self-handles umask/cd/tailable-log and cds into the passed workDir; it holds only tool commands, never qsub args. This is GENERAL, INDEPENDENT of allocation (e2305/s3319/any) - it is about code structure. Only a LARGE fan-out (hundreds of jobs, rare) justifies a generic launcher; most work needs one qsub or a handful, so inline-in-notes is the default. Detail: `~/projects/qsub_rules.sh`, `qsub_convention.sh`.
 - **NEVER wipe anything on lfe.** lfe access from l1: `ssh pfx` then `ssh lfe`.
 - `/home6` data MUST symlink to `/nobackup*`. Symlink-wipe procedure in `pleiades_notes.sh`.
 - **Every qsub script: `exec >` redirect to a work-dir log (never PBS `-o`) AND `umask 022` (readable outputs). Details: `qsub_convention.sh` / `qsub_rules.sh`.**
@@ -787,6 +793,12 @@ the harness and stalls autonomous runs. Avoid `rm -f "$VAR/file"` (flagged even
 when safe) - `cd "$VAR"` first, then `rm -f file`.
 
 ## Do Not Trigger Harness Permission Prompts Mid-Task (CRITICAL)
+
+**EVER-RECURRING. For ANY destructive command (rm -rf, find -delete) write a
+SINGLE EXPLICIT LITERAL ABSOLUTE PATH per command - one `rm -rf /full/abs/path`
+per line. NEVER a glob (`*`), `~`, `$VAR`, `cd &&`, or `find ... -exec rm`. If a
+path can't be made fully explicit, do NOT run the destructive command. This trips
+the sandbox over and over and breaks Oleg's flow.**
 
 Permission prompts from the sandbox BREAK Oleg's flow and stall independent
 progress. This has repeatedly frustrated him. The TRIGGER (confirmed 2026-06-24)
