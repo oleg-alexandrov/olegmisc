@@ -407,6 +407,16 @@ mean is outlier-driven). Skip the per-residual raw_pixels files (too big). These
 tell you whether the solve behaved (sub-pixel medians, bounded offsets, cameras
 multiply-tied).
 
+## point2dem --errorimage Always; Mosaic the Error Too
+
+Every `point2dem` that makes a DEM gets `--errorimage` (the triangulation
+IntersectionErr is a key diagnostic - distortion/misreg/blunders show there).
+Whenever DEMs are `dem_mosaic`'d, ALSO mosaic the per-pair error images
+(`dem_mosaic --max` over the `*-IntersectionErr.tif` -> a worst-case
+tri-error mosaic). For an ALIGNED DEM, align the POINT CLOUD (it carries the
+error in band 4) and `point2dem --errorimage` it, rather than aligning the
+bare DEM (a rigid align repositions the error, doesn't change it).
+
 ## Output Statements
 
 - Do NOT remove vw_out() statements - these are for user-facing informational output, not debugging
@@ -522,6 +532,16 @@ Format: `Copyright (c) 2006-YYYY, United States Government...` - update end year
 
 `~/bin/clean_style.py <input_cpp_file>` - automated C++ style cleanup. Use without asking when requested.
 
+## No Hardcoded Values or Env Vars in Scripts
+
+Scripts must take ALL parameters as explicit input args - no hardcoded values, no
+env vars, no default args. Hidden config can't be inspected when re-running the
+script later.
+Before running a script that is a notable stage of something, define all vars, 
+such as sigma=10. etc. Have rationale. Log all this rationale, var names and vals, and
+precise stage actual script invocation including the qsub cmd for reproductibilty later.
+So basically a premable with all defined followed by precise invocation you will launch.
+
 ## Multi-Option Commands in Scripts
 
 In shell scripts, put each command-line option (and each `export`) on its own
@@ -547,14 +567,19 @@ Lines are 1-based. Without `--inplace`, prints aligned output to stdout.
 
 ## Stereo/Photogrammetry Resolution (CRITICAL - screwed this up MULTIPLE TIMES)
 
-For stereo/photogrammetry, ALWAYS mapproject (and correlate) at near-native
-image resolution, with ONE pinned `--tr` so every image (left, right, all)
-shares the SAME GSD - auto (no `--tr`) drifts per image and parallel_stereo
-correlator-mode then errors on mismatched GSD. The DEM is only an interpolated
-draping surface, usually ~4x coarser; its coarseness must NEVER set the
+For stereo/photogrammetry, correlation ALWAYS runs at near-native image
+resolution. When mapprojecting, pin ONE `--tr` that is a COMPROMISE near the
+native GSD of the INPUT IMAGES (not the DEM), and mapproject BOTH/ALL images at
+that SAME res - auto (no `--tr`) drifts per image and parallel_stereo
+correlator-mode then errors on mismatched GSD. The seed/draping DEM is only an
+interpolated surface, usually ~4x coarser; its coarseness must NEVER set the
 mapproject/correlation grid. Only the OUTPUT DEM (point2dem) lives at the coarse
 ~4x-GSD res. Do not downsample imagery to the DEM. (CaSSIS native GSD ~4.59 m;
 DEM ~18 m.) Repeatedly assumed the DEM res sets the mapproject res - it does NOT.
+Mapprojecting at the coarse DEM res produced a rough, blocky DEM (CaSSIS PHASE 0,
+2026-06-27). Corollary: for a simple 2-image pair you can SKIP mapproject entirely
+and stereo the raw images (affineepipolar) - correlation is native by definition;
+mapproject is for many images / hard terrain / large convergence.
 
 ## Relative Paths in a Project Work Dir
 
@@ -637,7 +662,7 @@ gotcha.
 - `~/projects/lfe_archive.sh` - lfe tape archive AND restore procedure (DMF dmls/dmget: stage off tape before any tar/read)
 
 Bare minimum to remember without reading:
-- **No heavy/parallel compute on the pfe head node** - `parallel_stereo`, anything multi-process/multi-thread or big-RAM goes to qsub (small/fast -> `devel`). Light single-thread `gdalinfo`/`gdal_translate`/`gdalwarp`/`ls`/`qstat` on the head node is fine (don't qsub a one-off gdalinfo - use common sense). 4-sec dry-run before qsub. Default `bro_ele`, budget `e2305`. Detail: `~/projects/qsub_rules.sh`.
+- **No heavy/parallel compute on the pfe head node** - `parallel_stereo`, anything multi-process/multi-thread or big-RAM goes to qsub (small/fast -> `devel`). Light single-thread `gdalinfo`/`gdal_translate`/`gdalwarp`/`ls`/`qstat` on the head node is fine (don't qsub a one-off gdalinfo - use common sense). 4-sec dry-run before qsub. Models: `bro` is DECOMMISSIONED (2026-06-27) - use `cas_ait` (40c) or `rom_ait`/`mil` (128c); budget `e2305`. In a non-interactive ssh, qsub is not on PATH - use `/PBS/bin/qsub`. `devel` allows only 1 job/user (pack multiple sites into ONE serial job). POLICY: ALL qsub args (queue, model, walltime, select) live in the LAUNCHER + the plan/notes, NEVER in the worker/runner compute script (which holds only the tool commands + its exec-redirect log). Detail: `~/projects/qsub_rules.sh`, `qsub_convention.sh`.
 - **NEVER wipe anything on lfe.** lfe access from l1: `ssh pfx` then `ssh lfe`.
 - `/home6` data MUST symlink to `/nobackup*`. Symlink-wipe procedure in `pleiades_notes.sh`.
 - **Every qsub script: `exec >` redirect to a work-dir log (never PBS `-o`) AND `umask 022` (readable outputs). Details: `qsub_convention.sh` / `qsub_rules.sh`.**
