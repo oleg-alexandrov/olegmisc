@@ -348,6 +348,15 @@ comment-only - never `chmod +x`; `git -C ~/projects add` new files in subdirs.
 Full conventions + the work-tracking file index (mpr_todo.sh, todo.sh,
 ostfl_2025_notes.sh): `~/projects/notes_conventions.sh`.
 
+**Prompt to log done items to the progress trackers.** When a notable task
+finishes - especially if it landed in `NEWS.rst` or as a PR to ISIS, ALE,
+SpiceQL, USGSCSM, or other USGS repos - SUGGEST recording it in the right
+progress/done log: `mpr_todo.sh` (Monthly Progress Report, all projects),
+`csm_todo.sh` (CSM/ISIS work - the USGS PRs go here), `ostfl_todo.sh` (OSTFL),
+or `sli_fusion_todo.sh` (SLI fusion / GSFC geolocation). Just remind; don't
+edit these without the user's go-ahead. These are user-facing reporting docs,
+not the per-project working notes.
+
 **Notes are the source of truth, the disk is not.** Reviews read the notes, never
 re-derive from files (NO archeology) - dirs and log files get wiped, so the notes
 alone must let anyone reconstruct the whole process later (wins, dead-ends, and
