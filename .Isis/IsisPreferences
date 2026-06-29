@@ -1,0 +1,12 @@
+# User-level ISIS preference overrides. ISIS merges this over the system file at
+# $ISISROOT/IsisPreferences. Keep only the groups/keywords to override here.
+#
+# Stop ISIS from dumping a print.prt session log into the current working
+# directory on every run (FileOutput = Off).
+
+Group = SessionLog
+  TerminalOutput = Off
+  FileOutput     = Off
+  FileName       = print.prt
+  FileAccess     = Append
+EndGroup
