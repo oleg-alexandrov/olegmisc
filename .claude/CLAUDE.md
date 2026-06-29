@@ -847,11 +847,5 @@ RULE: in commit messages for ~/projects (and any private repo), never write
 The Mac mini (Olegs-Mac-mini) is a NOTES/light box, NOT a compute node. It RUNS
 OUT OF MEMORY (OOM) under real compute and the whole session wedges - nothing
 finishes and I cannot continue. RULE: if a script is anticipated to invoke
-parallel_stereo / stereo or bundle_adjust in any NON-TRIVIAL way (per-pair stereo
-loops, a real BA, mapproject batches, dem_mosaic), it must NOT be run on the Mac
-- send it to pfe (qsub) or l1. The ONLY exception is a step that strictly needs a
-locally-recompiled patched binary (e.g. the CaSSIS dem2gcp GCP-generation step):
-that short one-shot step - and only it, including its single prep correlation -
-may run on the Mac. The LONG/heavy "rest" (BA, per-pair stereo, mosaic, eval)
-ALWAYS goes to pfe. If a Mac job is found running the heavy rest, KILL it
-immediately and move it to pfe.
+parallel_stereo / stereo or bundle_adjust in any NON-TRIVIAL way it must NOT be
+run on the Mac - send it to pfe (qsub) or l1.
