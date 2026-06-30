@@ -312,6 +312,21 @@ Full list in `~/.bash_aliases` - check there if an unfamiliar short command show
 - `sg` = `stereo_gui --window-size 1500 1000 --font-size 12` (view images/DEMs)
 - `swa` = `sg -w --hide-all` (single-window overlay, start hidden)
 
+## Running sparse_disp From a Dev Build
+
+`sparse_disp` is a Python script needing numpy/scipy/gdal. A packaged release
+wraps it to its bundled Python. A dev build has no wrapper, so the `python` on
+PATH must carry those modules. Recipe: put the dev `install/bin` AHEAD of the
+deps env on PATH:
+`export PATH=~/projects/StereoPipeline/install/bin:$ISISROOT/bin:$PATH`
+(`$ISISROOT`=`asp_deps`). The ASP tools (including `sparse_disp`) then resolve
+from `install/bin`; `python`, absent there, falls through to `asp_deps`. The
+ordering is self-correcting. NEVER use PYTHONPATH-only with a different
+interpreter (ABI mismatch -> import failure). The regression config points `$ASP`
+at the RELEASE TARBALL, which lags dev source by up to a day, so when testing a
+fresh `sparse_disp` change, force dev `install/bin` first and confirm which copy
+ran. The dev-note comment lives at the top of the `sparse_disp` script too.
+
 ## Running Tests
 
 **Suite:** `~/projects/StereoPipelineTest`. Full guide - layout, **the CRITICAL
