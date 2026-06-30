@@ -309,6 +309,7 @@
         "preconditioner",
         "preconfigured",
         "predefines",
+        "prefilter",
         "preprocess",
         "prerasterization",
         "prerasterize",

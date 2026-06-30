@@ -405,6 +405,9 @@ non-trivial build work. Bare minimum to remember without reading:
   re-glob for others (git ignores mtime; other contributors don't build like us).
 - Native = `build/` + `install/`; cross-compile = `build_linux/` + `install_linux/`.
   NEVER mix them - it destroys the other build.
+- NEVER run ASP tools (esp. Python ones) from the source tree - it litters
+  `src/asp/Python/__pycache__/`, `src/asp/Tools/__pycache__/`. `make install` and
+  run from `install/bin`.
 
 ## Inspect BA/Jitter Stats After Every Run
 
