@@ -155,6 +155,7 @@ Refactoring often produces small float noise from evaluation order changes.
 ## Feedback
 
 - [feedback_stop_asking_permission.md](feedback_stop_asking_permission.md) - Don't ask permission to edit CLAUDE.md, config files, etc. Just do it.
+- [feedback_inspect_before_filter.md](feedback_inspect_before_filter.md) - Set a filter/threshold only AFTER visually inspecting (colorize+eyeball) the raster; stats hide a coherent systematic signal (CaSSIS max-disp 10 cut real shift, left a tilt).
 - [feedback_autonomous_safe_commands.md](feedback_autonomous_safe_commands.md) - When working autonomously, avoid command shapes that trip the sandbox (e.g. variable-path rm); cd + relative paths so you don't stall mid-stream.
 - [feedback_casual_out_of_docs.md](feedback_casual_out_of_docs.md) - Keep jokes/banter out of notes, commits, PRs, docs, anything public; chat can be playful, the record stays professional.
 - [feedback_batch_ssh_pfx.md](feedback_batch_ssh_pfx.md) - Batch all remote ops into ONE ssh pfx call; MOTD overhead is ~10s per call.
