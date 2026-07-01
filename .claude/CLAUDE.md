@@ -760,6 +760,16 @@ summary). Keep summaries brief and to the point.
   docs, notes, commits, chat (per Google/Microsoft/Apple style guides).
 - Do not write three dots (an ellipsis). Use "etc." or just end the sentence.
 
+**Words to avoid** (everywhere: code, comments, docs, notes, commits, chat). Use
+plain English instead:
+- "downweight" / "upweight" -> "give less weight" / "give more weight"
+- "tailable" -> "a log you can follow with tail" (not a real word)
+- "downcase" / "upcase" -> "lowercase" / "uppercase"
+- "honor" -> "respect", "obey", "use"
+- "TL;DR" -> "Summary"
+When one of these is added here, also grep the projects `.sh` files and the ASP
+and VW source and docs for it and fix existing occurrences.
+
 ## Commit Message Style
 
 Write like a human, not a robot. Short title; skip the body for trivial
