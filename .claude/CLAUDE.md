@@ -837,6 +837,13 @@ per line. NEVER a glob (`*`), `~`, `$VAR`, `cd &&`, or `find ... -exec rm`. If a
 path can't be made fully explicit, do NOT run the destructive command. This trips
 the sandbox over and over and breaks Oleg's flow.**
 
+**In auto/autonomous mode especially, AVOID removing things at all unless you are
+very sure it is needed - and then do it carefully with a single literal path. A
+sandbox permission prompt stops you dead in your tracks, which defeats autonomous
+progress. Deletion is rarely necessary: to refresh stale stats, re-read the data
+(don't delete the `.aux.xml`); for temp files, leave them. When in doubt, don't
+remove.**
+
 Permission prompts from the sandbox BREAK Oleg's flow and stall independent
 progress. This has repeatedly frustrated him. The TRIGGER (confirmed 2026-06-24)
 is the SHAPE of destructive Bash commands, not the operation itself:

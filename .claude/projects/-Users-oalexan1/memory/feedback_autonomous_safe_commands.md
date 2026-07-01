@@ -11,9 +11,12 @@ When Oleg sets you to work autonomously (he's away), keep going with minimal int
 
 **Why:** Getting stopped mid-stream defeats autonomous work; he can't approve while away.
 
+**This keeps recurring and frustrates Oleg. Applies EVEN when he is present, not just autonomous mode** — the prompt stops him dead in his tracks mid-flow. A destructive command with a `$VAR` AND a glob is the worst offender: `rm -f "$d"/*.aux.xml` triggered the "Dangerous rm on possibly-empty variable path" prompt (2026-07-01) and halted a review.
+
 **How to apply:**
-- Never `rm -rf $VAR/path` with a variable-expanded or absolute path (the sandbox flags it as dangerous). Instead `cd` into the parent dir, `ls` to confirm, then `rm -rf ./reldir` with relative paths only (this also matches the Safe Directory Cleanup rule).
-- Prefer relative paths after an explicit `cd` for any destructive op.
+- NEVER put a `$VAR`, `~`, `*` glob, or `cd &&` in any `rm`/`find -delete`. One SINGLE explicit LITERAL absolute path per destructive command, or don't run it.
+- Often you don't need the `rm` at all. To get FRESH raster stats without deleting the stale `.aux.xml` sidecar, read the band directly in python (GDAL `ReadAsArray` + numpy) — it computes fresh and ignores the sidecar. Never `rm` the `.aux.xml`.
+- Prefer non-destructive tools (Edit/Write/Read/Grep) which never prompt.
 - Batch related steps so fewer commands need approval.
 - Don't ask permission for things already approved; just proceed and report.
 
