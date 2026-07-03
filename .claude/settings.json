@@ -3,6 +3,9 @@
     "defaultMode": "bypassPermissions",
     "allow": [
       "Edit(/Users/oalexan1/.bashrc)"
+    ],
+    "deny": [
+      "AskUserQuestion"
     ]
   },
   "enabledPlugins": {
