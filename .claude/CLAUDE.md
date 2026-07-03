@@ -151,6 +151,14 @@ outputs more than once. Rule: any snippet using indexed arrays must run under
 explicit `bash -c '...'`, OR avoid index math entirely (iterate with
 `while read`/positional args, pair items by `paste`, or hardcode the calls).
 
+## zsh Does NOT Word-Split Unquoted Variables (CRITICAL)
+
+The Bash tool's shell AND pfe's login shell are **zsh**, which (unlike bash) does
+NOT word-split an unquoted `$VAR`. So `Q="-q normal -l walltime=2:00:00"; qsub $Q`
+passes `$Q` as ONE argument (qsub errors "illegally formed destination"). Fixes:
+INLINE all args into the command (no arg-bundle variable), or force splitting with
+`${=Q}` / `${(z)Q}`, or wrap in `bash -c`. Bit us building qsub arg strings for pfe.
+
 ## Preserving Comments When Editing Code (CRITICAL)
 
 **NEVER drop existing comments when editing code.** Only remove a comment if
