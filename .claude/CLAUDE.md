@@ -417,6 +417,17 @@ hard way on lunamaps SfS covariance, 2026-06: improvised a raw-`sfs` per-tile
 pipeline instead of reading and adapting the existing `parallel_sfs` runner,
 took several redirects to get on track, and had to redo the OOM/SBU diagnosis.)
 
+## Copying a Script for Custom Work: Read Both First
+
+When making a copy of an existing script (or a new peer dir) for some custom or
+one-off variant, first READ both the existing script(s) AND the destination you
+are copying into. These often carry hard-won knowledge - a gotcha comment, a
+tuned parameter, an env quirk, an ordering constraint - that is easy to lose if
+you write the new version from scratch. Writing fresh every time silently drops
+that accumulated wisdom. But do NOT imitate blindly either: understand WHY each
+piece is there, keep what still applies, and drop or change what does not fit the
+new task. Read, comprehend, adapt - never blank-slate, never blind copy.
+
 ## CMake and Build Mechanics
 
 Full cmake/build mechanics (glob/touch rules, native vs cross-compile build
