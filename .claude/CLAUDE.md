@@ -311,6 +311,15 @@ channel_priority`. Fix: `conda config --set channel_priority flexible`.
   `pfe`, probe them BEFORE committing to a plan (`ssh -o ConnectTimeout=8`).
   A dead host found mid-pipeline stalls an autonomous run. Cheap to test up front.
 
+- **Athena / Turin** (another supercomputer, separate from Pleiades) - reach via
+  **`ssh athfe01`** (..04); the hostname `athena` does NOT resolve. Model
+  **`tur_ath`** (Turin, 256c), OWN scheduler, submit from athfe ONLY with
+  **`/opt/pbs/bin/qsub`** (not `/PBS/bin/qsub`). `node_stats.sh` does NOT show the
+  per-model Free table there - gauge load with `qstat`. `/home6` + `~/projects`
+  symlinks ARE visible from athfe, so pfe-staged workers/data run as-is. Flaky;
+  default to `bro_ele` unless tur_ath is explicitly wanted. Full detail +
+  submit sample: `~/projects/pleiades_notes.sh` (athfe entry, "HOW TO FIND ATHENA").
+
 Per-machine build commands, conda init, paths, the athfe tunnel hop, `/tmp`
 triage: `~/projects/machines.sh` (and `install_asp_notes.sh`).
 
