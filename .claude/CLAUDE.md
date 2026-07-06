@@ -159,6 +159,17 @@ passes `$Q` as ONE argument (qsub errors "illegally formed destination"). Fixes:
 INLINE all args into the command (no arg-bundle variable), or force splitting with
 `${=Q}` / `${(z)Q}`, or wrap in `bash -c`. Bit us building qsub arg strings for pfe.
 
+## Use perl, Not sed, for In-Place Text Substitution
+
+For scripted text substitution (in-place edits, renames, regex swaps) prefer
+`perl -i -pe '...'` over `sed`. perl is more flexible and its regex is portable.
+macOS ships BSD sed, which does NOT support `\b` word boundaries or `\+`, and its
+`-i` needs an empty-string argument (`sed -i ''`). These silently no-op or behave
+differently from GNU sed, so a `\b`-based `sed` substitution appears to run yet
+changes nothing. perl behaves identically on Mac and Linux. Bit us doing a
+`\b`-word-boundary caps cleanup with BSD sed. (Edit/Read/Grep tools are still
+preferred for one-off code edits since they never prompt.)
+
 ## Preserving Comments When Editing Code (CRITICAL)
 
 **NEVER drop existing comments when editing code.** Only remove a comment if
@@ -795,6 +806,11 @@ summary). Keep summaries brief and to the point.
   Hyphens INSIDE a word are fine (model-based, cross-sensor). Applies everywhere:
   docs, notes, commits, chat (per Google/Microsoft/Apple style guides).
 - Do not write three dots (an ellipsis). Use "etc." or just end the sentence.
+- Do not use capital letters, underscores, asterisks, or any other markup to
+  emphasize words (applies everywhere: code comments, docs, notes, commits,
+  chat). Emphasis markup reads as shouting and clutters the text. Write plain
+  prose and let word choice carry the emphasis. Real identifiers (PATH, NED,
+  CSM, DOF) keep their normal casing.
 
 **Words to avoid** (everywhere: code, comments, docs, notes, commits, chat). Use
 plain English instead:
@@ -831,6 +847,17 @@ their own `.git`) belong in the projects repo.
 
 When a `git push` shows Dependabot or security vulnerability warnings, proactively
 flag it and offer to investigate/fix.
+
+## Advise on Build and Tool Warnings, Never Silently Ignore
+
+When a build, compile, link, or tool run emits warnings (even when it succeeds),
+do not skip past them. Read them, explain the root cause in plain terms, say
+whether they are harmless or a real problem, and recommend a fix. Oleg wants to
+understand warnings, not have them swept under the rug. Example: the macOS
+"dylib was built for newer macOS version (16.0) than being linked (11.0)" linker
+warnings traced to conda deps built for the host OS floor instead of the
+intended 11.0 floor. Even cosmetic warnings deserve a one-line "this is
+harmless because X" rather than silence.
 
 ## ISIS Builds Use Ninja, Not Make (CRITICAL - stop rediscovering this)
 
