@@ -343,6 +343,12 @@ tolerances, triage, gold regen, finding test dirs by tool:
 `~/projects/asp_regression_tests.sh`. Mac CI: `~/projects/update_cloud_tests.sh`.
 Run a test: `cd` in, `bash run.sh > output.txt 2>&1`, then `bash validate.sh`
 (exit 0 = pass). NOT pytest.
+- **When asked to evaluate FAILING regressions, FIRST `git fetch` + rebase the
+  latest from the remote for BOTH VW and ASP** (`god/master`). The local source
+  can be behind what the nightly built, so a local re-run silently uses stale
+  libs and disagrees with the nightly. Rebuild+install the updated repo before
+  concluding anything. (Burned 2026-07-06: local VW was 2 commits behind a
+  ray-DEM intersection change, so local tests wrongly "passed".)
 - **MANDATORY: run regression tests after every ASP code change** - find ALL
   matching dirs (`grep -rl <tool> ~/projects/StereoPipelineTest/ss*/run.sh`) and
   run them all, not just one; flag if a changed path has no test coverage.
