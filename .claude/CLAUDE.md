@@ -575,6 +575,18 @@ When adding/modifying command-line options, always update all three consistently
   lapses the moment a back-and-forth distracts you (this stalled a pipeline once).
   ScheduleWakeup is fine only for a true one-off wait. NEVER count on a task-completion
   notification (it can be missed). Interval tuned to the work: ~15-30 min for stereo/PBS.
+- CREATE THE CRON ONCE, KEEP IT STABLE, NEVER CHURN IT. The cron is a LOCAL HEARTBEAT
+  whose only job is to keep the session ticking so you stay awake - it is INDEPENDENT
+  of what runs on remote nodes. Its prompt must be CONTENT-FREE: it points at the
+  project notes for ALL changing state (which stage/job is running, which cluster,
+  job IDs, next step) and says "read the notes and advance". When the work moves
+  (e.g. sky_ele -> Athena, new job IDs), update the NOTES, NEVER delete-and-recreate
+  the cron. Baking node/job specifics into the cron prompt is exactly what tempts a
+  churn on every change. Delete the cron ONLY when absolutely, totally done. Do NOT
+  create a second/OS-level crontab as a "durable" backup - one stable CronCreate
+  heartbeat is the pattern Oleg wants. (Burned 2026-07-07: churned the cron on a
+  node switch; it fired once, never re-fired, and the pipeline sat idle ~11h after
+  the BA finished. The BA was fine - the monitor died.)
 - On every wakeup, FIRST run `date` to re-orient - long runs leave you stale.
 
 ## Building ASP Docs
