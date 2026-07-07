@@ -229,6 +229,23 @@ functions; no space before `::` or initializer `:`; lines < 90 cols; `"\n"` not
 `std::endl`; continuation lines align with the opening paren. Full rules (sed
 recipes, option-help wrapping, for-loop form): `~/projects/cpp_style.sh`.
 
+## NEVER Reference Private Work-Notes Files in Committed Code/Docs (CRITICAL)
+
+Committed source comments, RST docs, PR text, commit messages, and anything a
+user or reviewer sees must NEVER cite a private work-notes file - the
+`~/projects/*.sh` notes (e.g. `orbital_constraint_plan.sh`, `cassis_notes.sh`),
+a project subdir name (`cassis_asp`), a scratch/temp path, or an internal plan
+doc. Those are private, temporary, and go away. The reader will never have them,
+so the pointer is dead the moment it ships. This has leaked into ASP source more
+than once (a `See orbital_constraint_plan.sh (cassis_asp)` tail on real code
+comments). Rules:
+- The rationale a reader needs must be written INLINE and self-contained in the
+  comment/doc itself, never delegated to an external private file.
+- The `~/projects/*.sh` notes are for OUR working memory only - reference them
+  freely in `.sh` notes and in chat, never in code/docs/PRs/commits.
+- When finishing any code/doc edit, grep the touched files for `.sh`,
+  `_notes`, `_plan`, and project-subdir names and strip any that crept in.
+
 ## VisionWorkbench Namespace Conventions
 
 vw stands for VisionWorkbench.
