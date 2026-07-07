@@ -691,8 +691,10 @@ mapproject is for many images / hard terrain / large convergence.
 at NATIVE IMAGE resolution (~4x FINER than the DEM grid), NEVER at the coarser
 DEM/CTX res. VERY IMPORTANT.** The dense correlation window (5x5/9x9) locks onto
 coarser features while the disparity is sampled on the fine native grid at SUBPIXEL,
-so it resolves ~6 m shifts even when DEMs are ~18 m. Detail:
-`~/projects/cassis_asp/cassis_seam_refine_notes.sh`.
+so it resolves ~6 m shifts even when DEMs are ~18 m. The honest gain is finer spatial
+sampling of the shift field (~18 m -> ~9-10 m effective), not lower per-point noise;
+faux precision in smooth patches averages out over many dense GCP. Full rationale:
+`~/projects/cassis_asp/cassis_native_res_rationale.sh`.
 
 ## Relative Paths in a Project Work Dir
 
