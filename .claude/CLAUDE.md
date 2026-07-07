@@ -696,6 +696,21 @@ sampling of the shift field (~18 m -> ~9-10 m effective), not lower per-point no
 faux precision in smooth patches averages out over many dense GCP. Full rationale:
 `~/projects/cassis_asp/cassis_native_res_rationale.sh`.
 
+## Project Data Lives in a data/ Dir, Not Run Dirs With Symlinks (CRITICAL)
+
+Canonical project DATA (input images/cubs, reference DEMs, anything a run consumes
+but does not produce) must be stored ONCE in a stable `data/` directory with honest
+unique names, and every list/script must reference it THERE, directly. NEVER let a
+list point at a SYMLINK ALIAS inside a RUN dir (per-run `imgs/` collections,
+short-name `sl/L0.cub` aliases, etc.). Run dirs get wiped, and then the references
+break even though the real data is untouched - this bit us on CaSSIS: the joint
+image list pointed at `stage2/<site>_mid2/imgs/*.cub` symlinks (a run dir) instead of
+the canonical `cassis_asp/data/<site>/<obsID>/.../cas_cal_sc_...cub`, so a wiped/absent
+run dir showed every image MISSING. If symlink trickery is used for TEMPORARY
+expediency (e.g. short names a tool wants), CORRECT it when feasible - point the lists
+at the canonical `data/` path. Data in ONE place, honest names, no run-dir indirection,
+no eternal per-run copies.
+
 ## Relative Paths in a Project Work Dir
 
 In a project work dir, all paths (in scripts and when presenting to the user)
