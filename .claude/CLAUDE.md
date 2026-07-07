@@ -687,6 +687,13 @@ Mapprojecting at the coarse DEM res produced a rough, blocky DEM (CaSSIS PHASE 0
 and stereo the raw images (affineepipolar) - correlation is native by definition;
 mapproject is for many images / hard terrain / large convergence.
 
+**Hillshade-correlation for dem2gcp AND for DEM-to-DEM/CTX alignment ALWAYS runs
+at NATIVE IMAGE resolution (~4x FINER than the DEM grid), NEVER at the coarser
+DEM/CTX res. VERY IMPORTANT.** The dense correlation window (5x5/9x9) locks onto
+coarser features while the disparity is sampled on the fine native grid at SUBPIXEL,
+so it resolves ~6 m shifts even when DEMs are ~18 m. Detail:
+`~/projects/cassis_asp/cassis_seam_refine_notes.sh`.
+
 ## Relative Paths in a Project Work Dir
 
 In a project work dir, all paths (in scripts and when presenting to the user)
