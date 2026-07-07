@@ -299,9 +299,13 @@ function gr {
       --include="*.java" 
 }
 
+# recursive grep every text file, skipping build/install and heavy binary/generated dirs
 function grr {
-  # recursive grep every single file
-  grep -r -i -n -E --colour=auto --exclude-dir=build --exclude-dir=build_linux --exclude-dir=build_isis_dev --exclude-dir=install --exclude-dir=install_linux --exclude-dir=.git "$*" .
+  grep -r -i -n -E -I --colour=auto \
+    --exclude-dir=build --exclude-dir=build_linux --exclude-dir=build_isis_dev \
+    --exclude-dir=install --exclude-dir=install_linux --exclude-dir=.git \
+    --exclude-dir=_build --exclude-dir=images \
+    "$*" .
 }
 
 function grf {
