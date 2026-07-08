@@ -353,9 +353,11 @@ triage: `~/projects/machines.sh` (and `install_asp_notes.sh`).
 
 ## Common Aliases
 
-Full list in `~/.bash_aliases` - check there if an unfamiliar short command shows up in logs or notes.
+Full list in `~/.bash_aliases`. Viewing aliases/functions (`sg`, `sw`, `swa`, `sgm`) -
+see the defs in `~/projects/aliases_notes.sh`. Quick:
 - `sg` = `stereo_gui --window-size 1500 1000 --font-size 12` (view images/DEMs)
 - `swa` = `sg -w --hide-all` (single-window overlay, start hidden)
+- `sgm <min> <max> <files>` = stereo_gui colorbar view clamped to that range (geodiffs/DEMs)
 
 ## Running sparse_disp From a Dev Build
 
@@ -709,7 +711,11 @@ the canonical `cassis_asp/data/<site>/<obsID>/.../cas_cal_sc_...cub`, so a wiped
 run dir showed every image MISSING. If symlink trickery is used for TEMPORARY
 expediency (e.g. short names a tool wants), CORRECT it when feasible - point the lists
 at the canonical `data/` path. Data in ONE place, honest names, no run-dir indirection,
-no eternal per-run copies.
+no eternal per-run copies. INSPECTION/PREVIEW files count too: colorized PNGs and
+geodiff/DEM copies pulled over for viewing go in the experiment's REGULAR dir
+(mirror the honest pfe layout), NEVER a throw-away `eyeball`/scratch/tmp dir with
+renamed copies - each experiment's outputs live in its OWN dir, wipeable as one.
+(Bit us on CaSSIS: an `eyeball/` dir of renamed geodiff copies; wiped, remirrored.)
 
 ## Relative Paths in a Project Work Dir
 
