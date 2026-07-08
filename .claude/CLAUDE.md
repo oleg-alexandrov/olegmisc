@@ -483,6 +483,26 @@ OWN work, log everything (exact invocations, produced files by name, decisions,
 dead-ends and reverts) as you go, for the next bot's traceability - not just for
 yourself. If the notes were missing a fact you had to dig for, that is a notes
 bug - fix the notes.
+**THE TRIGGER (this is where the rule actually has to fire - a disposition is not
+enough).** The failure is almost never "did not read notes at all"; it is hitting
+a SPECIFIC factual sub-question mid-task (where does this file live? how was it
+made? why does this camera/DEM have this value? what is its provenance?) and
+reflexively answering it with a DISK PROBE - `find`/`ls`, inspecting a state
+file, diffing files across dirs, comparing ECEF positions/timestamps, `cam_test`
+- because disk feels like where precise answers live. STOP. Before ANY such probe
+to answer a question about the project's OWN process, GREP THE NOTES for that fact
+first. Disk is for CONFIRMING a NAMED fact the notes assert ("does file X still
+exist", "is its value still Y"), NEVER for DISCOVERING/deriving process state the
+notes should record. LITMUS: if you are inferring lineage, provenance, or "which
+file is the real one" from timestamps, ECEF positions, distortion coefficients, or
+by diffing files across directories, you are doing archeology - stop and read the
+notes. And CHASE NOTE POINTERS: when a note references a deeper account ("see
+~:934", "the S4 entry below", another notes file), follow it before deriving
+anything from disk. (Burned on CaSSIS 2026-07-08: reverse-engineered the
+refit-transverse camera lineage from ECEF positions and cam_test across stage2
+dirs, when `cassis_reprocess.sh` documented the exact refit command, output path,
+and cam_test result - and even had a `~:934` pointer straight to it.)
+If the notes were missing a fact you had to dig for, that is a notes bug - fix it.
 
 ## Copying a Script for Custom Work: Read Both First
 
