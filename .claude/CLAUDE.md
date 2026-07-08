@@ -732,6 +732,23 @@ geodiff/DEM copies pulled over for viewing go in the experiment's REGULAR dir
 renamed copies - each experiment's outputs live in its OWN dir, wipeable as one.
 (Bit us on CaSSIS: an `eyeball/` dir of renamed geodiff copies; wiped, remirrored.)
 
+SYMLINK / PATH-REWRITE TRICKERY EACH RUN IS A SMELL: if you find yourself resolving
+symlinks, or rewriting image-name paths inside a GCP / match / list file every run to make
+things match, the data is NOT well organized - stop and put the slow-changing inputs (GCP,
+cubs, match files) in ONE stable, honest, separate location (e.g. a `gcp/` dir in the work
+dir) built ONCE, so every run references it directly with no per-run trickery. Data that
+changes rarely deserves a good permanent home, not run-dir symlinks re-derived each time.
+(CaSSIS 2026-07-07: the joint GCP stored `stage2/*/imgs/` symlink paths; moving the image
+list to `data/` forced a 300k-line GCP path-rewrite mid-launch - exactly the smell.)
+
+## Debug Config on pfe With a Quick Kill, Not a Full qsub Round-Trip
+
+For fast CONFIG checks (does the GCP load? do image names match? does an option parse?) run
+the tool briefly ON the pfe head node - it reaches "Loaded N GCP" / the error in seconds -
+then KILL it before it starts heavy compute. Far faster than a qsub round-trip per iteration.
+ALWAYS ensure the kill (Ctrl-C / kill the PID): heavy compute must NEVER linger on the head
+node. Only for quick startup/config validation, never a real run.
+
 ## Relative Paths in a Project Work Dir
 
 In a project work dir, all paths (in scripts and when presenting to the user)
