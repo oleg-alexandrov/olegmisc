@@ -430,6 +430,13 @@ re-derive from files (NO archeology) - dirs and log files get wiped, so the note
 alone must let anyone reconstruct the whole process later (wins, dead-ends, and
 screw-ups alike) and condense it into a user doc. Log every script's EXACT
 invocation - the qsub command, input AND output paths - and the rationale.
+**TIMESTAMP everything you log - commands, results, stage START/DONE - with the
+wall-clock time** (`run date`; the runner scripts already echo `START/DONE
+$(date)`). Prefix note entries with the date/time. Being AWARE of how time
+passes as work proceeds catches bugs: a step that finished suspiciously fast
+(did it actually run, or no-op?), one that hung far too long, a job that died
+minutes after submit. Without timestamps these are invisible. Run `date` when
+you start a stage, when you check on it, and when you log an outcome.
 **After each stage completes, record the PRODUCED OUTPUT FILES by name** (the
 mosaicked DEMs, overlays, etc.), as an explicit list relative to the work dir, so
 they are never re-derived or dug up later. Output files are part of the work log,
