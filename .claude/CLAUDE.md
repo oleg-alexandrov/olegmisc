@@ -650,6 +650,21 @@ So basically a premable with all defined followed by precise invocation you will
 Any time you assume or expect a certain result, inspect it (visually AND with
 stats) to verify the result actually conforms to that expectation. Never assume - check.
 
+## Disparity Stats: disparitydebug --raw, NEVER gdalinfo on run-F.tif (CRITICAL)
+
+A correlator/stereo `run-F.tif` (parallel_stereo `--correlator-mode`) packs horizontal
+disparity (band 1), vertical disparity (band 2), and a VALIDITY MASK (band 3) in one file.
+`gdalinfo -stats` and `gdal_translate -b` IGNORE band 3, so invalid (uncorrelated) pixels
+read as 0 and pollute the dd-H/dd-V stats - a mostly-invalid flat scene then fakes a ~0
+shift, HIDING the real one. This bit us REPEATEDLY (a true CaSSIS dd-V shift of -3.4 px read
+as 1.4, flipping a conclusion). ALWAYS extract the disparity with:
+`disparitydebug --raw run-F.tif --output-prefix P` -> `P-H.tif` (dd-H), `P-V.tif` (dd-V),
+Float32 with real nodata (-1e6); THEN stat those (gdalinfo -stats is nodata-aware on them).
+disparitydebug is ASP's OWN tool; a release build sets ISIS up itself, our dev/packaged build
+needs `export ISISROOT=<asp_deps env>` (holds IsisPreferences). EVERY script that runs
+correlator-mode and analyzes disparity must emit these raw bands right there (cassis_corr.sh
+does). NEVER `gdal_translate -b` to pick a disparity band - it writes the invalid pixels as 0.
+
 ## Multi-Option Commands in Scripts
 
 In shell scripts, put each command-line option (and each `export`) on its own
