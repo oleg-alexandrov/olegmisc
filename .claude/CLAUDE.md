@@ -462,6 +462,21 @@ hard way on lunamaps SfS covariance, 2026-06: improvised a raw-`sfs` per-tile
 pipeline instead of reading and adapting the existing `parallel_sfs` runner,
 took several redirects to get on track, and had to redo the OOM/SBU diagnosis.)
 
+**PREFER NOTES OVER DISK ARCHEOLOGY (CRITICAL).** When resuming, learn the
+project state by READING THE LATEST NOTES - inputs, outputs, exact commands,
+timestamps, the current winning result and how it was earned - NOT by digging
+through whatever happens to be on disk. Disk digging is dangerous and yields
+wrong, inconsistent conclusions: dirs get wiped, half-finished and REVERTED
+attempts litter the tree, and file mtimes lie. The whole reason every stage logs
+its inputs, outputs, commands, and timestamps is so the next session reads the
+answer instead of re-deriving it - so read it. Only touch the disk to CONFIRM a
+fact the notes already assert (does this named file still exist), never to
+discover state the notes should have recorded. Keep the contract going: in your
+OWN work, log everything (exact invocations, produced files by name, decisions,
+dead-ends and reverts) as you go, for the next bot's traceability - not just for
+yourself. If the notes were missing a fact you had to dig for, that is a notes
+bug - fix the notes.
+
 ## Copying a Script for Custom Work: Read Both First
 
 When making a copy of an existing script (or a new peer dir) for some custom or
