@@ -919,6 +919,13 @@ use `gh api` (REST) for any issue/PR body/comment/state/label fetch or edit; and
 **never trust WebFetch summaries of issues/PRs** (it hallucinates) - pull with
 `gh api`. PR/issue/comment/review prose-style rules: `~/projects/github_text_style.sh`.
 
+**PR handoff: generate a PREFILLED "compare" URL** (title + URL-encoded body,
+`expand=1`), not the plain create-PR link GitHub already offers on push. The
+`?body=` param REPLACES the repo's auto PR template, so embed that repo's
+`.github/PULL_REQUEST_TEMPLATE.md` in the body, checking the boxes that apply.
+Do NOT open the PR (public-facing) unless told. Recipe + generator:
+`~/projects/github_notes.sh`.
+
 ## Co-Authored-By Trailer (CRITICAL)
 
 Every commit MUST include:
