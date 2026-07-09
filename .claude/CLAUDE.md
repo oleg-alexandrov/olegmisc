@@ -1023,7 +1023,12 @@ Always use `git -C ~/projects` for add, commit, push, etc.
 StereoPipeline, visionworkbench, ISIS3, BinaryBuilder, ale, usgscsm,
 StereoPipelineTest). NEVER add these to the `~/projects/.git` repo.
 Only standalone `.sh`, `.py`, and similar files (and subdirs without
-their own `.git`) belong in the projects repo.
+their own `.git`) belong in the projects repo. So when told to "add all
+notes" / "commit what changed", this EXCLUDES all data and logs: it is
+almost always `.sh` notes, occasionally `.md`; `.txt` is rare, so ASK
+before adding a new one unless it is already tracked and only locally
+modified. NEVER add binary files, data/output/run dirs, or anything in
+old unrelated project dirs.
 
 ## Dependabot / Security Alerts
 
