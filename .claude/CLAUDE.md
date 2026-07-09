@@ -619,6 +619,17 @@ When adding/modifying command-line options, always update all three consistently
   lapses the moment a back-and-forth distracts you (this stalled a pipeline once).
   ScheduleWakeup is fine only for a true one-off wait. NEVER count on a task-completion
   notification (it can be missed). Interval tuned to the work: ~15-30 min for stereo/PBS.
+- A ONE-SHOT BACKGROUND WAIT IS NOT A HEARTBEAT. Spawning a `run_in_background` Bash
+  monitor that sleeps-then-checks-once (or any single-fire wait) to "watch a job" is
+  the SAME trap as single-shot ScheduleWakeup: it fires ONCE and stops, and the long
+  job it was watching keeps running with NO pulse advancing it - you fall asleep on the
+  job. WHENEVER any long/unattended job is in flight, the PERSISTENT CronCreate
+  heartbeat MUST be armed. Deleting the heartbeat is correct ONLY when nothing is
+  running; the instant new long work launches, re-arm it in the SAME turn. Use one-shot
+  background waits only as a SHORT convenience ON TOP OF an already-armed heartbeat,
+  never as the pulse. (CaSSIS 2026-07-08: deleted the heartbeat when idle, then launched
+  stereo jobs and leaned on run_in_background monitors - Oleg caught it: "the thing you
+  waited for will fall asleep." Re-armed immediately.)
 - CREATE THE CRON ONCE, KEEP IT STABLE, NEVER CHURN IT. The cron is a LOCAL HEARTBEAT
   whose only job is to keep the session ticking so you stay awake - it is INDEPENDENT
   of what runs on remote nodes. Its prompt must be CONTENT-FREE: it points at the
