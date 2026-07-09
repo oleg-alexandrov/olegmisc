@@ -595,13 +595,22 @@ When adding/modifying command-line options, always update all three consistently
 - Balance work mode (concise, efficient) with chat mode (entertaining, human)
 
 **Overnight / autonomous + self-wakeup (full detail: `~/projects/claude_overnight_notes.sh`):**
+- DON'T STALL when told to run overnight and the parts are already logged. If the
+  prior notes contain the recipe (exact scripts, invocations, params, source paths),
+  KEEP GOING through the steps until done - do NOT sit in monitor mode waiting. There
+  was nothing to invent; following preexisting steps is the job. "Cautiously" means
+  READ CAREFULLY and follow the notes precisely, NOT stop. "Read and adapt, don't
+  improvise" is satisfied BY executing the documented recipe - it is never a license
+  to idle. Stop only for a real SHOW-STOPPER (a dead host, a wiped input, a genuine
+  decision the notes do not answer) - and log that blocker. (Burned 2026-07-09: held
+  ~7h before a fully-documented CaSSIS S2 step, calling it "risky/needs a focused
+  effort" when the notes had the whole pipeline. That was idling, not caution.)
 - Working alone, take initiative on simple fixes (symlink, missing lib, resubmit
   failed job, clean stale files); test small first; log what you did. No sweeping
   refactors, no external commits unprompted.
 - DEFAULT for ANY repeating autonomous monitoring/pipeline: reach for CronCreate
-  FIRST, not ScheduleWakeup. Oleg asks for this repeatedly - set up the independent
-  recurring cron (off-round-marks, e.g. "9,29,49 * * * *") at the START, don't
-  re-arm one-shots.
+  FIRST, not ScheduleWakeup. Set up the independent recurring cron
+  (off-round-marks, e.g. "9,29,49 * * * *") at the START, don't re-arm one-shots.
 - THE MOMENT a qsub/PBS job (or any long remote job) is submitted, IMMEDIATELY
   CronCreate the recurring monitor in the SAME turn. Do NOT offer ("want me to set
   up a cron?") and wait for a yes - that is the exact failure that "falls asleep on
@@ -628,8 +637,8 @@ When adding/modifying command-line options, always update all three consistently
   running; the instant new long work launches, re-arm it in the SAME turn. Use one-shot
   background waits only as a SHORT convenience ON TOP OF an already-armed heartbeat,
   never as the pulse. (CaSSIS 2026-07-08: deleted the heartbeat when idle, then launched
-  stereo jobs and leaned on run_in_background monitors - Oleg caught it: "the thing you
-  waited for will fall asleep." Re-armed immediately.)
+  stereo jobs and leaned on run_in_background monitors - the watched job would have
+  fallen asleep with no pulse advancing it. Re-arm the heartbeat immediately.)
 - CREATE THE CRON ONCE, KEEP IT STABLE, NEVER CHURN IT. The cron is a LOCAL HEARTBEAT
   whose only job is to keep the session ticking so you stay awake - it is INDEPENDENT
   of what runs on remote nodes. Its prompt must be CONTENT-FREE: it points at the
@@ -637,11 +646,33 @@ When adding/modifying command-line options, always update all three consistently
   job IDs, next step) and says "read the notes and advance". When the work moves
   (e.g. sky_ele -> Athena, new job IDs), update the NOTES, NEVER delete-and-recreate
   the cron. Baking node/job specifics into the cron prompt is exactly what tempts a
-  churn on every change. Delete the cron ONLY when absolutely, totally done. Do NOT
-  create a second/OS-level crontab as a "durable" backup - one stable CronCreate
-  heartbeat is the pattern Oleg wants. (Burned 2026-07-07: churned the cron on a
-  node switch; it fired once, never re-fired, and the pipeline sat idle ~11h after
-  the BA finished. The BA was fine - the monitor died.)
+  churn on every change. Delete the cron ONLY when absolutely, totally done.
+  (Burned 2026-07-07: churned the cron on a node switch; it fired once, never
+  re-fired, and the pipeline sat idle ~11h after the BA finished. The BA was
+  fine - the monitor died.)
+- STANDING POLICY - TWO HEARTBEAT LAYERS FOR ALL AUTONOMOUS WORK (set 2026-07-08).
+  The session-only vs OS-level distinction is the crux, so respect both layers.
+  For ANY unattended/auto session or long pipeline, ALWAYS arm BOTH:
+  (1) IN-SESSION heartbeat = CronCreate. Pick the interval to fit the work - roughly
+      every 20-40 min (tighter for fast-moving stages, looser for long jobs). Its prompt
+      is content-free, points at the project notes, touches ~/.claude_heartbeat each
+      firing, and advances the work. This is the normal pulse WHILE the harness is alive.
+  (2) OS-LEVEL cron = emergency resurrector, on the local machine(s). This is the layer
+      that survives an OUTAGE. It relaunches `claude -c -p` only when ~/.claude_heartbeat
+      is stale (harness presumed dead), else stands down; atomic-lock guarded so runs
+      never overlap; self-heals across a still-down service (cron keeps re-firing and
+      catches the moment it returns).
+  WHY BOTH (the thing I got wrong before): CronCreate is SESSION-ONLY - it lives inside
+  the running Claude session and DIES WITH IT, so a "service unavailable" outage that
+  kills the harness ALSO kills the CronCreate heartbeat and nothing re-arms it. Only an
+  OS-level cron, independent of the harness, can bring Claude back. The old blanket "no
+  OS-level crontab" rule predated this understanding and is RETIRED. OS cron is now
+  REQUIRED for durable auto work, on LOCAL machines only, NEVER on pfe.
+  Current implementation (Mac + l1): Mac `~/bin/claude_watchdog.sh` + crontab
+  "9,24,39,54"; l1 backup `~/bin/claude_watchdog_l1.sh` (claude is not on l1, so it sshes
+  to the Mac alias mac_arm and triggers the Mac watchdog) + crontab "12,42". Retire the
+  watchdog only when the auto work is truly done: touch `~/projects/cassis_asp/.auto_done`
+  or remove the crontab lines.
 - On every wakeup, FIRST run `date` to re-orient - long runs leave you stale.
 
 ## Building ASP Docs
@@ -1003,8 +1034,8 @@ flag it and offer to investigate/fix.
 
 When a build, compile, link, or tool run emits warnings (even when it succeeds),
 do not skip past them. Read them, explain the root cause in plain terms, say
-whether they are harmless or a real problem, and recommend a fix. Oleg wants to
-understand warnings, not have them swept under the rug. Example: the macOS
+whether they are harmless or a real problem, and recommend a fix. Explain
+warnings, do not sweep them under the rug. Example: the macOS
 "dylib was built for newer macOS version (16.0) than being linked (11.0)" linker
 warnings traced to conda deps built for the host OS floor instead of the
 intended 11.0 floor. Even cosmetic warnings deserve a one-line "this is
@@ -1049,7 +1080,7 @@ when safe) - `cd "$VAR"` first, then `rm -f file`.
 SINGLE EXPLICIT LITERAL ABSOLUTE PATH per command - one `rm -rf /full/abs/path`
 per line. NEVER a glob (`*`), `~`, `$VAR`, `cd &&`, or `find ... -exec rm`. If a
 path can't be made fully explicit, do NOT run the destructive command. This trips
-the sandbox over and over and breaks Oleg's flow.**
+the sandbox over and over and stalls the session.**
 
 **In auto/autonomous mode especially, AVOID removing things at all unless you are
 very sure it is needed - and then do it carefully with a single literal path. A
@@ -1058,8 +1089,8 @@ progress. Deletion is rarely necessary: to refresh stale stats, re-read the data
 (don't delete the `.aux.xml`); for temp files, leave them. When in doubt, don't
 remove.**
 
-Permission prompts from the sandbox BREAK Oleg's flow and stall independent
-progress. This has repeatedly frustrated him. The TRIGGER (confirmed 2026-06-24)
+Permission prompts from the sandbox stall independent progress and must be
+avoided. The TRIGGER (confirmed 2026-06-24)
 is the SHAPE of destructive Bash commands, not the operation itself:
 - Shell GLOBS/wildcards in a destructive command (`rm -f *`, `rm *.tif`).
 - `cd <dir> && rm ...` compounds, and `&&`-chained destructive sequences.
