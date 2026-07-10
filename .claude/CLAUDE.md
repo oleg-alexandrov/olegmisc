@@ -957,6 +957,10 @@ issue/pr view` and `gh pr edit` error on the deprecated Projects-classic API -
 use `gh api` (REST) for any issue/PR body/comment/state/label fetch or edit; and
 **never trust WebFetch summaries of issues/PRs** (it hallucinates) - pull with
 `gh api`. PR/issue/comment/review prose-style rules: `~/projects/github_text_style.sh`.
+When opening or editing a PR/issue/comment body, write plain prose: avoid
+backticks, avoid hard newlines within a paragraph (keep each paragraph on one
+line), and avoid angle brackets or other constructs GitHub can read as an HTML
+tag and swallow (e.g. `get<double>` renders as nothing) - reword instead.
 
 **PR handoff: generate a PREFILLED "compare" URL** (title + URL-encoded body,
 `expand=1`), not the plain create-PR link GitHub already offers on push. The
