@@ -896,6 +896,14 @@ Always use `// TODO(oalexan1):` format. Never bare `// TODO:`.
 
 Convention: `origin` = user's fork, `god` = upstream org (for ASP, VW, BinaryBuilder).
 
+**BinaryBuilder has several heads and is pushed DIRECTLY to BOTH remotes.**
+Unlike ASP/VW (where `god` receives changes only via reviewed PRs), BinaryBuilder
+changes go straight to `god` (NeoGeographyToolkit, the canonical) AND to `origin`
+(user fork). So when told to push BinaryBuilder, push to `god` master and
+`origin` master both, and confirm the two heads plus local `master` all match.
+(Still requires an explicit push instruction, per the never-push-without-
+authorization rule; this only says WHERE once authorized.)
+
 ## CSM Model-State JSON
 
 Parse CSM model-state / `.adjusted_state.json` files CAREFULLY - they are NOT plain
