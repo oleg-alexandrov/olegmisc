@@ -1070,19 +1070,12 @@ set (discovery runs the test binary at build time). Full flags and gotchas:
 `~/projects/isis_2026/isis_2026_notes.sh`; also
 `~/projects/isis_mapproject/isis_mapproject_notes.sh` and `~/projects/env_update.sh`.
 
-**NEVER build/install ISIS WITH coverage into `asp_deps` (CRITICAL).** Always pass
-`-DbuildCoverage=OFF` (and `-DbuildTests=OFF`). A coverage build injects
-`--coverage` and instruments libisis (~676 MB with 1000+ baked `.gcda` paths and
-`__gcov_init` symbols). If that lib lands in `asp_deps/lib`, the nightly bundles it
-into the ASP release, and then EVERY ASP tool (all link libisis) HANGS for minutes
-at process exit - the gcov runtime blocks trying to write `.gcda` files to the
-nonexistent build path over the shared filesystem on pfe/Athena. This shipped in the
-2026-07-11 nightly (a clean 10:46 rebuild was never `ninja install`ed, so asp_deps
-kept the 10:17 instrumented lib). After ANY build, VERIFY the installed lib is clean
-before it can be packaged: `nm -D $CONDA_PREFIX/lib/libisis*.so | grep -c gcov` must
-be 0 (a lean ~26 MB lib, not ~676 MB). If it is not 0, `rm build/CMakeCache.txt`,
-reconfigure clean, `ninja install`, and re-verify. Emergency workaround for an
-already-shipped instrumented build: `GCOV_PREFIX=/tmp GCOV_PREFIX_STRIP=99`.
+**NEVER install a coverage-instrumented libisis into `asp_deps` (CRITICAL).** Always
+build `-DbuildCoverage=OFF`. An instrumented libisis (~676 MB, `__gcov_init` +
+`.gcda` paths) gets bundled into the ASP nightly and then HANGS every ASP tool for
+minutes at exit on pfe/Athena. After any ISIS build verify the installed lib is clean
+(`nm -D $CONDA_PREFIX/lib/libisis*.so | grep -c gcov` must be 0, ~26 MB not ~676 MB).
+Full incident, fix, and `GCOV_PREFIX=/tmp` workaround: `~/projects/isis_2026/isis_2026_notes.sh`.
 
 ## ISIS Data (CRITICAL)
 
