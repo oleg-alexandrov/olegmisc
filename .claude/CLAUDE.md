@@ -1088,12 +1088,14 @@ set (discovery runs the test binary at build time). Full flags and gotchas:
 `~/projects/isis_2026/isis_2026_notes.sh`; also
 `~/projects/isis_mapproject/isis_mapproject_notes.sh` and `~/projects/env_update.sh`.
 
-**NEVER install a coverage-instrumented libisis into `asp_deps` (CRITICAL).** Always
-build `-DbuildCoverage=OFF`. An instrumented libisis (~676 MB, `__gcov_init` +
-`.gcda` paths) gets bundled into the ASP nightly and then HANGS every ASP tool for
-minutes at exit on pfe/Athena. After any ISIS build verify the installed lib is clean
-(`nm -D $CONDA_PREFIX/lib/libisis*.so | grep -c gcov` must be 0, ~26 MB not ~676 MB).
-Full incident, fix, and `GCOV_PREFIX=/tmp` workaround: `~/projects/isis_2026/isis_2026_notes.sh`.
+**NEVER install a coverage-instrumented ISIS into `asp_deps` (CRITICAL).** Always
+build `-DbuildCoverage=OFF`. Coverage instruments the WHOLE ISIS lib set (~142 libs:
+libisis ~676 MB plus every mission/camera/projection plugin `.so`, all with baked
+`.gcda` paths). Any that get bundled into the ASP nightly HANG ASP tools for minutes
+at exit on pfe/Athena (libisis hangs all tools, plugin libs hang on demand). After any
+ISIS build verify no ISIS lib is dirty: `cd $CONDA_PREFIX/lib; for f in lib*.so; do
+strings $f|grep -q '\.gcda' && echo DIRTY $f; done` (prints nothing; libisis ~26 MB not
+~676 MB). Full incident, fix, and `GCOV_PREFIX=/tmp` workaround: `~/projects/isis_2026/isis_2026_notes.sh`.
 
 ## ISIS Data (CRITICAL)
 
