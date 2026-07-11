@@ -416,6 +416,17 @@ comment-only - never `chmod +x`; `git -C ~/projects add` new files in subdirs.
 Full conventions + the work-tracking file index (mpr_todo.sh, todo.sh,
 ostfl_2025_notes.sh): `~/projects/notes_conventions.sh`.
 
+**Cross-link notes files so none is an orphan.** When a project already has a
+main notes `.sh` and new notes get written for a specific sub-task (a focused
+experiment, a rationale, a one-off study), wire them together - suggest it or
+just do it. The main notes gets a one-line POINTER to the sub-notes ("for the
+distortion refit see `<name>.sh`"), and the sub-notes opens with a back-pointer
+naming its parent so it is self-aware as part of a bigger picture. Same for two
+peer notes that touch the same work - link both ways. The goal: from any notes
+file you can navigate to the whole web, and the main notes stays the index of
+what exists. A sub-notes file with no inbound or outbound link is a bug - fix it
+when you notice it.
+
 **Prompt to log done items to the progress trackers.** When a notable task
 finishes - especially if it landed in `NEWS.rst` or as a PR to ISIS, ALE,
 SpiceQL, USGSCSM, or other USGS repos - SUGGEST recording it in the right
@@ -751,9 +762,16 @@ does). NEVER `gdal_translate -b` to pick a disparity band - it writes the invali
 
 ## Multi-Option Commands in Scripts
 
-In shell scripts, put each command-line option (and each `export`) on its own
-line for readability, with trailing `\` continuation backslashes aligned to one
-column (use the backslash alignment tool below).
+In shell scripts, put each command-line option on its own line, WITH ITS VALUE
+on that same line: `--option val \`. One option per line, never several options
+on one line, and never split an option from its value. Same for each `export`.
+Use trailing `\` continuation backslashes (single space before the `\`, matching
+the surrounding scripts; or align to one column with the backslash alignment tool
+below where that reads tidier).
+
+**Comment lines in scripts never exceed 90 characters.** Wrap a longer comment
+onto continuation comment lines. Measure line length with a tool (e.g. `awk
+'{if(length($0)>90)print NR,length($0)}'`), never eyeball it.
 
 **NEVER put a comment after a `\` line-continuation** (`cmd \  # note`): the `\`
 escapes the trailing space, the `#...` is a comment, and the command ENDS there
