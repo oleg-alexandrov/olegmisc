@@ -12,6 +12,9 @@
     "clangd-lsp@claude-plugins-official": true
   },
   "feedbackSurveyRate": 0,
+  "env": {
+    "DISABLE_AUTOUPDATER": "1"
+  },
   "skipDangerousModePermissionPrompt": true,
   "tui": "default"
 }
