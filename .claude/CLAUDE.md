@@ -683,7 +683,10 @@ When adding/modifying command-line options, always update all three consistently
   "9,24,39,54"; l1 backup `~/bin/claude_watchdog_l1.sh` (claude is not on l1, so it sshes
   to the Mac alias mac_arm and triggers the Mac watchdog) + crontab "12,42". Retire the
   watchdog only when the auto work is truly done: touch `~/projects/cassis_asp/.auto_done`
-  or remove the crontab lines.
+  or remove the crontab lines. LIMITATION - this one shared watchdog/heartbeat/sentinel
+  assumes a SINGLE auto session; with 2+ bots it is lossy on death (a survivor keeps the
+  heartbeat fresh so a dead bot is never resurrected; first `.auto_done` disarms everyone).
+  Fix = per-bot state (not yet done). Detail: `~/projects/claude_overnight_notes.sh`.
 - On every wakeup, FIRST run `date` to re-orient - long runs leave you stale.
 
 ## Building ASP Docs
@@ -744,6 +747,18 @@ So basically a premable with all defined followed by precise invocation you will
 
 Any time you assume or expect a certain result, inspect it (visually AND with
 stats) to verify the result actually conforms to that expectation. Never assume - check.
+
+## Robust Stats: ALWAYS median/MAD, NEVER mean/std for raster comparison metrics (CRITICAL)
+
+For comparing rasters (dz vs a reference, dd-H/dd-V disparity, tri-err /
+IntersectionErr mosaics, geodiffs), ALWAYS report and compare the robust
+**median and MAD** (plus p90/p99 if useful), NOT the mean and std. These fields
+carry a few catastrophic blunder pixels (a max-tri-err mosaic hit 750-1440 m at
+Jezero) that pollute the MEAN and STD wildly while the median/MAD are stable.
+Judging by the mean led to a wrong conclusion once (a "6x better tri-err" that was
+purely blunder pixels; the medians were identical - CaSSIS WF1 vs WF2, 2026-07-11).
+`gdalinfo -stats` gives only mean/std/min/max - for median/MAD read the raster
+with numpy (nodata-aware): see `~/projects/cassis_asp/tri_median.py`.
 
 ## Disparity Stats: disparitydebug --raw, NEVER gdalinfo on run-F.tif (CRITICAL)
 
