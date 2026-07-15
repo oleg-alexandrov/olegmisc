@@ -701,6 +701,15 @@ When adding/modifying command-line options, always update all three consistently
   idling past completion.
 - On every wakeup, FIRST run `date` to re-orient - long runs leave you stale.
 
+## ASP Tools: Read the Manual, Not --help
+
+When using an ASP tool, do NOT rely on `--help` - read its RST manual
+(`~/projects/StereoPipeline/docs/tools/<tool>.rst`). `--help` lists flags but has
+NO sensible usage examples; the RST has worked examples and the gotchas that make
+options behave (e.g. dem_mosaic fill: small `--fill-search-radius` + more
+`--fill-num-passes`, since a large radius stalls). bundle_adjust, dem_mosaic,
+pc_align, and the rest all have extensive documented examples.
+
 ## Building ASP Docs
 
 `conda activate sphinx; make -C ~/projects/StereoPipeline/docs html` (output in
@@ -764,6 +773,15 @@ So basically a premable with all defined followed by precise invocation you will
 
 Any time you assume or expect a certain result, inspect it (visually AND with
 stats) to verify the result actually conforms to that expectation. Never assume - check.
+
+**Cheap checks on produced output files: always do them.** If the recipe says an
+output DEM/raster must have a certain grid size, resolution, or projection, run
+`gdalinfo` on it the moment it exists and confirm it conforms. A 1-second check
+saves countless grief downstream.
+
+**All runnable scripts must be executable (`chmod +x`); only comment-only notes
+`.sh` stay non-executable.** A missing execute bit silently breaks `nohup`/direct
+invocation, and `rsync -a` can reset it - so set it at the source.
 
 ## Robust Stats: ALWAYS median/MAD, NEVER mean/std for raster comparison metrics (CRITICAL)
 
