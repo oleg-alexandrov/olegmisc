@@ -551,6 +551,10 @@ mean is outlier-driven). Skip the per-residual raw_pixels files (too big). These
 tell you whether the solve behaved (sub-pixel medians, bounded offsets, cameras
 multiply-tied).
 
+## gdalwarp: Always -r cubicspline, Never the Default Nearest-Neighbor
+
+Always run `gdalwarp` with `-r cubicspline`; never rely on its default nearest-neighbor resampling, which snaps and misregisters continuous rasters (DEMs, geodiffs, error fields) by up to half a pixel.
+
 ## point2dem --errorimage Always; Mosaic the Error Too
 
 Every `point2dem` that makes a DEM gets `--errorimage` (the triangulation
@@ -687,6 +691,14 @@ When adding/modifying command-line options, always update all three consistently
   assumes a SINGLE auto session; with 2+ bots it is lossy on death (a survivor keeps the
   heartbeat fresh so a dead bot is never resurrected; first `.auto_done` disarms everyone).
   Fix = per-bot state (not yet done). Detail: `~/projects/claude_overnight_notes.sh`.
+- MUST DROP THE OS-LEVEL CRON (and the in-session CronCreate heartbeat) THE MOMENT ALL
+  WORK IS FULLY DONE. The OS cron exists ONLY as a safeguard to resurrect the session if
+  it DIES MID-WORK. Once the work is complete there is nothing left to resurrect or
+  advance, so a still-armed cron just cycles for no good reason (and can pointlessly
+  relaunch a finished session). Dropping it is the FINAL action of any auto job: remove
+  the crontab line(s) / touch the `.auto_done` sentinel AND CronDelete the in-session
+  heartbeat. Arm the cron for the duration of the work, drop it when done - never leave it
+  idling past completion.
 - On every wakeup, FIRST run `date` to re-orient - long runs leave you stale.
 
 ## Building ASP Docs
@@ -697,6 +709,11 @@ When adding/modifying command-line options, always update all three consistently
 ## RST Documentation Formatting
 
 **Documentation file locations:** check both `docs/` subdirectories and repository root level.
+Cross-reference labels (`.. _foo:` targeted by `:numref:`foo``) OFTEN live in root-level
+`.rst` files (ASP: `INSTALLGUIDE.rst`, `NEWS.rst`, `README.rst`, `install/INSTALLGUIDE.rst`),
+NOT under `docs/`. So before calling a `:numref:` broken, grep the WHOLE repo for its label
+(`git grep '^.. _foo:'`), not just `docs/`. Example: `:numref:`release`` resolves to
+`INSTALLGUIDE.rst` at the repo root - it is NOT missing.
 
 **Style:** Be concise - users are expert researchers. Give hints and pointers, not tutorials.
 
