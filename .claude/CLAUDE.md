@@ -159,6 +159,17 @@ passes `$Q` as ONE argument (qsub errors "illegally formed destination"). Fixes:
 INLINE all args into the command (no arg-bundle variable), or force splitting with
 `${=Q}` / `${(z)Q}`, or wrap in `bash -c`. Bit us building qsub arg strings for pfe.
 
+## Nested ssh: No Unescaped Parens/Metachars in `bash -lc "..."` (CRITICAL)
+
+`ssh host bash -lc "... echo === X (Y) ==="` FAILS: the remote `bash -lc` parses
+the whole string, and unescaped `(` `)` (or other shell metacharacters `{ } < > | &`),
+even inside an `echo` or a comment, are a remote syntax error that aborts the command
+(`syntax error near unexpected token '('`). For ANYTHING non-trivial over ssh, write
+the script to a file and `scp` it, then `ssh host bash file.sh` - never inline. Bit us
+repeatedly (CaSSIS pfe, 5x in one night, each an ssh round-trip wasted). Also: reading
+a raster with `gdal.Open(f).GetRasterBand(1)` lets the dataset get garbage-collected and
+invalidates the band (GDAL 3.12 `GetNoDataValue` TypeError) - keep `ds=gdal.Open(f)` alive.
+
 ## Use perl, Not sed, for In-Place Text Substitution
 
 For scripted text substitution (in-place edits, renames, regex swaps) prefer
