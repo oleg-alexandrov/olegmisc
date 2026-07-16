@@ -13,4 +13,8 @@ export LANG=C
 
 export L1='oalexan1@lunokhod1'
 export L2='oalexan1@lunokhod2'
-export GIT_SSH_COMMAND='ssh -o "StrictHostKeyChecking no"' # so that git does not ask 
+export GIT_SSH_COMMAND='ssh -o "StrictHostKeyChecking no"' # so that git does not ask
+
+# Claude Code: disable TUI mouse click/drag capture so normal terminal
+# middle-click paste and text selection work (scroll wheel still works).
+export CLAUDE_CODE_DISABLE_MOUSE_CLICKS=1
