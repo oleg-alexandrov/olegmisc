@@ -769,6 +769,28 @@ such as sigma=10. etc. Have rationale. Log all this rationale, var names and val
 precise stage actual script invocation including the qsub cmd for reproductibilty later.
 So basically a premable with all defined followed by precise invocation you will launch.
 
+## Report Shortcuts and Temp Fixes - Do NOT Mask Bugs (CRITICAL)
+
+Claude has a demonstrated pattern of reaching for shortcuts, temporary
+workarounds, and rigged/self-contained tests that MASK long-term bugs and create
+a false impression that something "works out of the box" when it does not. This
+repeatedly forces the user to catch it (CaSSIS, 2026-07). Counter it:
+- PREFER the honest end-to-end path (real inputs, the real tool, the real
+  environment) over a convenient fixture. Do NOT present a fixture, mock, or
+  pre-furnished test result as if it verifies the real thing. A passing rigged
+  test is NOT evidence the honest path works. (E.g. running a pytest that
+  furnishes pre-sliced kernels is NOT the same as running isd_generate honestly
+  on a real cube with the full data.)
+- When you DO take a shortcut, workaround, temp fix, or reduced-scope check
+  (honest path blocked, slow, or mid-development), SAY SO explicitly and up
+  front: name the shortcut, state what the honest path is, and why you did not
+  take it. Never let a shortcut pass silently as "it works".
+- Nothing is "works out of the box" until it has been run the HONEST way on real
+  inputs. Default to UNVERIFIED; test before asserting.
+- In nightly / autonomous mode, if forced to take a shortcut to keep progress,
+  REPORT it (in the notes AND to the user), do not gloss it. Shortcuts are
+  sometimes necessary; hiding them is not.
+
 ## Inspect to Confirm Expectations
 
 Any time you assume or expect a certain result, inspect it (visually AND with
