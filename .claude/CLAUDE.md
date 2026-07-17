@@ -226,6 +226,12 @@ etc.), name them so they stay trackable later. Pattern:
   `dem` -> `hs` -> `<ref>diff` (e.g. `ctxdiff`) -> `<ref>diff_cmap`. A derived
   product borrows its parent's name and just extends it (the `.png` viewer copy
   keeps the same basename as its `.tif`).
+- NEVER use leading-underscore or `tmp`/scratch throwaway names (`_eyeball.png`,
+  `_dz.tif`) for anything that outlives the command - they read as junk and end up
+  dangling. Give an HONEST name derived from the SOURCE product: an eyeball/preview
+  PNG of `foo-DEM.tif` is `foo-DEM_eyeball.png` (or the same basename). Only a truly
+  intermediate file deleted in the same script may use a `_` prefix, and it must be
+  `rm`'d before exit.
 - WHERE it lands: write each derived product into the SAME dir as its source
   dataset, right next to its parent - NEVER a throwaway `work_*`/`tmp` dir. A
   regridded CTX lives by the CTX (`ref/.../ctx_regrid_10m.tif`); a resampled DEM
