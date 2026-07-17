@@ -748,7 +748,15 @@ NOT under `docs/`. So before calling a `:numref:` broken, grep the WHOLE repo fo
 - Section underlines must be exactly the same length as heading text
   - **CRITICAL: Always count characters carefully - prone to off-by-one errors**
 - Heading levels: `=` top, `-` subsection, `~` sub-sub, `^` sub-sub-sub
-- For `:ref:` links where text matches target, use simplified syntax: `` :ref:`tool_name` ``
+- **`:ref:` vs `:numref:` - name tools with `:ref:`, not `:numref:` (I keep getting this
+  wrong).** `:numref:`geodiff`` renders "Section 16.26" (a NUMBER); `:ref:`geodiff``
+  renders "geodiff" (the NAME). So to name a tool inline, use `:ref:` - "made with
+  :ref:`point2dem`" reads "made with point2dem". NEVER "made with :numref:`point2dem`"
+  (that reads "made with Section 16.56", which is nonsense in a sentence). Use `:numref:`
+  ONLY to cite a section by its number ("see :numref:`cassis_ba`" -> "see Section 12.3"),
+  or as a trailing parenthetical AFTER the plain word ("geodiff (:numref:`geodiff`)" ->
+  "geodiff (Section 16.26)"). Verified by rendering the built HTML, 2026-07-17. Litmus:
+  read the sentence with the ref replaced by "Section N" - if it reads wrong, use `:ref:`.
 
 ## NEWS.rst Conventions
 
