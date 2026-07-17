@@ -346,8 +346,15 @@ channel_priority`. Fix: `conda config --set channel_priority flexible`.
   failed - cost a whole night of false "pfe down"). To bound an `ssh` probe use
   `ssh -o ConnectTimeout=N`. Detail: `~/projects/pleiades_notes.sh`.
 
+- **Reach pfe with `ssh pfx`, NOT `ssh pfe`.** `pfx` is the ssh-config alias that
+  hops through the sfe secure front end onto a pfe node (lands on e.g. pfe21) and
+  works non-interactively (no SecurID prompt). `ssh pfe` goes through a different
+  ProxyCommand that demands a 2FA passcode and fails non-interactively. So for ALL
+  pfe access (probes, scp, running commands) use `ssh pfx` / `scp ... pfx:`. lfe is
+  `ssh pfx` then `ssh lfe`.
+
 - **Reachability check first (auto mode):** when a task depends on `l1` or
-  `pfe`, probe them BEFORE committing to a plan (`ssh -o ConnectTimeout=8`).
+  `pfe`, probe them BEFORE committing to a plan (`ssh pfx` with `-o ConnectTimeout=8`).
   A dead host found mid-pipeline stalls an autonomous run. Cheap to test up front.
 
 - **Athena / Turin** (another supercomputer, separate from Pleiades) - reach via
