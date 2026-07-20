@@ -579,6 +579,25 @@ multiply-tied).
 
 Always run `gdalwarp` with `-r cubicspline`; never rely on its default nearest-neighbor resampling, which snaps and misregisters continuous rasters (DEMs, geodiffs, error fields) by up to half a pixel.
 
+## pc_align: Denser Cloud First, and Direct-vs-Inverse Transform (CRITICAL, easy to get backwards)
+
+`pc_align <reference> <source>` aligns SOURCE onto REFERENCE. Two hard rules that
+interact and silently ruin everything if confused:
+- **Denser cloud MUST be the first (reference) arg** (ICP quality). So if your ASP
+  DEM is DENSER than the ground-truth you align to (e.g. an 18 m CTX DEM vs a
+  200 m HRSC/MOLA reference), the DENSE DEM goes FIRST, the coarse truth SECOND -
+  the opposite of the "align my DEM to the reference" mental model.
+- `run-transform.txt` maps SECOND(source)->FIRST(ref); `run-inverse-transform.txt`
+  maps FIRST->SECOND. To move the CAMERAS (which live in the DEM's frame) INTO the
+  coarse-truth frame, you need FIRST->SECOND = **`run-inverse-transform.txt`**.
+- Apply to CSM cameras: `bundle_adjust <imgs> <bundled_state.json> --initial-transform
+  align/run-inverse-transform.txt --apply-initial-transform-only --inline-adjustments`.
+  (Per pc_align.rst "Applying a transform to cameras": stereo DEM as pc_align's FIRST
+  arg -> use the INVERSE transform; stereo DEM as SECOND arg -> use the direct one.)
+Verify: mapproject the aligned cams onto the reference and overlay (no shift); the
+aligned DEM's geodiff median vs the reference should be near zero. Full worked recipe
+in `~/projects/cassis_olympus_mons/cassis_002920_ctxpair_A_notes.sh` (stage 1e-1f).
+
 ## point2dem --errorimage Always; Mosaic the Error Too
 
 Every `point2dem` that makes a DEM gets `--errorimage` (the triangulation
@@ -707,14 +726,29 @@ When adding/modifying command-line options, always update all three consistently
   OS-level cron, independent of the harness, can bring Claude back. The old blanket "no
   OS-level crontab" rule predated this understanding and is RETIRED. OS cron is now
   REQUIRED for durable auto work, on LOCAL machines only, NEVER on pfe.
-  Current implementation (Mac + l1): Mac `~/bin/claude_watchdog.sh` + crontab
-  "9,24,39,54"; l1 backup `~/bin/claude_watchdog_l1.sh` (claude is not on l1, so it sshes
-  to the Mac alias mac_arm and triggers the Mac watchdog) + crontab "12,42". Retire the
-  watchdog only when the auto work is truly done: touch `~/projects/cassis_asp/.auto_done`
-  or remove the crontab lines. LIMITATION - this one shared watchdog/heartbeat/sentinel
-  assumes a SINGLE auto session; with 2+ bots it is lossy on death (a survivor keeps the
-  heartbeat fresh so a dead bot is never resurrected; first `.auto_done` disarms everyone).
-  Fix = per-bot state (not yet done). Detail: `~/projects/claude_overnight_notes.sh`.
+  PER-BOT NAMESPACING (REQUIRED - a single shared watchdog/heartbeat/sentinel is LOSSY
+  with 2+ concurrent auto bots: a survivor keeps the shared heartbeat fresh so a dead bot
+  is never resurrected, and the first `.auto_done` disarms everyone). So EACH concurrent
+  auto bot gets its OWN fully independent set, tagged by a short name `<tag>`:
+    - heartbeat  `~/.claude_heartbeat_<tag>`   (the bot touches ONLY this, every turn)
+    - watchdog   `~/bin/claude_watchdog_<tag>.sh`
+    - lock       `~/.claude_watchdog_<tag>.lockdir`   (own lock - watchdogs never collide)
+    - log        `~/.claude_watchdog_<tag>.log`
+    - sentinel   `<project>/.auto_done_<tag>`   (disarms ONLY this bot)
+    - crontab    its own line at STAGGERED minutes (e.g. "11,26,41,56" vs another's "9,24,39,54")
+  Each watchdog checks ONLY its own heartbeat and resurrects ONLY its own session, by
+  `cd`-ing into that bot's PROJECT DIR before `claude -c -p "<resume prompt>"` so `-c`
+  grabs the right session - different bots MUST run in different project dirs (else use
+  explicit session IDs). A bot touches ONLY its own heartbeat and disarms ONLY its own
+  sentinel; it NEVER touches another bot's files. The same tagging applies to any l1
+  backup watchdog (`~/bin/claude_watchdog_<tag>_l1.sh`, sshes mac_arm). Retire a bot's
+  watchdog when ITS work is done: touch that bot's `<project>/.auto_done_<tag>` (and drop
+  its crontab line). Example: the Olympus CTX-pair bot = `~/.claude_heartbeat_ctxpairs` +
+  `~/bin/claude_watchdog_ctxpairs.sh` (crontab "11,26,41,56") + project cassis_olympus_mons
+  + sentinel `cassis_olympus_mons/.auto_done_ctxpairs`. The old un-tagged set
+  (`~/.claude_heartbeat`, `~/bin/claude_watchdog.sh`, `cassis_asp/.auto_done`, crontab
+  "9,24,39,54") is now just ONE bot's namespace - never piggyback on it from another bot.
+  Detail: `~/projects/claude_overnight_notes.sh`.
 - MUST DROP THE OS-LEVEL CRON (and the in-session CronCreate heartbeat) THE MOMENT ALL
   WORK IS FULLY DONE. The OS cron exists ONLY as a safeguard to resurrect the session if
   it DIES MID-WORK. Once the work is complete there is nothing left to resurrect or
@@ -871,7 +905,10 @@ on that same line: `--option val \`. One option per line, never several options
 on one line, and never split an option from its value. Same for each `export`.
 Use trailing `\` continuation backslashes (single space before the `\`, matching
 the surrounding scripts; or align to one column with the backslash alignment tool
-below where that reads tidier).
+below where that reads tidier). This applies when AUTHORING a new script and when
+showing a command invocation in chat, not only when editing an existing script -
+it recurred (a proposed bundle_adjust block bunched options onto one line), so
+default to one-option-per-line for every multi-option command, everywhere.
 
 **Comment lines in scripts never exceed 90 characters.** Wrap a longer comment
 onto continuation comment lines. Measure line length with a tool (e.g. `awk
@@ -1221,6 +1258,18 @@ isis3data). It looks like stale bulk data in a cleanup pass but is in constant
 active use and takes a long time to re-fetch. See `~/projects/isis_2026/isis_2026_notes.sh`.
 
 ## Safe Directory Cleanup (CRITICAL)
+
+**ABSOLUTE RULE - NEVER put a `$VAR` or `${...}` in an `rm` path. NO EXCEPTIONS.**
+This keeps recurring and Oleg keeps catching it. A variable that expands empty turns
+`rm -f $S/${tag}_file.tif` into `rm -f /file.tif` or worse, and even when safe the
+harness flags "dangerous rm on possibly-empty variable path" and STALLS the run. This
+applies EVERYWHERE, including throwaway scratch/relay/temp cleanup and loops - those are
+exactly where it bit us (ctx-relay loop `rm -f $S/${tag}_ctx_18m.tif`, 2026-07-20; VW
+wiped TWICE by `rm -rf $bld/...`). Instead, in order of preference: (1) DON'T delete -
+leave small temp files in the scratchpad, they get cleaned up automatically and disk is
+rarely the real constraint; (2) if deletion is truly needed, write ONE `rm` per line with
+a FULLY LITERAL absolute path, no variable, no glob; (3) never inside a `for`/`while` loop.
+If you cannot write the literal path, do not run the delete. When in doubt, leave it.
 
 Full deletion/cleanup policy: `~/projects/file_cleanup_notes.sh`. Bare minimum to
 remember without reading: NEVER `rm -rf` an absolute or variable-expanded path
