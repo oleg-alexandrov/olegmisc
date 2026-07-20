@@ -406,6 +406,14 @@ tolerances, triage, gold regen, finding test dirs by tool:
 `~/projects/asp_regression_tests.sh`. Mac CI: `~/projects/update_cloud_tests.sh`.
 Run a test: `cd` in, `bash run.sh > output.txt 2>&1`, then `bash validate.sh`
 (exit 0 = pass). NOT pytest.
+- **Need test inputs (cameras/DEMs/images) to exercise an ASP tool or to
+  reproduce/validate a bug? LOOK IN THE TEST SUITE FIRST** - `StereoPipelineTest/ss*`
+  (`grep -rl <tool> ~/projects/StereoPipelineTest/ss*/run.sh`), plus in-repo
+  `StereoPipeline/examples/` and `src/**/tests/`. Hundreds of ready cameras/DEMs
+  exist; reuse or adapt one (e.g. punch a nodata hole into an existing DEM). Better
+  still, if you have the real inputs that triggered the bug, replicate with THOSE,
+  not a synthetic stand-in. Hand-roll a fake case only as a last resort. Detail:
+  `~/projects/asp_regression_tests.sh` ("FINDING TEST INPUTS" section).
 - **When asked to evaluate FAILING regressions, FIRST `git fetch` + rebase the
   latest from the remote for BOTH VW and ASP** (`god/master`). The local source
   can be behind what the nightly built, so a local re-run silently uses stale
