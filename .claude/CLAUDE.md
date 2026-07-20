@@ -1020,6 +1020,13 @@ low-relief terrain - a small geodiff std does NOT mean registered; judge
 registration ONLY by the red/green hillshade overlay. Full rule + failure record
 at the top of that file.**
 
+Colorizing a raster for inspection (geodiff/dz, disparity, tri-err): render WITH a
+colorbar (matplotlib, not bare `gdaldem color-relief`). EACH plot gets its OWN vertical
+colorbar on the RIGHT, unit label ("meters"/"pixels") rotated 90 degrees; NEVER a shared
+colorbar. Diverging ramp + symmetric clamp for signed diffs; robust clamp, not min/max;
+nodata masked. Multidirectional hillshade (`gdaldem hillshade -multidirectional`) for
+DEMs. Full recipe (pfe gdal-vs-matplotlib env split): `~/projects/visual_raster_inspection.sh` section 5.
+
 Match-point inspection: `~/bin/plot_matches.py` overlays an ASP .match file on both images and reports the residual to the best-fit translation (the real-vs-junk metric for co-registered pairs). For the stereo_gui solid-red-dot look use `--red --radius N`.
 
 Checking a bundle_adjust `pointmap.csv` (GCP / from-DEM points) against a reference DEM with `geodiff` (split by population, the `--csv-srs` gotcha): see `~/projects/visual_raster_inspection.sh`. Keywords: bundle_adjust pointmap.csv, geodiff --csv-format, heights-from-dem on-DEM check, fix-gcp-xyz.
