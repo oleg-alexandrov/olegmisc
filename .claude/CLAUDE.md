@@ -438,7 +438,7 @@ REPRODUCIBLE (record exact commands/invocations so results can be redone) and
 log the screw-ups and bad judgment too, not just the wins. Notes `.sh` are
 comment-only - never `chmod +x`; `git -C ~/projects add` new files in subdirs.
 Full conventions + the work-tracking file index (mpr_todo.sh, todo.sh,
-ostfl_2025_notes.sh): `~/projects/notes_conventions.sh`.
+ostfl_2026_notes.sh): `~/projects/notes_conventions.sh`.
 
 **Cross-link notes files so none is an orphan.** When a project already has a
 main notes `.sh` and new notes get written for a specific sub-task (a focused
@@ -455,7 +455,7 @@ when you notice it.
 finishes - especially if it landed in `NEWS.rst` or as a PR to ISIS, ALE,
 SpiceQL, USGSCSM, or other USGS repos - SUGGEST recording it in the right
 progress/done log: `mpr_todo.sh` (Monthly Progress Report, all projects),
-`csm_todo.sh` (CSM/ISIS work - the USGS PRs go here), `ostfl_todo.sh` (OSTFL),
+`csm_todo.sh` (CSM/ISIS work - the USGS PRs go here), `ostfl_2026_notes.sh` (OSTFL),
 or `sli_fusion_todo.sh` (SLI fusion / GSFC geolocation). Just remind; don't
 edit these without the user's go-ahead. These are user-facing reporting docs,
 not the per-project working notes.
