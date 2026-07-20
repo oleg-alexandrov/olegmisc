@@ -103,6 +103,19 @@ notes - the pointer is a promise that the detail exists there.
   real fixes and debug prints. Either commit the real fixes first, or
   selectively discard only the debug parts.
 
+## Check the Remote BEFORE Doing Local Work on a Repo (CRITICAL)
+
+When asked to work on a repo (feedstock, ASP, VW, notes, anything) and a local
+clone exists, FIRST `git fetch` and compare local vs the remote (`git log
+HEAD..origin/master`, `git show origin/master:path`) BEFORE editing anything.
+The remote may already have the change - possibly a better version than you'd
+write. Do NOT assume your local copy is authoritative or up to date. Rebase/sync
+to the remote first, THEN decide what (if anything) still needs doing. Burned
+2026-07-20: hand-wrote an mgm_multi block into a local s2p-feedstock build.sh
+without checking; the remote already had it, and more complete (with a mac
+iio.c fix my draft lacked). Wasted effort and nearly clobbered the better
+version. At minimum: be aware of remote state before local work.
+
 ## git rm --cached, never bare git rm (CRITICAL)
 
 Never add `.ssh/` to git (dangerous). To untrack a file but keep it on disk, always `git rm --cached`, never bare `git rm` (which deletes the working file too - this once wiped `~/.ssh/config`; recover via `git show <commit>^:path > path`).
@@ -372,6 +385,26 @@ holding only `stereo/`. The real fix (belated bugfix, 2026-07): ASP's
 `lib/qt6/plugins:plugins` (Qt6 first, Qt5 fallback), matching the tarball wrapper
 `BinaryBuilder/dist-add/libexec/libexec-funcs.sh`. Full write-up:
 `~/projects/mgm_multi_notes.sh`.
+
+## Honest Install into asp_deps, NEVER an Editable/`-e` Link (CRITICAL)
+
+NEVER `pip install -e` (editable) a dev package (ale, usgscsm, etc.) into the
+shipping `asp_deps` env. An editable install only drops a `.pth` that redirects
+`import <pkg>` to your source tree - the env does NOT contain the package, it
+borrows it. Worse, it deletes the conda package's real files, so `conda-pack`
+then fails ("Cannot pack an environment with editable packages") and the tarball
+carries a dangling `.pth` pointing at a path no consumer has. The `--ignore-
+editable-packages` conda-pack flag is a HACK that hides this - do NOT reach for it.
+Rule: when developing ale/usgscsm/etc. and you want the change in `asp_deps`, do
+an HONEST non-editable install every time (more work - you must remember to
+reinstall after each edit, but it is honest and self-contained):
+  pip uninstall -y <pkg>
+  pip install --no-deps --no-build-isolation ~/projects/<pkg>
+For a truly legit conda env, rebuild the conda package from the local source
+(bump the build string) and `conda install --force-reinstall` it. Do editable
+DEV work in a SEPARATE env or a throwaway clone, never in the env that becomes
+the deps tarball. (Bit us 2026-07-16..20: an editable ale in asp_deps forced
+`--ignore-editable-packages` and shipped a dangling `.pth` in the linux tarball.)
 
 ## Conda Channel Cleanup (prune old asp_N builds)
 
