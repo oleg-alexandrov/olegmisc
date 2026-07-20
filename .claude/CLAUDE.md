@@ -299,6 +299,40 @@ for Linux (local) + macOS x64/arm64 (GitHub Actions). Full reference:
 run_tests.sh, utils.sh). Email via msmtp on completion. Mac CI gold
 updates: `~/projects/update_cloud_tests.sh`.
 
+## Nightly asp_deps Cloud Tarballs (CRITICAL - canonical location)
+
+The Mac/Linux cloud nightlies build ASP against a prebuilt asp_deps tarball per
+platform, stored as BinaryBuilder GitHub releases (conda-pack of the asp_deps
+env, plus python_isis10):
+- `asp_deps_mac_arm64_v4`, `asp_deps_mac_x64_v4` (x64 may be split p1/p2 for the
+  2 GB limit), `asp_deps_linux_arm_v1`, and the linux-intel one.
+CANONICAL per-platform worklogs (the recipe to build/repackage/upload these):
+`~/projects/env_update_06_2026_{mac_arm,mac_intel,linux_arm,linux_intel}.sh`, plus
+the repackaging plan `~/projects/mac_arm_deps_tarball.sh`. (A CaSSIS-capable-deps
+sub-job lives in `~/projects/cassis_asp/asp_cassis_deps_plan.sh`; that is a
+specific task, not the general recipe.)
+
+- **The ACTUAL fetch/extract/relocate mechanics live in
+  `StereoPipeline/.github/workflows`** (`build_test.sh`, `build_test_linux_arm.sh`,
+  `save_mac_deps.sh`, `save_linux_deps.sh`) and MUST be respected: the tarball
+  naming (`asp_deps_p1.tar.gz` [+p2], `python_isis10.tar.gz`), the tag synced in
+  build_test.sh, `conda-unpack` on the runner, and the MAC-ARM-ONLY ad-hoc
+  `codesign --force -s -` re-sign after conda-unpack (arm64 SIGKILLs binaries
+  whose signature conda-unpack invalidated). Do not change the tarball format
+  without updating those scripts.
+- Stereo correlation plugins (mgm, mgm_multi, msmw, msmw2, libelas) live in the
+  packed env's `plugins/stereo/<algo>/bin`. `plugins/` MUST be an honest real
+  directory, NEVER a symlink to `lib/qt6/plugins` (see the Qt6-plugins rule
+  above). Plugin binaries must be relocatable: on Mac their `LC_RPATH` is
+  `@loader_path/../../../../lib/` (Linux uses `$ORIGIN/../../../../lib`), matching
+  the existing mgm plugin, NOT an absolute build-time path.
+- To ADD a plugin binary to an existing tarball (no full deps rebuild): NO
+  version bump. Download the release asset, extract, drop in the platform-built
+  relocatable binary, ensure `plugins/` is a real dir, re-tar, and re-upload to
+  the SAME tag with `gh release upload <tag> --clobber`.
+- Watch storage: each tarball is ~1-2 GB; extract in a scratch dir, wipe it after,
+  and never leave stray conda-pack scratch or half-extracted envs around.
+
 ## ASP Release Packaging
 
 ```bash
@@ -321,6 +355,23 @@ One rule to remember without reading: do NOT use `conda remove --force-remove`
 Instead, surgically `rm` only `libAsp*.so`, `libVw*.so`, `include/{asp,vw}`, and
 ASP tools from `bin/` (using the dev install as the reference list). See the
 notes file for the exact commands.
+
+## NEVER symlink `$PREFIX/plugins` to Qt6 plugins (CRITICAL)
+
+Qt6 plugins live in `$PREFIX/lib/qt6/plugins`, NOT `$PREFIX/plugins` (that was
+the Qt5 location). ASP's OWN stereo correlation plugins (the external algorithms
+mgm, mgm_multi, msmw, msmw2, libelas) live in `$PREFIX/plugins/stereo`. These are
+two different owners of two different paths and they do NOT collide. There was a
+bad workaround (make_asp_deps_env.sh, and a stray symlink on asp_deps) of
+`ln -s lib/qt6/plugins plugins`, done only to make `$PREFIX/plugins` exist so
+ASP would not throw "Cannot find Qt plugins" - it silently CLOBBERS
+`plugins/stereo`, so `parallel_stereo` loses every external algorithm. That was
+never acceptable. NEVER do that symlink. Keep `$PREFIX/plugins` a REAL dir
+holding only `stereo/`. The real fix (belated bugfix, 2026-07): ASP's
+`src/asp/Core/EnvUtils.cc` `set_asp_env_vars()` now sets `QT_PLUGIN_PATH` to
+`lib/qt6/plugins:plugins` (Qt6 first, Qt5 fallback), matching the tarball wrapper
+`BinaryBuilder/dist-add/libexec/libexec-funcs.sh`. Full write-up:
+`~/projects/mgm_multi_notes.sh`.
 
 ## Conda Channel Cleanup (prune old asp_N builds)
 
@@ -848,7 +899,31 @@ So basically a premable with all defined followed by precise invocation you will
 Claude has a demonstrated pattern of reaching for shortcuts, temporary
 workarounds, and rigged/self-contained tests that MASK long-term bugs and create
 a false impression that something "works out of the box" when it does not. This
-repeatedly forces the user to catch it (CaSSIS, 2026-07). Counter it:
+repeatedly forces the user to catch it (CaSSIS, 2026-07; Qt6-plugins symlink,
+2026-07). Counter it:
+
+THE GENERAL LESSON (this is the one that matters): do NOT paper over a problem to
+make an error message go away. A symlink, fallback path, copied file, broadened
+catch, or special-case that MUTES a symptom without fixing the defect is
+cheating - the bug lives on somewhere quieter and reads as fixed. The tell that
+you are about to cheat: you are reaching for something that makes the error
+disappear without having first NAMED the actual root cause. Stop, name the cause,
+fix THAT.
+- A temporary workaround IS legitimate (honest path blocked, slow, or out of
+  scope right now). But it is ONLY legitimate if you (a) say so explicitly, and
+  (b) ensure the real problem gets fixed eventually. If you can fix the root
+  cause along the way - in scope, in code - do it. If you cannot, REPORT the
+  problem to the user so it is not lost. Especially raise it when we are not
+  busy: a quiet moment is when latent problems should be surfaced and fixed.
+- You MUST report problems to the user. Always. Even in a long-running nightly or
+  autonomous run - when you hit an issue, surface it (in the notes AND to the
+  user), do not silently work around it and move on. A muted problem in an
+  unattended run is the worst case: nobody knows it is broken.
+- Owning known breakage is your job, not optional. Example: if the task is to
+  prepare/maintain a release and you KNOW the release bumped a dependency (e.g.
+  Qt5 -> Qt6) that breaks something, handling that breakage IS release
+  maintenance. Refusing to deal with it, or papering it over with a symlink, is
+  wrong. The known upstream change is precisely what you are there to handle.
 - PREFER the honest end-to-end path (real inputs, the real tool, the real
   environment) over a convenient fixture. Do NOT present a fixture, mock, or
   pre-furnished test result as if it verifies the real thing. A passing rigged
