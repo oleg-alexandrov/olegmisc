@@ -610,6 +610,21 @@ OWN work, log everything (exact invocations, produced files by name, decisions,
 dead-ends and reverts) as you go, for the next bot's traceability - not just for
 yourself. If the notes were missing a fact you had to dig for, that is a notes
 bug - fix the notes.
+**When notes CONFLICT, the NEWER-TIMESTAMPED entry WINS (CRITICAL).** Notes accrete
+dated entries over time and older ones get superseded but not always deleted, so a
+grep can surface a stale claim and a current one side by side. NEVER act on the
+first hit. When two statements disagree (e.g. "isd_generate is BROKEN for CaSSIS"
+vs a later "isd_generate works"), find the LATEST-DATED statement on that exact
+question and treat it as current; the older/undated one is history. Sort by date,
+chase "SUPERSEDED/UPDATE" banners, and CROSS-CHECK against merged PRs and the
+shipped user docs (RST) - those reflect the end state and outrank any note. This
+is why every entry must be timestamped: an undated claim cannot be aged out. When
+you find a stale recipe still being treated as live, MARK IT SUPERSEDED in the
+notes (dated pointer to the current recipe) so it stops misleading the next bot.
+(Burned 2026-07-20: old CaSSIS notes said isd_generate could not build an ISD and
+needed a hand-cooked metakernel + isd_gen.py; PRs #720/#725 had since made bare
+`isd_generate <cube>` work end to end, and I chased the dead recipe for several
+turns before checking the merged PRs and cassis.rst.)
 **THE TRIGGER (this is where the rule actually has to fire - a disposition is not
 enough).** The failure is almost never "did not read notes at all"; it is hitting
 a SPECIFIC factual sub-question mid-task (where does this file live? how was it

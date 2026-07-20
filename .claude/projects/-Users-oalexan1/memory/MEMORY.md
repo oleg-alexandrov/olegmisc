@@ -11,36 +11,18 @@ remind user in a day or two to go on with rescale logic plan for ww, so rescale 
 
 ## Recent Projects
 
-`~/projects/sli_fusion/sli_fusion_notes.sh` - **SLI fusion** (started 2026-06-16,
-with Shashank/sbhusha1). Orthoimage geolocation-assessment tool using ASP's
-ip-matching: take ref + source orthoimages, output match points in projected
-units with dx/dy offsets to a GeoPackage (like image_align but NO alignment).
-Eval lidar-intensity vs NAIP as reference basemaps vs WorldView/Planet sources;
-cross-wavelength matching is the hard part. Data (16 GB, read-only) at
-`/nobackup/sbhusha1/sli_fusion/data` - 12 sites, each lidar/ (ref) + src_img/wv_pan/
-(WV pan, 1.0 m); lidar already co-registered to source grid. Work dirs: Mac notes
-`~/projects/sli_fusion/`, pfe `~/projects/sli_fusion` -> nobackup. Inventory:
-`sli_fusion_inventory.sh`. Open: qsub group_list (data is s3319, off-limits to charge).
+`~/projects/sli_fusion/sli_fusion_notes.sh` - **SLI fusion** (2026-06-16, with
+Shashank/sbhusha1). Orthoimage geolocation-assessment tool via ASP ip-matching:
+ref + source orthos -> match points with dx/dy offsets to a GeoPackage (no
+alignment). Cross-wavelength (lidar-intensity/NAIP vs WV/Planet) is the hard
+part. Data (16 GB) `/nobackup/sbhusha1/sli_fusion/data`, alloc s3319. Detail +
+inventory in the notes.
 
-`~/projects/cassis_asp/cassis_notes.sh` - TGO CaSSIS (Mars, push-frame, treated
-as FRAMING not linescan) stereo in ASP. Started 2026-06-10. Jezero target pair
-MY37_028515_017_1/2. ISIS/ALE/USGSCSM + kernels already exist; effort is wiring
-+ validation + docs, not a camera port. UPDATE 2026-06-13: distortion was added
-to ALE - the CaSSIS distortion (USGSCSM DistortionType CASSIS = 9, the
-TgoCassisDistortionMap equivalent) is now emitted; the decomposed "baby" frame
-cameras carry m_distortionType=9 with real coeffs. The old "ALE tgo is
-NoDistortion" gap is CLOSED. DISHING DIAGNOSED (2026-06-13): a long-wavelength
-cross-track BOWL dominates (ours ~11 m vs CTX, vendor OPD ~15 m, OPPOSITE signs,
-ours-vendor ~30 m = largest) - so it is PIPELINE-SPECIFIC, not CTX's error and
-not a shared CaSSIS systematic. It is a near-degeneracy of two-look self-
-consistent BA (the cross-track bowl is ~null-space of reprojection). Distortion
-self-cal makes it WORSE (overfit: reproj halves but bowl grows 11->27 m); ASP
-already solves CASSIS distortion generically (no code change, like the Kaguya
-doc example). Real fix needs EXTERNAL low-freq control (LOLA/CTX), keeping our
-high-freq detail. Also fixed a pc_align bug (high/NaN no-data voided match-file
-matches; create_mask fix + test ss_pc_align_match_high_nodata pushed). Alloc
-e2305 (SFS). Reference DTMs (OAPD/PSA) are
-browser-only, not curl-able. General qsub convention: `~/projects/qsub_convention.sh`.
+`~/projects/cassis_asp/cassis_notes.sh` - TGO CaSSIS (Mars, push-frame as
+FRAMING) stereo in ASP (2026-06-10). Jezero pair MY37_028515_017_1/2. Distortion
+now emitted by ALE (USGSCSM DistortionType CASSIS=9). Residual cross-track BOWL
+is pipeline-specific (two-look BA near-degeneracy); real fix needs external
+low-freq control (LOLA/CTX). Alloc e2305. Full diagnosis in the notes.
 
 `~/projects/PNCB/pncb_registration.sh` - PNCB re-registration (spring 2026,
 active as of 2026-04-21). Plan reorganized 2026-04-21 (context top, steps
@@ -66,14 +48,9 @@ SPOTCameraModel deleted. Uses TRANSVERSE distortion with f=1.0 angle-unit
 detector. Shared helpers landed: refineCsmLinescanFit, isLinescanCsmSession,
 CsmUtils resample. Reuse these for any SPOT 1-4 work.
 
-`~/projects/spot1/spot1_notes.sh` - SPOT 1-4 (HRV) camera support plan.
-Analysis of DIMAP v1.1 sample scene, comparison vs SPOT5/SPOT6, four
-transforms needed (quaternion rate integrator per handbook section 4.5, linear
-look fit, HRV mirror boresight into m_mountingMatrix, optional 1B->raw
-pre-map), readiness inventory. Session name: "spot14". No destripe in
-first pass. Vendor doc at
-~/projects/spot1/SPOT_Geometry_Handbook_CNES_S-NT-73-12-SI.pdf (82 pp).
-Deferred; not started.
+`~/projects/spot1/spot1_notes.sh` - SPOT 1-4 (HRV) camera support plan (session
+"spot14"). DIMAP v1.1 analysis, four transforms needed, readiness inventory.
+Vendor doc `SPOT_Geometry_Handbook_CNES_S-NT-73-12-SI.pdf`. Deferred, not started.
 
 `~/projects/csm_resample/csm_resample_notes.sh` - ALE ISD subsampling.
 PR DOI-USGS/ale#677 **merged 2026-03-23**. Completed.
@@ -97,44 +74,15 @@ branch jigsaw_isdlist. Code reviewed and tested. Awaiting CI and review.
 | `vw_stereo_refactor.sh` | vw/Stereo/ cleanup - dead code removal, de-templatization |
 | `rebuild_theia_deps.sh` | TheiaSfM rebuild in deps tarballs, cross-compilation ARM->x86_64 |
 
-## ASP Build Order & CMake Flags (Mac ARM64)
+## ASP Build / Test Quick Refs
 
-Build VW first, then ASP. Both use conda clang from `asp_deps` env.
-
-```bash
-# VW
-cmake ../src -DASP_DEPS_DIR=$HOME/miniconda3/envs/asp_deps \
-  -DCMAKE_INSTALL_PREFIX=$HOME/projects/StereoPipeline/install \
-  -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
-
-# ASP (after VW is installed)
-cmake ../src -DASP_DEPS_DIR=$HOME/miniconda3/envs/asp_deps \
-  -DVISIONWORKBENCH_INSTALL_DIR=$HOME/projects/StereoPipeline/install \
-  -DCMAKE_INSTALL_PREFIX=$HOME/projects/StereoPipeline/install \
-  -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
-```
-
-## Test Gold Generation Workflow
-
-1. Download latest release tarball (e.g., from GitHub releases)
-2. Set PATH to release build: `export PATH=/path/to/release/bin:$PATH`
-3. Run test: `bash run.sh > output_gold.txt 2>&1`
-4. Copy output to gold/: the gold dir is the reference
-5. Switch to dev build: `export PATH=~/projects/StereoPipeline/install/bin:$PATH`
-6. Run same test again, then `bash validate.sh` to compare against gold
-
-## Mac ARM64 Batch Testing with Pytest
-
-```bash
-conda activate pytest
-cd ~/projects/StereoPipelineTest
-pytest -n 4 -q -s -r a --tb=no --config dev_mac_arm.conf
-# Expected: ~234 passed, ~58 failed (known issues / missing data)
-```
-
-## Conda Channel Priority for asp_deps
-
-Order matters: `nasa-ames-stereo-pipeline`, `usgs-astrogeology`, `conda-forge`, `defaults`
+- Build order + cmake flags (VW first, then ASP, conda clang from asp_deps):
+  `~/projects/install_asp_notes.sh`.
+- Gold generation + dev-vs-release validate workflow, and Mac ARM64 pytest
+  (`pytest -n 4 --config dev_mac_arm.conf`, ~234 pass / ~58 known-fail):
+  `~/projects/asp_regression_tests.sh`.
+- Conda channel priority for asp_deps: nasa-ames-stereo-pipeline,
+  usgs-astrogeology, conda-forge, defaults (in that order).
 
 ## projwin_fix Work
 
@@ -154,6 +102,8 @@ Refactoring often produces small float noise from evaluation order changes.
 
 ## Feedback
 
+- [feedback_deliver_hosted_artifact.md](feedback_deliver_hosted_artifact.md) - For report/results deliverables, publish a hosted HTML Artifact (claude.ai link) via the Artifact tool, not just a local file.
+- [feedback_dont_cover_bugs.md](feedback_dont_cover_bugs.md) - Don't mute a symptom with a workaround (symlink/fallback/copy/fixture); name and fix the actual defect. The Qt6 plugins symlink hid a one-line EnvUtils.cc bug for months.
 - [feedback_stop_asking_permission.md](feedback_stop_asking_permission.md) - Don't ask permission to edit CLAUDE.md, config files, etc. Just do it.
 - [feedback_inspect_before_filter.md](feedback_inspect_before_filter.md) - Set a filter/threshold only AFTER visually inspecting (colorize+eyeball) the raster; stats hide a coherent systematic signal (CaSSIS max-disp 10 cut real shift, left a tilt).
 - [feedback_autonomous_safe_commands.md](feedback_autonomous_safe_commands.md) - When working autonomously, avoid command shapes that trip the sandbox (e.g. variable-path rm); cd + relative paths so you don't stall mid-stream.
