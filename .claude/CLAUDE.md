@@ -991,6 +991,29 @@ fix THAT.
   REPORT it (in the notes AND to the user), do not gloss it. Shortcuts are
   sometimes necessary; hiding them is not.
 
+## No Per-Site / Per-Input Special-Casing in Reproducible Pipelines (CRITICAL)
+
+A pipeline meant to give USERS reproducible results must apply the SAME logic to
+every input. Turning an experimental lever ON for one specific site/dataset while
+leaving it OFF for others - whether by a hardcoded site name, a per-input `if`, or
+a per-site config that flips a knob - is a form of CHEATING. It fakes a good result
+for that one case that the general pipeline does NOT actually produce, so a user
+running the shipped config on that site silently gets a DIFFERENT, worse result
+than the paper/doc shows. This is exactly the unreliable-results-for-users failure.
+(Caught 2026-07-21 in the CaSSIS pipeline: a `soft_gcp` pass-2 option whose comments
+said "used for ox1" - a per-site tweak advertised in shipped code.) Rules:
+- A tunable option in the CODE is fine, but it MUST default OFF and be applied
+  UNIFORMLY across all inputs, or not at all. No per-input branching, no site-name
+  conditionals, no per-site config that flips an experimental knob, no site names in
+  the pipeline logic/comments advocating a per-site use.
+- If a lever genuinely helps, apply it to EVERY input and document it. If it helps
+  only one, that is a sign it is fitting that dataset's noise - do not ship it on.
+- Any result that was produced with a per-site tweak is UNRELIABLE and must be
+  REDONE honestly with the uniform pipeline before it is presented as a pipeline
+  result. Flag it to the user and log the redo.
+- The legitimate per-input mechanism is a per-site CONFIG carrying only that site's
+  INPUTS (paths, ids, reference DEM) - never a knob that changes the algorithm.
+
 ## Inspect to Confirm Expectations
 
 Any time you assume or expect a certain result, inspect it (visually AND with
