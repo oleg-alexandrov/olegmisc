@@ -820,10 +820,11 @@ When adding/modifying command-line options, always update all three consistently
   For ANY unattended/auto session or long pipeline, ALWAYS arm BOTH:
   (1) IN-SESSION heartbeat = CronCreate. Pick the interval to fit the work - roughly
       every 20-40 min (tighter for fast-moving stages, looser for long jobs). Its prompt
-      is content-free, points at the project notes, touches ~/.claude_heartbeat each
-      firing, and advances the work. This is the normal pulse WHILE the harness is alive.
+      is content-free, points at the project notes, touches
+      `~/.claude/autorun/heartbeat_<tag>` each firing, and advances the work. This is the
+      normal pulse WHILE the harness is alive.
   (2) OS-LEVEL cron = emergency resurrector, on the local machine(s). This is the layer
-      that survives an OUTAGE. It relaunches `claude -c -p` only when ~/.claude_heartbeat
+      that survives an OUTAGE. It relaunches `claude -c -p` only when the heartbeat file
       is stale (harness presumed dead), else stands down; atomic-lock guarded so runs
       never overlap; self-heals across a still-down service (cron keeps re-firing and
       catches the moment it returns).
@@ -836,26 +837,28 @@ When adding/modifying command-line options, always update all three consistently
   PER-BOT NAMESPACING (REQUIRED - a single shared watchdog/heartbeat/sentinel is LOSSY
   with 2+ concurrent auto bots: a survivor keeps the shared heartbeat fresh so a dead bot
   is never resurrected, and the first `.auto_done` disarms everyone). So EACH concurrent
-  auto bot gets its OWN fully independent set, tagged by a short name `<tag>`:
-    - heartbeat  `~/.claude_heartbeat_<tag>`   (the bot touches ONLY this, every turn)
-    - watchdog   `~/bin/claude_watchdog_<tag>.sh`
-    - lock       `~/.claude_watchdog_<tag>.lockdir`   (own lock - watchdogs never collide)
-    - log        `~/.claude_watchdog_<tag>.log`
-    - sentinel   `<project>/.auto_done_<tag>`   (disarms ONLY this bot)
+  auto bot gets its OWN fully independent set, tagged by a short name `<tag>`. ALL of the
+  apparatus files live UNDER `~/.claude/autorun/`, NEVER loose in the home dir (`~`) or
+  `~/bin` - the home dir stays clean. Make it once (`mkdir -p ~/.claude/autorun`). The set:
+    - heartbeat  `~/.claude/autorun/heartbeat_<tag>`   (the bot touches ONLY this, every turn)
+    - watchdog   `~/.claude/autorun/watchdog_<tag>.sh`
+    - lock       `~/.claude/autorun/watchdog_<tag>.lockdir`   (own lock - watchdogs never collide)
+    - log        `~/.claude/autorun/watchdog_<tag>.log`
+    - sentinel   `<project>/.auto_done_<tag>`   (in the PROJECT dir, not home; disarms ONLY this bot)
     - crontab    its own line at STAGGERED minutes (e.g. "11,26,41,56" vs another's "9,24,39,54")
   Each watchdog checks ONLY its own heartbeat and resurrects ONLY its own session, by
   `cd`-ing into that bot's PROJECT DIR before `claude -c -p "<resume prompt>"` so `-c`
   grabs the right session - different bots MUST run in different project dirs (else use
   explicit session IDs). A bot touches ONLY its own heartbeat and disarms ONLY its own
   sentinel; it NEVER touches another bot's files. The same tagging applies to any l1
-  backup watchdog (`~/bin/claude_watchdog_<tag>_l1.sh`, sshes mac_arm). Retire a bot's
+  backup watchdog (`~/.claude/autorun/watchdog_<tag>_l1.sh`, sshes mac_arm). Retire a bot's
   watchdog when ITS work is done: touch that bot's `<project>/.auto_done_<tag>` (and drop
-  its crontab line). Example: the Olympus CTX-pair bot = `~/.claude_heartbeat_ctxpairs` +
-  `~/bin/claude_watchdog_ctxpairs.sh` (crontab "11,26,41,56") + project cassis_olympus_mons
-  + sentinel `cassis_olympus_mons/.auto_done_ctxpairs`. The old un-tagged set
-  (`~/.claude_heartbeat`, `~/bin/claude_watchdog.sh`, `cassis_asp/.auto_done`, crontab
-  "9,24,39,54") is now just ONE bot's namespace - never piggyback on it from another bot.
-  Detail: `~/projects/claude_overnight_notes.sh`.
+  its crontab line) AND remove that bot's files under `~/.claude/autorun/`. Example: the
+  Olympus CTX-pair bot = `~/.claude/autorun/heartbeat_ctxpairs` +
+  `~/.claude/autorun/watchdog_ctxpairs.sh` (crontab "11,26,41,56") + project
+  cassis_olympus_mons + sentinel `cassis_olympus_mons/.auto_done_ctxpairs`. Never let any
+  heartbeat/watchdog/lock/log file sit loose in `~` or `~/bin` - they all belong under
+  `~/.claude/autorun/`. Detail: `~/projects/claude_overnight_notes.sh`.
 - MUST DROP THE OS-LEVEL CRON (and the in-session CronCreate heartbeat) THE MOMENT ALL
   WORK IS FULLY DONE. The OS cron exists ONLY as a safeguard to resurrect the session if
   it DIES MID-WORK. Once the work is complete there is nothing left to resurrect or

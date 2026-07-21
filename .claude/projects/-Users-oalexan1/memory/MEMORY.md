@@ -103,6 +103,7 @@ Refactoring often produces small float noise from evaluation order changes.
 ## Feedback
 
 - [feedback_deliver_hosted_artifact.md](feedback_deliver_hosted_artifact.md) - For report/results deliverables, publish a hosted HTML Artifact (claude.ai link) via the Artifact tool, not just a local file.
+- [feedback_scripts_in_workdir.md](feedback_scripts_in_workdir.md) - Write project scripts in the actual work dir (git-tracked), not the session scratchpad; scratchpad only for throwaway experiments.
 - [feedback_dont_cover_bugs.md](feedback_dont_cover_bugs.md) - Don't mute a symptom with a workaround (symlink/fallback/copy/fixture); name and fix the actual defect. The Qt6 plugins symlink hid a one-line EnvUtils.cc bug for months.
 - [feedback_stop_asking_permission.md](feedback_stop_asking_permission.md) - Don't ask permission to edit CLAUDE.md, config files, etc. Just do it.
 - [feedback_inspect_before_filter.md](feedback_inspect_before_filter.md) - Set a filter/threshold only AFTER visually inspecting (colorize+eyeball) the raster; stats hide a coherent systematic signal (CaSSIS max-disp 10 cut real shift, left a tilt).
