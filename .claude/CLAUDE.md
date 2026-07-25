@@ -302,6 +302,16 @@ Don't do blind sed-style namespace replacements - read and comprehend the code f
 - For cutting VW point releases and keeping the conda-forge feedstock
   building (alpha → point release → repoint bot's PR branch → merge →
   restore alpha), see `~/projects/vw_conda_release.sh`.
+- **ISAAC / Astrobee ISS panorama-mesh** (interesting project, worth
+  revisiting): two Astrobee robots (bumble, queen), each with nav_cam +
+  sci_cam + haz_cam, scanned the JEM/Kibo module from several bays,
+  rotating in place. Fused into one registered, textured mesh via
+  theia_sfm -> rig_calibrator -> depth fusion -> texrecon. Documented in
+  ASP `docs/examples/sfm_iss.rst`. Work notes:
+  `~/projects/20220608_Isaac9/isaac9_notes.sh`. The hard part is that
+  panorama acquisition is rotation-only (near-zero baseline), so
+  triangulation is near-degenerate. Flagged to reprocess with better
+  fusion understanding, possibly without the noisy haz_cam.
 
 ## Nightly Build and Regression Tests
 
@@ -945,6 +955,20 @@ such as sigma=10. etc. Have rationale. Log all this rationale, var names and val
 precise stage actual script invocation including the qsub cmd for reproductibilty later.
 So basically a premable with all defined followed by precise invocation you will launch.
 
+## Readable Shell Script Style - `~/projects/shell_style.sh` (CRITICAL, no reminders needed)
+
+EVERY new `.sh` worker follows the readable style in `~/projects/shell_style.sh`:
+positional `shift` arg parsing (not `${1:?verbose}` blocks), a clean relative-path
+var block echoed to the log, `umask 022`, exec-redirect log, one option per line
+with aligned backslashes, and the literal qsub submit line in the header comment.
+HARD rules Oleg keeps reminding on (just do them): NO line over 90 chars, code or
+comment - measure with `awk '{if(length($0)>90)print NR,length($0)}'`, never
+eyeball, and break the long ones (split a long multi-var `export` into separate
+lines). A big comment goes on its OWN line(s) BEFORE the code, NEVER as a trailing
+right-side comment that wraps across many lines (a short single-line trailing note
+on a var is fine). Readable, human, not verbose/ugly. Reference workers:
+`sfs_mons_mouton/ba_htdem_gcp.sh`, `cassis_asp/gusev_cnet_gcp.sh`.
+
 ## Report Shortcuts and Temp Fixes - Do NOT Mask Bugs (CRITICAL)
 
 Claude has a demonstrated pattern of reaching for shortcuts, temporary
@@ -1169,6 +1193,18 @@ low-relief terrain - a small geodiff std does NOT mean registered; judge
 registration ONLY by the red/green hillshade overlay. Full rule + failure record
 at the top of that file.**
 
+**NEVER combine two geo-referenced rasters with raw python/numpy pixel ops.** numpy
+aligns arrays by row/col INDEX, not ground coordinates, so differencing/overlaying/
+comparing rasters on different grids or projections in python is silently wrong.
+ALWAYS use the projection-aware tools: `geodiff` to difference two DEMs/rasters (it
+regrids the 2nd onto the 1st, respects proj+datum), and `gdalwarp` to put rasters on
+ONE common grid (-t_srs + -te + -tr/-ts, -r cubicspline). Warp BOTH onto the shared
+canonical grid FIRST, THEN read into python only to DISPLAY (imshow) or compute robust
+stats. Do NOT warp the raster whose pattern you care about onto a DIFFERENTLY-centered
+projection - it tilts/rotates it into an artifact (burned 2026-07-21: warped a dz onto a
+CTX pair's stereographic center 0.12 deg off, faking a cross-track pattern). Detail in
+`~/projects/visual_raster_inspection.sh`.
+
 Colorizing a raster for inspection (geodiff/dz, disparity, tri-err): render WITH a
 colorbar (matplotlib, not bare `gdaldem color-relief`). EACH plot gets its OWN vertical
 colorbar on the RIGHT, unit label ("meters"/"pixels") rotated 90 degrees; NEVER a shared
@@ -1177,6 +1213,8 @@ nodata masked. Multidirectional hillshade (`gdaldem hillshade -multidirectional`
 DEMs. Full recipe (pfe gdal-vs-matplotlib env split): `~/projects/visual_raster_inspection.sh` section 5.
 
 Match-point inspection: `~/bin/plot_matches.py` overlays an ASP .match file on both images and reports the residual to the best-fit translation (the real-vs-junk metric for co-registered pairs). For the stereo_gui solid-red-dot look use `--red --radius N`.
+
+**Low-texture pc_align (CRITICAL, see the alignment primer in `~/projects/visual_raster_inspection.sh`):** on bland terrain (few craters) the correlator dh/dv MEDIAN and geodiff/dz BOTH LIE - swamped by spurious ~0 matches on featureless plains, so a real ~20 px crater misalignment reads as "2 px". NEVER judge an align by dh/dv median or dz there; ALWAYS eyeball a ZOOMED, fully-covered textured window (crater/ridge) as a red/green hillshade overlay (aligned = yellow, misaligned = red/green fringes). Sparse IP (`pc_align --initial-transform-from-hillshading rigid`, no match file) beats dense `--correlator-mode` (which locks onto the plains); `--compute-translation-only` kills spurious-rotation blowups; regrid both DEMs to the same grid first. Burned a whole session trusting the correlator median.
 
 Checking a bundle_adjust `pointmap.csv` (GCP / from-DEM points) against a reference DEM with `geodiff` (split by population, the `--csv-srs` gotcha): see `~/projects/visual_raster_inspection.sh`. Keywords: bundle_adjust pointmap.csv, geodiff --csv-format, heights-from-dem on-DEM check, fix-gcp-xyz.
 

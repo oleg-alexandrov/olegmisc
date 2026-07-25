@@ -248,6 +248,7 @@
         "monostatic",
         "mosaicking",
         "multiprocess",
+        "multiscale",
         "Multispectral",
         "multiview",
         "nadirpinhole",
