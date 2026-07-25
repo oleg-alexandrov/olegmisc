@@ -5,6 +5,11 @@
 # script with no arguments on l1 first, then on Mac. Both tunnels must be active
 # for the full chain to work: Mac -> pfx -> l1.
 
+# SecurID caching: ~/.ssh/config sets ControlPersist yes on the sfe host, so one
+# SecurID passcode opens a persistent sfe master that all later hops (pfx, pfe,
+# lfe, athfe01) reuse with no prompt until reboot or a network drop. Reset a stale
+# master with: ssh -O exit sfe
+
 # The chain:
 #   Mac --> pfx (pfe21) --> lunokhod1
 
