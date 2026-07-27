@@ -1064,6 +1064,21 @@ purely blunder pixels; the medians were identical - CaSSIS WF1 vs WF2, 2026-07-1
 `gdalinfo -stats` gives only mean/std/min/max - for median/MAD read the raster
 with numpy (nodata-aware): see `~/projects/cassis_asp/tri_median.py`.
 
+## DEM Alignment: Judge by Hillshade Eyeball, NOT Vertical Diffs (CRITICAL)
+
+For ANY DEM alignment/registration work, judge by the EYEBALL of HILLSHADES (red/green
+overlay), NEVER by vertical dz/geodiff or its NMAD/std - dz is blind to horizontal
+misregistration and dominated by DEM noise/coverage, so a dz number says nothing about
+alignment (a well-aligned pair can show 20+ m dz NMAD; a badly-shifted one near zero).
+Full detail, recipes, and cross-modality (image-vs-hillshade) tips:
+`~/projects/visual_raster_inspection.sh`.
+
+## Artifact and Preview Image Sizing
+
+For HTML artifacts and uploaded previews, downsample DRASTICALLY: <=1000 px long side,
+<1 MB per image (dpi ~80-100). Over ~1 MB or ~1000x1000 px is overkill. Full-res stays on
+disk. Detail in `~/projects/visual_raster_inspection.sh`.
+
 ## Disparity Stats: disparitydebug --raw, NEVER gdalinfo on run-F.tif (CRITICAL)
 
 A correlator/stereo `run-F.tif` (parallel_stereo `--correlator-mode`) packs horizontal
