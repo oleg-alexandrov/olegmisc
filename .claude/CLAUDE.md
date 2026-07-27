@@ -423,7 +423,13 @@ For a truly legit conda env, rebuild the conda package from the local source
 (bump the build string) and `conda install --force-reinstall` it. Do editable
 DEV work in a SEPARATE env or a throwaway clone, never in the env that becomes
 the deps tarball. (Bit us 2026-07-16..20: an editable ale in asp_deps forced
-`--ignore-editable-packages` and shipped a dangling `.pth` in the linux tarball.)
+`--ignore-editable-packages` and shipped a dangling `.pth` in the linux tarball.
+Again 2026-07-27: a standalone `ale` conda env was a `pip install -e` editable
+overlay with no built ale_c, so `import ale` was broken - wiped it and installed
+ale honestly from source into asp_deps.) **ALE build + honest-from-source-install
+recipe (the ale_c SWIG ext is Eigen/json only, easy with clang+swig; verify by
+`isd_generate`, not by importing ale_c), plus the no-pip-hack rule and the
+standalone-env cleanup: `~/projects/isis_ale_rebuild_notes.sh`.**
 
 ## Conda Channel Cleanup (prune old asp_N builds)
 
@@ -1208,6 +1214,22 @@ node. Only for quick startup/config validation, never a real run.
 In a project work dir, all paths (in scripts and when presenting to the user)
 must be RELATIVE to that work dir. Use absolute paths only for external files
 outside it.
+
+**ALWAYS operate FROM the work dir and keep everything relative to it (CRITICAL,
+recurring).** Pick one work dir, stay in it, and write every path in scripts,
+commands, and chat RELATIVE to it (`data/cub/x.cub`, `quartet_v1/ba`), never
+absolute (`/Users/...`, `$HOME/projects/...`). A script assumes it is run from the
+work dir and uses relative paths; the ONLY absolute paths allowed are external
+tooling outside the project (conda env / ISISROOT / a reference DEM elsewhere) and
+a single literal absolute path in a destructive `rm` (the safety exception). Do
+NOT hardcode `$HOME/projects/<proj>/...` into project scripts. When showing a
+command to the user, show it relative too. (Bit us on the Viking quartet: a BA
+runner hardcoded `$HOME/projects/viking_orbiter/data/cub` instead of `data/cub`.)
+
+**Keep slow-changing INPUTS in a `data/` dir (or similar) that OUTLIVES wiping the
+outputs.** Inputs (cubs, reference DEMs, images) live in `data/`; each experiment's
+outputs live in their own peer run dir that can be wiped wholesale without touching
+`data/`. So a `rm -rf <run_dir>` never destroys an input, and re-running is cheap.
 
 ## Visual Raster Inspection - "Claude has eyes"
 
