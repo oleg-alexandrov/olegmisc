@@ -717,6 +717,10 @@ before continuing, else `-t_srs` and projection ops silently misbehave.
 
 Always run `gdalwarp` with `-r cubicspline`; never rely on its default nearest-neighbor resampling, which snaps and misregisters continuous rasters (DEMs, geodiffs, error fields) by up to half a pixel.
 
+## dem_mosaic: Call With `-o output.tif`, Not `-o out`
+
+Recent `dem_mosaic` writes the given name directly when `-o` ends in `.tif` (e.g. `-o mosaic.tif` -> `mosaic.tif`); a bare `-o out` produces `out-tile-0.tif`. Always pass the honest `.tif` output name and reference that file later.
+
 ## pc_align: Denser Cloud First, and Direct-vs-Inverse Transform (CRITICAL, easy to get backwards)
 
 `pc_align <reference> <source>` aligns SOURCE onto REFERENCE. Two hard rules that
@@ -989,6 +993,21 @@ lines). A big comment goes on its OWN line(s) BEFORE the code, NEVER as a traili
 right-side comment that wraps across many lines (a short single-line trailing note
 on a var is fine). Readable, human, not verbose/ugly. Reference workers:
 `sfs_mons_mouton/ba_htdem_gcp.sh`, `cassis_asp/gusev_cnet_gcp.sh`.
+
+## Reaching for a Symlink = You Are Hacking Around a Bug (CRITICAL)
+
+Any time the impulse is to create a symlink (`ln -s`) to make something work, STOP.
+A symlink is almost always a hack that papers over a real defect (a script that
+locates a sibling by CWD instead of its own dir, a hardcoded path, a missing
+PATH/arg, a tool assuming a file is somewhere it is not). Do NOT silently drop the
+symlink. Instead, at minimum REPORT the underlying problem to the user, and prefer
+to PROPOSE a real fix in the software, or APPLY that fix if feasible. The symlink
+hides the bug so it resurfaces later somewhere quieter. Name the root cause and fix
+THAT. (Recurring: the ox2 CaSSIS `cassis_stereo_pair.sh` "not found 127" was a
+tool bug - `cassis_stereo.sh` called the worker by bare name after `cd`ing into the
+work dir, so it only worked if a copy/symlink sat in every work dir. The fix is to
+resolve the worker by `${BASH_SOURCE[0]}` dir, not a per-dir symlink.) Same spirit
+as the do-not-mask-bugs rule below.
 
 ## Report Shortcuts and Temp Fixes - Do NOT Mask Bugs (CRITICAL)
 
@@ -1264,6 +1283,8 @@ colorbar. Diverging ramp + symmetric clamp for signed diffs; robust clamp, not m
 nodata masked. Multidirectional hillshade (`gdaldem hillshade -multidirectional`) for
 DEMs. Full recipe (pfe gdal-vs-matplotlib env split): `~/projects/visual_raster_inspection.sh` section 5.
 
+**No baked-in descriptive titles/captions inside figures that ship with an RST/HTML caption** (the caption carries it); keep colorbar labels, axis units, and short per-panel IDs.
+
 Match-point inspection: `~/bin/plot_matches.py` overlays an ASP .match file on both images and reports the residual to the best-fit translation (the real-vs-junk metric for co-registered pairs). For the stereo_gui solid-red-dot look use `--red --radius N`.
 
 **Low-texture pc_align (CRITICAL, see the alignment primer in `~/projects/visual_raster_inspection.sh`):** on bland terrain (few craters) the correlator dh/dv MEDIAN and geodiff/dz BOTH LIE - swamped by spurious ~0 matches on featureless plains, so a real ~20 px crater misalignment reads as "2 px". NEVER judge an align by dh/dv median or dz there; ALWAYS eyeball a ZOOMED, fully-covered textured window (crater/ridge) as a red/green hillshade overlay (aligned = yellow, misaligned = red/green fringes). Sparse IP (`pc_align --initial-transform-from-hillshading rigid`, no match file) beats dense `--correlator-mode` (which locks onto the plains); `--compute-translation-only` kills spurious-rotation blowups; regrid both DEMs to the same grid first. Burned a whole session trusting the correlator median.
@@ -1291,6 +1312,16 @@ per-row ID matches. Fail fast with a clear error.
 MUST be in identical order. Build the camera list FROM the image list (e.g.
 `perl -pe 's/\.cub$/.json/'`), never independently - a mismatch runs fine but
 yields junk.**
+
+**`--mapprojected-data-list`: do NOT append the DEM at the end of the list of
+mapprojected images anymore.** Since the 1/2026 ASP build the DEM is optional and
+is looked up from the mapprojected images' own geoheaders (each ASP-mapprojected
+image records the DEM it was projected onto). The list is just the mapprojected
+images, in the same order as the input images. If a DEM IS given it must be the
+last entry, but the clean form is to omit it. See bundle_adjust.rst
+`--mapprojected-data` / `--mapprojected-data-list` (:numref:`mapip`). Verified on
+Viking 2026-07-27: bundle logs `Loading DEM: ...seed.tif` from the geoheaders with
+no DEM in the list, matches identical.
 
 Always use `// TODO(oalexan1):` format. Never bare `// TODO:`.
 
