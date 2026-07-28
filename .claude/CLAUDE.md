@@ -772,6 +772,10 @@ When adding/modifying command-line options, always update all three consistently
 2. RST documentation
 3. Code help text string
 
+Keep the option help (both RST and code) to a basic description plus a reference.
+When an example is needed, put it in a documentation section and have the option
+point to it, matching how other options are already documented.
+
 ## Colon Spacing
 
 - No space before `:` in inheritance, initializer lists, scope resolution, labels
@@ -1154,6 +1158,11 @@ onto continuation comment lines. Measure line length with a tool (e.g. `awk
 escapes the trailing space, the `#...` is a comment, and the command ENDS there
 (continuation broken). This applies to scripts AND to paste-able commands shown
 to Oleg. Keep comments on their own lines, or omit them.
+
+**When documenting a command in RST, list the options first, before the positional
+file arguments, with the output file last.** Keep each standalone command line under
+about 75 characters. A longer line does not wrap in a rendered RST code block, so it
+forces a horizontal scroll bar; break it across continuation lines (`\`) instead.
 
 ## Backslash Alignment Tool
 
