@@ -134,6 +134,7 @@ Refactoring often produces small float noise from evaluation order changes.
 - [feedback_adapt_existing_workflow.md](feedback_adapt_existing_workflow.md) - When a project already has scripts/workflow, read and adapt them surgically (smallest diff); never improvise a new parallel workflow from scratch.
 - [feedback_check_ground_truth_before_artifact.md](feedback_check_ground_truth_before_artifact.md) - Don't call a structured/repeating raster pattern a processing artifact without checking ground truth; it may be real (lunamaps painted-concrete target).
 - [feedback_test_on_real_data.md](feedback_test_on_real_data.md) - Test on real representative data and eyeball the output; a synthetic test with degenerate inputs (identity geotransform) masked the sparse_disp pixel-vs-map-coords bug another bot caught by looking.
+- [feedback_trace_dont_guess.md](feedback_trace_dont_guess.md) - Why-does-X-differ debugging: read the source, find shared fn + divergent callers, prove with cout+recompile; don't assert a mechanism from behavior alone.
 
 ## Reference
 

@@ -450,6 +450,14 @@ channel_priority`. Fix: `conda config --set channel_priority flexible`.
 
 ## Machines
 
+- **2026-07-30 to 2026-08-03 (inclusive): ON SHIP - LOCAL MAC ONLY, NO REMOTE.**
+  Outbound port 22 is blocked and there is NO access to pfe or l1 through Aug 3
+  inclusive. Do NOT attempt any remote work (ssh/scp/qsub/rsync to pfe or l1) or
+  remote regression tests during this window - it will just hang. Run everything
+  on the local Mac mini. Keep jobs light and DO NOT HOG the Mac (no heavy
+  overlapping parallel_stereo/bundle runs; one at a time, modest process counts).
+  Remove this note after Aug 3 when remote access returns.
+
 - **lunokhod1** (`l1`) - primary dev/build/git box (g++ 12.4 in `asp_deps`, 16
   cores). Build: `make -C ~/projects/StereoPipeline/build -j16`. Remotes:
   `origin`=fork, `god`=org.
@@ -1058,6 +1066,24 @@ fix THAT.
 - In nightly / autonomous mode, if forced to take a shortcut to keep progress,
   REPORT it (in the notes AND to the user), do not gloss it. Shortcuts are
   sometimes necessary; hiding them is not.
+
+## Trace the Code, Do NOT Guess the Mechanism (CRITICAL)
+
+Claude has a demonstrated pattern of GUESSING mechanisms from behavior and
+asserting them confidently when they are wrong. When investigating WHY two code
+paths differ (tool A works, tool B does not, on the same inputs), do NOT settle
+for a plausible-sounding story inferred from logs. READ the source: find the
+shared function and the two divergent callers, see exactly what each passes,
+then PROVE the cause by adding cout/instrumentation, recompiling, and running
+both paths to compare. State hypotheses as hypotheses until proven; never assert
+a mechanism you have not read in the code and confirmed by running it. Burned
+2026-07-30 (CaSSIS ox2 jitter): confidently claimed bundle_adjust applied
+`--ip-match-radius` through the jittered camera geometry - Oleg said "that is
+not possible, matching all happens in the projected domain, stop guessing." He
+was right. The real cause (found by reading the code + a cout trace) was that
+the bundle path skipped image normalization for non-OpenCV detectors (OBALoG),
+so OBALoG saw a near-flat raw image. A whole day of guesswork preceded it.
+Saved as `[[feedback_trace_dont_guess]]` in memory too.
 
 ## No Per-Site / Per-Input Special-Casing in Reproducible Pipelines (CRITICAL)
 
