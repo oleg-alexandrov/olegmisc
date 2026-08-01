@@ -1449,6 +1449,8 @@ When opening or editing a PR/issue/comment body, write plain prose: avoid
 backticks, avoid hard newlines within a paragraph (keep each paragraph on one
 line), and avoid angle brackets or other constructs GitHub can read as an HTML
 tag and swallow (e.g. `get<double>` renders as nothing) - reword instead.
+NO inline backticks in any PR, issue, comment, or README.md - use italic
+instead. Standalone code blocks (triple backticks) are fine.
 
 **PR handoff: generate a PREFILLED "compare" URL** (title + URL-encoded body,
 `expand=1`), not the plain create-PR link GitHub already offers on push. The
