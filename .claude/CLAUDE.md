@@ -600,7 +600,25 @@ you start a stage, when you check on it, and when you log an outcome.
 **After each stage completes, record the PRODUCED OUTPUT FILES by name** (the
 mosaicked DEMs, overlays, etc.), as an explicit list relative to the work dir, so
 they are never re-derived or dug up later. Output files are part of the work log,
-not an afterthought. No need to note on-Mac vs on-pfe - that is figure-out-able. Each
+not an afterthought.
+
+**LOG EVERY NOTABLE COMMAND AND EVERY NOTABLE PRODUCT so both can be found
+later (CRITICAL).** The paper trail must let anyone re-locate what was run and
+what came out, without disk archeology. Two halves:
+- COMMANDS: log the exact, copy-pasteable invocation of every notable stage
+  (the full command with all options and paths, the qsub line, the download
+  command). A notable command is any that produces or transforms a kept product.
+- PRODUCTS AND THEIR INPUTS: log them by NAME, scaled to how many there are.
+  Few inputs (2 images, 1 camera, a reference DEM) - name each one explicitly.
+  Many inputs (hundreds/thousands of images or cameras) - you cannot name each,
+  so log the LIST FILE that enumerates them (path to the image-list / camera-list)
+  plus the count. For a SINGLE notable output product (a mosaicked DEM, an aligned
+  DEM, a geodiff) - name the file and its key diagnostic (e.g. the median tri-error,
+  the NMAD vs reference). For MANY per-run outputs (a big run dir with countless
+  per-pair sub-runs) - log the run DIR and the naming pattern, not each file. The
+  litmus: months later, from the notes alone, could someone name the exact input
+  images/cameras (or the list holding them), re-run the exact command, and find the
+  exact output DEM and its quality number? If not, the log is incomplete. No need to note on-Mac vs on-pfe - that is figure-out-able. Each
 experiment gets its OWN versioned peer dir (e.g. `dem2gcp_v7` -> `dem2gcp_transverse_v8`),
 kept SEPARATE from `ref/` and `input/`, so experiments stay findable, comparable,
 and wipeable. Hierarchical memory: this file is a condensed INDEX of triggers - a
