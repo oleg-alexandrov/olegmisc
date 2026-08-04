@@ -1384,6 +1384,12 @@ changes go straight to `god` (NeoGeographyToolkit, the canonical) AND to `origin
 (Still requires an explicit push instruction, per the never-push-without-
 authorization rule; this only says WHERE once authorized.)
 
+**StereoPipelineTest: ALWAYS push to `origin` master. There is NO fork and NO
+separate branch.** `origin` IS the org repo (NeoGeographyToolkit/StereoPipelineTest),
+so master is the only branch. A temporary `dev` branch existed briefly and was
+deleted (local and origin) on 2026-08-04 - do not recreate one. Commit test
+changes on master and push there.
+
 ## CSM Model-State JSON
 
 Parse CSM model-state / `.adjusted_state.json` files CAREFULLY - they are NOT plain
