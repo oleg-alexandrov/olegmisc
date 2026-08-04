@@ -450,14 +450,6 @@ channel_priority`. Fix: `conda config --set channel_priority flexible`.
 
 ## Machines
 
-- **2026-07-30 to 2026-08-03 (inclusive): ON SHIP - LOCAL MAC ONLY, NO REMOTE.**
-  Outbound port 22 is blocked and there is NO access to pfe or l1 through Aug 3
-  inclusive. Do NOT attempt any remote work (ssh/scp/qsub/rsync to pfe or l1) or
-  remote regression tests during this window - it will just hang. Run everything
-  on the local Mac mini. Keep jobs light and DO NOT HOG the Mac (no heavy
-  overlapping parallel_stereo/bundle runs; one at a time, modest process counts).
-  Remove this note after Aug 3 when remote access returns.
-
 - **lunokhod1** (`l1`) - primary dev/build/git box (g++ 12.4 in `asp_deps`, 16
   cores). Build: `make -C ~/projects/StereoPipeline/build -j16`. Remotes:
   `origin`=fork, `god`=org.
