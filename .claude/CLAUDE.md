@@ -116,15 +116,6 @@ without checking; the remote already had it, and more complete (with a mac
 iio.c fix my draft lacked). Wasted effort and nearly clobbered the better
 version. At minimum: be aware of remote state before local work.
 
-## GitHub SSH (port 22) is blocked these days - push over HTTPS (CRITICAL)
-
-Outbound SSH to github.com:22 times out from these machines currently (banner-exchange
-timeout). Do NOT push via the `git@github.com:` SSH remotes - they hang. Push over HTTPS
-(port 443, which works; credentials are cached) for ALL repos, without changing the remote:
-  git -C <repo> push https://github.com/<owner>/<repo>.git <branch>
-e.g. home = oleg-alexandrov/olegmisc, projects = oleg-alexandrov/projects, ASP =
-NeoGeographyToolkit/StereoPipeline, etc. Confirmed working 2026-07-27. Revisit if port 22 reopens.
-
 ## git rm --cached, never bare git rm (CRITICAL)
 
 Never add `.ssh/` to git (dangerous). To untrack a file but keep it on disk, always `git rm --cached`, never bare `git rm` (which deletes the working file too - this once wiped `~/.ssh/config`; recover via `git show <commit>^:path > path`).
