@@ -1,20 +1,22 @@
 {
+  "env": {
+    "DISABLE_AUTOUPDATER": "1"
+  },
   "permissions": {
-    "defaultMode": "bypassPermissions",
     "allow": [
-      "Edit(/Users/oalexan1/.bashrc)"
+      "Edit(/Users/oalexan1/.bashrc)",
+      "Edit(/home/oalexan1/.bashrc)"
     ],
     "deny": [
       "AskUserQuestion"
-    ]
+    ],
+    "defaultMode": "bypassPermissions"
   },
   "enabledPlugins": {
     "clangd-lsp@claude-plugins-official": true
   },
   "feedbackSurveyRate": 0,
-  "env": {
-    "DISABLE_AUTOUPDATER": "1"
-  },
+  "tui": "default",
   "skipDangerousModePermissionPrompt": true,
-  "tui": "default"
+  "theme": "dark"
 }
