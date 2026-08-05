@@ -946,7 +946,12 @@ inspecting ASP intermediate files. Bare minimum to remember without reading:
   `ss*/gold/*.match` (reference) - the right layer to judge an IP-affecting
   change is diffing those, not just the final DEM/camera output.
 - Official parser: `parse_match_file.py` (binary<->text). Visual/residual
-  overlay: `~/bin/plot_matches.py`.
+  overlay: `~/bin/plot_matches.py` (use `--red --radius N` for readable solid-red
+  dots, never the rainbow, when handing a match overlay to a human).
+- bundle_adjust/stereo CACHE their `.match` and per-image `-stats.tif` in the run
+  dir and REUSE them on a rerun, so ALWAYS wipe the run dir (or use a fresh one)
+  before a rerun meant to test a change, or you measure stale results and draw
+  wrong conclusions.
 
 ## Building ASP Docs
 
