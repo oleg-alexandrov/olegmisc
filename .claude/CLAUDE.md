@@ -259,6 +259,13 @@ functions; no space before `::` or initializer `:`; lines < 90 cols; `"\n"` not
 `std::endl`; continuation lines align with the opening paren. Full rules (sed
 recipes, option-help wrapping, for-loop form): `~/projects/cpp_style.sh`.
 
+**Always qualified `std::abs`, never bare `abs`/`::abs`, never `fabs`.** Bare
+`abs` routes to C's integer-only `abs(int)` and silently truncates a double
+(-2.7 -> 2) with no default warning on libstdc++ (our l1/nightly build).
+`std::abs` picks the real float/double overload and is safe. Verified on both
+g++ 12.4/libstdc++ (Linux) and conda clang 18/libc++ (Mac). Keep `<cmath>`
+included when using `std::abs` on floats (guarantees the float overload on both).
+
 ## NEVER Reference Private Work-Notes Files in Committed Code/Docs (CRITICAL)
 
 Committed source comments, RST docs, PR text, commit messages, and anything a
