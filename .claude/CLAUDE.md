@@ -926,6 +926,21 @@ options behave (e.g. dem_mosaic fill: small `--fill-search-radius` + more
 `--fill-num-passes`, since a large radius stalls). bundle_adjust, dem_mosaic,
 pc_align, and the rest all have extensive documented examples.
 
+## ASP Internals and File Formats - `~/projects/asp_manual.sh`
+
+Reference for hard-to-rederive ASP/VW on-disk formats and internals (where the
+manuals live, which tool writes what, how to read/compare it). Read it before
+inspecting ASP intermediate files. Bare minimum to remember without reading:
+- Interest-point `.match` files (written by both VW and ASP - stereo,
+  bundle_adjust, jitter_solve, image_align, etc.) are little-endian binary:
+  header is two `uint64` counts (equal = number of matched pairs), then the IP
+  records. Read just the count: first 8 bytes as `uint64`.
+- The regression suite keeps real match files: `ss*/run/*.match` (fresh) vs
+  `ss*/gold/*.match` (reference) - the right layer to judge an IP-affecting
+  change is diffing those, not just the final DEM/camera output.
+- Official parser: `parse_match_file.py` (binary<->text). Visual/residual
+  overlay: `~/bin/plot_matches.py`.
+
 ## Building ASP Docs
 
 `conda activate sphinx; make -C ~/projects/StereoPipeline/docs html` (output in
