@@ -1171,6 +1171,19 @@ alignment (a well-aligned pair can show 20+ m dz NMAD; a badly-shifted one near 
 Full detail, recipes, and cross-modality (image-vs-hillshade) tips:
 `~/projects/visual_raster_inspection.sh`.
 
+## "HTML Artifact" = the Artifact Tool (know the drill)
+
+When Oleg asks for an "HTML artifact" (or just "artifact"), that means: use the
+`Artifact` tool. I write an HTML file for the CURRENT project (plots, colorized
+rasters, tables, whatever), publish it, and it pops up as a claude.ai-hosted URL
+in a browser tab (private by default, shareable). No need to re-explain what it
+is each time. Key rule: an artifact is SELF-CONTAINED - a strict CSP blocks every
+external file, so all images must be INLINED as base64 data URIs. Follow the
+sizing rule just below (downsample hard). For a purely local glance instead of a
+hosted URL, use `SendUserFile ... display:render`. See also
+`~/projects/visual_raster_inspection.sh` (colorbar/preview recipe) and
+`~/projects/html_for_google_docs.sh` (base64-embedded HTML for Google Docs).
+
 ## Artifact and Preview Image Sizing
 
 For HTML artifacts and uploaded previews, downsample DRASTICALLY: <=1000 px long side,
