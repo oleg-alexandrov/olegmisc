@@ -259,6 +259,12 @@ functions; no space before `::` or initializer `:`; lines < 90 cols; `"\n"` not
 `std::endl`; continuation lines align with the opening paren. Full rules (sed
 recipes, option-help wrapping, for-loop form): `~/projects/cpp_style.sh`.
 
+**Keep code comments BRIEF.** A comment states the intent in a line or two, not a
+paragraph. Do not restate what the code plainly shows, do not re-explain the same
+idea several ways, and do not walk through every branch. A multi-line block where
+one sentence would do reads as clutter (reviewers call this out). Write the
+minimum that makes the intent clear, then stop.
+
 **Always qualified `std::abs`, never bare `abs`/`::abs`, never `fabs`.** Bare
 `abs` routes to C's integer-only `abs(int)` and silently truncates a double
 (-2.7 -> 2) with no default warning on libstdc++ (our l1/nightly build).
@@ -1550,6 +1556,10 @@ plain English instead:
 - "downcase" / "upcase" -> "lowercase" / "uppercase"
 - "honor" -> "respect", "obey", "use"
 - "TL;DR" -> "Summary"
+- "special casing" / "special-case" (as a verb) -> "handling as a special case",
+  "a special case", "special-case handling" (noun). "special casing" is terrible
+  English. And do NOT invent other analogous noun-to-verb coinages of the same
+  shape (they read just as badly) - write the plain phrase instead.
 When one of these is added here, also grep the projects `.sh` files and the ASP
 and VW source and docs for it and fix existing occurrences.
 
