@@ -939,11 +939,25 @@ options behave (e.g. dem_mosaic fill: small `--fill-search-radius` + more
 `--fill-num-passes`, since a large radius stalls). bundle_adjust, dem_mosaic,
 pc_align, and the rest all have extensive documented examples.
 
-## ASP Internals and File Formats - `~/projects/asp_manual.sh`
+## ASP Primer / Manual I Maintain - `~/projects/asp_manual.sh` (READ AT START OF ANY ASP WORK)
 
-Reference for hard-to-rederive ASP/VW on-disk formats and internals (where the
-manuals live, which tool writes what, how to read/compare it). Read it before
-inspecting ASP intermediate files. Bare minimum to remember without reading:
+This is my growing ASP primer - the ONE place that collects every hard-won,
+non-obvious, recurring insight into how ASP/VW actually works. READ IT when
+starting any ASP task. STANDING RULE: whenever I learn something about how ASP
+works that is non-obvious and likely to recur (a workflow, a gotcha, a tool
+behavior, a file format, an option interaction), ADD IT to this primer and
+`git -C ~/projects add`/commit/push - do not leave it only in a per-project
+notes file. Build it up over time so I stop rediscovering the same things.
+What it currently contains (grep the headers for detail):
+- Reading the RST manuals (not --help).
+- Interest-point .match file format (binary, how to read/compare).
+- MAPPROJECTED STEREO - the two-pass workflow (mapproject at NATIVE image GSD,
+  same --tr/--t_srs both images, aligned cameras, --alignment-method none,
+  eval tri-err/ortho/color-hillshade-DEM/dz/dd-H/dd-V). The high-quality path
+  used for CaSSIS/CTX/Viking/TMC/OHRC.
+- pc_align applying a transform to cameras (direct vs inverse; carry via
+  bundle_adjust --apply-initial-transform-only --inline-adjustments).
+Bare minimum to remember without reading:
 - Interest-point `.match` files (written by both VW and ASP - stereo,
   bundle_adjust, jitter_solve, image_align, etc.) are little-endian binary:
   header is two `uint64` counts (equal = number of matched pairs), then the IP
