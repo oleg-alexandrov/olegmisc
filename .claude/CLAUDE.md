@@ -480,10 +480,17 @@ channel_priority`. Fix: `conda config --set channel_priority flexible`.
   **`ssh athfe01`** (..04); the hostname `athena` does NOT resolve. Model
   **`tur_ath`** (Turin, 256c), OWN scheduler, submit from athfe ONLY with
   **`/opt/pbs/bin/qsub`** (not `/PBS/bin/qsub`). `node_stats.sh` does NOT show the
-  per-model Free table there - gauge load with `qstat`. `/home6` + `~/projects`
-  symlinks ARE visible from athfe, so pfe-staged workers/data run as-is. Flaky;
-  default to `bro_ele` unless tur_ath is explicitly wanted. Full detail +
-  submit sample: `~/projects/pleiades_notes.sh` (athfe entry, "HOW TO FIND ATHENA").
+  per-model Free table there - gauge load with `qstat`. **FULLY VISIBLE
+  (confirmed 2026-08-07): `/nobackup`, `~/projects`, AND the ASP dev build
+  (`~/projects/BinaryBuilder/StereoPipeline/bin`) are ALL visible from Athena
+  compute nodes, so Athena runs ASP jobs EXACTLY like any pfe node - no data
+  staging needed. It just has MORE cores per node (256 vs 28/40) and is MORE
+  EXPENSIVE (higher SBU). Use it like any other node when you need throughput.**
+  Single-node Athena: NO `--nodes-list` (ssh distribution to the HSN hostname is
+  flaky and killed a job) - use `--processes`/`--threads-multiprocess` for local
+  parallelism instead. Flaky historically; default to `bro_ele` for small work,
+  reach for tur_ath when a big core count helps. Full detail + submit sample:
+  `~/projects/pleiades_notes.sh` (athfe entry, "HOW TO FIND ATHENA").
 
 Per-machine build commands, conda init, paths, the athfe tunnel hop, `/tmp`
 triage: `~/projects/machines.sh` (and `install_asp_notes.sh`).
