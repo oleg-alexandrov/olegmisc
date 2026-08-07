@@ -1063,10 +1063,16 @@ keep redoing (so we stop reinventing and re-blundering). When doing new ASP work
 USE one of these or ADAPT it; do not write from scratch. Each embeds the hard-won
 rules inline. The primer `~/projects/asp_manual.sh` points to each script.
 - `stereo_mapproj.sh` - mapprojected stereo (pass 2): native-GSD mapproject, DEM
-  as the LAST parallel_stereo arg, asp_mgm + subpixel-9, --nodes-list + --processes,
-  optional `--resume-at-corr`.
+  as the LAST parallel_stereo arg, asp_mgm + subpixel-9, --nodes-list + --processes
+  (Athena: nodesMode local), optional `--resume-at-corr`.
 - `stereo_localepi.sh` - local_epipolar stereo (pass 1) + point2dem.
-- (to add) `bundle_adjust.sh`, `parallel_bundle_adjust.sh`, `pc_align.sh`.
+- `bundle_adjust.sh`, `parallel_bundle_adjust.sh` - BA (list-order + residual rules).
+- `pc_align.sh` - align a DEM to a ref: regrid `-r average` (dense-vs-sparse fix),
+  hillshade seed, carry transform to native cameras.
+- `fetch_lola_shots.sh` - AUTOMATED LOLA shots for a lon/lat box from the NASA/USGS
+  LOLA COPC on AWS (PDAL, no manual download) -> lon,lat,radius_km CSV. Detail:
+  `~/projects/lola_notes.sh` (LOLA gridded LDEM vs shots; the AWS COPC method is
+  the primary route, superseding the manual ODE tool).
 
 ## Readable Shell Script Style - `~/projects/shell_style.sh` (CRITICAL, no reminders needed)
 
