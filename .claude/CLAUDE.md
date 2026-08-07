@@ -1407,16 +1407,26 @@ outputs live in their own peer run dir that can be wiped wholesale without touch
 ## Visual Raster Inspection - "Claude has eyes"
 
 Claude can SEE images - use vision to verify rasters (orthos, DEMs, geodiffs,
-camera/rotation alignment). Technique, the warp-to-a-common-grid-before-overlay
-rule, and where preview files live (with the data on pfe, not /tmp):
-`~/projects/visual_raster_inspection.sh`.
-**CARDINAL RULE (do not repeat the Oxia screwup): you are a PIXEL PNG viewer,
-NOT GIS - you CANNOT eyeball a georeferenced overlay; gdalwarp ALL rasters to ONE
-identical grid (-t_srs + -te + -ts) -> PNG, THEN look (a side-by-side at different
-framing is worthless). And geodiff std is BLIND to HORIZONTAL misregistration on
-low-relief terrain - a small geodiff std does NOT mean registered; judge
-registration ONLY by the red/green hillshade overlay. Full rule + failure record
-at the top of that file.**
+camera/rotation alignment). Full technique, recipes, and where preview files live
+(with the data on pfe, not /tmp): **`~/projects/visual_raster_inspection.sh` -
+READ IT before inspecting/eyeballing any geo raster.**
+
+**WHEN THE USER SAYS "eyeball" / "inspect" / "look at" / "compare" an ortho, DEM,
+geodiff, tri-err, or any geo raster, it ALWAYS means this EXACT procedure (do NOT
+re-derive it each time, do NOT skip a step):**
+1. Put EVERY raster on ONE identical grid first: `gdalwarp -t_srs <one proj>
+   -te <one extent> -ts <one size> -r cubicspline` (same PROJECTION, same EXTENT,
+   same GRID, cubicspline). Comparing rasters on different grids/framing - or with
+   raw numpy (index-aligned) - is NONSENSICAL and worthless.
+2. HILLSHADE any DEM before viewing: `gdaldem hillshade -multidirectional`. NEVER
+   eyeball raw elevation; you compare terrain by its hillshade.
+3. Downsample to <=1000 px, write PNG, THEN look.
+4. Judge REGISTRATION only by the red/green hillshade overlay (aligned = yellow),
+   NEVER by dz/geodiff std (blind to horizontal misregistration on low relief).
+5. Colorize a geodiff/tri-err/dz with a matplotlib colorbar (per-panel, unit
+   label), not bare grayscale.
+This applies to the mapproj ortho-on-hillshade geometry check too: warp the ortho
+and the DEM hillshade to the same grid, then look.
 
 **NEVER combine two geo-referenced rasters with raw python/numpy pixel ops.** numpy
 aligns arrays by row/col INDEX, not ground coordinates, so differencing/overlaying/
