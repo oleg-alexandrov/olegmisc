@@ -962,8 +962,17 @@ What it currently contains (grep the headers for detail):
   same --tr/--t_srs both images, aligned cameras, --alignment-method none,
   eval tri-err/ortho/color-hillshade-DEM/dz/dd-H/dd-V). The high-quality path
   used for CaSSIS/CTX/Viking/TMC/OHRC.
+- **parallel_stereo PARALLELISM (--nodes-list + --processes + --threads-
+  multiprocess): READ the primer section before setting these on ANY
+  parallel_stereo/parallel_bundle_adjust run.** Bare minimum: get_num_cpus()
+  auto-detects cores so one script is portable; ALWAYS pass --nodes-list
+  $PBS_NODEFILE (single-node file = 1 node, safe); set --processes P and
+  --threads-multiprocess T with P*T ~= cores/node (P reduced if RAM-bound, e.g.
+  Athena 256 -> --processes 32 --threads-multiprocess 8).
 - pc_align applying a transform to cameras (direct vs inverse; carry via
   bundle_adjust --apply-initial-transform-only --inline-adjustments).
+- ATHENA (Turin) for ASP jobs - fully visible (/nobackup + build mounted),
+  256 cores/node, more expensive; single-node parallelism via --processes.
 Bare minimum to remember without reading:
 - Interest-point `.match` files (written by both VW and ASP - stereo,
   bundle_adjust, jitter_solve, image_align, etc.) are little-endian binary:
