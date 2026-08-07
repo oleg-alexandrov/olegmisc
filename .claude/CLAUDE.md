@@ -1056,7 +1056,30 @@ such as sigma=10. etc. Have rationale. Log all this rationale, var names and val
 precise stage actual script invocation including the qsub cmd for reproductibilty later.
 So basically a premable with all defined followed by precise invocation you will launch.
 
+## Canonical ASP Scripts - `~/projects/asp_scripts/` (USE or ADAPT, don't re-figure)
+
+Reusable, commented, parameterized reference workers for the ASP operations we
+keep redoing (so we stop reinventing and re-blundering). When doing new ASP work,
+USE one of these or ADAPT it; do not write from scratch. Each embeds the hard-won
+rules inline. The primer `~/projects/asp_manual.sh` points to each script.
+- `stereo_mapproj.sh` - mapprojected stereo (pass 2): native-GSD mapproject, DEM
+  as the LAST parallel_stereo arg, asp_mgm + subpixel-9, --nodes-list + --processes,
+  optional `--resume-at-corr`.
+- `stereo_localepi.sh` - local_epipolar stereo (pass 1) + point2dem.
+- (to add) `bundle_adjust.sh`, `parallel_bundle_adjust.sh`, `pc_align.sh`.
+
 ## Readable Shell Script Style - `~/projects/shell_style.sh` (CRITICAL, no reminders needed)
+
+**When rewriting or revisiting ANY script, OFFER to bring it to the preferred
+style below** (do not silently leave it ugly). The single worst offense: a
+lengthy comment placed AFTER code on the same line, spilling across continuation
+lines. NEVER do that. A comment is BRIEF and goes on its OWN line(s) BEFORE the
+code; a tiny same-line note on a var (`nprocs=$1; shift  # per node`) is fine.
+Keep `key=value` form in echo lines (easy to read); otherwise avoid verbosity.
+The preferred style in one line: positional `shift` args (workDir first), clean
+relative-path var block echoed to the log, `umask 022`, exec-redirect log with
+START/DONE banner, one option per line with aligned backslashes, the literal qsub
+line in the header, no line over 90 chars, brief up-front comments.
 
 EVERY new `.sh` worker follows the readable style in `~/projects/shell_style.sh`:
 positional `shift` arg parsing (not `${1:?verbose}` blocks), a clean relative-path
