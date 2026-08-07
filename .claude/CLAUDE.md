@@ -1082,6 +1082,11 @@ rules inline. The primer `~/projects/asp_manual.sh` points to each script.
 - `bundle_adjust.sh`, `parallel_bundle_adjust.sh` - BA (list-order + residual rules).
 - `pc_align.sh` - align a DEM to a ref: regrid `-r average` (dense-vs-sparse fix),
   hillshade seed, carry transform to native cameras.
+- `geo_figures.py` - CANONICAL plotting library (import it): hillshade DEM,
+  colorized signed diff (dz/dd-H/dd-V, diverging+symmetric+robust clamp), one-sided
+  error (tri-err, magma), each with its OWN full-image-height colorbar + unit; NO
+  text baked in the figure (caption lives in the HTML/RST); robust median/NMAD.
+  Do not re-write figure code per project. Detail: visual_raster_inspection.sh.
 - `fetch_lola_shots.sh` - AUTOMATED LOLA shots for a lon/lat box from the NASA/USGS
   LOLA COPC on AWS (PDAL, no manual download) -> lon,lat,radius_km CSV. Detail:
   `~/projects/lola_notes.sh` (LOLA gridded LDEM vs shots; the AWS COPC method is
