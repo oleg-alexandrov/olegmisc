@@ -1656,6 +1656,16 @@ plain English instead:
 When one of these is added here, also grep the projects `.sh` files and the ASP
 and VW source and docs for it and fix existing occurrences.
 
+**Informal INTERNAL terms and tools must NOT bleed into EXTERNAL / user-facing
+docs (RST, published docs, PR and issue text). They stay valuable for our own
+work; they just never ship.**
+- "eyeball" -> "inspect" in external docs. Between you and me, "eyeball" is fine.
+- Do NOT mention a "red/green overlay" (or "red/green hillshade overlay") in
+  external docs. Describe the visual check plainly. The red/green (or red/blue,
+  whatever helps you see the shift) overlay is a valuable INTERNAL inspection
+  tool - keep using it for our work, just never name it in a shipped doc.
+The rule is scoped: keep external docs professional; internal notes stay casual.
+
 ## Commit Message Style
 
 Write like a human, not a robot. Short title; skip the body for trivial
