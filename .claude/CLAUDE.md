@@ -755,11 +755,30 @@ mean is outlier-driven). Skip the per-residual raw_pixels files (too big). These
 tell you whether the solve behaved (sub-pixel medians, bounded offsets, cameras
 multiply-tied).
 
-## gdal "Cannot find proj.db" -> activate a gdal env FIRST
+## gdal "Cannot find proj.db" -> the PROJ framework is missing, output is JUNK (CRITICAL)
 
-Any time a gdal tool warns `PROJ: proj_create_from_name: Cannot find proj.db`, the
-env has no PROJ data. STOP and `conda activate asp_deps` (or any env with gdal)
-before continuing, else `-t_srs` and projection ops silently misbehave.
+Any time a gdal/ASP tool warns `PROJ: proj_create_from_name: Cannot find proj.db`,
+the env has NO PROJ data. This is NEVER cosmetic. STOP immediately - do not call it
+harmless, do not proceed. Without proj.db every projection operation (`-t_srs`,
+gdalwarp, reprojection, geodiff across datums, mapproject) silently misbehaves and
+produces WRONG, subtly-broken georeferenced results. These bugs are subtle,
+downstream, and I am NOT reliably able to detect or debug them after the fact - so
+the only safe policy is to PREVENT them: out of an abundance of caution, ENSURE the
+geo framework (PROJ + proj.db) is present for EVERY gdal/ASP invocation, always, up
+front, before running anything. Never run a geo tool and hope the georef survives.
+- Local / conda: `conda activate asp_deps` (or any env with gdal) first.
+- pfe / Athena packaged build (non-interactive ssh has nothing set): export the
+  PROJ path to the packaged share dir in EVERY remote script, e.g.
+  `export PROJ_LIB=$HOME/projects/BinaryBuilder/StereoPipeline/share/proj`
+  (also `export PROJ_DATA=$PROJ_LIB` for PROJ 9+; proj.db lives there). Set it
+  alongside PATH/ISISROOT in the script header, not as an afterthought.
+- After any masking / image_calc / warp, VERIFY the output still carries the right
+  CRS and geotransform (`gdalinfo | grep -E "PROJCRS|Origin|Pixel Size"`) before
+  trusting it. A missing or altered CRS means redo it with PROJ set.
+Even when a given op (e.g. image_calc copying an existing geotransform) happens to
+survive, treat the warning as a hard stop: fix the env and re-run. Do NOT rationalize
+it away as cosmetic - that mistake shipped a georef-broken result once and Oleg had to
+catch it.
 
 ## gdalwarp: Always -r cubicspline, Never the Default Nearest-Neighbor
 
