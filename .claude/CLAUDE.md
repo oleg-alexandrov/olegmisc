@@ -1679,6 +1679,8 @@ and VW source and docs for it and fix existing occurrences.
 docs (RST, published docs, PR and issue text). They stay valuable for our own
 work; they just never ship.**
 - "eyeball" -> "inspect" in external docs. Between you and me, "eyeball" is fine.
+- "nuke" (as in remove/zero-out pixels) -> "remove", "mask out", "set to nodata"
+  in external docs. Fine in our notes and chat, too casual for a shipped doc.
 - Do NOT mention a "red/green overlay" (or "red/green hillshade overlay") in
   external docs. Describe the visual check plainly. The red/green (or red/blue,
   whatever helps you see the shift) overlay is a valuable INTERNAL inspection
