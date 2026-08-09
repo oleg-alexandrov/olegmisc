@@ -623,7 +623,13 @@ later (CRITICAL).** The paper trail must let anyone re-locate what was run and
 what came out, without disk archeology. Two halves:
 - COMMANDS: log the exact, copy-pasteable invocation of every notable stage
   (the full command with all options and paths, the qsub line, the download
-  command). A notable command is any that produces or transforms a kept product.
+  command). This INCLUDES every plotting / figure-generation invocation - the
+  exact `python <plot_script.py>` (or tool) line that produced each figure, its
+  input rasters/CSVs, and the output image path - not just the compute/qsub runs.
+  A notable command is any that produces or transforms a kept product, and a
+  figure IS a kept product. Runs AND plots AND scripts all get their invocation
+  logged; if a plot came from a script, that script must be git-tracked and named
+  in the log so the figure can be rebuilt.
 - PRODUCTS AND THEIR INPUTS: log them by NAME, scaled to how many there are.
   Few inputs (2 images, 1 camera, a reference DEM) - name each one explicitly.
   Many inputs (hundreds/thousands of images or cameras) - you cannot name each,
