@@ -1313,6 +1313,15 @@ needs `export ISISROOT=<asp_deps env>` (holds IsisPreferences). EVERY script tha
 correlator-mode and analyzes disparity must emit these raw bands right there (cassis_corr.sh
 does). NEVER `gdal_translate -b` to pick a disparity band - it writes the invalid pixels as 0.
 
+## Alignment-Residual Notation: dh / dv / dz, Not dd-H / dd-V
+
+When labeling a horizontal/vertical alignment residual (a DEM-to-reference
+correlation shift, or a stereo disparity residual) in FIGURES, CAPTIONS, and DOCS,
+use the short informal `dh` (horizontal), `dv` (vertical), and `dz` (height
+difference). AVOID `dd-H` / `dd-V` - even though these are informal, `dh`/`dv`/`dz`
+read more easily and are consistent. This is a labeling convention only; internal
+band names from `disparitydebug` (`-H.tif`, `-V.tif`) stay as the tool emits them.
+
 ## Multi-Option Commands in Scripts
 
 In shell scripts, put each command-line option on its own line, WITH ITS VALUE
