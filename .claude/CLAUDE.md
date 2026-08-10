@@ -1831,6 +1831,34 @@ Also: for file/code/doc/notes edits prefer Edit / Write / Read / Grep / Glob -
 they never prompt and never need this care. If something still prompts despite a
 literal path, hand Oleg the exact `! <command>` to run, rather than re-issuing it.
 
+## Remote (ssh) Destructive Ops Bypass the Harness Gate - Compensate With Discipline (CRITICAL)
+
+The sandbox only inspects the LOCAL Bash command. When a destructive op runs INSIDE
+an ssh'd remote script (`ssh host bash cleanup.sh`, or `ssh host "rm ..."`), the
+harness sees only the `ssh ... bash` line - it does NOT see or gate the remote
+`rm`/`find -delete`. So the prompt-on-glob/`$VAR`/`cd &&` safety net is ABSENT for
+anything running on pfe/lfe/Athena. Never read "the prompt didn't fire" as "this is
+safe" - a remote script is opaque to the harness. Do NOT push a destructive op into
+a remote script IN ORDER TO dodge the prompt; the prompt exists for a reason. If
+remote destructive work is genuinely needed, apply MORE care, not less, and TELL
+Oleg the local gate is bypassed. Safety then comes from DISCIPLINE, in this order
+(proven on the 573->63 GB chandra /nobackup wipe + lfe re-archive, 2026-08-09):
+- GET EXPLICIT APPROVAL for any heavy/irreversible remote wipe - present the plan,
+  the keep/delete lists, and sizes - before running it.
+- ARCHIVE FIRST when the data is precious: the non-regenerable INPUTS get a tape
+  copy (lfe) BEFORE a big wipe; treat produced results as redoable.
+- VERIFY THE KEEPERS EXIST FIRST: list every deliverable you intend to keep and
+  confirm it is present, BEFORE deleting anything.
+- Inside the remote script still obey the literal-path rules: whole-dir deletes are
+  one `rm -rf /full/abs/literal/path` per line (no `$VAR`, no glob); in-dir pruning
+  uses a KEEP-WHITELIST (`find /abs/literal/dir -maxdepth 1 -type f ! -name 'keepA'
+  ! -name 'keepB' ... -delete`) that you have CHECKED against the actual `ls` of
+  that dir, not guessed.
+- Echo BEFORE/AFTER sizes from the script, and RE-VERIFY the deliverables still
+  exist afterward. For a tape overwrite, write ONLY the single intended tar path
+  (`tar cf /u/.../one.tar dir/`) - never touch other lfe datasets - and shallow-check
+  it (`tar tf` all headers + a one-file data extract + key-member grep).
+
 ## Never Reference Public PRs/Issues in Private-Repo Commit Messages (CRITICAL)
 
 GitHub auto-links `owner/repo#NNN` (and bare `#NNN`) in commit messages and
