@@ -464,6 +464,12 @@ channel_priority`. Fix: `conda config --set channel_priority flexible`.
   exits 127 "command not found", which silently looks like the wrapped command
   failed - cost a whole night of false "pfe down"). To bound an `ssh` probe use
   `ssh -o ConnectTimeout=N`. Detail: `~/projects/pleiades_notes.sh`.
+  **This bites AGAIN with REMOTE commands: `ssh mac_arm 'timeout N <cmd>'` runs
+  `timeout` ON THE MAC (none there) - it errors "command not found" and `<cmd>`
+  never runs, which looks like `<cmd>` failed (falsely concluded a mac `git pull`
+  couldn't reach github, 2026-08-10). Put any `timeout` on the l1 SIDE, wrapping
+  the whole `ssh` (`timeout N ssh mac_arm '<cmd>'`), never inside the remote
+  command. Same for any Mac-run script.**
 
 - **Reach pfe with `ssh pfx`, NOT `ssh pfe`.** `pfx` is the ssh-config alias that
   hops through the sfe secure front end onto a pfe node (lands on e.g. pfe21) and
