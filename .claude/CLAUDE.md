@@ -1664,6 +1664,11 @@ summary). Keep summaries brief and to the point.
 **Words to avoid** (everywhere: code, comments, docs, notes, commits, chat). Use
 plain English instead:
 - "downweight" / "upweight" -> "give less weight" / "give more weight"
+- "drape" / "draping" (a DEM used for mapprojection) -> "DEM for mapprojection",
+  "mapprojection DEM", "mapproject onto the DEM". This is the universal ASP
+  convention. Avoid "drape" everywhere - docs, code, and even our own notes. (When
+  adding this rule, existing notes were left as-is by request; just do not write it
+  going forward.)
 - "tailable" -> "a log you can follow with tail" (not a real word)
 - "downcase" / "upcase" -> "lowercase" / "uppercase"
 - "honor" -> "respect", "obey", "use"
