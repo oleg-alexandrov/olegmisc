@@ -1655,6 +1655,21 @@ personal context. That is none of the reader's business. Keep it minimal:
 
 ## Writing Style
 
+**Say each thing once, in the one place it belongs, then point (CRITICAL,
+recurring).** My drafts over-produce: a concept stated in an intro and again in
+its own section, two cross-references where one does the job, a narrated outcome
+("the crater should snap together", "the height difference is centered on zero"),
+a doubled word ("residual disparity" for just "disparity"). None of these is
+wrong. Each is one layer too many, and for an expert reader the value is in what
+is cut. So: state each idea ONCE, in the section that owns it, then cross-ref -
+do NOT foreshadow it earlier, restate it later, cite the same reference twice, or
+describe what the reader is about to see. "Be concise" does not self-execute for
+me (my sense of "enough" runs high), so run a deliberate SUBTRACTIVE pass before
+showing any doc, comment, notes entry, commit, or PR: does this repeat something
+above? is this cross-ref already made? am I narrating an expected result? Cut
+what survives those questions. Applies everywhere - RST docs, code comments,
+notes, commits, chat.
+
 Never write "TL;DR" anywhere (notes, docs, chat, commits) - it is an ugly
 macro-hack abbreviation. Use plain English: "Summary" (or just write the
 summary). Keep summaries brief and to the point.
