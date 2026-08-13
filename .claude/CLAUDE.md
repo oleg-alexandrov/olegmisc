@@ -1798,6 +1798,17 @@ active use and takes a long time to re-fetch. See `~/projects/isis_2026/isis_202
 ## Safe Directory Cleanup (CRITICAL)
 
 **ABSOLUTE RULE - NEVER put a `$VAR` or `${...}` in an `rm` path. NO EXCEPTIONS.**
+
+**MECHANISM (so you STOP reaching for it - this keeps stalling autonomous runs). The
+recurring trap is pre-cleaning scratch/experiment outputs in a loop with `rm -f
+"$W"/*.rA` (a var AND a glob). DO NOT DO THIS. There is nothing to clean: the writing
+tool overwrites its output files (`fopen(...,"wb")`) so a fresh run just replaces them,
+and the scratchpad auto-cleans anyway - a pre-run wipe is pointless AND trips the
+"dangerous rm on possibly-empty variable path" gate. If you genuinely need a clean dir,
+make a NEW literal-named subdir for this run (e.g. `.../det2/`), never delete the old one
+by glob. When you catch yourself about to write `rm ... $VAR .../*.ext` before a loop:
+just delete that rm line. Confirmed to stall the run repeatedly (2026-08-13).**
+
 This keeps recurring and Oleg keeps catching it. A variable that expands empty turns
 `rm -f $S/${tag}_file.tif` into `rm -f /file.tif` or worse, and even when safe the
 harness flags "dangerous rm on possibly-empty variable path" and STALLS the run. This
