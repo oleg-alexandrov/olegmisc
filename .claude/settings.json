@@ -15,6 +15,7 @@
   "enabledPlugins": {
     "clangd-lsp@claude-plugins-official": true
   },
+  "disableAgentView": true,
   "feedbackSurveyRate": 0,
   "tui": "default",
   "skipDangerousModePermissionPrompt": true,
