@@ -172,6 +172,15 @@ passes `$Q` as ONE argument (qsub errors "illegally formed destination"). Fixes:
 INLINE all args into the command (no arg-bundle variable), or force splitting with
 `${=Q}` / `${(z)Q}`, or wrap in `bash -c`. Bit us building qsub arg strings for pfe.
 
+## No `timeout` on Mac - Just Don't (CRITICAL, keeps recurring)
+
+The Mac (the local Bash-tool shell AND `ssh mac_arm`) has NO `timeout`/`gtimeout`.
+NEVER prefix any command with `timeout N` there - it errors "command not found" and
+the real command never runs, which looks like the command itself failed. To bound an
+ssh probe use `ssh -o ConnectTimeout=N`. To bound a remote job wrap the whole `ssh`
+on the l1 side, never inside the Mac-run command. (Fuller detail in the Mac mini
+machine bullet below.)
+
 ## Nested ssh: No Unescaped Parens/Metachars in `bash -lc "..."` (CRITICAL)
 
 `ssh host bash -lc "... echo === X (Y) ==="` FAILS: the remote `bash -lc` parses
@@ -1263,6 +1272,16 @@ saves countless grief downstream.
 **All runnable scripts must be executable (`chmod +x`); only comment-only notes
 `.sh` stay non-executable.** A missing execute bit silently breaks `nohup`/direct
 invocation, and `rsync -a` can reset it - so set it at the source.
+
+**chmod +x at TWO points, no exceptions (CRITICAL, keeps recurring).** (1) The
+MOMENT any runnable script is created, `chmod +x` it at the SOURCE, before any
+rsync. (2) AFTER the last rsync and BEFORE qsub, `chmod +x` the remote copy again
+and `ls -la` to CONFIRM the bit is set. rsync from the Mac routinely STRIPS the
++x even when the source has it, and a re-rsync silently un-does an earlier remote
+chmod, so the source-side chmod is not enough - you must re-check remotely every
+time. PBS exits ~254 in seconds (the job flips straight to state E/F with no
+output, looking like the code failed) if the `--` script is not executable. So:
+create -> chmod +x source -> rsync -> chmod +x remote -> `ls -la` confirm -> qsub.
 
 ## Robust Stats: ALWAYS median/MAD, NEVER mean/std for raster comparison metrics (CRITICAL)
 
