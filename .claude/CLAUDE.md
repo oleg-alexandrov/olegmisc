@@ -1072,6 +1072,22 @@ NOT under `docs/`. So before calling a `:numref:` broken, grep the WHOLE repo fo
   "geodiff (Section 16.26)"). Verified by rendering the built HTML, 2026-07-17. Litmus:
   read the sentence with the ref replaced by "Section N" - if it reads wrong, use `:ref:`.
 
+## Citing Papers in ASP Docs
+
+ASP docs cite papers via `sphinxcontrib.bibtex` (configured in `docs/conf.py`,
+`bibtex_bibfiles`). To add a citation:
+1. Add a BibTeX entry to `docs/bibliography.bib` (the general reference bib).
+   `docs/papersusingasp.bib` is ONLY for papers that USE ASP - do not put a
+   cited work there. Use a short lowercase key (e.g. `alrousan98`). Brace proper
+   nouns/acronyms so BibTeX keeps their case: `{DEM}`, `{SPOT}`.
+2. Cite inline with ``:cite:`key` `` (renders a numbered, linked reference). It
+   reads well right after the author names - "assessed by Al-Rousan and Petrie
+   :cite:`alrousan98`", NOT "by (1998)" and NOT a bare "[1]" mid-sentence.
+3. The reference list renders automatically from `docs/zzreferences.rst`
+   (`.. bibliography:: bibliography.bib`); no per-doc bibliography directive is
+   needed. Existing `:cite:` uses (e.g. in `bundle_adjustment.rst`) are the model.
+Verify by building the docs: a missing entry warns "citation not found".
+
 ## NEWS.rst Conventions
 
 **Release notes live in `NEWS.rst` at the repo root** (included by `docs/news.rst`).
