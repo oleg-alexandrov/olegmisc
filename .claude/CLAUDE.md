@@ -1898,6 +1898,22 @@ Also: for file/code/doc/notes edits prefer Edit / Write / Read / Grep / Glob -
 they never prompt and never need this care. If something still prompts despite a
 literal path, hand Oleg the exact `! <command>` to run, rather than re-issuing it.
 
+## Tape Archive and Wipe (lfe) - Canonical Notes (find it here first)
+
+**Canonical archive/restore/logging policy + recipe: `~/projects/lfe_archive.sh`**
+(reusable tool `~/bin/archive_to_lfe.sh`; DMF `dmls`/`dmget`/`dmput -r`; plain `tar cf`,
+never `-z`). The one rule: LOG EVERY ARCHIVE in that project's own notes, as a running
+inventory near the TOP (tape is invisible otherwise). The archive+wipe WORKFLOW is:
+symlink-audit first, prune regenerable intermediates, tar to lfe, VERIFY (tar tf entry
+count == live `find` count, one-file data extract, key members present), `dmput -r` to
+migrate, THEN wipe the /nobackup dir (one literal-path `rm -rf` each; also remove any
+`/home6` symlink). `(DUL)`/`(OFL)` in dmls = safely on tape; `(REG)`/`(MIG)` = on lfe
+disk / migrating. Verify keepers exist on tape BEFORE deleting.
+- **Per-project tape inventories** live atop each project's notes. Known canonical logs:
+  CaSSIS -> `~/projects/cassis_asp/cassis_cleanup_plan.sh` (TAPE ARCHIVE INVENTORY +
+  per-dir wipe log; the hub `cassis_notes.sh` points to it). Deletion-safety policy:
+  `~/projects/file_cleanup_notes.sh`.
+
 ## Remote (ssh) Destructive Ops Bypass the Harness Gate - Compensate With Discipline (CRITICAL)
 
 The sandbox only inspects the LOCAL Bash command. When a destructive op runs INSIDE
