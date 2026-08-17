@@ -832,6 +832,13 @@ tri-error mosaic). For an ALIGNED DEM, align the POINT CLOUD (it carries the
 error in band 4) and `point2dem --errorimage` it, rather than aligning the
 bare DEM (a rigid align repositions the error, doesn't change it).
 
+**A `*-IntersectionErr.tif` may be a VECTOR (3-band X/Y/Z), not a magnitude.**
+`gdalinfo` it first: if `RasterCount` is 3 (point2dem wrote the 3D error, not the
+norm - e.g. Jay Laura's Kaguya usgs_dtms_v2 errors), you MUST take the NORM
+`sqrt(b1^2+b2^2+b3^2)`. Plotting/stat-ing one band understates it badly - on
+Jay's Kaguya errs band 1 is ~0.01 m but the norm is ~1 m (~100x). Full write-up:
+`~/projects/asp_manual.sh` (TRIANGULATION ERROR section).
+
 ## Output Statements
 
 - Do NOT remove vw_out() statements - these are for user-facing informational output, not debugging
