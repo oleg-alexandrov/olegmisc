@@ -1028,7 +1028,13 @@ What it currently contains (grep the headers for detail):
   auto-detects cores so one script is portable; ALWAYS pass --nodes-list
   $PBS_NODEFILE (single-node file = 1 node, safe); set --processes P and
   --threads-multiprocess T with P*T ~= cores/node (P reduced if RAM-bound, e.g.
-  Athena 256 -> --processes 32 --threads-multiprocess 8).
+  Athena 256 -> --processes 32 --threads-multiprocess 8). **NEVER size
+  --processes from `nproc` or `wc -l < $PBS_NODEFILE` in a wrapper: INSIDE a NAS
+  PBS job both return 1 (the node has 128-256 CPUs), silently forcing
+  --processes 1 = FULLY SERIAL (Eff 0%, cpupercent ~1.5 cores). Pass --processes
+  EXPLICITLY (you set ncpus in the qsub) or use `grep -c ^processor /proc/cpuinfo`;
+  ALWAYS verify with `qstat -f <job> | grep cpupercent` (/100 = cores busy).
+  Full write-up: qsub_rules.sh RULE E, asp_manual.sh. Burned 2026-08-17.**
 - pc_align applying a transform to cameras (direct vs inverse; carry via
   bundle_adjust --apply-initial-transform-only --inline-adjustments).
 - ATHENA (Turin) for ASP jobs - fully visible (/nobackup + build mounted),
