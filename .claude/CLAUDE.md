@@ -856,6 +856,23 @@ norm - e.g. Jay Laura's Kaguya usgs_dtms_v2 errors), you MUST take the NORM
 Jay's Kaguya errs band 1 is ~0.01 m but the norm is ~1 m (~100x). Full write-up:
 `~/projects/asp_manual.sh` (TRIANGULATION ERROR section).
 
+## point2dem After Jitter: Same Absolute Tri-Err Cutoff Before and After (CRITICAL)
+
+point2dem's default `--remove-outliers-params 75 3` is a RELATIVE tri-err filter,
+so it can be too aggressive and strip VALID data. After a jitter_solve the
+triangulation error drops, which TIGHTENS the relative threshold, so the
+post-jitter DEM loses lines the pre-jitter DEM kept. A before-minus-after DEM
+then shows fake gaps and banding from differential stripping, not from jitter.
+Rules for a jitter before/after comparison:
+- Give BOTH the pre-jitter and post-jitter point2dem the SAME absolute cutoff
+  `--max-valid-triangulation-error`, set to about 5*GSD (CTX GSD ~5 m -> ~25 m),
+  so the filter never removes real terrain and both DEMs strip identically.
+- Difference against the ALIGNED pre-jitter DEM (same frame as the jitter
+  cameras, which come from the aligned bundle_adjust), NOT the unaligned stereo
+  DEM. Otherwise the diff carries the whole pc_align vertical offset (a ~220 m
+  bulk shift bit the CTX FUB jitter study, 2026-08-18: every before-minus-after
+  read a uniform +221 m because it used the unaligned pre-jitter DEM).
+
 ## Output Statements
 
 - Do NOT remove vw_out() statements - these are for user-facing informational output, not debugging
