@@ -65,7 +65,11 @@ colorbar. Diverging ramp + symmetric clamp for signed diffs; robust clamp, not m
 nodata masked. Multidirectional hillshade (`gdaldem hillshade -multidirectional`) for
 DEMs. Full recipe (pfe gdal-vs-matplotlib env split): `~/projects/visual_raster_inspection.sh` section 5.
 
-**No baked-in descriptive titles/captions inside figures that ship with an RST/HTML caption** (the caption carries it); keep colorbar labels, axis units, and short per-panel IDs.
+**No text inside a figure that ships with an RST/HTML caption - the caption below carries ALL of it.** No panel titles ("before"/"after"/"hillshade"), no colorbar unit label ("meters"/"pixels"), no baked-in descriptions. KEEP only the colorbar tick numbers (they carry the range/scale). The prose caption names the panels left-to-right and states the units and clamp. (Oleg 2026-08-20.)
+
+**No black border/frame around any image panel (hillshade, ortho, colorized raster) - NEVER put one.** Call `ax.axis('off')` (or hide all four spines) so matplotlib draws no box around the imshow; keep nodata white or transparent, never a black edge. A framed hillshade reads as sloppy. This applies to every panel in every figure.
+
+**All image panels in a multi-panel figure must be the SAME height (1:1).** A colorbar attached with `fig.colorbar(im, ax=a)` steals width from that panel, and with `aspect='equal'` a narrower image is also shorter - so panels with a colorbar end up shorter than those without. Fix: give EVERY panel an equal-width right slot via `make_axes_locatable(a).append_axes("right", size="6%", pad=0.05)` - a real colorbar on the panels that need one, `cax.axis("off")` (invisible spacer) on the rest. Then all panels render at identical height and the colorbars are full panel height. (Oleg 2026-08-20.)
 
 Match-point inspection: `~/bin/plot_matches.py` overlays an ASP .match file on both images and reports the residual to the best-fit translation (the real-vs-junk metric for co-registered pairs). For the stereo_gui solid-red-dot look use `--red --radius N`.
 
