@@ -845,25 +845,6 @@ time. PBS exits ~254 in seconds (the job flips straight to state E/F with no
 output, looking like the code failed) if the `--` script is not executable. So:
 create -> chmod +x source -> rsync -> chmod +x remote -> `ls -la` confirm -> qsub.
 
-## "HTML Artifact" = the Artifact Tool (know the drill)
-
-When Oleg asks for an "HTML artifact" (or just "artifact"), that means: use the
-`Artifact` tool. I write an HTML file for the CURRENT project (plots, colorized
-rasters, tables, whatever), publish it, and it pops up as a claude.ai-hosted URL
-in a browser tab (private by default, shareable). No need to re-explain what it
-is each time. Key rule: an artifact is SELF-CONTAINED - a strict CSP blocks every
-external file, so all images must be INLINED as base64 data URIs. Follow the
-sizing rule just below (downsample hard). For a purely local glance instead of a
-hosted URL, use `SendUserFile ... display:render`. See also
-`~/projects/visual_raster_inspection.sh` (colorbar/preview recipe) and
-`~/projects/html_for_google_docs.sh` (base64-embedded HTML for Google Docs).
-
-## Artifact and Preview Image Sizing
-
-For HTML artifacts and uploaded previews, downsample DRASTICALLY: <=1000 px long side,
-<1 MB per image (dpi ~80-100). Over ~1 MB or ~1000x1000 px is overkill. Full-res stays on
-disk. Detail in `~/projects/visual_raster_inspection.sh`.
-
 ## Project Data Lives in a data/ Dir, Not Run Dirs With Symlinks (CRITICAL)
 
 Canonical project DATA (input images/cubs, reference DEMs, anything a run consumes
@@ -921,59 +902,6 @@ runner hardcoded `$HOME/projects/viking_orbiter/data/cub` instead of `data/cub`.
 outputs.** Inputs (cubs, reference DEMs, images) live in `data/`; each experiment's
 outputs live in their own peer run dir that can be wiped wholesale without touching
 `data/`. So a `rm -rf <run_dir>` never destroys an input, and re-running is cheap.
-
-## Visual Raster Inspection - "Claude has eyes"
-
-Claude can SEE images - use vision to verify rasters (orthos, DEMs, geodiffs,
-camera/rotation alignment). Full technique, recipes, and where preview files live
-(with the data on pfe, not /tmp): **`~/projects/visual_raster_inspection.sh` -
-READ IT before inspecting/eyeballing any geo raster.**
-
-**WHEN THE USER SAYS "eyeball" / "inspect" / "look at" / "compare" an ortho, DEM,
-geodiff, tri-err, or any geo raster, it ALWAYS means this EXACT procedure (do NOT
-re-derive it each time, do NOT skip a step):**
-1. Put EVERY raster on ONE identical grid first: `gdalwarp -t_srs <one proj>
-   -te <one extent> -ts <one size> -r cubicspline` (same PROJECTION, same EXTENT,
-   same GRID, cubicspline). Comparing rasters on different grids/framing - or with
-   raw numpy (index-aligned) - is NONSENSICAL and worthless.
-2. HILLSHADE any DEM before viewing: `gdaldem hillshade -multidirectional`. NEVER
-   eyeball raw elevation; you compare terrain by its hillshade.
-3. Downsample to <=1000 px, write PNG, THEN look.
-4. Judge REGISTRATION only by the red/green hillshade overlay (aligned = yellow),
-   NEVER by dz/geodiff std (blind to horizontal misregistration on low relief).
-5. Colorize a geodiff/tri-err/dz with a matplotlib colorbar (per-panel, unit
-   label), not bare grayscale.
-This applies to the mapproj ortho-on-hillshade geometry check too: warp the ortho
-and the DEM hillshade to the same grid, then look.
-
-**NEVER combine two geo-referenced rasters with raw python/numpy pixel ops.** numpy
-aligns arrays by row/col INDEX, not ground coordinates, so differencing/overlaying/
-comparing rasters on different grids or projections in python is silently wrong.
-ALWAYS use the projection-aware tools: `geodiff` to difference two DEMs/rasters (it
-regrids the 2nd onto the 1st, respects proj+datum), and `gdalwarp` to put rasters on
-ONE common grid (-t_srs + -te + -tr/-ts, -r cubicspline). Warp BOTH onto the shared
-canonical grid FIRST, THEN read into python only to DISPLAY (imshow) or compute robust
-stats. Do NOT warp the raster whose pattern you care about onto a DIFFERENTLY-centered
-projection - it tilts/rotates it into an artifact (burned 2026-07-21: warped a dz onto a
-CTX pair's stereographic center 0.12 deg off, faking a cross-track pattern). Detail in
-`~/projects/visual_raster_inspection.sh`.
-
-Colorizing a raster for inspection (geodiff/dz, disparity, tri-err): render WITH a
-colorbar (matplotlib, not bare `gdaldem color-relief`). EACH plot gets its OWN vertical
-colorbar on the RIGHT, unit label ("meters"/"pixels") rotated 90 degrees; NEVER a shared
-colorbar. Diverging ramp + symmetric clamp for signed diffs; robust clamp, not min/max;
-nodata masked. Multidirectional hillshade (`gdaldem hillshade -multidirectional`) for
-DEMs. Full recipe (pfe gdal-vs-matplotlib env split): `~/projects/visual_raster_inspection.sh` section 5.
-
-**No baked-in descriptive titles/captions inside figures that ship with an RST/HTML caption** (the caption carries it); keep colorbar labels, axis units, and short per-panel IDs.
-
-Match-point inspection: `~/bin/plot_matches.py` overlays an ASP .match file on both images and reports the residual to the best-fit translation (the real-vs-junk metric for co-registered pairs). For the stereo_gui solid-red-dot look use `--red --radius N`.
-
-**Low-texture pc_align (CRITICAL, see the alignment primer in `~/projects/visual_raster_inspection.sh`):** on bland terrain (few craters) the correlator dh/dv MEDIAN and geodiff/dz BOTH LIE - swamped by spurious ~0 matches on featureless plains, so a real ~20 px crater misalignment reads as "2 px". NEVER judge an align by dh/dv median or dz there; ALWAYS eyeball a ZOOMED, fully-covered textured window (crater/ridge) as a red/green hillshade overlay (aligned = yellow, misaligned = red/green fringes). Sparse IP (`pc_align --initial-transform-from-hillshading rigid`, no match file) beats dense `--correlator-mode` (which locks onto the plains); `--compute-translation-only` kills spurious-rotation blowups; regrid both DEMs to the same grid first. Burned a whole session trusting the correlator median.
-
-Checking a bundle_adjust `pointmap.csv` (GCP / from-DEM points) against a reference DEM with `geodiff` (split by population, the `--csv-srs` gotcha): see `~/projects/visual_raster_inspection.sh`. Keywords: bundle_adjust pointmap.csv, geodiff --csv-format, heights-from-dem on-DEM check, fix-gcp-xyz.
-
-Google-Doc-ready section (prose + real tables + inline figures, in one copy-paste): build a self-contained HTML with base64-embedded images, open in Chrome, select-all, copy, paste. See `~/projects/html_for_google_docs.sh`.
 
 ## Git Repositories on lunokhod1
 
