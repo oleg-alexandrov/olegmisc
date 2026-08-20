@@ -128,7 +128,6 @@ alias gs2='git status | grep -v "\.\."'
 alias gsc=gsc.sh
 alias gsc10=gsc10.sh
 alias gsm='git status | grep -E "modified:|file:|deleted:"'
-alias gt='git difftool --tool=tkdiff'
 alias gtc='gt $(gs |g rig | pc 0)'
 alias gtf='gdal_translate -of GTiff'
 alias gts='gdal_translate.pl -srcwin'

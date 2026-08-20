@@ -290,6 +290,13 @@ function hg {
     history 1 | grep -i  "$*"
 }
 
+function gt {
+  # git difftool (tkdiff), skipping image files. A function, not an alias, so
+  # revision args land BEFORE the "--" and are read as revisions, not paths.
+  # Handles any number: "gt", "gt HASH", "gt HASH1 HASH2".
+  git difftool --tool=tkdiff "$@" -- . ":^*.png" ":^*.jpg"
+}
+
 function gr {
   # recursive grep
   grep -r -i -n -E --colour=auto "$*" . --include="*.cc"  --include="*.cpp"  \
