@@ -303,17 +303,6 @@ time. PBS exits ~254 in seconds (the job flips straight to state E/F with no
 output, looking like the code failed) if the `--` script is not executable. So:
 create -> chmod +x source -> rsync -> chmod +x remote -> `ls -la` confirm -> qsub.
 
-## ISIS Mission Data and Kernels
-
-**LRO NAC end-to-end + generic ISIS kernel fetch: `~/projects/lronac_processing.sh`.**
-Full ingest pipeline (lronac2isis → spiceinit → lronaccal → lronacecho), CSM JSON
-via isd_generate, ODE search, illumination/azimuth analysis, and failure modes
-(missing CK, ALE driver crash, sub-solar lon vs ground azimuth). Kernel fetch
-(section 5): `downloadIsisData <mission> $ISISDATA` for a full sync, or targeted
-`rclone --config $ISISROOT/etc/isis/rclone.conf copy <mission>:kernels/ck/ ...
---include="<file>" --no-traverse -P` for a single missing CK. Update on any new
-gotcha.
-
 ## Co-Authored-By Trailer (CRITICAL)
 
 Every commit MUST include:
