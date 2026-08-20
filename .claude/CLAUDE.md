@@ -1662,38 +1662,6 @@ via isd_generate, ODE search, illumination/azimuth analysis, and failure modes
 --include="<file>" --no-traverse -P` for a single missing CK. Update on any new
 gotcha.
 
-## NASA NAS / Pleiades Supercomputer
-
-**Before any pfe work, read these notes files first:**
-- `~/projects/pleiades_notes.sh` - machine map, storage, ASP build layout, lfe access/safety, symlink-wipe procedure
-- `~/projects/qsub_rules.sh` - qsub arg rules, dry-run, umask, error codes
-- `~/projects/qsub_convention.sh` - allocations (e2305 ours, s3319 off-limits), checklist, runner template
-- `~/projects/lfe_archive.sh` - lfe tape archive AND restore procedure (DMF dmls/dmget: stage off tape before any tar/read)
-
-Bare minimum to remember without reading:
-- **No heavy/parallel compute on the pfe head node** - `parallel_stereo`, anything multi-process/multi-thread or big-RAM goes to qsub (small/fast -> `devel`). Light single-thread `gdalinfo`/`gdal_translate`/`gdalwarp`/`ls`/`qstat` on the head node is fine (don't qsub a one-off gdalinfo - use common sense). **HEAD-NODE RULE (pfe AND Athena front end), confirmed by a policy-violation warning 2026-08-07: the trigger is >1 process/thread, NOT file size. On any head node use ONLY 1 PROCESS and 1 THREAD. Big single-threaded `gdal_translate`/`gdalwarp`/`geodiff`/`dem_mosaic --threads 1` on multi-GB rasters are all FINE. `dem_mosaic --threads 6` (or any multi-thread/multi-process) is the violation. So when downsampling/differencing/mosaicking for figures on a head node, force `--threads 1`; anything heavier goes to a qsub compute node (or do it locally on the Mac).** **IF THE HEAD NODE KILLS a command (policy enforcement / OOM), DO NOT retry it on the head node - that just re-trips the gate. Move that work to a qsub compute node (or shrink it to 1 proc / 1 thread / low mem). Retrying a killed head-node command is never the fix.** **To run any gdal/ASP tool on pfe FIRST set the env** (non-interactive ssh has nothing on PATH, PROJ unset): `conda activate asp_deps` (PROJ data, so `-t_srs` works) + `export PATH=$HOME/projects/BinaryBuilder/StereoPipeline/bin:$PATH` (the packaged build has ALL tools); detail in `~/projects/pleiades_notes.sh`. **NEVER run heavy compute - `stereo_corr`/`parallel_stereo`/correlation (the eval dd) - on the Mac OR the pfe head node; it goes to a qsub compute node.** The eval (`cassis_eval_stage.sh`) is the last step inside each stage's qsub job, so its dd runs on the compute node - do not run it by hand on the Mac. 4-sec dry-run before qsub. budget `e2305`. **Models & node choice:** `cas_ait` (40c, Aitken), `rom_ait`/`mil_ait` (128c, Aitken), `bro_ele` (28c, Electra), `sky_ele` (40c, Electra). Broadwell is decommissioned ONLY on Pleiades - `bro_ele` (Electra) and `sky_ele` are FINE to use. **Our code is model-agnostic - it must run on ANY of them** (match `ncpus` to that model's cores). **Before launching, study load on ALL systems** (`/u/scicon/tools/bin/node_stats.sh` -> Free vs "Queued jobs want N nodes" per model) and pick the LEAST-CONTENDED (e.g. bro_ele was Free 292 / 12 queued while cas_ait was 379 queued). **For small single-node jobs Athena (Turin) nodes are also fine - but Athena Turin is only visible/submittable from the ATHENA front-end** (ssh to athena), NOT from pfe. **If a job sits queued too long, qdel it and resubmit on a less-contended system.** In a non-interactive ssh, qsub is not on PATH - use `/PBS/bin/qsub`. `devel` allows only 1 job/user (pack multiple sites into ONE serial job). POLICY: NO separate PBS launcher script (cannot afford one per stage). The PLAN/NOTES file holds the COMPLETE, LITERAL, copy-pasteable qsub command line (the full `qsub <all pbs args> -- $dir/script.sh <all script args, workDir LAST>` as ONE reproducible string - NOT just the args/params/job-id logged piecemeal), WITH its rationale + named params, logged BEFORE the launch. Then launch the worker DIRECTLY via that qsub `--` form. The worker self-handles umask/cd/tailable-log and cds into the passed workDir; it holds only tool commands, never qsub args. This is GENERAL, INDEPENDENT of allocation (e2305/s3319/any) - it is about code structure. Only a LARGE fan-out (hundreds of jobs, rare) justifies a generic launcher; most work needs one qsub or a handful, so inline-in-notes is the default. Detail: `~/projects/qsub_rules.sh`, `qsub_convention.sh`.
-- **On pfe, NEVER rely on the default `ssh`/`scp` landing dir - it is the HOME dir
-  (`/home6/oalexan1`), so scratch dropped there litters the home (which has even been a
-  stray olegmisc checkout at times).** This is the mechanism behind the recurring pile-up of
-  `inspect_*.sh` / `*.py` / `print.prt` in `~`: `ssh pfx 'python foo.py'` runs with CWD=`~`,
-  `scp file pfx:` lands in `~`, and ISIS/gdal tools dump `print.prt`/`.aux.xml` into CWD. FIX
-  (do it at the moment of writing, every time): every remote script goes to `pfx:/tmp/...`
-  explicitly (`scp file pfx:/tmp/`, run `ssh pfx bash /tmp/file.sh`); `cd` into a work dir
-  before running any tool so its side-outputs land there, not in `~`; anything worth keeping
-  goes in a project subdir. Never the bare default.
-- **NEVER wipe anything on lfe.** lfe access from l1: `ssh pfx` then `ssh lfe`.
-- `/home6` data MUST symlink to `/nobackup*`. Symlink-wipe procedure in `pleiades_notes.sh`.
-- **Every qsub script: `exec >` redirect to a work-dir log (never PBS `-o`) AND `umask 022` (readable outputs). Details: `qsub_convention.sh` / `qsub_rules.sh`.**
-- **CHECK JOB EFFECTIVENESS on any long/multi-node pfe job - do not assume it parallelizes.** Effectiveness (efficiency) = CPU-time-used / (cores-allocated x walltime); 1.0 = every allocated core busy every second, low = idle cores wasting the allocation. THE overall number is `qstat`'s `Eff` column, equivalently from `qstat -f <jobid>`: `resources_used.cput / (resources_used.ncpus x resources_used.walltime)`. This is already JOB-WIDE - `cput` sums CPU-time over ALL nodes/chunks and `ncpus` is the TOTAL cores - so for a MULTI-NODE run it covers every node at once; you do NOT poll each node to get the overall figure (that answers "is the whole job effective"). Instantaneous aggregate = `resources_used.cpupercent` (divide by 100 = cores busy right now, summed across all nodes; e.g. 529 = 5.3 of 28). Any LOW value SUSTAINED over time (e.g. 7% on 28 cores = ~2 cores busy) is SUSPECT - investigate, do not ignore. To then LOCALIZE which node/rank is the laggard in a multi-node job: `exec_host`/`exec_vnode` in `qstat -f` lists every node; ssh each and compare `uptime` load avg vs its core count (pdsh/clush across all at once if available). Common cause: a serial per-item loop starving the node -> fix is batching/concurrency across items, not bigger per-item threads. Caveat: cput-efficiency can look low for legitimately I/O-bound or sync-heavy phases - judge over time, not one instant. (Caught the un-batched Jezero stereo_transverse.sh this way, 2026-06-26: Eff 7%, cpupercent 529.)
-
-## ASP Dev Build on pfe
-
-Working ASP on pfe: `pfx:~/projects/BinaryBuilder/StereoPipeline/` - a packaged
-release (wrappers in `bin/`, ELF in `libexec/`, libs in `lib/`). Patch it from
-l1: rebuild changed libs/tools, then rsync dev `install/lib/` -> `lib/`,
-`install/bin/` -> `libexec/`, `*.py` -> `bin/`. Full recipe + NFS gotcha + scp
-fix: `~/projects/pleiades_notes.sh` section "Syncing dev build to pfe".
-
 ## Sending Email to Oleg
 
 How to email Oleg (msmtp; recipient oleg.alexandrov@gmail.com) is described in
