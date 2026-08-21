@@ -38,6 +38,10 @@ Full reference (paths, repo slugs, GraphQL/REST recipes, CI): `~/projects/github
 `gh` not on PATH: `$(ls -d $HOME/*conda3/envs/gh/bin/gh)`. **CRITICAL:** `gh
 issue/pr view` and `gh pr edit` error on the deprecated Projects-classic API -
 use `gh api` (REST) for any issue/PR body/comment/state/label fetch or edit; and
+- editing a PR body: `gh api -X PATCH repos/OWNER/REPO/pulls/N -F body=@file`
+  (issue body: `.../issues/N`; `-F body=@file` reads the text from a file). `gh
+  pr edit --body-file` exits 1 on the Projects-classic GraphQL error and the
+  edit does NOT apply, so always go through `gh api` PATCH for body edits; and
 **never trust WebFetch summaries of issues/PRs** (it hallucinates) - pull with
 `gh api`. PR/issue/comment/review prose-style rules: `~/projects/github_text_style.sh`.
 When opening or editing a PR/issue/comment body, write plain prose: avoid
