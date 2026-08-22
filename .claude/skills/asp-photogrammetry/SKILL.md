@@ -295,3 +295,55 @@ faux precision in smooth patches averages out over many dense GCP. Full rational
 Parse CSM model-state / `.adjusted_state.json` files CAREFULLY - they are NOT plain
 JSON: a model-name line comes FIRST, then the JSON (so `json.load` fails; skip line 1).
 Frame center, linescan position interpolation, parsing recipe: `~/projects/csm_camera_notes.sh`.
+
+## Aligning bundle-adjusted cameras to a reference DEM (pc_align -> apply to cameras)
+
+To seat BA cameras on a reference DEM/lidar (fix a residual camera-vs-ground offset)
+without re-solving the whole bundle. Learned on the SDB WV-3 tri-stereo run (Key
+West, 2026-08). Manual = the RST docs in the ASP source: `~/projects/StereoPipeline/docs/`.
+
+1. Read the offset. BA writes `run-{initial,final}_residuals_pointmap.csv`
+   (`lon,lat,height_above_datum,mean_resid,nobs`). geodiff it vs the reference:
+   `geodiff ref.tif pointmap.csv --csv-format '1:lon 2:lat 3:height_above_datum'`.
+   Heights are ELLIPSOIDAL above the datum - mind the geoid: in Florida sea level is
+   ~ -25 m ellipsoidal, so a LAND filter is `height > ~-24 m`, NOT `>0`. Filter to
+   land first so refracted/underwater points don't bias the shift. Manual:
+   `outputfiles.rst`, `bundle_adjustment.rst` (geodiff `--csv-format`).
+2. pc_align the pointmap onto the reference. DENSER cloud FIRST (the DEM), pointmap
+   SECOND. Use `--compute-translation-only` so NO tilt/rotation is introduced (a pure
+   shift can't tilt - ideal when you only want a vertical/horizontal offset removed and
+   the pointmap is noisy/urban/water). Bound outliers with `--max-displacement`.
+   CAUTION: a DEM reference is loaded as a full point cloud - SLOW and RAM-heavy;
+   DOWNSAMPLE it first (`gdal_translate -tr`) and NEVER run pc_align on a pfe LOGIN
+   node (little free RAM - it crawled at 0% loading a 260M-pt DEM there).
+   `pc_align --max-displacement D --compute-translation-only \`
+   `  --csv-format '1:lon 2:lat 3:height_above_datum' \`
+   `  ref_downsampled.tif pm_land.csv --save-transformed-source-points -o align/run`
+   Read the NED translation + Euler angles from the log (translation-only -> Euler ~0).
+   Manual: `tools/pc_align.rst`.
+3. Apply the transform to the CAMERAS (no re-optimization) -> new .adjust cameras:
+   `bundle_adjust <images> <cameras> -t <session> \`
+   `  --initial-transform align/run-transform.txt --apply-initial-transform-only \`
+   `  -o ba_align/run`
+   DIRECTION (the footgun): when the REF (denser) is FIRST in pc_align, apply
+   `run-transform.txt`; if the order is reversed (your cloud first), apply
+   `run-inverse-transform.txt`. ALWAYS VALIDATE, never trust the rule blind: geodiff
+   pc_align's `run-trans_source` (= EXACTLY what the aligned cameras triangulate) vs
+   the ref - the median should collapse to ~0. If it doubled, use the other transform.
+   Manual: `bundle_adjustment.rst` ("This alignment can then be applied to the cameras
+   as well", ~L309-326) and `tools/bundle_adjust.rst` (`--initial-transform`,
+   `--apply-initial-transform-only`).
+4. Downstream `mapproject` / `parallel_stereo` then take `--bundle-adjust-prefix
+   ba_align/run` to use the aligned cameras. (For DG/WV, `-t dg`.)
+
+## Convergence angles - ASP computes them (bundle AND stereo)
+
+`bundle_adjust` writes `run-convergence_angles.txt`: per image pair, the 25/50/75
+percentile ray-convergence angle (deg) + match count. `parallel_stereo`'s
+preprocessing (stereo_pprc) also reports a pair's convergence. Independent geometry
+cross-check from the delivery XML: unit vector `u = [cos(El)sin(Az), cos(El)cos(Az),
+sin(El)]` from `MEANSATEL`/`MEANSATAZ`, `conv = arccos(u1.u2)`; this agreed with ASP
+to ~0.1 deg on the WV-3 set. Wide-baseline / longer-dt pairs have larger convergence
+-> better height sensitivity, but also show jitter most strongly in the tri-error.
+Along-track banding in `point2dem --errorimage` output + systematic per-pair DEM
+disagreement = jitter (next step: `jitter_solve`). Manual: `tools/bundle_adjust.rst`.
