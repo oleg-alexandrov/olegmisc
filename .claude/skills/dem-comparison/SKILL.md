@@ -44,10 +44,15 @@ the hillshade disparity - that horizontal motion is exactly what we are after.
 ## Step 3 - correlate the two hillshades -> disparity
 
 parallel_stereo in --correlator-mode (pure image correlation, no cameras) with the
-two hillshades as left/right, asp_mgm, small search:
+two hillshades as left/right, asp_mgm. On FLAT/low-texture terrain (e.g. Key West
+bathy) IP-seeded correlation FAILS ("Number of IPs left after filtering is 5 ...
+less than required") - the hillshades are too featureless to seed. FIX (CaSSIS
+lesson): --corr-seed-mode 0 with a BOUNDED fixed search sized to the expected shift:
   parallel_stereo --correlator-mode --stereo-algorithm asp_mgm --subpixel-mode 9 \
-    ref_hs.tif warped_hs.tif dispDir/run
-Output disparity = dispDir/run-F.tif (filtered) / run-D.tif (raw).
+    --corr-seed-mode 0 --corr-search -30 -30 30 30 \
+    left_hs.tif right_hs.tif dispDir/run
+Output disparity = dispDir/run-F.tif (filtered) / run-D.tif (raw). Left=warped,
+right=ref -> run-F is the warped->ref disparity (what dem2gcp wants).
 
 ## Step 4 - split into components and PLOT (dh, dv) + geodiff (dz)
 
