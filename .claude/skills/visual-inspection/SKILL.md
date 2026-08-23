@@ -78,3 +78,18 @@ Match-point inspection: `~/bin/plot_matches.py` overlays an ASP .match file on b
 Checking a bundle_adjust `pointmap.csv` (GCP / from-DEM points) against a reference DEM with `geodiff` (split by population, the `--csv-srs` gotcha): see `~/projects/visual_raster_inspection.sh`. Keywords: bundle_adjust pointmap.csv, geodiff --csv-format, heights-from-dem on-DEM check, fix-gcp-xyz.
 
 Google-Doc-ready section (prose + real tables + inline figures, in one copy-paste): build a self-contained HTML with base64-embedded images, open in Chrome, select-all, copy, paste. See `~/projects/html_for_google_docs.sh`.
+
+## Eyeball after EVERY step - hypothesis then confirm (the core discipline)
+
+Geospatial/mapping tools are FRAGILE and fail SILENTLY (bad otsu/KDE mask, junk
+correlation, wrong-grid mapproject, spurious pc_align rotation). The recurring
+expensive failure is running a multi-step pipeline WITHOUT LOOKING, so a bad
+product at step 2 is caught 10 steps later after wasted compute. For EACH product
+(image or DEM - both inspectable): FIRST state the hypothesis (what it must look
+like), THEN colorize/hillshade -> PNG -> LOOK to confirm, BEFORE the next step.
+Never proceed on an unlooked-at product. To compare two rasters by eye you MUST
+first `gdalwarp` both to the SAME grid+extent+projection, then PNG them - otherwise
+the comparison is meaningless. MASKS: overlay the mask on its source image (or show
+masked-vs-raw side by side) and confirm the boundary sits at the shoreline - keeps
+land (runway/buildings), drops water (coral/underwater). Frequent inspection IS the
+work, not overhead.
