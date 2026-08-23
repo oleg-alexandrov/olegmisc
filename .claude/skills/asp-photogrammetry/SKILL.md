@@ -347,3 +347,24 @@ to ~0.1 deg on the WV-3 set. Wide-baseline / longer-dt pairs have larger converg
 -> better height sensitivity, but also show jitter most strongly in the tri-error.
 Along-track banding in `point2dem --errorimage` output + systematic per-pair DEM
 disagreement = jitter (next step: `jitter_solve`). Manual: `tools/bundle_adjust.rst`.
+
+## USE YOUR EYES - EYEBALL EVERY PRODUCT, EVERY STEP (the #1 rule)
+
+This cannot be overstated. ASP/VW/geospatial tools are FRAGILE and fail SILENTLY -
+a water mask that keeps the coral and drops the houses, a correlation that locked
+onto noise, a mapproject onto the wrong grid, a pc_align that found a spurious
+rotation. The recurring, expensive mistake is running a multi-step pipeline WITHOUT
+LOOKING, so a bad product at step 2 is only discovered 10 steps later after hours of
+wasted compute. Claude HAS EYES (Read an image and see it) - so use them constantly:
+- For EACH product (image OR DEM - both are visually inspectable), FIRST state the
+  HYPOTHESIS (what it must look like: "the land/water mask keeps the runway, landfill
+  and houses and drops the coral/underwater"; "the aligned hillshades overlay in
+  yellow"), THEN colorize/hillshade -> downsample to PNG -> LOOK to CONFIRM before
+  moving on. Do not proceed on an unconfirmed product.
+- To compare two rasters by eye, first `gdalwarp` BOTH to the SAME grid, extent, and
+  projection, then hillshade/colorize each to PNG - only then is the side-by-side or
+  overlay apples-to-apples (mismatched grids make the comparison meaningless).
+- Masks especially: overlay the mask on the source image (or show masked vs raw) and
+  verify the land/water boundary is right at the shoreline, not eating land or keeping
+  water. otsu/KDE thresholds are fragile; never trust one unlooked-at.
+Frequent visual inspection is not overhead - in mapping work it IS the work.

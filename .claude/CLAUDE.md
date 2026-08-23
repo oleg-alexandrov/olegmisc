@@ -284,6 +284,20 @@ said "used for ox1" - a per-site tweak advertised in shipped code.) Rules:
 Any time you assume or expect a certain result, inspect it (visually AND with
 stats) to verify the result actually conforms to that expectation. Never assume - check.
 
+**EYEBALL AFTER EACH STEP - not 10 steps later (CRITICAL, the recurring failure).**
+Every image or DEM product is visually inspectable, and mapping tools (otsu/KDE
+masks, correlation, mapproject, pc_align) are FRAGILE - they silently produce
+junk. Claude's demonstrated mistake is going through the motions of a multi-step
+pipeline WITHOUT looking, so a bad mask/threshold/regrid at step 2 is only caught
+10 steps later after wasted compute. The discipline: for EACH product, first state
+the HYPOTHESIS (what it should look like - "the mask keeps the runway/houses and
+drops the coral/underwater"), THEN eyeball (Claude has eyes: colorize/hillshade ->
+PNG -> look) to CONFIRM it. Do not launch the next step until the current product
+is confirmed by eye. Frequent inspection is not optional in geospatial work - it is
+the work. To compare two rasters by eye, first `gdalwarp` them to the SAME grid,
+extent, and projection (so the PNG-based image comparison is apples-to-apples),
+then hillshade/colorize and look. (See the visual-inspection and asp-photogrammetry skills.)
+
 **Cheap checks on produced output files: always do them.** If the recipe says an
 output DEM/raster must have a certain grid size, resolution, or projection, run
 `gdalinfo` on it the moment it exists and confirm it conforms. A 1-second check
