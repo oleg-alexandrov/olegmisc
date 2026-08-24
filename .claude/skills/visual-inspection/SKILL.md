@@ -47,6 +47,12 @@ re-derive it each time, do NOT skip a step):**
    scatter easting/northing; flip south-up arrays to north-up) - never raw pixel indices.
 2. HILLSHADE any DEM before viewing: `gdaldem hillshade -multidirectional`. NEVER
    eyeball raw elevation; you compare terrain by its hillshade.
+   **HILLSHADE AT FULL RES *THEN* DOWNSAMPLE (CRITICAL gotcha).** Always run gdaldem
+   on the full-resolution DEM and downsample the *hillshade* for the preview. If you
+   downsample the DEM first and hillshade after, low-relief/flat terrain (Key West
+   ~0-5 m) loses all its slope and the hillshade comes out uniform/blank. For flat
+   terrain also add vertical exaggeration (`-z 3`) to reveal the relief. Same order
+   for any slope/aspect product: compute at native res, then downsample the product.
 3. Downsample to <=1000 px, write PNG, THEN look.
 4. Judge REGISTRATION only by the red/green hillshade overlay (aligned = yellow),
    NEVER by dz/geodiff std (blind to horizontal misregistration on low relief).
