@@ -145,6 +145,12 @@ comments). Rules:
 - When finishing any code/doc edit, grep the touched files for `.sh`,
   `_notes`, `_plan`, and project-subdir names and strip any that crept in.
 
+## Docs phrasing: "after jitter correction", not bare "after jitter"
+
+In docs/figure captions, write the full action, not the noun alone: "before/after
+jitter correction" (or "solving for jitter"), never bare "before/after jitter".
+Same spirit for any process - name the operation, not just the thing.
+
 ## NEVER Edit a Script While a Job Is Running It (CRITICAL)
 
 Bash RE-READS a script file from disk AS it executes (it does not slurp the whole
