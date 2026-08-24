@@ -475,6 +475,30 @@ Oleg the local gate is bypassed. Safety then comes from DISCIPLINE, in this orde
   (`tar cf /u/.../one.tar dir/`) - never touch other lfe datasets - and shallow-check
   it (`tar tf` all headers + a one-file data extract + key-member grep).
 
+## Nested Quoting in Remote/Docker Commands Is Dangerous - Keep Destructive Ops DEAD SIMPLE (CRITICAL)
+
+Deeply-nested remote invocations - `ssh host 'bash -lc "... \$var ... \$(cmd) ...
+awk \\\$4 ..."'` or the docker equivalent - are FRAGILE. The multiple layers of
+quoting/escaping are easy to get wrong, and when they are wrong the failure modes
+are bad in BOTH directions:
+- BEST case (proven 2026-08-23, the ale respin cleanup): an over-nested
+  `ssh l1 'bash -lc "... conda ... awk \\\$4 ..."'` produced NO output and
+  SILENTLY DID NOT RUN the `rm` lines at all - I thought l1 scratch was wiped; it
+  was still there. A silent no-op on a cleanup reads as success and isn't.
+- WORST case: a `$VAR` that expands empty (or a mis-terminated quote) turns
+  `rm -rf "$W/dir"` into `rm -rf /dir` or `rm -rf /` on the REMOTE, where the
+  harness gate does NOT apply. This is how you wipe someone's root.
+RULES:
+- For any REMOTE destructive op, use a DEAD-SIMPLE command: `ssh host 'rm -rf
+  /full/literal/absolute/path'` - single outer quotes, NO inner `bash -lc`, NO
+  `$var`, NO `$(...)`, one literal absolute path per `rm`. Then read back with a
+  separate simple command (`ssh host 'test -d /path && echo STILL || echo GONE'`).
+- If remote logic genuinely needs variables/loops, write a real script FILE,
+  rsync it over, and run it by path (`ssh host bash /abs/path/script.sh`) - never
+  inline a multi-level-escaped one-liner for anything that deletes.
+- Treat an empty/odd result from a nested remote command as "it probably didn't
+  run", not "it worked" - re-verify state explicitly before moving on.
+
 ## Never Reference Public PRs/Issues in Private-Repo Commit Messages (CRITICAL)
 
 GitHub auto-links `owner/repo#NNN` (and bare `#NNN`) in commit messages and
