@@ -27,6 +27,16 @@ etc.), name them so they stay trackable later. Pattern:
   regridded CTX lives by the CTX (`ref/.../ctx_regrid_10m.tif`); a resampled DEM
   and its diff/cmap live by that DEM. General rule for any dataset you manipulate,
   not just rasters: result goes home next to the input, since scratch dirs get wiped.
+- PRESERVE THE SOURCE'S FULL BASENAME + a suffix - do NOT re-invent a short cryptic
+  name that drops it. `data/lidar/Florida_..._Ellipsoid.tif` -> blurred is
+  `..._Ellipsoid_blur.tif`, filled `..._Ellipsoid_filled.tif`, filled-then-blurred
+  `..._Ellipsoid_filled_blur.tif` (chain suffixes in operation order), ALL in
+  `data/lidar/`. Do NOT dump it in a generic `dem/` as `blurred_lidar.tif` - that
+  mixes lidar-derived with stereo DEMs and destroys provenance. Distinguish variants
+  by an EXPLICIT token (`_blur`, `_filled`, `_mask`, `_full`), NEVER by only `.` vs
+  `_` before the same word (`X.map.tif` vs `X_map.tif` is an unreadable trap; the
+  `.map.tif` form is reserved for where a tool requires it, e.g. bundle_adjust
+  --mapprojected-data).
 
 ## Running sparse_disp From a Dev Build
 

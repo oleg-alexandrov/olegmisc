@@ -309,6 +309,38 @@ output DEM/raster must have a certain grid size, resolution, or projection, run
 `gdalinfo` on it the moment it exists and confirm it conforms. A 1-second check
 saves countless grief downstream.
 
+## Naming Derived Products (keep the source's FULL basename) (CRITICAL)
+
+A derived file MUST be named after its SOURCE's FULL basename plus an explicit
+descriptor suffix, so any product unambiguously names its parent. For source
+`X.tif`: mask -> `X_mask.tif`, hillshade -> `X_hs.tif`, mapprojected -> `X_map.tif`
+(or `X.map.tif` only where a tool REQUIRES that exact token, e.g. bundle_adjust
+`--mapprojected-data`), error image -> `X_err.tif`, etc. NEVER invent a cryptic
+short name that drops the base: for `pan_200013549424.r100.tif` the mask must be
+`pan_200013549424.r100_mask.tif`, NOT `new_424_pan_mask.tif` (untraceable to its
+source). **A derived dataset stays in the SAME DIRECTORY as its source** (next to
+it), carrying the source's full basename + suffix - do NOT drop it in a separate
+generic dir (`dem/`, `masks/`) with a re-invented name, which MIXES provenance
+(e.g. lidar-derived DEMs jumbled with stereo DEMs) and makes it unclear what came
+from what. Example: for `data/lidar/Florida_..._Ellipsoid.tif` the derivatives are
+`data/lidar/Florida_..._Ellipsoid_blur.tif`, `..._Ellipsoid_filled.tif`,
+`..._Ellipsoid_filled_blur.tif` (filled first, then blurred) - all in `data/lidar/`,
+never `dem/blurred_lidar.tif`. Distinguish variants (masked vs unmasked, etc.) by an
+EXPLICIT token (`_mask`, `_full`, `_blur`, `_filled`) - NEVER by only `.` vs `_`
+before the same word (`X.map.tif` vs `X_map.tif` is an unreadable trap). Chain
+suffixes in operation order (`_filled_blur` = filled then blurred).
+
+## Report Paths Relative to the Work Dir (CRITICAL)
+
+There is always exactly ONE work dir for a task. Report every path RELATIVE to it
+(`masks/new_424_mask_map.tif`), consistently - not sprawling absolute paths
+(`/nobackupp19/.../sdb_2026_08/masks/...` or the `/home6` symlink twin). State the
+work dir ONCE, then keep all paths relative to it. Same in notes, scripts, and chat.
+Do NOT keep changing the anchor mid-conversation (sometimes `/home6`, sometimes
+`/nobackupp19`, sometimes relative) - that has annoyed Oleg repeatedly. Pick the
+project work dir once and hold it fixed for the whole session; every path is
+work-dir-relative unless he explicitly asks for the absolute path.
+
 **All runnable scripts must be executable (`chmod +x`); only comment-only notes
 `.sh` stay non-executable.** A missing execute bit silently breaks `nohup`/direct
 invocation, and `rsync -a` can reset it - so set it at the source.
