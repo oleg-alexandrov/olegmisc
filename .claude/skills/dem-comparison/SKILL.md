@@ -29,10 +29,27 @@ have). Use gdalwarp:
   - fine -> coarse (downsampling to the coarser grid): `-r average`
   - coarse -> fine (or same-ish res resampling): `-r cubicspline`
   Pick by direction of the resolution change (Oleg's rule).
-  gdalwarp -t_srs <one proj> -te <xmin ymin xmax ymax> -tr <coarse> -tr <coarse> \
+  gdalwarp -t_srs <one proj> -te <xmin ymin xmax ymax> -tr <res> <res> \
     -r average  in.tif  out_ongrid.tif        # (or -r cubicspline)
 Crop the reference to the overlap first if it is much larger. Comparing DEMs on
 different grids - or with raw numpy by array index - is meaningless; regrid FIRST.
+
+**-te EXTENT ORDER (CRITICAL, bit us):** `gdalwarp -te` wants **`xmin ymin xmax
+ymax`**. This is NOT the same as the `--t_projwin` / `gdal_translate -projwin`
+order, which is **`xmin ymax xmax ymin`** (ulx uly lrx lry). `gdal_win.sh` emits
+the *projwin* order by DEFAULT (for `mapproject --t_projwin`); pass it a 2nd arg
+(`gdal_win.sh dem minmin`) to get the `-te` order. Feeding projwin order to
+`gdalwarp -te` swaps ymin/ymax and silently builds a **flipped, south-up grid**
+(positive Y pixel size) - which then propagates through dem_mosaic / gdaldem /
+image_calc and only shows up later as an upside-down plot. So: for BOTH rasters,
+warp with the SAME explicit `-te xmin ymin xmax ymax` and SAME `-tr`, then VERIFY
+`gdalinfo` shows identical `Size is`, identical extent, a NEGATIVE Y pixel size
+(north-up), and the right proj. For correlation especially (parallel_stereo
+--correlator-mode, or dem2gcp's warped->ref disparity) the two inputs must be
+pixel-for-pixel on the exact same grid/extent/proj, or the disparity is garbage.
+When plotting points over a warped raster, draw in projected coords (imshow with a
+UTM `extent`, scatter in easting/northing) and flip any south-up array to north-up
+first - never trust raw pixel indices for the geotransform sign.
 
 ## Step 2 - hillshade both (ALWAYS gdaldem hillshade)
 

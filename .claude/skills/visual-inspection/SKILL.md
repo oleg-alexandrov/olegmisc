@@ -36,6 +36,15 @@ re-derive it each time, do NOT skip a step):**
    -te <one extent> -ts <one size> -r cubicspline` (same PROJECTION, same EXTENT,
    same GRID, cubicspline). Comparing rasters on different grids/framing - or with
    raw numpy (index-aligned) - is NONSENSICAL and worthless.
+   **`-te` order is `xmin ymin xmax ymax`** - NOT the `--t_projwin`/`-projwin` order
+   (`xmin ymax xmax ymin`). `gdal_win.sh` emits projwin order by default; pass a 2nd
+   arg (`gdal_win.sh dem minmin`) for `-te`. Feeding projwin order to `gdalwarp -te`
+   swaps ymin/ymax and silently builds a FLIPPED south-up grid (positive Y pixel),
+   which surfaces later as an upside-down plot. After any warp, `gdalinfo` and confirm
+   identical Size/extent, NEGATIVE Y pixel size (north-up), right proj - especially
+   before correlation, where both inputs must be pixel-for-pixel identical. When
+   overlaying points on a raster, plot in projected coords (imshow `extent` in UTM,
+   scatter easting/northing; flip south-up arrays to north-up) - never raw pixel indices.
 2. HILLSHADE any DEM before viewing: `gdaldem hillshade -multidirectional`. NEVER
    eyeball raw elevation; you compare terrain by its hillshade.
 3. Downsample to <=1000 px, write PNG, THEN look.
