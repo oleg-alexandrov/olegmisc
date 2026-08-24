@@ -75,6 +75,16 @@ then bundle_adjust bends the cameras to honor them (see casa_grande/dem2gcp.sh):
     --left-camera L.json --right-camera R.json \
     --match-file <dense disp match> --gcp-sigma 1 --max-disp <px> \
     --search-len 0 --output-gcp out.gcp
+The cameras (L.json/R.json) MUST be the baked `<prefix>-<img>.adjusted_state.json`
+from the latest bundle_adjust - dem2gcp has NO `--bundle-adjust-prefix`, so the
+baked state IS the only way to give it an adjusted camera (see the asp-photogrammetry
+skill). For >2 images use `--image-list`/`--camera-list` + `--match-files-prefix`
+(reuse existing sparse matches; dense not required). Land-only GCP: pass
+`--gcp-sigma-image <georef land mask>` (GCP where the mask is nodata/<=0 are SKIPPED)
+and/or feed a land-masked warped-DEM; set `--max-disp` to reject change/layover
+blobs (e.g. keep a real few-px warp, drop >=10 px). `--max-num-gcp` caps the count.
+NOTE: weight-image in bundle_adjust masks TRIANGULATED tie points only, NOT GCP -
+GCP land-purity must come from dem2gcp itself.
 Then bundle_adjust with the latest cameras + these GCPs to fix the horizontal
 ground plane (gcp-sigma ~1; --robust-threshold ~1 - check tools/bundle_adjust.rst
 for how robust-threshold gates residuals, and whether that magnitude suits your

@@ -105,6 +105,26 @@ Verify: mapproject the aligned cams onto the reference and overlay (no shift); t
 aligned DEM's geodiff median vs the reference should be near zero. Full worked recipe
 in `~/projects/cassis_olympus_mons/cassis_002920_ctxpair_A_notes.sh` (stage 1e-1f).
 
+## Prefer adjusted_state.json Cameras, NOT --bundle-adjust-prefix (CRITICAL)
+
+Every `bundle_adjust`/`parallel_bundle_adjust` run writes, per input camera, a
+standalone CSM state file `<prefix>-<image>.adjusted_state.json` with the
+adjustment BAKED IN (for CSM frame/linescan this is automatic; DG/WorldView and
+ISIS cams are converted to a CSM linescan state and baked; `--inline-adjustments`
+forces it for Pinhole/OpticalBar). This includes the SECOND bundle that only
+applies a pc_align transform (`--apply-initial-transform-only`) - it too emits a
+baked `adjusted_state.json`. USE THAT FILE DIRECTLY as the camera in every
+downstream tool (mapproject, parallel_stereo, dem2gcp, jitter_solve, another
+bundle_adjust) and do NOT pass `--bundle-adjust-prefix`. Reasons: (1) some tools
+(notably `dem2gcp`) have NO `--bundle-adjust-prefix` option, so the baked camera
+is the only way to feed them an adjusted camera; (2) passing BOTH the
+adjusted_state.json AND `--bundle-adjust-prefix` DOUBLE-APPLIES the adjustment - a
+silent, serious error; (3) it is self-documenting (the camera file IS the state).
+Verify equivalence once with `cam_test --image img --cam1 run-img.adjusted_state.json
+--cam2 raw.cam --cam2-bundle-adjust-prefix run` -> pixel/center diff must be ~1e-9
+(machine zero; confirmed on WV3, 2026-08-23). Only reach for `--bundle-adjust-prefix`
+when a run did NOT produce adjusted_state.json (older builds / adjust-only .adjust).
+
 ## point2dem --errorimage Always; Mosaic the Error Too
 
 Every `point2dem` that makes a DEM gets `--errorimage` (the triangulation

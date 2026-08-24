@@ -41,8 +41,8 @@ re-derive it each time, do NOT skip a step):**
 3. Downsample to <=1000 px, write PNG, THEN look.
 4. Judge REGISTRATION only by the red/green hillshade overlay (aligned = yellow),
    NEVER by dz/geodiff std (blind to horizontal misregistration on low relief).
-5. Colorize a geodiff/tri-err/dz with a matplotlib colorbar (per-panel, unit
-   label), not bare grayscale.
+5. Colorize a geodiff/tri-err/dz with a matplotlib colorbar (per-panel, numeric
+   ticks only; plasma for error, RdBu_r for signed), not bare grayscale.
 This applies to the mapproj ortho-on-hillshade geometry check too: warp the ortho
 and the DEM hillshade to the same grid, then look.
 
@@ -60,14 +60,28 @@ CTX pair's stereographic center 0.12 deg off, faking a cross-track pattern). Det
 
 Colorizing a raster for inspection (geodiff/dz, disparity, tri-err): render WITH a
 colorbar (matplotlib, not bare `gdaldem color-relief`). EACH plot gets its OWN vertical
-colorbar on the RIGHT, unit label ("meters"/"pixels") rotated 90 degrees; NEVER a shared
-colorbar. Diverging ramp + symmetric clamp for signed diffs; robust clamp, not min/max;
-nodata masked. Multidirectional hillshade (`gdaldem hillshade -multidirectional`) for
-DEMs. Full recipe (pfe gdal-vs-matplotlib env split): `~/projects/visual_raster_inspection.sh` section 5.
+full-height colorbar on the RIGHT, **numeric ticks ONLY, no unit label** (unit goes in
+the caption); tick `labelsize ~16`; NEVER a shared colorbar. Robust clamp, not min/max.
+Multidirectional hillshade (`gdaldem hillshade -multidirectional`) for DEMs. Full recipe
+(pfe gdal-vs-matplotlib env split): `~/projects/visual_raster_inspection.sh` section 5.
+
+**COLORMAP CONVENTION (permanent, Oleg 2026-08-18; used in the ASP doc figures):**
+- **Unsigned / error** (tri-err, |dz|, residual/disparity magnitude): **`plasma`,
+  `vmin=0`**. Chosen deliberately because plasma's low end is deep PURPLE, so it stays
+  visually distinct from BLACK nodata (black is reserved for nodata - never let a
+  colormap's min be black). Not magma, not viridis - plasma.
+- **Signed** (dz, dh, before-minus-after, DEM-minus-ref): **`RdBu_r`** (blue negative,
+  white zero, red positive), **symmetric clamp** about 0.
+- **nodata = BLACK** for every colorized plot (`cmap.set_bad("black")`, nodata->NaN),
+  so it reads as "not covered", distinct from real low values.
+The ASP tools `colormap`/`point2dem --colormap-style` take these names too
+(`plasma`, `inferno`, `viridis`, ...); the full list is in the ASP
+`docs/tools/colormap.rst`. Canonical plotting recipe with these conventions:
+`~/projects/visual_raster_inspection.sh` (colormap-conventions section).
 
 **No text inside a figure that ships with an RST/HTML caption - the caption below carries ALL of it.** No panel titles ("before"/"after"/"hillshade"), no colorbar unit label ("meters"/"pixels"), no baked-in descriptions. KEEP only the colorbar tick numbers (they carry the range/scale). The prose caption names the panels left-to-right and states the units and clamp. (Oleg 2026-08-20.)
 
-**No black border/frame around any image panel (hillshade, ortho, colorized raster) - NEVER put one.** Call `ax.axis('off')` (or hide all four spines) so matplotlib draws no box around the imshow; keep nodata white or transparent, never a black edge. A framed hillshade reads as sloppy. This applies to every panel in every figure.
+**No black FRAME around any image panel (hillshade, ortho, colorized raster) - NEVER put one.** Call `ax.axis('off')` (or hide all four spines) so matplotlib draws no box or ticks around the imshow. A framed panel reads as sloppy. This applies to every panel in every figure. NOTE the distinction: the FRAME (axis spine rectangle) is gone, but nodata PIXELS are rendered BLACK (`cmap.set_bad("black")`) - black is reserved for nodata, which is why error plots use `plasma` (purple min, not black min). Do not confuse "no black frame" with "no black nodata".
 
 **All image panels in a multi-panel figure must be the SAME height (1:1).** A colorbar attached with `fig.colorbar(im, ax=a)` steals width from that panel, and with `aspect='equal'` a narrower image is also shorter - so panels with a colorbar end up shorter than those without. Fix: give EVERY panel an equal-width right slot via `make_axes_locatable(a).append_axes("right", size="6%", pad=0.05)` - a real colorbar on the panels that need one, `cax.axis("off")` (invisible spacer) on the rest. Then all panels render at identical height and the colorbars are full panel height. (Oleg 2026-08-20.)
 
