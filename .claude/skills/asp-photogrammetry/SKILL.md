@@ -130,6 +130,25 @@ bundle_adjust) and do NOT pass `--bundle-adjust-prefix`. Reasons: (1) some tools
 is the only way to feed them an adjusted camera; (2) passing BOTH the
 adjusted_state.json AND `--bundle-adjust-prefix` DOUBLE-APPLIES the adjustment - a
 silent, serious error; (3) it is self-documenting (the camera file IS the state).
+
+## Dense matches from a stereo disparity for a re-triangulation / refraction / residual BA
+`parallel_stereo ... --entry-point 5 --num-matches-from-disparity N` (at the triangulation
+stage) writes DENSE tie-point matches derived straight from the stereo disparity. Even when
+the stereo ran on MAPPROJECTED images, these are meant to be matches between the ORIGINAL/RAW
+images (file `<out>-disp-<Lraw>__<Rraw>.match`). To consume them in `bundle_adjust` (e.g. a
+0-iteration run just to write `*-final_residuals_pointmap.csv`, or a bathy/refraction test),
+pass `--match-files-prefix <out>` with the RAW images + cameras and **do NOT use
+`--mapprojected-data-list`** - ASP hard-errors "Cannot specify --match-files-prefix or
+--clean-match-files-prefix together with --mapprojected-data or --mapprojected-data-list".
+You don't NEED mapprojected-data-list here, because num-matches-from-disparity already puts
+the matches in raw-image space. NUANCE (seen 2026-08-25, mapproj T1-T3 bathy work): the
+raw-named `run-disp-<Lraw>__<Rraw>.match` came out EMPTY while a mapproj-domain
+`run-L__R.match` (coords spanning the mapproj grid, not the raw dims) held the points - so
+VERIFY the raw match is non-empty and its coords span the RAW image dimensions
+(`parse_match_file.py`) before relying on it; if empty, fix the num-matches-from-disparity
+setup, do not fall back to `--mapprojected-data-list`. (Standard ASP bathy stereo -
+`--left/right-bathy-mask` + `--bathy-plane` + `--refraction-index` at triangulation - is the
+dense alternative validation path that avoids the match-injection question entirely.)
 Verify equivalence once with `cam_test --image img --cam1 run-img.adjusted_state.json
 --cam2 raw.cam --cam2-bundle-adjust-prefix run` -> pixel/center diff must be ~1e-9
 (machine zero; confirmed on WV3, 2026-08-23). Only reach for `--bundle-adjust-prefix`
