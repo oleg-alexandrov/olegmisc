@@ -80,6 +80,20 @@ launch_master no longer in `pgrep` = finished (and it has emailed). Wall time is
 roughly mac_x64 ~1h20m, mac_arm64 ~40m, linux_arm ~25m; a full run ~1.5-2h.
 When arming an in-session CronCreate heartbeat to watch it, see autonomous-ops.
 
+**The done-signal is the PROCESS, not the status file.** `status_master.txt`
+persists between runs and shows the PREVIOUS run's per-platform Success/Fail
+until the current run overwrites each line as its result lands. Early in a run it
+still holds yesterday's numbers, so reading it mid-run will make you falsely
+conclude "done, cloudLinuxArm64 Fail" when the run is only minutes in and still
+building. ALWAYS gate "done" on `pgrep -fa launch_master.sh` returning nothing;
+only then read status_master.txt for the real result. (Burned 2026-08-26.)
+
+**zsh gotchas in the l1 recon ssh** (l1's login shell is zsh): a `?` in an echo
+(`echo RUNNING?`) triggers a no-match glob error that ABORTS the whole remote
+line, and a leading `=` (`echo ===STATUS===`) triggers `=cmd` filename expansion
+and errors. Use plain separators with no `?` and no leading `=` (e.g.
+`echo ----status----`).
+
 ## Email + release (done by launch_master)
 
 - Email via msmtp: `Subject: ASP build <date> status is <Success|Fail>`, body is
