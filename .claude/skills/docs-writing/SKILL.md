@@ -1,6 +1,6 @@
 ---
 name: docs-writing
-description: Documentation and prose writing - building ASP docs, RST formatting and :ref: vs :numref:, citing papers, NEWS.rst conventions, the say-once/short-sentence/words-to-avoid writing style, commit-message style, and how to show diffs. Load before writing or editing RST docs, NEWS entries, commit messages, PR/issue text, or any prose.
+description: Documentation and prose writing - building/compiling ASP docs (sphinx, make html) and checking a doc build for warnings, RST formatting and :ref: vs :numref:, citing papers, NEWS.rst conventions, the say-once/short-sentence/words-to-avoid writing style, commit-message style, and how to show diffs. Load before building, compiling, or checking the ASP docs (sphinx-build / make html), or before writing or editing RST docs, NEWS entries, commit messages, PR/issue text, or any prose.
 ---
 
 ## Displaying Diffs and Changes
@@ -17,6 +17,24 @@ Use markdown diff blocks:
 
 `conda activate sphinx; make -C ~/projects/StereoPipeline/docs html` (output in
 `docs/_build/html/`). Full build/cmake mechanics: `~/projects/cmake_build_notes.sh`.
+ASP's own instructions: `docs/building_asp.rst` ("Building the documentation").
+
+**The `sphinx` env is mandatory** - the base/anaconda3 sphinx lacks
+`sphinxcontrib.bibtex` (declared in `docs/conf.py` `extensions`), and a build
+without it dies immediately with `Extension error: Could not import extension
+sphinxcontrib.bibtex`. The env lives at `~/anaconda3/envs/sphinx`; if
+`conda activate sphinx` is not set up in a non-interactive shell, invoke the
+binary directly: `~/anaconda3/envs/sphinx/bin/sphinx-build -b html . _build/html`
+from within `docs/`. Create it (once) per `building_asp.rst`:
+`conda create -n sphinx -c conda-forge sphinx sphinxcontrib-bibtex`.
+
+**Checking a build for real problems.** Grepping the build log for `error` gives
+false positives - many ASP page/image names contain "error"
+(`error_propagation`, `*_error.png`). Filter for genuine issues instead:
+`sphinx-build ... 2>&1 | grep -iE "WARNING|ERROR:|undefined label|citation not
+found" | grep -viE "RemovedInSphinx|deprecated"`. Empty output = clean. A bad
+`:numref:` shows as `WARNING: undefined label`; a missing bib entry as
+`citation not found`. PDF/latexpdf output is no longer supported - HTML only.
 
 ## RST Documentation Formatting
 
