@@ -35,7 +35,11 @@ changes on master and push there.
 ## GitHub CLI (gh)
 
 Full reference (paths, repo slugs, GraphQL/REST recipes, CI): `~/projects/github_notes.sh`.
-`gh` not on PATH: `$(ls -d $HOME/*conda3/envs/gh/bin/gh)`. **CRITICAL:** `gh
+`gh` is NOT on PATH on any box; it lives in a dedicated `gh` conda env. Portable:
+`GH=$(ls -d $HOME/*conda3/envs/gh/bin/gh)`. Concrete paths: Mac mini
+`/Users/oalexan1/anaconda3/envs/gh/bin/gh`; lunokhod1
+`/home/oalexan1/miniconda3/envs/gh/bin/gh`. Do NOT waste calls running bare `gh`
+first (it is `command not found`) - go straight to the env path. **CRITICAL:** `gh
 issue/pr view` and `gh pr edit` error on the deprecated Projects-classic API -
 use `gh api` (REST) for any issue/PR body/comment/state/label fetch or edit; and
 - editing a PR body: `gh api -X PATCH repos/OWNER/REPO/pulls/N -F body=@file`
