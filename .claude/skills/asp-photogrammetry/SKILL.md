@@ -132,29 +132,27 @@ adjusted_state.json AND `--bundle-adjust-prefix` DOUBLE-APPLIES the adjustment -
 silent, serious error; (3) it is self-documenting (the camera file IS the state).
 
 ## Dense matches from a stereo disparity (num-matches-from-disparity) - residual/refraction BA
-Two stereo_tri options -> `asp::matchesFromDisp` (src/asp/Tools/stereo_tri.cc ->
-src/asp/Core/DisparityProcessing.cc). BOTH un-project the matches to the ORIGINAL RAW images
-(for mapprojected stereo, `*_trans->reverse` UNDOES the mapprojection -> raw pixel coords):
-- `--num-matches-from-disparity N` -> `noTripletsMatches`: walks the DISPARITY grid; for each
-  valid disparity pixel emits a match via `left_trans->reverse` / `right_trans->reverse`.
-  ROBUST and the PREFERRED mode - "triplet" is a misnomer, you usually want this (no triplets).
-- `--num-matches-from-disp-triplets N` -> `tripletsMatches`: walks the LEFT RAW-IMAGE grid,
-  `left_trans->forward` into the disparity, samples, `reverse` to raw; keeps points consistent
-  across pairs (rerun per pair to build cross-image triplets). Works on 2 images in principle.
+`--num-matches-from-disparity` and `--num-matches-from-disp-triplets` ARE ALIASES in current
+ASP. Verified src/asp/Tools/stereo.cc ~987 ("In the latest ASP always create triplets"):
+`--num-matches-from-disparity`'s value is COPIED into `num_matches_from_disp_triplets` and the
+former is ZEROED, after printing "equivalent to --num-matches-from-disp-triplets". So ONLY the
+triplets code path (`tripletsMatches` in src/asp/Core/DisparityProcessing.cc) ever runs;
+`noTripletsMatches` is effectively dead code. `tripletsMatches` DOES work on a 2-image pair
+(no >=3 requirement); it walks the LEFT RAW-IMAGE grid, `left_trans->forward` into the
+disparity, samples, `right_trans->reverse` to raw -> so matches END UP IN RAW image coords.
 OUTPUT FILE: `<out>-disp-<Lraw>__<Rraw>.match` (named after the ORIGINAL raw images, from the
-mapproj header). This is the one to USE. Do NOT use `<out>-L__R.match` - that is a different
-input/aligned-domain sampling; feeding it to BA against the RAW images gave ~380 px reproj
-residuals (burned 2026-08-25). Consume: copy/rename `-disp-<raw>__<raw>.match` to
-`<prefix>-<Lrawbase>__<Rrawbase>.match`, `bundle_adjust --match-files-prefix <prefix>` with
-RAW images + cameras, and do NOT pass `--mapprojected-data-list` (mutually exclusive, and not
-needed - matches are already raw). Sanity: the 0-iter pointmap reproj residuals must be SMALL.
-BUILD GOTCHA (pfe packaged build, 2026-08-25): the plain `--num-matches-from-disparity` was
-routed to the TRIPLETS path (log: "equivalent to --num-matches-from-disp-triplets",
-"Internally multiplying by 1.3"), and on a lone MAPPROJECTED T1-T3 pair `tripletsMatches`
-returned 0 (its raw-image-grid + forward-transform iteration found nothing in-bounds) -> EMPTY
-`-disp-` file. The DEV SOURCE routes the plain flag to `noTripletsMatches` (disparity-grid +
-reverse), which populates it. So if `-disp-` is empty: run/rebuild with the dev build (plain
--> noTriplets), or use `--num-matches-from-disp-triplets`. `F.tif` non-empty is necessary but
+mapproj header) - this is the one to USE. Do NOT use `<out>-L__R.match` (input/aligned-domain
+sampling; feeding it to BA against RAW images gave ~380 px reproj residuals, burned 2026-08-25).
+Consume: copy/rename `-disp-<raw>__<raw>.match` to `<prefix>-<Lrawbase>__<Rrawbase>.match`,
+`bundle_adjust --match-files-prefix <prefix>` with RAW images + cameras, and do NOT pass
+`--mapprojected-data-list` (mutually exclusive; not needed - matches are raw). Sanity: 0-iter
+pointmap reproj residuals must be SMALL.
+OPEN BUG (2026-08-25): on our MAPPROJECTED T1-T3 pair `tripletsMatches` returned 0 -> EMPTY
+`-disp-` file, even though F.tif is non-empty. Root cause not yet nailed (likely the raw<->
+disparity transform `left_trans` for a mapproj-INPUT stereo with alignment-method none - the
+forward step lands out of the disparity bounds). To run down: check `tx_left/tx_right` for
+mapproj+alignment-none, and/or redo the stereo so the transforms are valid. F.tif non-empty is
+necessary but
 NOT sufficient - the routing/transform must be right too.
 ALWAYS EYEBALL any match / dense-match file before trusting it: overlay on BOTH images
 (`~/bin/plot_matches.py` or stereo_gui) and confirm the SAME feature sits at the two match
