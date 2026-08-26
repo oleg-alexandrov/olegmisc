@@ -131,6 +131,25 @@ is the only way to feed them an adjusted camera; (2) passing BOTH the
 adjusted_state.json AND `--bundle-adjust-prefix` DOUBLE-APPLIES the adjustment - a
 silent, serious error; (3) it is self-documenting (the camera file IS the state).
 
+## ALWAYS check a DEM's min value AND NoData before using it (CRITICAL)
+Before feeding ANY DEM to mapproject / stereo / bundle_adjust (especially as the mapproj
+surface for `num-matches-from-disp(-triplets)` or any camera-ray -> DEM intersection), run
+`gdalinfo -stats -mm <dem>` and confirm BOTH: (1) a NoData Value IS declared, and (2) the
+STATISTICS_MINIMUM is physically sane (not a sentinel). The classic trap: a "filled" DEM whose
+nodata cells hold -FLT_MAX (-3.4028e38, or -1e38 / -1e6 / -9999) but with NO NoData declared in
+the header. VW/ASP then treats the sentinel as VALID terrain: `vw::cartography::demHeightGuess`
+averages it to garbage (~-5.7e37 m), and `Map2CamTrans::forward()` (camera_pixel_to_dem_xyz)
+diverges -> ray-DEM intersection FAILS for every ray -> `num-matches-from-disparity` writes an
+EMPTY `-disp-` match, while `reverse()` (direct DEM sampling, used by triangulation) still works,
+so the DEM/PC look fine and the failure is silent. (Burned 2026-08-25, SDB Key West: external
+lidar blurDem, 0 matches; proven by A/B - a clean ASP DEM gave 3828, the same DEM + a
+`gdalbuildvrt -vrtnodata` overlay gave 4622.) FIX: declare it - `gdal_edit.py -a_nodata <sentinel>
+<dem>` (in place) or a non-destructive `gdalbuildvrt -vrtnodata <sentinel> nd.vrt <dem>` overlay -
+or use a clean ASP-made DEM (point2dem writes NoData -1e6, sane min/max). Tell-tale in
+`gdalinfo -stats`: STATISTICS_MINIMUM ~ -3.4e38 (or other sentinel) and/or a missing "NoData
+Value". This is also a latent VW robustness gap (demHeightGuess should reject absurd/-FLT_MAX
+heights) worth an upstream fix.
+
 ## Dense matches from a stereo disparity (num-matches-from-disparity) - residual/refraction BA
 `--num-matches-from-disparity` and `--num-matches-from-disp-triplets` ARE ALIASES in current
 ASP. Verified src/asp/Tools/stereo.cc ~987 ("In the latest ASP always create triplets"):
@@ -147,13 +166,25 @@ Consume: copy/rename `-disp-<raw>__<raw>.match` to `<prefix>-<Lrawbase>__<Rrawba
 `bundle_adjust --match-files-prefix <prefix>` with RAW images + cameras, and do NOT pass
 `--mapprojected-data-list` (mutually exclusive; not needed - matches are raw). Sanity: 0-iter
 pointmap reproj residuals must be SMALL.
-OPEN BUG (2026-08-25): on our MAPPROJECTED T1-T3 pair `tripletsMatches` returned 0 -> EMPTY
-`-disp-` file, even though F.tif is non-empty. Root cause not yet nailed (likely the raw<->
-disparity transform `left_trans` for a mapproj-INPUT stereo with alignment-method none - the
-forward step lands out of the disparity bounds). To run down: check `tx_left/tx_right` for
-mapproj+alignment-none, and/or redo the stereo so the transforms are valid. F.tif non-empty is
-necessary but
-NOT sufficient - the routing/transform must be right too.
+SOLVED (2026-08-25): 0 matches from a MAPPROJECTED pair was NOT a code bug - it was the
+mapproj DEM. `tripletsMatches` places matches by walking the LEFT RAW grid and calling
+`left_trans->forward()` = `Map2CamTrans::forward()` = `camera_pixel_to_dem_xyz` (intersect the
+camera ray with the MAPPROJ DEM). Our external "filled" lidar DEM contained -FLT_MAX
+(-3.4e38) sentinel pixels but declared NO NoData in the GeoTIFF header, so VW treated -3.4e38
+as valid terrain: `demHeightGuess` averaged to ~-5.7e37 m, and the ray-marching started at an
+absurd height and NEVER intersected for ANY ray -> "Found 0 left-to-right matches" -> empty
+`-disp-`. `reverse()` (map->raw, direct DEM sample) is unaffected, so triangulation still made
+a fine DEM - THAT is why F.tif/PC were good yet matches were 0. PROVEN by an A/B on one window,
+same cameras/images, fresh stereo each, only the mapproj DEM differing: internal ASP DEM
+(NoData -1e6, sane range) -> 3828 matches; external DEM -> 0. LESSON: for
+num-matches-from-disp(-triplets) on mapprojected inputs, the mapproj DEM MUST be clean - a
+DECLARED NoData and no absurd sentinel heights - or `forward()` silently yields 0 while tri
+looks fine. CHECK the DEM with `gdalinfo -stats -mm` (watch STATISTICS_MINIMUM ~ -3.4e38 and a
+missing "NoData Value"); fix with `gdal_edit.py -a_nodata <sentinel>` / a `gdalbuildvrt
+-vrtnodata` overlay, or use a clean ASP-made DEM (point2dem writes NoData -1e6). demHeightGuess
+being poisoned by undeclared -FLT_MAX is also a latent VW robustness gap (guard the height
+guess / reject absurd values) worth an upstream fix. F.tif non-empty is necessary but NOT
+sufficient - the mapproj DEM must be clean too.
 ALWAYS EYEBALL any match / dense-match file before trusting it: overlay on BOTH images
 (`~/bin/plot_matches.py` or stereo_gui) and confirm the SAME feature sits at the two match
 endpoints. A NON-empty file can still be garbage (wrong domain/transform -> the 380 px case).
