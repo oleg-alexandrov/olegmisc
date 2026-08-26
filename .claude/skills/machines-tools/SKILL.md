@@ -62,5 +62,30 @@ see the defs in `~/projects/aliases_notes.sh`. Quick:
 
 ## Sending Email to Oleg
 
-How to email Oleg (msmtp; recipient oleg.alexandrov@gmail.com) is described in
-`~/projects/send_email_notes.sh`.
+Recipient is always `oleg.alexandrov@gmail.com`. Transport is `msmtp` (same
+mailer the nightly uses). Compose an RFC822 file (Subject header first, blank
+line, then body - put full https URLs inline, Oleg copy-pastes them), then pipe
+it in. Do NOT inline a multi-line body in a remote ssh string (nested quoting
+eats newlines).
+```bash
+cat > /tmp/claude_mail.txt <<'MSG'
+Subject: <one-line subject>
+To: oleg.alexandrov@gmail.com
+
+<body>
+MSG
+msmtp oleg.alexandrov@gmail.com < /tmp/claude_mail.txt   # Mac local msmtp (primary)
+```
+Mac msmtp = `/opt/homebrew/bin/msmtp`, config `~/.msmtprc` (perms 600). Fallback
+if the Mac config breaks - l1's msmtp over ssh, piping the same file as stdin:
+`ssh l1 '~/miniconda3/envs/gh/bin/msmtp oleg.alexandrov@gmail.com' < /tmp/claude_mail.txt`.
+Exit 0 = accepted. Full detail: `~/projects/send_email_notes.sh`.
+
+## ssh login banners (l1, pfe, athena)
+
+These U.S. Government hosts print a long CUI banner on every login that floods
+command output. When batching a recon `ssh l1 '...'`, pipe the result through a
+grep filter (drop lines matching `U\.S\. Government|information system|consent|
+Unclassified|monitor|Unauthorized|privileges|^-+$`) so the banner does not bury
+the real output. Batch all remote ops into ONE ssh call - MOTD/banner overhead
+is ~10s per call.
