@@ -131,29 +131,37 @@ is the only way to feed them an adjusted camera; (2) passing BOTH the
 adjusted_state.json AND `--bundle-adjust-prefix` DOUBLE-APPLIES the adjustment - a
 silent, serious error; (3) it is self-documenting (the camera file IS the state).
 
-## Dense matches from a stereo disparity for a re-triangulation / refraction / residual BA
-`--num-matches-from-disparity N` (a stereo_tri option; run at `--entry-point 5`) writes N
-dense tie-point matches sampled from the stereo disparity, **"between the ORIGINAL images
-(before any alignment or mapprojection)" = RAW image coordinates** - per its own --help.
-So it WORKS ON A PAIR (2 images) and gives RAW matches, as long as `F.tif` (the disparity)
-is non-empty. The output is written as `<out>-L__R.match` (the stereo's internal L/R, but
-the point COORDS are raw). To consume in `bundle_adjust` (e.g. a 0-iter run to write
-`*-final_residuals_pointmap.csv`, or a bathy/refraction residual test): copy/rename it to
-BA's expected name `<prefix>-<Lrawbase>__<Rrawbase>.match`, pass `--match-files-prefix
-<prefix>` with the RAW images + cameras, and **do NOT pass `--mapprojected-data-list`** -
-the two are mutually exclusive ("Cannot specify --match-files-prefix ... together with
---mapprojected-data-list"), AND you don't need it since the matches are already raw. Then
-sanity-check: the 0-iter pointmap reproj residuals must be SMALL (wrong domain/name -> huge).
-GOTCHA (2026-08-25): in this build `--num-matches-from-disparity` is aliased-warned as
-"equivalent to `--num-matches-from-disp-triplets`", but they differ: the plain option is the
-pair/raw sampler (populates `-L__R.match`); the TRIPLETS variant needs >=3 images to enforce
-cross-image consistency and writes `<out>-disp-<Lraw>__<Rraw>.match` - which is EMPTY for a
-lone 2-image pair (do not mistake that empty triplets file for failure; use `-L__R.match`).
-CHEAP: to get matches you do NOT need a full point cloud - run a single `stereo_tri` (not
-full parallel_stereo) resuming an EXISTING stereo run, just adding the cameras +
-`--num-matches-from-disparity`. (Standard ASP bathy stereo -
-`--left/right-bathy-mask` + `--bathy-plane` + `--refraction-index` at triangulation - is the
-dense alternative validation path that avoids the match-injection question entirely.)
+## Dense matches from a stereo disparity (num-matches-from-disparity) - residual/refraction BA
+Two stereo_tri options -> `asp::matchesFromDisp` (src/asp/Tools/stereo_tri.cc ->
+src/asp/Core/DisparityProcessing.cc). BOTH un-project the matches to the ORIGINAL RAW images
+(for mapprojected stereo, `*_trans->reverse` UNDOES the mapprojection -> raw pixel coords):
+- `--num-matches-from-disparity N` -> `noTripletsMatches`: walks the DISPARITY grid; for each
+  valid disparity pixel emits a match via `left_trans->reverse` / `right_trans->reverse`.
+  ROBUST and the PREFERRED mode - "triplet" is a misnomer, you usually want this (no triplets).
+- `--num-matches-from-disp-triplets N` -> `tripletsMatches`: walks the LEFT RAW-IMAGE grid,
+  `left_trans->forward` into the disparity, samples, `reverse` to raw; keeps points consistent
+  across pairs (rerun per pair to build cross-image triplets). Works on 2 images in principle.
+OUTPUT FILE: `<out>-disp-<Lraw>__<Rraw>.match` (named after the ORIGINAL raw images, from the
+mapproj header). This is the one to USE. Do NOT use `<out>-L__R.match` - that is a different
+input/aligned-domain sampling; feeding it to BA against the RAW images gave ~380 px reproj
+residuals (burned 2026-08-25). Consume: copy/rename `-disp-<raw>__<raw>.match` to
+`<prefix>-<Lrawbase>__<Rrawbase>.match`, `bundle_adjust --match-files-prefix <prefix>` with
+RAW images + cameras, and do NOT pass `--mapprojected-data-list` (mutually exclusive, and not
+needed - matches are already raw). Sanity: the 0-iter pointmap reproj residuals must be SMALL.
+BUILD GOTCHA (pfe packaged build, 2026-08-25): the plain `--num-matches-from-disparity` was
+routed to the TRIPLETS path (log: "equivalent to --num-matches-from-disp-triplets",
+"Internally multiplying by 1.3"), and on a lone MAPPROJECTED T1-T3 pair `tripletsMatches`
+returned 0 (its raw-image-grid + forward-transform iteration found nothing in-bounds) -> EMPTY
+`-disp-` file. The DEV SOURCE routes the plain flag to `noTripletsMatches` (disparity-grid +
+reverse), which populates it. So if `-disp-` is empty: run/rebuild with the dev build (plain
+-> noTriplets), or use `--num-matches-from-disp-triplets`. `F.tif` non-empty is necessary but
+NOT sufficient - the routing/transform must be right too.
+ALWAYS EYEBALL any match / dense-match file before trusting it: overlay on BOTH images
+(`~/bin/plot_matches.py` or stereo_gui) and confirm the SAME feature sits at the two match
+endpoints. A NON-empty file can still be garbage (wrong domain/transform -> the 380 px case).
+CHEAP: matches need no full point cloud - a single `stereo_tri` resuming an existing run (add
+cameras + the flag) suffices. Standard bathy stereo (`--left/right-bathy-mask` +
+`--bathy-plane` + `--refraction-index`) is the dense alternative that avoids matches entirely.
 Verify equivalence once with `cam_test --image img --cam1 run-img.adjusted_state.json
 --cam2 raw.cam --cam2-bundle-adjust-prefix run` -> pixel/center diff must be ~1e-9
 (machine zero; confirmed on WV3, 2026-08-23). Only reach for `--bundle-adjust-prefix`
