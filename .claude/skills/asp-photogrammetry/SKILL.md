@@ -132,21 +132,26 @@ adjusted_state.json AND `--bundle-adjust-prefix` DOUBLE-APPLIES the adjustment -
 silent, serious error; (3) it is self-documenting (the camera file IS the state).
 
 ## Dense matches from a stereo disparity for a re-triangulation / refraction / residual BA
-`parallel_stereo ... --entry-point 5 --num-matches-from-disparity N` (at the triangulation
-stage) writes DENSE tie-point matches derived straight from the stereo disparity. Even when
-the stereo ran on MAPPROJECTED images, these are meant to be matches between the ORIGINAL/RAW
-images (file `<out>-disp-<Lraw>__<Rraw>.match`). To consume them in `bundle_adjust` (e.g. a
-0-iteration run just to write `*-final_residuals_pointmap.csv`, or a bathy/refraction test),
-pass `--match-files-prefix <out>` with the RAW images + cameras and **do NOT use
-`--mapprojected-data-list`** - ASP hard-errors "Cannot specify --match-files-prefix or
---clean-match-files-prefix together with --mapprojected-data or --mapprojected-data-list".
-You don't NEED mapprojected-data-list here, because num-matches-from-disparity already puts
-the matches in raw-image space. NUANCE (seen 2026-08-25, mapproj T1-T3 bathy work): the
-raw-named `run-disp-<Lraw>__<Rraw>.match` came out EMPTY while a mapproj-domain
-`run-L__R.match` (coords spanning the mapproj grid, not the raw dims) held the points - so
-VERIFY the raw match is non-empty and its coords span the RAW image dimensions
-(`parse_match_file.py`) before relying on it; if empty, fix the num-matches-from-disparity
-setup, do not fall back to `--mapprojected-data-list`. (Standard ASP bathy stereo -
+`--num-matches-from-disparity N` (a stereo_tri option; run at `--entry-point 5`) writes N
+dense tie-point matches sampled from the stereo disparity, **"between the ORIGINAL images
+(before any alignment or mapprojection)" = RAW image coordinates** - per its own --help.
+So it WORKS ON A PAIR (2 images) and gives RAW matches, as long as `F.tif` (the disparity)
+is non-empty. The output is written as `<out>-L__R.match` (the stereo's internal L/R, but
+the point COORDS are raw). To consume in `bundle_adjust` (e.g. a 0-iter run to write
+`*-final_residuals_pointmap.csv`, or a bathy/refraction residual test): copy/rename it to
+BA's expected name `<prefix>-<Lrawbase>__<Rrawbase>.match`, pass `--match-files-prefix
+<prefix>` with the RAW images + cameras, and **do NOT pass `--mapprojected-data-list`** -
+the two are mutually exclusive ("Cannot specify --match-files-prefix ... together with
+--mapprojected-data-list"), AND you don't need it since the matches are already raw. Then
+sanity-check: the 0-iter pointmap reproj residuals must be SMALL (wrong domain/name -> huge).
+GOTCHA (2026-08-25): in this build `--num-matches-from-disparity` is aliased-warned as
+"equivalent to `--num-matches-from-disp-triplets`", but they differ: the plain option is the
+pair/raw sampler (populates `-L__R.match`); the TRIPLETS variant needs >=3 images to enforce
+cross-image consistency and writes `<out>-disp-<Lraw>__<Rraw>.match` - which is EMPTY for a
+lone 2-image pair (do not mistake that empty triplets file for failure; use `-L__R.match`).
+CHEAP: to get matches you do NOT need a full point cloud - run a single `stereo_tri` (not
+full parallel_stereo) resuming an EXISTING stereo run, just adding the cameras +
+`--num-matches-from-disparity`. (Standard ASP bathy stereo -
 `--left/right-bathy-mask` + `--bathy-plane` + `--refraction-index` at triangulation - is the
 dense alternative validation path that avoids the match-injection question entirely.)
 Verify equivalence once with `cam_test --image img --cam1 run-img.adjusted_state.json
