@@ -22,6 +22,46 @@ For HTML artifacts and uploaded previews, downsample DRASTICALLY: <=1000 px long
 <1 MB per image (dpi ~80-100). Over ~1 MB or ~1000x1000 px is overkill. Full-res stays on
 disk. Detail in `~/projects/visual_raster_inspection.sh`.
 
+## NO TEXT BAKED INTO FIGURES - put it in the caption UNDERNEATH (long-standing rule)
+
+Do NOT draw titles/annotations/long labels as PIXELS inside a matplotlib/plot image - they get
+cut off, don't reflow, and can't be edited. Keep the RASTER clean (the data, a colorbar, minimal
+axis ticks) and put ALL explanation as PLAIN TEXT in the HTML `<figcaption>` BELOW the figure.
+For side-by-side panels, DON'T title each panel in-image; write one caption under that says "Left:
+... Right: ...". Same for stacked panels ("Top/Bottom: ..."). This keeps text legible, complete,
+and reflowable, and lets the wording be revised without regenerating the PNG. (Oleg has asked for
+this repeatedly; suppress `ax.set_title`, keep colorbars, describe in the figcaption.)
+- When comparing two things side by side, make the panels the SAME extent/scale so differences are
+  real, and say which is which in the caption. Prefer PURE grayscale hillshade (no color) for a
+  shift eyeball (color distracts from whether features move); a colorized version can go alongside.
+- ALWAYS hillshade with `gdaldem hillshade -multidirectional -compute_edges`, NOT a homemade
+  numpy-gradient shade - it looks right at edges and matches what the correlator sees. (More
+  hillshade/align examples in `docs/tools/pc_align.rst` and the dem-comparison + pc-align skills.)
+
+## INSPECT CONSTANTLY - eyeballing IS the job (photogrammetry hat)
+
+Wear the photogrammetry hat: **observation of IMAGE PATTERNS tells you things RMSE/medians
+cannot.** A number can look fine while the raster shows a tilt, a bowl, a seam, a junk patch,
+a mirrored/rotated frame, a checkerboard, an edge notch, a shifted feature. So at EVERY step,
+do not just print stats - render the product and LOOK. State the HYPOTHESIS first (what it
+should look like), then confirm by eye before moving on. Frequent inspection is not overhead;
+it is the work, and it catches blunders (junk pairs, wrong datum, wrong convention) that stats
+hide. Specific comparisons to eyeball (all after warping to a COMMON grid/extent/proj):
+- **DEM vs DEM**: colorized + hillshade, side by side; and the geodiff (dz) with a symmetric
+  diverging colorbar. A junk pair shows as a bright blob in the DEM AND the tri-error map.
+- **image/ortho vs hillshaded DEM**: overlay or side-by-side - do features (shoreline, roads,
+  buildings) land on the terrain? Mis-registration/tilt/rotation jump out.
+- **hillshade vs hillshade** (your DEM vs the reference): the two must look visually SIMILAR
+  before correlating them; a horizontal shift is visible as offset relief.
+- **residual/pointmap CSVs**: plot the points colored by value over a terrain background, and
+  ZOOM to the core (crop far outliers, cap the colorbar) to reveal spatial STRUCTURE (e.g.
+  low-on-texture / high-on-water, or a per-frame radial pattern) - structure that the median
+  hides. Even a dense match/disparity CSV can be gridded to a raster (point2dem) and inspected.
+- **disparity** (run-F.tif / disparitydebug): a smoothly varying, near-constant field = a good
+  correlation lock; blocky/noisy = a bad one. Always look before trusting dh/dv.
+REVIEW YOUR OWN PLOTS after making them - re-open the PNG and read it critically, don't just
+save and move on. Keep ADDING inspected figures to the running HTML artifact as you go.
+
 ## Visual Raster Inspection - "Claude has eyes"
 
 Claude can SEE images - use vision to verify rasters (orthos, DEMs, geodiffs,

@@ -117,6 +117,71 @@ in `~/projects/cassis_olympus_mons/cassis_002920_ctxpair_A_notes.sh` (stage 1e-1
 
 ## Prefer adjusted_state.json Cameras, NOT --bundle-adjust-prefix (CRITICAL)
 
+For MANY images (a block/survey, not a handful), ALWAYS use `parallel_bundle_adjust`,
+never plain `bundle_adjust`. Pairwise interest-point MATCHING is the bottleneck and plain
+`bundle_adjust` runs it under-parallelized (seen 2026-08-26: a 46-image aerial block used
+only ~8 of 56 threads, ~18% job efficiency - hours for 582 pairs). It REUSES existing
+`*.vwip` (per-image IP) and `*.match` files, so a killed run RESUMES cheaply - but first
+wipe the ~dozen NEWEST `.match` files (the one being written when the job died can be
+truncated/corrupt).
+- **Options gotcha (parse-error trap):** `parallel_bundle_adjust` has NO
+  `--processes`/`--threads-multiprocess`/`--threads-singleprocess` - those are
+  `parallel_stereo`'s. Its ONLY parallel knobs are `--nodes-list` (multi-node; omit =
+  local cores via GNU Parallel), `--entry-point`/`--stop-point` (0 stats, 1 matching, 2
+  optimization), `--parallel-options`. EVERYTHING else is a passthrough `bundle_adjust`
+  option. Passing a `parallel_stereo`-only flag forwards it to the worker `bundle_adjust`,
+  which prints "ERROR: Error parsing input" + full help and the run dies at spawn. So its
+  usage is literally `parallel_bundle_adjust <bundle_adjust args...> -o pfx` (+ optional
+  `--nodes-list`).
+- **DRY-RUN BEFORE qsub** (burned 2026-08-26, wasted a queue+run): validate the arg string
+  cheaply first, e.g. `parallel_bundle_adjust <all args> --stop-point 0` (parses + stops
+  before statistics, no real compute), or run 5 s on the head node and grep the log for
+  "Error parsing". Only then qsub the full run.
+- **`--inline-adjustments` is PREFERRED for BOTH Pinhole (.tsai) AND CSM.** It bakes the
+  solved extrinsics into standalone adjusted camera files (`<pfx>-<image>.tsai` for pinhole;
+  `<pfx>-<image>.adjusted_state.json` for CSM). Then USE THOSE ADJUSTED FILES DIRECTLY as
+  the cameras in every downstream tool (mapproject, parallel_stereo, point2dem, dem2gcp,
+  jitter, another BA) - do NOT also pass `--bundle-adjust-prefix`. Keep intrinsics FIXED
+  (do NOT pass `--solve-intrinsics`) unless intrinsic self-cal is explicitly wanted.
+- Same spirit for stereo: `parallel_stereo`, and split many pairs across several qsub jobs
+  (never one serial job that does all - it will time out / die).
+- **HIGH-VALUE DEBUG SKILL — cross-check camera poses by mapprojecting a FEW frames with
+  the (pre-bundle) cameras onto a rough prior DEM (e.g. Copernicus) and eyeballing.** If the
+  orientation/position/intrinsics are right, each frame's content lands where expected -
+  shoreline, islands, roads fall on the DEM's coastline/features (Copernicus is coarse but
+  gets shoreline+islands well). Mis-registration diagnoses the blunder class: a whole-frame
+  rotation = wrong yaw/κ convention; a mirror = an axis-flip (the photo↔camera `diag(1,-1,-1)`
+  or an R transpose); a uniform shift = wrong position or optical-center; a scale/keystone =
+  wrong focal length or pixel pitch. Do this BEFORE trusting a bundle: a huge initial
+  reprojection residual (e.g. median >~100 px, vs the ~1-4 px expected for good EOP) means the
+  INPUT cameras carry a systematic - find it rather than let BA silently absorb it. Blunders
+  live in intrinsics (focal, center, pitch), position, OR orientation - check all three.
+  Cheap quantitative test when matches exist: `bundle_adjust --num-iterations 0
+  --match-files-prefix <matches>` per camera variant and compare the INITIAL residual; the
+  variant with the lowest initial residual has the right convention. (SDB aerial 2026-08-26:
+  a photogrammetric OPK→tsai gave 116 px initial median; suspected the UTM meridian-convergence
+  `Rz(γ)` term - γ≈0.7° matches the ~0.67° implied error.)
+- **tsai intrinsics: prefer PIXEL units** - focal length and optical center in PIXELS with
+  `pitch = 1` (e.g. `fu = focal_mm/pixel_mm`, `cu = ncols/2`, `cv = nrows/2`). Physical units
+  (focal in mm, center in mm, `pitch = pixel_mm`) are mathematically equivalent IF consistent,
+  but pixel+pitch=1 is the convention here and removes a whole class of unit-mismatch blunders.
+- When REDOING a bundle after fixing cameras, REUSE the matches: keep the raw `run-*.match`,
+  but WIPE the `run-*-clean.match` (they are tied to the previous solution's outlier removal),
+  and run plain `bundle_adjust --match-files-prefix <old_prefix>` in a NEW output dir. Keep the
+  parallel_bundle_adjust dir as the match store; the honest solve lives in its own dir.
+- **dem_mosaic always appends `-tile-0.tif` (and `-max`/`-first` etc.) to `-o <prefix>`** - it
+  never writes the exact name you pass, so you get the "pathetic" `mosaic-tile-0.tif`. Give an
+  explicit clear prefix (`-o mosaic_dem` -> `mosaic_dem-tile-0.tif`) and, if a clean single-file
+  name is wanted downstream, `gdal_translate mosaic_dem-tile-0.tif mosaic_dem.tif` (or `mv`) right
+  after, so scripts/plots reference `mosaic_dem.tif` not the tile suffix.
+- **FOUNDING PRINCIPLE — related outputs go in ONE subdir; co-locate mapprojected images
+  with the bundle cameras that made them.** A `bundle_adjust` run's adjusted cameras
+  (`<pfx>-*.tsai`/`.adjusted_state.json`) AND the images you mapproject with those cameras
+  belong in the SAME output dir (the bundle dir, e.g. `ba_green/…`). Then N bundle dirs each
+  SELF-CONTAIN their cams + their mapprojected images: you never confuse which cameras
+  produced which mapproj images, and you can wipe/redo one bundle's whole output as a unit.
+  Generalizes: keep a stage's related products together in its own subdir, not scattered.
+
 Every `bundle_adjust`/`parallel_bundle_adjust` run writes, per input camera, a
 standalone CSM state file `<prefix>-<image>.adjusted_state.json` with the
 adjustment BAKED IN (for CSM frame/linescan this is automatic; DG/WorldView and
