@@ -101,7 +101,12 @@ bit-identical). (Done 2026-08-23: local `aspIsCsmIsd` in CsmModel.cc.)
 
 - Regold benign failures: `python2 ~/projects/StereoPipelineTest/bin/runs_to_golds.py
   <names>` (does `rm -rf gold; cp -r run gold`). Then re-run each `validate.sh` and
-  confirm it passes. **gold/ (and run/) are gitignored ~40 GB - NEVER git add them.**
+  confirm it passes. **gold/ and run/ (all test data) are NEVER committed to any
+  repo - IRONCLAD policy, do NOT even ask.** Regolding writes gold/ on l1 disk only
+  (gitignored, ~40 GB); it never enters git. Commits carry source + docs only (the
+  lone binary exception is documentation figures). So a first nightly reddening on a
+  brand-new test whose gold does not yet exist is EXPECTED - regold on l1 and move on;
+  never propose adding the gold/run to git.
 - Relaunch the nightly from scratch:
   `cd ~/projects/BinaryBuilder && nohup bash auto_build/launch_master.sh > output_master.txt 2>&1 &`
   (no arg = full rebuild+retest all platforms; `resume` = skip platforms already at

@@ -39,6 +39,14 @@ notes - the pointer is a promise that the detail exists there.
   This includes .cub, .tif, .img, .json (large), .bsp, .bc, .ply, .lbl, .dat,
   and any file over ~100 KB. Only .sh, .py, .txt, .md, .rst, .cmake, .cc, .h,
   and similar text/source files belong in git. If unsure, ask first.
+- **TEST DATA IS NEVER COMMITTED - IRONCLAD, DO NOT EVEN ASK.** Regression
+  `gold/` and `run/` dirs, and test inputs/outputs of any kind (imagery, DEMs,
+  .cub/.tif/.img, produced rasters), are NEVER git-added to ANY repo - not ASP,
+  not StereoPipelineTest, not BinaryBuilder, not any test dir. Regolding writes
+  `gold/` on l1 only (it is gitignored, ~40 GB); that data lives on disk, never
+  in git. Our commits carry SOURCE and DOCS only; the sole binary exception is
+  figures for documentation. This rule is permanent and will not change - do not
+  ask permission to add test/gold/run data, just never do it.
 - **NEVER modify `.gitignore` without explicit permission.** Do not add, remove,
   or edit entries in any `.gitignore` file unless specifically asked to.
 - **NEVER force push (`git push --force`, `git push -f`, or `--force-with-lease`) unless explicitly asked by the user.**
