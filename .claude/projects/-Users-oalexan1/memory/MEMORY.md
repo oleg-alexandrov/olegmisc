@@ -136,6 +136,8 @@ Refactoring often produces small float noise from evaluation order changes.
 - [feedback_test_on_real_data.md](feedback_test_on_real_data.md) - Test on real representative data and eyeball the output; a synthetic test with degenerate inputs (identity geotransform) masked the sparse_disp pixel-vs-map-coords bug another bot caught by looking.
 - [feedback_trace_dont_guess.md](feedback_trace_dont_guess.md) - Why-does-X-differ debugging: read the source, find shared fn + divergent callers, prove with cout+recompile; don't assert a mechanism from behavior alone.
 - [feedback_dry_test_qsub.md](feedback_dry_test_qsub.md) - Dry-test every qsub script on the pfe head node (~30s, monitor RAM/CPU, kill, wipe) before submitting the real job; catches path/session/arg bugs in seconds.
+- [feedback_dont_wind_down_early.md](feedback_dont_wind_down_early.md) - In autonomous burn-resources mode, don't stop at a milestone or reframe next steps as "needs the user"; keep launching until the work is genuinely done. "For later" = next for me to run overnight.
+- [feedback_fixed_workdir_no_nested_cd.md](feedback_fixed_workdir_no_nested_cd.md) - One fixed work dir per project; cd into it ONCE at the top, keep paths relative; never a nested cd into a subdir (it re-bases relative paths and breaks inputs).
 
 ## Reference
 

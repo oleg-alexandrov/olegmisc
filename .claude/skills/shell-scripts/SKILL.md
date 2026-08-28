@@ -3,6 +3,17 @@ name: shell-scripts
 description: Shell script authoring and CLI gotchas - perl over sed, zsh array indexing and word-splitting, no timeout on Mac, nested-ssh metacharacter escaping, no hardcoded values in scripts, readable one-option-per-line style, and the backslash/column alignment tools. Load before writing or editing any .sh script or composing multi-option shell commands.
 ---
 
+## One Fixed Work Dir, cd Into It ONCE, No Nested cd (CRITICAL)
+
+Every project has ONE fixed work dir. A script `cd "$W"` into it ONCE at the top and
+thereafter uses paths RELATIVE to that work dir (inputs `data/<sid>/img.tif`, outputs
+`v5/out.tif`) or absolute. NEVER a second `cd` into a subdir partway through - it
+silently re-bases every relative path set earlier and breaks the inputs. To write into
+a subdir, reference it by relative path (`mkdir -p v5; ... v5/gL.tif`), do NOT `cd v5`.
+Keep exactly one `cd` per script. Burned 2026-08-28: a mid-script `cd v5` turned the
+earlier relative `data/...` inputs into `v5/data/...`, every input went missing, the
+qsub job died. (Dry-testing on the head node - see pfe-nas - also catches this.)
+
 ## Shell Arrays: zsh is 1-Indexed (CRITICAL)
 
 The Bash tool's default shell is **zsh**, where arrays are **1-indexed**

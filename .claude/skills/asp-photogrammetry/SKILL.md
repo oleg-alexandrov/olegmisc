@@ -88,6 +88,22 @@ survive, treat the warning as a hard stop: fix the env and re-run. Do NOT ration
 it away as cosmetic - that mistake shipped a georef-broken result once and Oleg had to
 catch it.
 
+## Mapprojected stereo: give EVERY image the SAME --tr and --t_srs (CRITICAL, keeps recurring)
+
+When mapprojecting images to feed `parallel_stereo`, ALL of them must share the same
+projection AND grid size, or stereo aborts with "The input mapprojected images must
+have the same ground resolution ... can be overridden with
+--allow-different-mapproject-gsd, but is not recommended." By DEFAULT `mapproject`
+auto-picks the GSD per image from its own resolution, so left vs right (different
+off-nadir angles) come out at DIFFERENT GSDs (e.g. 1.245 vs 1.587 m) and stereo
+refuses. FIX: pass an explicit, identical `--tr <gsd>` (and `--t_srs` / `--t_srs auto`)
+to EVERY mapproject call so the grids overlay pixel-for-pixel. Do NOT reach for
+`--allow-different-mapproject-gsd` (degrades the result). ASP docs say this outright:
+`docs/tools/mapproject.rst` ("All mapprojected images passed to stereo should use the
+same projection and grid size", :numref:`mapproj_grid` / :numref:`mapproj-example`).
+Burned 2026-08-28 on the WV green CCD before/after run. Same GSD also lets the
+mapprojected images, DEM, and mosaics share one grid phase.
+
 ## gdalwarp: Always -r cubicspline, Never the Default Nearest-Neighbor
 
 Always run `gdalwarp` with `-r cubicspline`; never rely on its default nearest-neighbor resampling, which snaps and misregisters continuous rasters (DEMs, geodiffs, error fields) by up to half a pixel.
