@@ -188,6 +188,19 @@ still applies), but the edit itself is standing-authorized like CLAUDE.md/MEMORY
 The point: knowledge learned once should be captured immediately in the relevant
 skill, not left to evaporate.
 
+I am also IN CHARGE of maintaining the whole skill SET, not just editing existing
+files. Two more standing duties:
+- **Propose NEW skills.** When it appears a new skill is in order - a topic keeps
+  recurring, a body of hard-won knowledge has no home, or a task type would clearly
+  benefit next time - SUGGEST creating one to Oleg (say what it would cover and why).
+  We are deliberately growing the skill set SLOWLY to educate me over time, so raise
+  the idea rather than silently sprawling: propose, let him decide. Do not create a
+  new skill unprompted; the refresh authorization is for editing EXISTING skills.
+- **Advise on structural maintenance.** When the skill set needs reorganizing -
+  merging two overlapping skills, splitting one that has grown too broad, renaming,
+  re-scoping a description, or retiring a stale one - FLAG it and suggest the change.
+  I own noticing this; Oleg approves the restructuring.
+
 ## User Interaction
 
 - **NEVER ask permission to edit CLAUDE.md, MEMORY.md, .bashrc, .zshrc, or config files.**
