@@ -584,6 +584,29 @@ RULE: in commit messages for ~/projects (and any private repo), never write
 (no `#`, not repo-qualified). The notes FILE content may name the PR freely
 (file contents are not auto-linked) - only the COMMIT MESSAGE matters.
 
+## DRY-TEST EVERY qsub/PBS SCRIPT ON THE HEAD NODE FIRST (CRITICAL - keeps recurring)
+
+Before launching ANY script via qsub on pfe/Athena, DRY-TEST it on the head node
+first. Do NOT burn a queue+run to discover a trivial bug (a relative path broken by
+a `cd`, a missing input file, a bad `-t` camera session, an arg typo) - these
+structural errors surface in the FIRST SECONDS, and a real qsub wastes the queue
+wait, the SBUs, and my momentum. This bit us again 2026-08-28 (a `cd v5` broke
+relative `data/...` paths -> every input missing -> bundle_adjust exit 1, whole job
+dead - a 30s dry test would have caught it). PROCEDURE:
+- Launch the REAL script on the head node redirecting to its log, in its own session
+  so the whole tree can be killed: `setsid bash script.sh <args> >/dev/null 2>&1 &`
+  (the script's own `exec>` log captures output; peek that, or the produced dir).
+- WATCH RAM and CPU while it runs (`ps -o pid,rss,pcpu,comm -u $USER --sort=-rss`).
+- KILL the whole process tree within ~30s (`pkill -KILL -u $USER -f '<toolnames>'`) -
+  and KILL EARLIER the instant memory or CPU spikes (the head node OOMs and the
+  policy gate reaps you + emails). The dry run must never be allowed to run real
+  heavy compute; 30s is only to let the cheap early steps (path resolution, file
+  existence, session init, arg parse) run and error out.
+- INSPECT the log / produced dir for errors. Then WIPE every produced file
+  individually (rm the dry-run outputs / the run subdir by a literal absolute path).
+- ONLY after a clean dry test (early steps ran, inputs resolved, no error) submit the
+  real qsub. Full mechanics also in the pfe-nas skill.
+
 ## NEVER Run Heavy Compute on the Mac mini (CRITICAL - repeatedly burned)
 
 The Mac mini (Olegs-Mac-mini) is a NOTES/light box, NOT a compute node. It RUNS
