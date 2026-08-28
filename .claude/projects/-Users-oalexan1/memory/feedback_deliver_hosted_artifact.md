@@ -20,3 +20,9 @@ and hand back the URL. Mention it is private by default (share via the page's Sh
 file copy is fine in addition, but the hosted artifact link is the deliverable. Related: the
 paste-into-Google-Docs base64 HTML pattern ([[reference_geodiff_no_csv_datum]] neighbors in html
 notes) still applies for Docs, but default to the artifact link.
+
+**UPDATE IT EVERY TIME (2026-08-28):** the hosted HTML artifact is HOW OLEG SEES
+results - he cannot see figures otherwise. So every time you produce a new
+figure/result/number, REGENERATE the artifact and republish (same URL) as part of
+that step - do not just SendUserFile it, log it, or describe it. Updating the
+artifact is not a final "wrap-up" action; it is continuous, one update per result.
