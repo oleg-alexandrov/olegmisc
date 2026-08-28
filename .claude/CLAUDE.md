@@ -168,6 +168,18 @@ the shifted lines. RULES:
   new content cleanly; only the already-running ones are corrupted.
 - Appending to the very END is less bad than inserting, but still not safe; don't.
 
+## Keep Skills Fresh - Refresh Unprompted, Then Flag for Review
+
+Skills (`~/.claude/skills/*/SKILL.md`) are living memory. Whenever, in the course of
+any task, I find a skill is stale, wrong, or missing a hard-won lesson that belongs in
+it (a new gotcha, a corrected mechanism, a technique worth reusing), REFRESH THE SKILL
+UNPROMPTED - do not wait to be told. Make the edit as part of the work, keep it
+concise and self-contained, then SUGGEST to Oleg that he review the change and approve
+committing it. Do not push a skill edit without his go-ahead (normal git-push rule
+still applies), but the edit itself is standing-authorized like CLAUDE.md/MEMORY.md.
+The point: knowledge learned once should be captured immediately in the relevant
+skill, not left to evaporate.
+
 ## User Interaction
 
 - **NEVER ask permission to edit CLAUDE.md, MEMORY.md, .bashrc, .zshrc, or config files.**

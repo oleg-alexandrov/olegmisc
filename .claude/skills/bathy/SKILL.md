@@ -177,3 +177,33 @@ per-pair stereo, then dem_mosaic). The order matters and masking is the trap:
   Use the same `--ortho-bathy-mask` for all pairs (one mask), far simpler than per-frame left/right
   masks for a many-frame block. Do NOT go to the external prior DEM for point2dem - that grid is only
   for alignment/validation.
+
+## Bundle-adjustment / self-calibration technique notes (Parrish, generic)
+
+Two generic pieces of advice from Chris Parrish (Oregon State, conventional
+photogrammetry; through-water SfM expert), worth keeping in mind for ANY bathy BA,
+not just one dataset:
+
+- **Redundancy needs LAND.** Analytical self-calibration (floating unknowns like the
+  water-surface height inside the bundle) needs enough redundant observations - matched
+  points + GCP - to solve each camera's exterior orientation AND the floated unknowns.
+  On land that is trivial (thousands of tie points); through-water it is NOT. So
+  **having land in the imagery is very useful** - it supplies the redundancy that pins
+  the cameras before the weakly-observed water unknowns are introduced. This is the same
+  reason the aerial pipeline masks LATE (land dominates the block SfM); do land-only
+  rigorous BA first, then bring in the water.
+- **The down-weight-interior-orientation hack (for CLOSED SfM software only).** In
+  commercial SfM you can't model refraction. Parrish's tested trick: enter a good camera
+  calibration (interior orientation) but give those parameters artificially HIGH
+  uncertainty (LOW weight). The solver then ABSORBS the refraction / caustic / other
+  through-water errors into the camera parameters, and the bathy solution improves. He is
+  explicit that this is "fundamentally incorrect" - the error is real refraction, not a
+  lens defect, it is just being soaked up by whatever free parameters are available.
+  **ASP does NOT need this hack, and we should not imitate it**: we can model the water
+  surface + Snell refraction directly at triangulation (`--bathy-plane` +
+  `--refraction-index`), so the error is corrected where it actually arises instead of
+  being hidden in the camera intrinsics. Keep the intrinsics properly weighted.
+
+Full email-thread context (Monica's doc, Parrish's 4-step augmented-collinearity /
+self-calibration recipe, Oleg's two-step land-then-water reconciliation, the SDB error
+budget and Jacobian): `~/projects/sdb_2026_08/monica_parrish_oleg_ba_notes.sh`.
