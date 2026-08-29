@@ -65,3 +65,50 @@ you're told to reset to the remote:
   ceremony (that's only for ISIS3/usgscsm/ale/SpiceQL). Just the standard trailer.
 - NEVER push without an explicit instruction. NEVER force-push. Verify heads match
   after pushing to two remotes (`git log --oneline -1 HEAD god/master origin/master`).
+- ale remote naming (differs from ISIS3/usgscsm): `origin` = oleg-alexandrov/ale (fork,
+  push here), `usgs` = DOI-USGS/ale (upstream, PR-only). ISIS3/usgscsm use `oleg` for the fork.
+
+## Opening a DOI-USGS PR: PLAIN link + copy-paste body (Oleg opens it himself)
+
+Oleg opens/reviews the PR himself. After pushing the branch to the fork:
+- Give a PLAIN compare URL, `?expand=1` ONLY. Do NOT build a title/body-prefilled URL with
+  `&title=&body=` and urllib.parse.quote - the %20/%0A-encoded body is an unreadable HORROR
+  SHOW in chat and Oleg hates it (2026-08-28).
+  `https://github.com/<UPSTREAM>/compare/<BASE>...<FORKOWNER>:<BRANCH>?expand=1`
+  e.g. `https://github.com/DOI-USGS/ale/compare/main...oleg-alexandrov:my_branch?expand=1`
+- Put the title + body as PLAIN TEXT in a file on his DESKTOP (`~/Desktop/<name>_pr.txt`,
+  "TITLE:" line then "BODY:" then the body) for copy-paste. Give him the plain link + the file
+  path, nothing else. He fills the form.
+
+PR BODY STYLE Oleg wants (asked 2026-08-28, applies to DOI-USGS PR bodies):
+- Plain text. NO backticks anywhere (spell code/paths/flags out inline).
+- ONE line per paragraph - NO mid-paragraph hard wrapping. Blank line between paragraphs and
+  between each section label (Description / Related Issue / How Has This Been Validated? /
+  Types of changes / Checklist / Licensing) and its content.
+- Checkboxes CHECKED as task-list items: `- [x] text` - the leading `- ` AND the space after
+  `]` are BOTH required or GitHub renders literal `[x]` / an unspaced item. Check every box
+  that applies.
+- Imitate `.github/PULL_REQUEST_TEMPLATE.md` section labels. DOI-USGS AI attribution is
+  welcome (check the "developed with assistance from Claude" box; add the Co-Authored-By
+  trailer to the commit, but NOT a Claude-Session link in a public repo).
+- Changelog stays VERY brief (bulleted enumeration of the fixes, minimal prose); the PR body
+  carries the longer explanation + validation numbers.
+
+CHANGELOG PR NUMBER (Oleg, 2026-08-28): use the HONEST number, never `[#XXXX]`. If the PR is
+already open, get it from `curl .../repos/<UPSTREAM>/pulls?state=all` filtered by
+`head.ref == <branch>`. If not open yet, predict = latest issue/PR number + 1 (issues and PRs
+share one counter). AFTER the PR opens: `git fetch` + reconcile the branch, confirm the
+changelog number matches the real PR, run the tests, and add EXTRA commits on top to fix
+anything - NEVER amend/force a pushed or PR'd branch. "After PR open, double-peek, validate,
+and fix if you have to."
+
+FINAL-RESULT PROSE (Oleg, 2026-08-28): changelog, PR body, and commit messages state the FINAL
+result only, not before/after. Write "ASP cam_test agrees with ISIS to ~5e-4 px", NOT
+"0.707 px to ~5e-4 px". Same principle as the code-comment rule below.
+
+CODE COMMENT STYLE (Oleg, 2026-08-28): a comment's ONLY job is to illuminate what the code
+below does. NO monologue about code history or evolution - drop "previously X", "used to be
+inside the except", "now that the try branch succeeds", "this used to raise ...". That
+what-changed narrative goes in the commit message / changelog / PR body, never in a source
+comment. Claude tends to tangent into this. Keep comments present-tense, about intent; when
+in doubt make them SHORTER.
