@@ -176,8 +176,10 @@ Knob intuition (smaller uncertainty = stronger pull):
   (Oleg on ASP issue #396). Resample with `--num-lines-per-position/orientation`.
 - After solving, the cameras are `jitter_<tag>/run-<img>.adjusted_state.json`.
   Re-triangulate with `--prev-run-prefix stereo/run` (cheap), then point2dem.
-- **point2dem `--max-triangulation-error`**: set it GENEROUS (e.g. 100–200 m) when
-  jitter is large, or high-error but real lines get cut → missing lines in the DEM.
+- **point2dem `--max-valid-triangulation-error`** (NOT `--max-triangulation-error`,
+  which does not exist and makes point2dem dump help and exit non-zero, killing a
+  `set -e` script): set it GENEROUS (e.g. 100–200 m) when jitter is large, else
+  high-error but real lines get cut → missing lines in the DEM.
 
 ## Validation (judge by the reference, not by intersection error alone)
 
