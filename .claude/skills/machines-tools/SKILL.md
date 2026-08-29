@@ -81,11 +81,24 @@ if the Mac config breaks - l1's msmtp over ssh, piping the same file as stdin:
 `ssh l1 '~/miniconda3/envs/gh/bin/msmtp oleg.alexandrov@gmail.com' < /tmp/claude_mail.txt`.
 Exit 0 = accepted. Full detail: `~/projects/send_email_notes.sh`.
 
-## ssh login banners (l1, pfe, athena)
+## ssh login banners (l1, pfe, athena) - the banner is on STDERR
 
-These U.S. Government hosts print a long CUI banner on every login that floods
-command output. When batching a recon `ssh l1 '...'`, pipe the result through a
-grep filter (drop lines matching `U\.S\. Government|information system|consent|
-Unclassified|monitor|Unauthorized|privileges|^-+$`) so the banner does not bury
-the real output. Batch all remote ops into ONE ssh call - MOTD/banner overhead
-is ~10s per call.
+These U.S. Government hosts print a long CUI banner on every login. The banner is
+sent by the ssh CLIENT to its **local stderr** (an sshd pre-auth `Banner`; a remote
+`~/.hushlogin` does NOT suppress it - that only hushes /etc/motd). The real command
+output is on **stdout**. So the clean, principled fix is to drop the ssh client's
+stderr - do NOT rely on fragile content-based grep filters:
+
+- **Default:** `ssh pfe "cmd 2>&1" 2>/dev/null` - the INNER `2>&1` runs on the remote
+  and folds the remote command's own stderr (tracebacks, warnings) INTO stdout, so
+  you still SEE real remote errors; the OUTER `2>/dev/null` drops only the ssh-client
+  banner. Clean stdout, real errors kept, no banner.
+- **Stdout-only:** `ssh pfe "cmd" 2>/dev/null` - clean, but drops the remote command's
+  real stderr too (fine when you only need stdout and detect failure by missing output).
+- Verified 2026-08-27: split test proved 0 banner lines on stdout, all on stderr, for
+  both forms. This beats the old `grep -vE 'information system|...'` hack, which is
+  content-fragile and occasionally still leaks.
+
+Batch all remote ops into ONE ssh call - MOTD/banner overhead is ~10s per call.
+(Reaching pfe: `ssh pfe` works non-interactively in this environment; `ssh pfx` is
+the SecurID-avoiding config alias if `pfe` ever prompts.)

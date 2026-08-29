@@ -45,6 +45,14 @@ NOT under `docs/`. So before calling a `:numref:` broken, grep the WHOLE repo fo
 (`git grep '^.. _foo:'`), not just `docs/`. Example: `:numref:`release`` resolves to
 `INSTALLGUIDE.rst` at the repo root - it is NOT missing.
 
+**ALWAYS verify a label EXISTS before you write `:numref:`foo`` - do NOT invent or
+guess the anchor name (CRITICAL, Oleg 2026-08-27).** The moment you add a cross
+reference, `git grep '^.. _foo:'` the whole repo to confirm the target is real. An
+invented label renders as `WARNING: undefined label` and breaks the build. This is
+easy to get wrong when the obvious name is not the actual one: the bathymetry doc's
+anchor is `.. _bathy_intro:` (section "Shallow-water bathymetry"), NOT `bathymetry`
+- I referenced the made-up `:numref:`bathymetry`` twice. Grep first, then cite.
+
 **Style:** Be concise - users are expert researchers. Give hints and pointers, not tutorials.
 
 **Formatting rules:**
@@ -90,7 +98,15 @@ Verify by building the docs: a missing entry warns "citation not found".
   with bullet points underneath. Create a new tool group if one doesn't exist
   yet in the current section, or append a bullet to an existing group.
 - The `Misc:` group always comes last in a section, after all tool entries.
-- Keep bullets concise - one or two sentences with a numref link.
+- **A NEWS entry is a very brief ANNOUNCEMENT, not an explanation. Format:
+  a brief CLAIM (what is new/changed) + a `:numref:` to where it is explained -
+  and nothing more.** The whole reason the `:numref:` is there is that the
+  detail lives in the doc it points to; do NOT restate the mechanism, rationale,
+  or effect in the NEWS bullet. One sentence, then the link. (Oleg cut a drafted
+  "The rays are bent... so the vertical uncertainty grows..." tail from a bathy
+  error-prop entry 2026-08-27 - that belonged in the doc, not NEWS.) If you feel
+  the bullet needs a second explanatory sentence, that sentence belongs in the
+  referenced section instead.
 
 ## Writing Style
 

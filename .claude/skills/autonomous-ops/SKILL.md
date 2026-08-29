@@ -115,3 +115,32 @@ description: Running Claude autonomously or overnight - the don't-stall rule, in
   idling past completion.
 - On every wakeup, FIRST run `date` to re-orient - long runs leave you stale.
 
+## Notes Discipline + Reread-On-Resurrection (MANDATORY for any auto/overnight run)
+
+The durable NOTES FILE (in `~/projects/<proj>/`), not this chat context, is the single
+source of truth for an autonomous run. Context gets COMPACTED and the session can be
+KILLED and RESURRECTED by the OS watchdog - both wipe your working memory. The notes
+survive; treat them as the handoff to your future self.
+- **On EVERY resurrection (cron said "came back from dead") AND every time you notice a
+  compaction/summary just happened: STOP and re-bootstrap before doing anything.** In
+  order: (1) `date`; (2) re-read the project notes file top-to-bottom, especially the
+  WORK LOG (newest entry last) and the PLAN; (3) re-read the parent/hub notes + any
+  status tracker + the relevant skill; (4) check which PRODUCTS already exist on disk
+  before redoing a step (a half-finished step is common); (5) resume from the last
+  logged step. Never resume from stale chat memory - it may be a different reality than
+  the notes.
+- **Put a RESURRECTION/COMPACTION POLICY header at the TOP of the project notes' WORK
+  LOG** spelling out the reread order above, so a cold-started session self-orients.
+- **Log COPIOUSLY and IMMEDIATELY, as you go, never batched at the end** (the end may
+  never come - you might die first). Each meaningful step gets a timestamped WORK LOG
+  entry with: the exact command run, the product path it wrote, the key stats/metrics,
+  what you EYEBALLED (and the PNG path), any gotcha learned, and a one-line "next step".
+  Also record inferences, dead ends (so you don't repeat them), and pointers to docs/code
+  (`file:line`). Density beats polish - a future cold session must be able to continue
+  from the log alone.
+- **The cron/watchdog resume prompt must be CONTENT-FREE**: it points at the notes and
+  says "re-read and advance", never bakes in changing state (job IDs, current stage).
+  All state lives in the notes; you update the notes, never churn the cron.
+- **Commit the notes early and often** (`git -C ~/projects add <file> && commit`), so the
+  paper trail is safe even if the disk copy is lost. Push only per the repo's push rules.
+

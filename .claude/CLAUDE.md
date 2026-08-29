@@ -153,6 +153,14 @@ comments). Rules:
 - When finishing any code/doc edit, grep the touched files for `.sh`,
   `_notes`, `_plan`, and project-subdir names and strip any that crept in.
 
+## Word choice: say "fails", never "chokes"
+
+Never write "choke"/"chokes"/"choked" when you mean fail. Use "fails" (or
+"errors out", "cannot read", "rejects", "throws"). Applies everywhere - chat,
+notes, commits, PRs, docs, code comments. Same spirit as the avoid-jargon rule:
+plain, precise verbs, not casual slang. This is the running style-guide section
+for word choices to prefer/avoid (extend it as more come up).
+
 ## Docs phrasing: "after jitter correction", not bare "after jitter"
 
 In docs/figure captions, write the full action, not the noun alone: "before/after
