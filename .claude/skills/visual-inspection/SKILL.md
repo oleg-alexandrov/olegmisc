@@ -133,6 +133,14 @@ The ASP tools `colormap`/`point2dem --colormap-style` take these names too
 (`plasma`, `inferno`, `viridis`, ...); the full list is in the ASP
 `docs/tools/colormap.rst`. Canonical plotting recipe with these conventions:
 `~/projects/visual_raster_inspection.sh` (colormap-conventions section).
+**Reusable single-panel renderer (copy it):**
+`~/projects/cassis_asp/ctx_k19_jitter_scripts/render_panels.py` — reads a raster
+via gdal, tight valid-data crop, p95 clamp, plasma(error)/RdBu_r(signed), nodata
+black, own full-height right colorbar via `make_axes_locatable` (numeric ticks,
+labelsize 16), `ax.axis("off")`, writes a self-contained PNG. Run it in a
+matplotlib+gdal env (pfe `geo`/`isis10`; the ASP env has gdal but NO matplotlib).
+Note: ASP's `colormap --legend` gives only an UNLABELED strip — for a real labeled
+colorbar use matplotlib (this renderer), not the ASP tool.
 
 **No text inside a figure that ships with an RST/HTML caption - the caption below carries ALL of it.** No panel titles ("before"/"after"/"hillshade"), no colorbar unit label ("meters"/"pixels"), no baked-in descriptions. KEEP only the colorbar tick numbers (they carry the range/scale). The prose caption names the panels left-to-right and states the units and clamp. (Oleg 2026-08-20.)
 

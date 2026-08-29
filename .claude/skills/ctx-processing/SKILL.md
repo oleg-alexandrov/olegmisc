@@ -190,3 +190,17 @@ signed before-minus-after DEM diff (discontinuity test). See the `dem-comparison
 skill for dh/dv (horizontal, from hillshade correlation) vs dz (vertical geodiff),
 and `local-epi-debug` for missing-tile / edge diagnostics. Complements
 `asp-photogrammetry`, `pc-align`, `pfe-nas` (qsub), `project-workflow`.
+
+## Figures / colorized rasters — LOAD `visual-inspection` FIRST
+
+Before making ANY figure, colorized raster, or HTML artifact from CTX products
+(tri-err, dz, dh/dv, hillshades), LOAD the `visual-inspection` skill and follow its
+colormap/colorbar convention — do not hand-roll `gdaldem color-relief` + CSS bars.
+The convention (ASP-doc standard): **error/magnitude maps → `plasma`, vmin=0**;
+**signed diffs → `RdBu_r`, symmetric clamp**; nodata **black**; each panel its OWN
+full-height colorbar on the right (matplotlib `make_axes_locatable`), numeric ticks
+only (labelsize ~16), no unit/title text baked in (caption carries it), no axis
+frame, tight valid-data crop, robust p95 clamp shared across a before/after pair.
+matplotlib lives in the pfe `geo`/`isis10` conda envs (NOT the ASP env — that has
+gdal only). Reusable single-panel renderer to copy:
+`~/projects/cassis_asp/ctx_k19_jitter_scripts/render_panels.py`.

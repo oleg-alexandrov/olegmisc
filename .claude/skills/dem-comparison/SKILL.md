@@ -119,3 +119,8 @@ to confirm dh/dv shrank (and dz stayed good).
 - Horizontal shift is invisible to geodiff on flat ground - that is the whole point.
 - No pc_align between BA stages (spoils horizontal); cameras carry forward.
 - Mapproject/correlation at image-GSD res, DEM res only for the final point2dem grid.
+- Plotting dz/dh/dv/tri-err for a figure or artifact? LOAD the `visual-inspection`
+  skill and follow its colormap convention: error → `plasma` (vmin=0), signed dz/dh/dv
+  → `RdBu_r` symmetric, nodata black, per-panel full-height right colorbar (matplotlib,
+  numeric ticks only), no baked text, tight crop, p95 clamp shared before/after.
+  Reusable renderer: `~/projects/cassis_asp/ctx_k19_jitter_scripts/render_panels.py`.
