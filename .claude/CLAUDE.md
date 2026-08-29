@@ -124,6 +124,15 @@ without checking; the remote already had it, and more complete (with a mac
 iio.c fix my draft lacked). Wasted effort and nearly clobbered the better
 version. At minimum: be aware of remote state before local work.
 
+**POLICY: always base new work on the UPSTREAM remote dev/main, fetched FIRST.**
+Before ANY git work that will become a branch or PR, the FIRST action is to fetch
+the true UPSTREAM branch (for DOI-USGS repos: `git fetch https://github.com/DOI-USGS/<repo>.git dev`)
+and branch off THAT. NEVER branch off a local `dev`/`main` or a fork's dev without
+fetching upstream first - they drift. Seen 2026-08-28 on ISIS3: local `dev` was 25
+commits behind DOI-USGS/dev (and `adam/dev` even further behind). A branch off local
+dev would have opened the PR on a stale base. Fetch upstream dev, branch off it,
+replay the change on top, then push/PR. This holds for every repo, every time.
+
 ## git rm --cached, never bare git rm (CRITICAL)
 
 Never add `.ssh/` to git (dangerous). To untrack a file but keep it on disk, always `git rm --cached`, never bare `git rm` (which deletes the working file too - this once wiped `~/.ssh/config`; recover via `git show <commit>^:path > path`).
