@@ -170,6 +170,26 @@ notes, commits, PRs, docs, code comments. Same spirit as the avoid-jargon rule:
 plain, precise verbs, not casual slang. This is the running style-guide section
 for word choices to prefer/avoid (extend it as more come up).
 
+## Term: "triangulation error", not "ray intersection error"
+
+Prefer "triangulation error" over "ray intersection error" / "intersection error"
+for the stereo point2dem error (the `--errorimage` band, `run-IntersectionErr.tif`).
+Applies to chat, notes, commits, docs, figure captions, and the ASP RST docs. It is
+fine to write both once ("triangulation error (ray intersection error)") the first
+time in a doc for clarity, then use "triangulation error" throughout.
+
+## Colorized-plot polarity: keep it CONSISTENT within a document, never flip
+
+For signed-difference maps (dz, DEM-minus-ref, disparity) keep ONE fixed subtraction
+order and ONE fixed colour polarity across the whole document/report - never revert
+it mid-way (Oleg gets confused). Convention that matches the existing CTX-Jezero
+artifact: compute every diff as [evaluated - reference] (e.g. mosaic - HRSC, corrected
+- mosaic) and colour it BLUE = evaluated ABOVE reference (matplotlib `RdBu`, blue at
++vmax). Do NOT introduce an artificial vertical shift to make a diff look nicer, and
+do NOT claim a specific datum cause (areoid, geoid) unless it is actually verified.
+(Note: this per-document polarity can differ from the visual-inspection skill's default
+RdBu_r; consistency within the document wins - pick the doc's convention and hold it.)
+
 ## Docs phrasing: "after jitter correction", not bare "after jitter"
 
 In docs/figure captions, write the full action, not the noun alone: "before/after
