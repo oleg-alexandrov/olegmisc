@@ -108,9 +108,30 @@ bundle_adjust --input-adjustments-prefix ba/run \
   --apply-initial-transform-only <cubs> <jsons> -o ba_align/run
 ```
 `<ref>` = MOLA (463 m, always available) or a USGS controlled CTX DTM (20 m). Pick
-`--max-displacement` from the actual DEM-to-ref offset (datum differences alone can
-be ~km: CTX stereo DEMs are sphere/ellipsoid-referenced, the USGS/HRSC products are
-areoid — convert with `dem_geoid` or let pc_align absorb the constant).
+`--max-displacement` from the actual DEM-to-ref offset.
+
+**pc_align argument order + datum — two traps that silently corrupt the result:**
+- **Order is `pc_align <REFERENCE> <SOURCE>`** (pc_align.rst): the FIRST arg is the
+  reference, the SECOND (source) is what MOVES. `--save-transformed-source-points`
+  saves the SECOND cloud regridded into the reference frame; `run-transform.txt` maps
+  source(2nd)→ref(1st) and is the one to feed `bundle_adjust --initial-transform
+  --apply-initial-transform-only`. So to align your DEM to a reference DTM:
+  `pc_align ref.tif your-DEM.tif --save-transformed-source-points`, then point2dem
+  `run-trans_source.tif`, and apply `run-transform.txt` to the cameras. If you put
+  your DEM FIRST by mistake, pc_align silently moves the REFERENCE into your frame
+  (the "aligned DEM" stays at your original elevation) and the camera transform points
+  the wrong way. (The reverse order is also valid if you instead use
+  `--save-inv-transformed-reference-points` + `run-inverse-transform.txt` — but never
+  MIX the two conventions.)
+- **Datum:** ASP `point2dem` writes ELLIPSOID (sphere R=3396190) heights; the USGS
+  controlled CTX DTMs, HRSC blend, and vendor products are AREOID (orthometric),
+  offset by the geoid separation (~1500–1700 m at Jezero, and it VARIES spatially).
+  Before pc_align / geodiff / jitter `--heights-from-dem`, put everything in ONE
+  datum: convert the areoid references to ellipsoid with
+  `dem_geoid --reverse-adjustment --geoid MOLA ref.tif -o ref_g` (→ `ref_g-adj.tif`;
+  needs `ISISROOT` set and the `mola_areoid.tif` in the ASP `share/geoids`, present in
+  the pfe package). A leftover ~1500 m areoid/ellipsoid mismatch will make pc_align
+  invent a bogus vertical shift and corrupt jitter's `--heights-from-dem`.
 
 ## 5. Existing CTX DTM products (references, no stereo needed)
 
