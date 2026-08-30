@@ -314,6 +314,23 @@ fix THAT.
   REPORT it (in the notes AND to the user), do not gloss it. Shortcuts are
   sometimes necessary; hiding them is not.
 
+## Never Quietly Serve Stale/Old Results When the Point Was to Get NEW Ones (CRITICAL)
+
+When a task's WHOLE POINT is to produce fresh results (a new run, re-measured
+data, an updated figure), do NOT silently fall back to OLD or known-bad results
+if the fresh ones aren't in hand (remote host down, data not pulled, run not
+finished). ASK, or go GET the fresh ones - never quietly hand over the stale
+version dressed up as the deliverable. The old data was often bad ON PURPOSE and
+the entire reason for the new run. Worse: reconstructing/approximating the result
+from a stale local artifact can reintroduce the very defect the new run fixed.
+Burned 2026-08-30 (WV03 green-CCD): pfe was offline, so instead of asking I
+reconstructed the "after correction" panels from a stale local curve
+(`C1 - roll(C1,13)`), which manufactured the exact +13 seam spikes the shift had
+removed - the opposite of the shipped result. Oleg had to catch it. The fix was
+to pull the REAL re-measured per-scene residuals from pfe once he restored access.
+RULE: no fresh data in hand -> say so and ask / fetch; never substitute old data.
+Saved as `[[feedback_ask_dont_serve_stale]]` in memory.
+
 ## Trace the Code, Do NOT Guess the Mechanism (CRITICAL)
 
 Claude has a demonstrated pattern of GUESSING mechanisms from behavior and
