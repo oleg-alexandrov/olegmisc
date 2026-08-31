@@ -170,6 +170,16 @@ notes, commits, PRs, docs, code comments. Same spirit as the avoid-jargon rule:
 plain, precise verbs, not casual slang. This is the running style-guide section
 for word choices to prefer/avoid (extend it as more come up).
 
+## Punctuation: no em dashes (use a period or colon)
+
+Oleg dislikes the em-dash style. Never use a long em dash to join clauses. End
+the clause with a period and start a new sentence, or use a colon when introducing
+something. Applies everywhere - chat, notes, commits, PRs, issues, docs, code
+comments. (A short hyphen inside a compound word is fine; the ban is on the em dash
+"-" used as a clause separator.) This is a running STYLE GUIDE; the github-issues
+skill carries the GitHub-text formatting rules (no inline backticks in prose, use
+italics; flowing paragraphs; no horizontal rules; verified step-by-step repro).
+
 ## Term: "triangulation error", not "ray intersection error"
 
 Prefer "triangulation error" over "ray intersection error" / "intersection error"
