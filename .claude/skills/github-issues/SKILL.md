@@ -80,3 +80,11 @@ The gh CLI is not on PATH. Use the full path and target the correct repo. See th
 git-repos skill for the gh path. File against the upstream repo, for example
 DOI-USGS/ISIS3, not a fork. Write the body to a file and pass it with --body-file so
 the formatting survives.
+
+Editing a PR body: `gh pr edit <n> -R <repo> --body-file <file>` can SILENTLY FAIL
+to apply on repos that still have Projects (classic). It aborts on a GraphQL
+"Projects (classic) is being deprecated" error and leaves the body unchanged.
+Always verify the body after editing. If it did not take, update via the REST API,
+which does not touch the Projects path:
+`gh api -X PATCH repos/<owner>/<repo>/pulls/<n> -F body=@<file>`. The same REST
+fallback works for issues (`.../issues/<n>`).
