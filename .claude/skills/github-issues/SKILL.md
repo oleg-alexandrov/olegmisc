@@ -64,6 +64,16 @@ the user's hour, schedule, or circumstances. Use one disclaimer per issue or PR,
 the body, not repeated on every comment. For DOI-USGS repos such as ISIS3, usgscsm,
 and ale this attribution is welcome and expected.
 
+## Guess the PR number in changelog entries, do not two-step
+
+When a changelog or NEWS entry needs the PR number, GUESS it before opening the PR.
+Do not open with a placeholder like XXXX and then push a correction. That makes CI
+and the regression suite run twice, which wastes the maintainers' resources.
+GitHub shares one counter across pull requests and issues in a repo, so the next
+number is usually max(latest PR number, latest issue number) plus 1. We are usually
+right. After the PR opens, VERIFY the number it actually got and correct the entry
+if the guess was wrong.
+
 ## Filing mechanics
 
 The gh CLI is not on PATH. Use the full path and target the correct repo. See the
