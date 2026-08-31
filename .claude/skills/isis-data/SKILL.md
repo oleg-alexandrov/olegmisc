@@ -3,6 +3,13 @@ name: isis-data
 description: ISIS mission data and SPICE kernels - the LRO NAC end-to-end ingest pipeline, CSM JSON via isd_generate, ODE search, illumination analysis, and fetching kernels with downloadIsisData or targeted rclone. Load only when working with ISIS mission cubes, spiceinit, or kernel downloads.
 ---
 
+## Never run an ISIS app with no arguments (it pops a GUI)
+
+Running any ISIS app bare (e.g. `spiceinit`, `campt`) with no arguments launches
+its Qt GUI and hangs the session. To see parameters, use `<app> -h`, or read the
+parameter XML at `$ISISROOT/bin/xml/<app>.xml`. Always pass real arguments (or
+`-h`) to an ISIS app.
+
 ## ISIS Mission Data and Kernels
 
 **LRO NAC end-to-end + generic ISIS kernel fetch: `~/projects/lronac_processing.sh`.**
