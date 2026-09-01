@@ -3,6 +3,29 @@ name: build-env
 description: Building and packaging ASP and its deps - nightly build/regression, asp_deps cloud tarballs, release packaging, the asp_deps conda build env, the Qt6 plugins symlink ban, honest non-editable installs, conda channel cleanup, running the regression tests, cmake/build mechanics, ISIS ninja builds, and reading build warnings. Load before building ASP/VW/ISIS, editing CMake, packaging a release, or running the test suite.
 ---
 
+## Build/install ale and usgscsm from source into asp_deps, NOT isis_dev
+
+Source builds of ale and usgscsm (the coupled pair) install into the **asp_deps**
+conda env. isis_dev is ONLY for ISIS work and carries the conda ale/usgscsm; do
+not source-install into it. Recipe (from cassis_asp/ale_usgscsm_respin_notes.sh):
+ale is `cd ~/projects/ale/build; cmake .. -DALE_BUILD_LOAD=ON -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX; make -j8 && make install`
+then `cd ~/projects/ale; pip install . --no-deps` (use a REGULAR install, not
+`pip install -e .` - the PEP 660 editable finder leaves `ale.__file__` None and
+fails to resolve `ale.drivers` submodules; also copy the built
+`build/lib.*/ale/_ale_c.*.so` into `ale/ale/` if `import ale` cannot find `_ale_c`).
+usgscsm is `cmake .. -DUSGSCSM_EXTERNAL_DEPS=ON -Dale_DIR=$CONDA_PREFIX/lib/cmake/ale -DCMAKE_INSTALL_PREFIX=$CONDA_PREFIX; make -j8 && make install`.
+NOTE this modifies asp_deps, the nightly env; do it deliberately and be ready to
+reinstall the conda package to restore it.
+
+GOTCHA (isd_generate local SpiceQL search): `isd_generate <cube>` with no `-k`/`-w`
+uses `pyspiceql.searchForKernelsets`, which returns `("", None)` (empty) for EVERY
+mission in our local isisdata setup (near, clementine1, cassini, juno, lro all
+empty), so ale's `KernelSet(None)` throws and the driver is rejected. This is a
+SpiceQL local-db-search setup limitation, NOT ale staleness (rebuilding ale from
+source 1.3.0 did not change it) and NOT a per-mission `spiceql_mission` issue. The
+working paths are `isd_generate -k <cube>` (furnish from the spiceinit'd cube) or
+`-w` (web SpiceQL, when the server is up).
+
 ## Nightly Build and Regression Tests
 
 Cron job on lunokhod1 at 23:05 runs the full build/test/release pipeline
