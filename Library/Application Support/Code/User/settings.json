@@ -538,8 +538,17 @@
     "typescript.tsserver.web.projectWideIntellisense.suppressSemanticErrors": false,
     "files.watcherExclude": {
         "**/miniconda3/**": true,
+        "**/anaconda3/**": true,
         "**/.*/**": true,
         "**/Desktop/**": true
+    },
+    "files.exclude": {
+        "**/miniconda3": true,
+        "**/anaconda3": true
+    },
+    "search.exclude": {
+        "**/miniconda3": true,
+        "**/anaconda3": true
     },
     "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
     "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
