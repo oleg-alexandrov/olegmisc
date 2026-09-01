@@ -19,5 +19,18 @@
   "feedbackSurveyRate": 0,
   "tui": "default",
   "skipDangerousModePermissionPrompt": true,
-  "theme": "dark"
+  "theme": "dark",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/rst-docs-reminder.sh"
+          }
+        ]
+      }
+    ]
+  }
 }
