@@ -3,6 +3,36 @@ name: asp-photogrammetry
 description: ASP/VW photogrammetry tool usage and knowledge - stereo/mapproject resolution, pc_align, point2dem --errorimage and tri-err cutoffs, dem_mosaic, gdalwarp/proj.db, disparitydebug, robust median/MAD stats, hillshade alignment judging, dh/dv/dz notation, BA/jitter stats, CSM model-state JSON, derived-raster naming, sparse_disp, and the asp_manual.sh/asp_scripts pointers. Load before running any ASP or VW photogrammetry tool (stereo, bundle_adjust, jitter_solve, mapproject, point2dem, pc_align, dem_mosaic, geodiff).
 ---
 
+## bundle_adjust: prefer inline-adjusted cameras (CSM/pinhole), not --bundle-adjust-prefix
+
+For camera models that support it (CSM frame and linescan, and pinhole), STRONGLY
+prefer using the bundle-adjusted cameras with the adjustment applied INLINE, over
+passing `--bundle-adjust-prefix` to every downstream tool. For pinhole, pass
+`--inline-adjustments` to bundle_adjust so it writes adjusted camera files. For CSM
+this is AUTOMATIC: bundle_adjust always writes, for each input CSM camera, an
+adjusted state file `<out-prefix>-<camera>.adjusted_state.json`, which is the CSM
+camera with the adjustment baked in. Pass that `.adjusted_state.json` directly to
+mapproject / parallel_stereo / point2dem instead of the original camera plus
+`--bundle-adjust-prefix`. (`--solve-intrinsics` also implies `--inline-adjustments`
+for these models.) See bundle_adjust.rst (`--inline-adjustments`, the CSM
+adjusted-state note) and csm.rst for context.
+
+## bundle_adjust caches match files - wipe them when changing IP settings
+
+bundle_adjust REUSES existing `<out-prefix>-*.match` files if present, so re-running
+with different interest-point settings (`--ip-per-tile`, `--matches-per-tile`,
+`--ip-detect-method`, etc.) silently keeps the OLD matches and your new settings do
+nothing. Before a re-run with changed IP/matching options, delete the old matches
+(or use a fresh `-o`/`--output-prefix` directory). `rm -rf ba` before re-running is
+the simplest safe move.
+
+## Interest-point / match-point plots: RED FILLED balls (dots)
+
+Whenever plotting interest points or tie-point matches on an image (match figures,
+pointmaps, ip overlays), draw them as RED FILLED circles (matplotlib
+`scatter(..., c='red', marker='o')`, filled, not hollow, not yellow). This is the
+house style for match plots everywhere - docs, notes, chat figures.
+
 ## Derived Raster Product Naming (DEMs, diffs, cmaps, hillshades, pngs)
 
 When producing many derived rasters across processing stages (DEM comparison work

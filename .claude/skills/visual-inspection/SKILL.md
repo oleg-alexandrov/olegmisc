@@ -120,6 +120,11 @@ the caption); tick `labelsize ~16`; NEVER a shared colorbar. Robust clamp, not m
 Multidirectional hillshade (`gdaldem hillshade -multidirectional`) for DEMs. Full recipe
 (pfe gdal-vs-matplotlib env split): `~/projects/visual_raster_inspection.sh` section 5.
 
+**Interest-point / match-point plots: RED FILLED balls.** When overlaying tie-point
+matches or interest points on an image, draw them as red FILLED circles
+(`scatter(..., c='red', marker='o')`) - filled, not hollow, not yellow. House style
+for all match plots (docs, notes, chat). Same rule in the asp-photogrammetry skill.
+
 **COLORMAP CONVENTION (permanent, Oleg 2026-08-18; used in the ASP doc figures):**
 - **Unsigned / error** (tri-err, |dz|, residual/disparity magnitude): **`plasma`,
   `vmin=0`**. Chosen deliberately because plasma's low end is deep PURPLE, so it stays
