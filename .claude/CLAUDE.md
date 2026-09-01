@@ -180,6 +180,18 @@ comments. (A short hyphen inside a compound word is fine; the ban is on the em d
 skill carries the GitHub-text formatting rules (no inline backticks in prose, use
 italics; flowing paragraphs; no horizontal rules; verified step-by-step repro).
 
+## Shell command blocks: NEVER comment to the right of a continuation line
+
+A multi-line shell command (backslash-continued) exists to be COPY-PASTED and RUN.
+Never put a comment to the right of a continuation line. `--foo bar \  # note` is
+not just ugly - it BREAKS the line continuation, because the backslash is no longer
+the last character on the line, so the command silently stops continuing and fails.
+Put clarifying comments ABOVE the command or, better, in a short note BELOW it (e.g.
+after the block: "here image_list.txt is the 75 cubs and camera_list.txt the 75 CSM
+states"). The command itself stays pure and runnable, one clean `\`-terminated line
+each. Applies everywhere a runnable multi-line command appears - READMEs, docs,
+notes, chat.
+
 ## Term: "triangulation error", not "ray intersection error"
 
 Prefer "triangulation error" over "ray intersection error" / "intersection error"
