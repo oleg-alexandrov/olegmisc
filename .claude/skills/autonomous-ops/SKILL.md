@@ -17,8 +17,26 @@ description: Running Claude autonomously or overnight - the don't-stall rule, in
   ~7h before a fully-documented CaSSIS S2 step, calling it "risky/needs a focused
   effort" when the notes had the whole pipeline. That was idling, not caution.)
 - Working alone, take initiative on simple fixes (symlink, missing lib, resubmit
-  failed job, clean stale files); test small first; log what you did. No sweeping
-  refactors, no external commits unprompted.
+  failed job); test small first; log what you did. No sweeping refactors, no
+  external commits unprompted.
+- DEFER / SKIP CLEANUP WHEN UNATTENDED - a permission-gated command does not fail,
+  it FREEZES on the gate (CRITICAL). A destructive Bash command (`rm`, even a single
+  literal absolute path; also `find -delete`, `mv` over a file, etc.) can trip the
+  sandbox permission prompt, and when the user is away NOBODY is there to approve it:
+  the call HANGS indefinitely, silently stalling the whole run until they return and
+  click. It does not error, it does not time out - it just sits there. Confirmed
+  2026-09-01: an `rm -rf <literal scratch dir>` after a test blocked and only completed
+  after Oleg manually approved it; it had frozen the session. YOU CANNOT DETECT THIS
+  FROM INSIDE: a call hung on the permission gate is INDISTINGUISHABLE from a slow one -
+  no error, no timeout, no signal - only the user can see the stall. So there is no
+  "notice it and recover"; PREVENTION is the only defense. So when running
+  unattended, or ANY time storage is not the constraint (it rarely is): do NOT delete
+  throwaway/scratch/temp output at all. Leave it - the scratchpad auto-cleans, disk is
+  cheap, and a skipped cleanup costs nothing while a gated `rm` costs the whole run.
+  Reach for a delete only when disk genuinely IS the blocker; then use one literal
+  absolute path per `rm` (never a glob/`$VAR`/`cd &&`), and prefer handing the user an
+  `! <command>` to run themselves over risking the gate mid-flow. Tidiness is never
+  worth a stall.
 - DEFAULT for ANY repeating autonomous monitoring/pipeline: reach for CronCreate
   FIRST, not ScheduleWakeup. Set up the independent recurring cron
   (off-round-marks, e.g. "9,29,49 * * * *") at the START, don't re-arm one-shots.
