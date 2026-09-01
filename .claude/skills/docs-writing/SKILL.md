@@ -28,6 +28,17 @@ binary directly: `~/anaconda3/envs/sphinx/bin/sphinx-build -b html . _build/html
 from within `docs/`. Create it (once) per `building_asp.rst`:
 `conda create -n sphinx -c conda-forge sphinx sphinxcontrib-bibtex`.
 
+**Several docs pages are pulled from the ASP repo BASE dir, not from `docs/`.**
+The Sphinx build includes a handful of `.rst` files that physically live at the
+repo root (one level above `docs/`) via `.. include:: ../<FILE>` stubs in `docs/`:
+`installation.rst` includes `../INSTALLGUIDE.rst`, `news.rst` includes `../NEWS.rst`,
+`contributing.rst` includes `../CONTRIBUTING.rst`, `acknowledgements.rst` includes
+`../AUTHORS.rst`, `thirdparty.rst` includes `../THIRDPARTYLICENSES.rst`. So to edit
+the install guide, the release notes, the contributing guide, the author list, or
+the third-party licenses, edit the BASE-dir file (`INSTALLGUIDE.rst`, `NEWS.rst`,
+etc.), NOT the `docs/` stub. Grepping only under `docs/` for that prose will miss
+it; search the repo root too.
+
 **Checking a build for real problems.** Grepping the build log for `error` gives
 false positives - many ASP page/image names contain "error"
 (`error_propagation`, `*_error.png`). Filter for genuine issues instead:
