@@ -142,10 +142,18 @@ description: Running Claude autonomously or overnight - the don't-stall rule, in
   WORK IS FULLY DONE. The OS cron exists ONLY as a safeguard to resurrect the session if
   it DIES MID-WORK. Once the work is complete there is nothing left to resurrect or
   advance, so a still-armed cron just cycles for no good reason (and can pointlessly
-  relaunch a finished session). Dropping it is the FINAL action of any auto job: remove
-  the crontab line(s) / touch the `.auto_done` sentinel AND CronDelete the in-session
-  heartbeat. Arm the cron for the duration of the work, drop it when done - never leave it
-  idling past completion.
+  relaunch a finished session). Dropping it is the FINAL action of any auto job, and it is a
+  FOUR-PART cleanup - do ALL of it or the apparatus litters `~/.claude/autorun/` (Oleg keeps
+  finding stale heartbeat/watchdog/log/lock files left behind): (1) remove ONLY this bot's OS
+  crontab line (`crontab -l | grep -v 'watchdog_<tag>' | crontab -`, then `crontab -l` to
+  CONFIRM you did NOT drop another bot's line - re-add it if you did); (2) touch the
+  `<project>/.auto_done_<tag>` sentinel; (3) CronDelete the in-session heartbeat; (4) **WIPE
+  this bot's apparatus FILES with literal absolute paths**: `rm -f
+  ~/.claude/autorun/heartbeat_<tag>`, `rm -f ~/.claude/autorun/watchdog_<tag>.sh`, `rm -f
+  ~/.claude/autorun/watchdog_<tag>.log`, `rm -rf ~/.claude/autorun/watchdog_<tag>.lockdir` (one
+  literal path per line, no glob/`$VAR`; touch ONLY the tag that is done). The sentinel may stay
+  as a completion marker. Arm the cron for the duration of the work, drop-and-WIPE it when done -
+  never leave it idling or its files lying around past completion.
 - On every wakeup, FIRST run `date` to re-orient - long runs leave you stale.
 
 ## Notes Discipline + Reread-On-Resurrection (MANDATORY for any auto/overnight run)

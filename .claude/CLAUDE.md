@@ -18,6 +18,13 @@ notes - the pointer is a promise that the detail exists there.
   Use `.sh` files (comment-only) in `~/projects/` so they're tracked by the
   projects repo. The `.claude/` memory is only for cross-project patterns
   and preferences, not per-project notes.
+- **On ANY context compaction/summary OR session resurrection, STOP and re-read
+  the active project's notes file top-to-bottom (esp. its WORK LOG + resurrection
+  policy) BEFORE acting - never resume from stale/summarized memory.** During
+  autonomous/overnight runs, LOG COPIOUSLY and IMMEDIATELY as you go (each step:
+  command, product path, key stats, next step), so a cold-started self can
+  continue from the notes alone. Full discipline: the autonomous-ops skill
+  ("Notes Discipline + Reread-On-Resurrection").
 - **Project-specific data, scratch, and outputs go in the relevant
   `~/projects/<subdir>/`, never loose in the home dir or scattered around.** Do
   not create scratch dirs or stray files in `~` (e.g. `~/sli_fusion_lr`, build
