@@ -65,10 +65,42 @@ l1 is the master and orchestrates FOUR platforms
   or `now_building`/`now_testing` while live). launch_master uploads to the GitHub release
   area and emails oleg.alexandrov@gmail.com ONLY if ALL 4 pass; any Fail => no upload, mail says Fail.
 - Resume without rebuilding the good ones: `launch_master.sh resume`.
-- KEY TRIAGE SIGNAL: if localLinux FAILS but all 3 cloud PASS on a deterministic change
-  (e.g. the hillshade Horn change, identical output across arch), the cloud golds are already
-  current and only **l1's local gold is stale** -> regold l1, done. (Do NOT say "pfe" - there is
-  no pfe/NAS host in this nightly; the remotes are cloud CI.)
+- KEY TRIAGE SIGNAL: localLinux can FAIL while all 3 cloud PASS because **the cloud runs only a
+  ~12-test SUBSET**, not the full l1 suite. So a test that fails on l1 is often simply NOT run on
+  the cloud. Check before assuming the cloud "agrees". (Do NOT say "pfe" - the remotes are cloud CI.)
+
+## The cloud (remote) test scheme is SEPARATE from l1 - do not clobber it
+
+The cloud build+test is `StereoPipeline/.github/workflows/build_test.sh` (run in GitHub Actions,
+one .yml per platform). It clones VW from **god** (`visionworkbench/visionworkbench`), builds ASP,
+then fetches the tests+data+gold from a tarball: `StereoPipelineTest.tar`, GitHub release **0.0.1**
+on **NeoGeographyToolkit/StereoPipelineTest**. CRUCIAL facts:
+- That tarball is a **~12-test SUBSET** with its OWN, SEPARATELY MAINTAINED `validate.sh` files that
+  use **RELAXED tolerances** (`bin/max_err.pl`, e.g. 0.25) for cross-platform float/alignment drift
+  (pc_align UTM/Mars, opencv_sgbm). It also has no `run/` dirs and no AppleDouble junk. Most l1 tests
+  (incl. ss_hillshade, ss_colormap, ss_pc_align_large_shift, and every other hillshade test) are
+  **NOT in the cloud subset** -> a hillshade/algo change touching only l1-exclusive tests does NOT
+  affect the cloud at all. Verify by `tar tf StereoPipelineTest.tar | grep <test>`.
+- To regold the cloud, use `StereoPipeline/.github/workflows/update_mac_tests.sh`: it takes the
+  CLOUD's own run/ (from the build artifact `StereoPipelineTest.tar`), does `mv run gold` per test,
+  re-tars, and `gh release create` back to tag 0.0.1. NEVER re-tar from the l1 checkout and push it -
+  that clobbers the cloud's relaxed-tolerance validate.sh and its subset, breaking cross-platform CI.
+  The cloud gold must come from a cloud run (float-sensitive tests differ across arch).
+
+## Declare-success-and-publish shortcut (benign failures, no rebuild)
+
+When a nightly's only failures are BENIGN (an intended algo change; the build itself is fine) and you
+do NOT want to rebuild, publish the already-built tarballs directly:
+1. Regold the failed l1 tests: `cp -f ssX/run/* ssX/gold/` then re-run `ssX/validate.sh` (needs
+   `conda activate asp_deps` for gdalinfo; validate adds `../bin` for cmp_stats.sh). Confirm "Validation succeeded".
+2. Edit the failing `~/projects/BinaryBuilder/status_<platform>.txt`: change `test_done Fail` -> `test_done Success`.
+3. `cd ~/projects/BinaryBuilder && bash auto_build/launch_master.sh resume`. Resume SKIPS every platform
+   already at `test_done Success` (no rebuild, no re-test), aggregates `status_master.txt`, and if all 4
+   are Success calls `upload_to_github` (creates `<date>-daily-build` release on NeoGeographyToolkit/
+   StereoPipeline, keeps last 2) and emails the status. That email is the "passing build" confirmation.
+Order matters if also pushing an algo change to god: PUBLISH the current build FIRST (gold matching the
+built tarball), THEN push the new code to god and roll the gold forward, so the published tarball and
+its gold stay consistent at publish time.
 
 ## Hillshade / colormap / IP-match failures (Horn's method, gdaldem split)
 
