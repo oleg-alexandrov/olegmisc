@@ -49,6 +49,65 @@ size, min/max/mean/stddev, valid_percent). ANY nudge fails them. So a "fail" aft
 an intentional stereo/tiling change is EXPECTED and is NOT evidence of a real
 regression. Judge the DEM itself, not the diff.
 
+## Nightly topology & trigger (1 local + 3 CLOUD platforms)
+
+Trigger: a CRON job on **l1 (lunokhod1) at 23:05** runs
+`~/projects/BinaryBuilder/auto_build/launch_master.sh` (log: `output_master.txt`).
+l1 is the master and orchestrates FOUR platforms
+(`buildPlatforms="localLinux cloudMacX64 cloudMacArm64 cloudLinuxArm64"`):
+- **localLinux** = l1 itself: built AND tested locally (build.sh + run_tests.sh -> pytest -> report.txt).
+- **cloudMacX64 / cloudMacArm64 / cloudLinuxArm64** = the 3 REMOTES, all in the CLOUD
+  (**GitHub Actions**, NOT pfe/NAS). Triggered from l1 by `gh workflow run <wf> -R <repo>`
+  (see `auto_build/build.sh build_cloud_macos()`), polled with `gh run list`, artifacts
+  pulled with `gh run download`. Build+test happen in the cloud; l1 just monitors.
+- Aggregated status: `~/projects/BinaryBuilder/status_master.txt` (one line per platform,
+  Success/Fail) and per-platform `status_<platform>.txt` (`<tarball> test_done Success|Fail`,
+  or `now_building`/`now_testing` while live). launch_master uploads to the GitHub release
+  area and emails oleg.alexandrov@gmail.com ONLY if ALL 4 pass; any Fail => no upload, mail says Fail.
+- Resume without rebuilding the good ones: `launch_master.sh resume`.
+- KEY TRIAGE SIGNAL: if localLinux FAILS but all 3 cloud PASS on a deterministic change
+  (e.g. the hillshade Horn change, identical output across arch), the cloud golds are already
+  current and only **l1's local gold is stale** -> regold l1, done. (Do NOT say "pfe" - there is
+  no pfe/NAS host in this nightly; the remotes are cloud CI.)
+
+## Hillshade / colormap / IP-match failures (Horn's method, gdaldem split)
+
+Hillshade-touching tests fail as a group when the VW hillshade normal algo changes
+(e.g. `vw@d9b24799`, 2026-09-01, one-sided forward diff -> Horn's 3x3 central
+difference in `src/vw/Image/ImageSurface.h ComputeNormalsFunc`, to match gdaldem).
+Such a change moves ~60-76% of DN globally, so the exact stat-diff fails -> REGOLD,
+not a bug. Key facts for triage:
+- Affected: `ss_hillshade`, `ss_colormap` (colorized x hillshade), and any pc_align
+  test that passes `--hillshade-options` (routes to ASP's `hillshade` tool).
+- NOT affected: `ss_pc_align_hillshade` - with NO `--hillshade-options`, pc_align's
+  DEFAULT is `gdaldem hillshade -multidirectional` (GDAL, unchanged) -> byte-identical
+  (matching md5, identical .vwip/.match, identical transform). This split is itself
+  proof the cause is the VW hillshade code. (Traced in `src/asp/Tools/pc_align.cc`
+  ~line 689: default gdaldem vs `program_path("hillshade")` when options are set.)
+- Horn handles missing points well: a no-data NEIGHBOR is replaced by the CENTER
+  value; the pixel is masked ONLY if its own center is no-data; borders via
+  ConstantEdgeExtension. A point with only one live neighbor still yields a finite,
+  sensible (one-sided/flat) normal - never NaN, never a bail. The OLD code masked any
+  pixel whose right(+1,0) or down(0,+1) sample was missing (that's what "bailed").
+- Cross-check determinism: same commit on l1 (Linux) and mac_arm (Mac ARM64) gives
+  IDENTICAL new stats -> it's the algo, not platform noise. Confirm the Mac's
+  `git -C ~/projects/visionworkbench log -1 --oneline` has the commit.
+
+**Inspect the interest points, not just the DEM.** For IP/match-affecting failures
+compare `ss*/run/*.match` vs `ss*/gold/*.match`:
+- Parse: `~/projects/StereoPipeline/install/bin/parse_match_file.py in.match out.txt`
+  (header "nL nR"; then nL reference pts, then nR source pts; cols `x y ix iy ...`;
+  the .match holds RANSAC INLIERS). More inliers usually = better texture in the new
+  hillshade (e.g. large_shift 1002 -> 1396).
+- Plot (solid red dots, stereo_gui look): `~/bin/plot_matches.py ref.tif src.tif
+  pair.match out.png <width> <maxpts> --red --radius 7`. It draws reference|source
+  side by side and prints residual-to-best-fit-TRANSLATION. CAVEAT: that residual (and
+  its "mediocre" verdict) is inflated for pairs with real rotation/scale (a similarity
+  fit) - do NOT read it as bad matches; judge by the pc_align beg/end errors instead.
+- Judge the alignment by `run-beg_errors.csv`/`run-end_errors.csv` (col 4 = error m):
+  use the MEDIAN (mean is inflated by the shared non-overlap tail). A better hillshade
+  shows a better START (beg median drops) and an equal FINAL residual.
+
 ## Judge acceptable vs real: run-vs-gold coverage + dz
 
 For each failing DEM test, put run and gold on ONE common grid and look:
