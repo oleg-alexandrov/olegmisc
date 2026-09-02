@@ -37,6 +37,21 @@ description: Running Claude autonomously or overnight - the don't-stall rule, in
   absolute path per `rm` (never a glob/`$VAR`/`cd &&`), and prefer handing the user an
   `! <command>` to run themselves over risking the gate mid-flow. Tidiness is never
   worth a stall.
+- TWO ESCAPE HATCHES for any tricky/gate-prone op: DEFER it, or DELEGATE it to a
+  BACKGROUND SUBAGENT. If the op genuinely cannot be skipped (a delete that MUST
+  happen, an interactive-ish command), do NOT run it inline where a gate would freeze
+  the whole session undetectably. Instead hand it to a subagent via the Agent tool
+  run in the BACKGROUND (the default): the parent keeps control, so if the subagent
+  falls on the sword (hangs on the gate, or dies), the blast radius is the SUBAGENT,
+  not the session. The parent stays responsive and CAN notice "that subagent never
+  returned" and report/route around it - the introspection you lack when you block
+  inline. This is an EXTRA MEANS, not a guarantee: the gated op still needs approval
+  to actually complete (the subagent hits the same gate), and the parent may itself
+  be unable to make progress without that op - no promise the run continues. But it
+  isolates the freeze and keeps the session observable, which inline execution cannot.
+  Detecting a stuck subagent still needs the parent to be PULSING (the heartbeat) to
+  poll elapsed time. So the rule is: for tricky business, either DEFER or ASSIGN TO A
+  SUBAGENT - never run it inline unattended.
 - DEFAULT for ANY repeating autonomous monitoring/pipeline: reach for CronCreate
   FIRST, not ScheduleWakeup. Set up the independent recurring cron
   (off-round-marks, e.g. "9,29,49 * * * *") at the START, don't re-arm one-shots.
