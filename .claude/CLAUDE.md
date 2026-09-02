@@ -34,6 +34,11 @@ notes - the pointer is a promise that the detail exists there.
 - **When told to add/commit/push CLAUDE.md, always do the same for MEMORY.md
   (`~/.claude/projects/-Users-oalexan1/memory/MEMORY.md`) too.** They travel together.
 - "Project dir" or "projects dir" means `~/projects`.
+- **Mac and pfe mirror a project at the SAME home-relative path `~/projects/<proj>/...`**
+  (only the home prefix differs: on pfe `~/projects/<proj>` is a symlink to
+  `/nobackupp19/oalexan1/<proj>`; the bytes live on nobackup). So copy back/forth with the
+  SAME relative path, never rename on the fly, and a matching path means the data is in both
+  places. Detail (symlink setup, mirror-the-remote-relative-path rule): the pfe-nas skill.
 - **NEVER `git commit` or `git push` without explicit instruction.** Show
   what will be committed/pushed and wait for approval. But when told to
   commit or push, do it immediately without hesitation or double-checking.

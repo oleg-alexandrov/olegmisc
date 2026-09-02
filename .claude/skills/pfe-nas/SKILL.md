@@ -84,8 +84,17 @@ Bare minimum to remember without reading:
   (or `/nobackupp19/oalexan1/<mydir>`). Set it up as: `mkdir -p /nobackupp19/oalexan1/<mydir>;
   mkdir -p ~/projects; ln -s /nobackupp19/oalexan1/<mydir> ~/projects/<mydir>` (only if the
   home symlink is wanted). The DATA is on nobackup; `/home6` only ever holds the symlink, never
-  the bytes. When mirroring a local Mac project to pfe, put it on nobackup and add the home
-  symlink so paths resolve from either. Symlink-wipe procedure in `pleiades_notes.sh`.
+  the bytes. Symlink-wipe procedure in `pleiades_notes.sh`.
+- **Mac and pfe are kept in sync at the SAME HOME-RELATIVE PATH `~/projects/<proj>/...` (only
+  the absolute home prefix differs).** A project is at `~/projects/<proj>` on BOTH machines:
+  on the Mac `/Users/oalexan1/projects/<proj>` is the real dir; on pfe `/home6/oalexan1/projects/<proj>`
+  is a SYMLINK -> `/nobackupp19/oalexan1/<proj>` (the bytes live on nobackup). So the `~`-relative
+  path is IDENTICAL on both (`~/projects/<proj>/sf2/hiric-DEM.tif` means the same file on each) and
+  you copy back and forth with the SAME relative path - never rename on the fly, and a matching
+  path tells you the data is in both places. rsync/scp: `rsync -a ~/projects/<proj>/ pfe:~/projects/<proj>/`
+  (or the explicit `/nobackupp19/oalexan1/<proj>/` target) - same subtree either way. This is the
+  standing cross-machine mirror convention; combined with the "mirror the remote relative path"
+  rule above, the two trees stay identical up to the home-dir prefix + the nobackup symlink.
 - **Every qsub script: `exec >` redirect to a work-dir log (never PBS `-o`) AND `umask 022` (readable outputs). Details: `qsub_convention.sh` / `qsub_rules.sh`.**
 - **CHECK JOB EFFECTIVENESS on any long/multi-node pfe job - do not assume it parallelizes.** Effectiveness (efficiency) = CPU-time-used / (cores-allocated x walltime); 1.0 = every allocated core busy every second, low = idle cores wasting the allocation. THE overall number is `qstat`'s `Eff` column, equivalently from `qstat -f <jobid>`: `resources_used.cput / (resources_used.ncpus x resources_used.walltime)`. This is already JOB-WIDE - `cput` sums CPU-time over ALL nodes/chunks and `ncpus` is the TOTAL cores - so for a MULTI-NODE run it covers every node at once; you do NOT poll each node to get the overall figure (that answers "is the whole job effective"). Instantaneous aggregate = `resources_used.cpupercent` (divide by 100 = cores busy right now, summed across all nodes; e.g. 529 = 5.3 of 28). Any LOW value SUSTAINED over time (e.g. 7% on 28 cores = ~2 cores busy) is SUSPECT - investigate, do not ignore. To then LOCALIZE which node/rank is the laggard in a multi-node job: `exec_host`/`exec_vnode` in `qstat -f` lists every node; ssh each and compare `uptime` load avg vs its core count (pdsh/clush across all at once if available). Common cause: a serial per-item loop starving the node -> fix is batching/concurrency across items, not bigger per-item threads. Caveat: cput-efficiency can look low for legitimately I/O-bound or sync-heavy phases - judge over time, not one instant. (Caught the un-batched Jezero stereo_transverse.sh this way, 2026-06-26: Eff 7%, cpupercent 529.)
 
