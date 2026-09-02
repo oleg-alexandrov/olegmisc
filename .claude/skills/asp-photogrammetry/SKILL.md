@@ -550,6 +550,27 @@ to ~0.1 deg on the WV-3 set. Wide-baseline / longer-dt pairs have larger converg
 Along-track banding in `point2dem --errorimage` output + systematic per-pair DEM
 disagreement = jitter (next step: `jitter_solve`). Manual: `tools/bundle_adjust.rst`.
 
+## MAPPROJECT-FIRST after ANY camera generation (the surest blunder-catch in stereo)
+
+The VERY FIRST thing to do after generating or modifying a camera - `sat_sim`, `cam_gen`,
+`bundle_adjust`/`jitter_solve` output, a hand-built CSM/RPC/tsai, a converted ISIS/DG camera -
+is MAPPROJECT the image onto SOME reference surface and COMPARE it, before any stereo/BA/point2dem.
+Mapproject onto a DEM (CTX/HRSC/MOLA/Copernicus) or drape and overlay/flip against something
+independent: a hillshade of that DEM, an existing ortho, a different-instrument image of the same
+ground, the reference DEM's own hillshade. Confirm the SAME features (craters, rims, ridges,
+shoreline) land in the SAME place and the SAME orientation. This catches gross blunders on step
+ONE - the biggest being a LEFT-RIGHT (or up-down) FLIP/MIRROR from a wrong cross-track sample-axis
+or along-track/time sign, plus wrong yaw/rotation, an axis swap, a scale error, or a position
+offset. A mirror is especially insidious: the stereo can be INTERNALLY consistent (great tri-err)
+yet globally REFLECTED, and pc_align (rigid, no reflection) can NEVER register it - so it masquerades
+as an un-removable "warp" downstream. (Burned 2026-09-02, Tianwen-1 HiRIC sub4: the whole DEM was
+built cross-track MIRRORED vs the reference; tri-err was 0.37 m yet it would not align, and hours
+went to blaming jitter before Oleg eyeballed same-crater positions and saw the flip. One mapproject-
+and-compare at camera-gen time would have caught it immediately.) So: cam-gen -> mapproject ->
+overlay/flip against a hillshade/ortho -> ONLY THEN proceed. Cross-track sign truth for a linescan
+built from a lon/lat backplane: check which way EAST goes with increasing SAMPLE in the backplane and
+make the camera agree. This is the cheapest, earliest, highest-value check in the whole pipeline.
+
 ## USE YOUR EYES - EYEBALL EVERY PRODUCT, EVERY STEP (the #1 rule)
 
 This cannot be overstated. ASP/VW/geospatial tools are FRAGILE and fail SILENTLY -
