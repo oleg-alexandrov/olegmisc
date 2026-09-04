@@ -189,8 +189,23 @@ the clause with a period and start a new sentence, or use a colon when introduci
 something. Applies everywhere - chat, notes, commits, PRs, issues, docs, code
 comments. (A short hyphen inside a compound word is fine; the ban is on the em dash
 "-" used as a clause separator.) This is a running STYLE GUIDE; the github-issues
-skill carries the GitHub-text formatting rules (no inline backticks in prose, use
-italics; flowing paragraphs; no horizontal rules; verified step-by-step repro).
+skill carries the fuller GitHub-text formatting rules (flowing paragraphs; no
+horizontal rules; verified step-by-step repro) - load it before drafting any
+GitHub text - but the no-backticks rule below is stated inline BECAUSE it must
+apply even when that skill is not loaded.
+
+## GitHub prose: NO inline backticks, use *italics* (CRITICAL - keeps recurring)
+
+In ANY GitHub prose - a PR body, an issue body, a comment, a review, a commit
+message - never wrap an identifier, filename, flag, path, command, or keyword in
+backticks. Set it in *italics* with single asterisks instead. Backticks appear
+ONLY inside a standalone fenced code block, never in a running sentence. This
+rule applies EVERY TIME, with or without the github-issues skill loaded; do not
+delegate it to a skill you might forget to load (that is exactly how it leaked
+into usgscsm PR 534, which had backticks around every identifier). The em-dash
+ban above and this backtick ban are the two always-on GitHub prose rules; apply
+both reflexively before any `gh pr`/`gh issue`/`gh api` write. Writing GitHub text
+is itself the trigger to load github-issues for the rest of its rules.
 
 ## Shell command blocks: NEVER comment to the right of a continuation line
 
@@ -570,6 +585,17 @@ sandbox permission prompt stops you dead in your tracks, which defeats autonomou
 progress. Deletion is rarely necessary: to refresh stale stats, re-read the data
 (don't delete the `.aux.xml`); for temp files, leave them. When in doubt, don't
 remove.**
+
+**DELEGATE destructive/bulk-wipe ops to a SUBAGENT (Oleg's standing rule, "as
+usual", 2026-09-03).** When a step needs a destructive/harness-triggering command
+(bulk `rm -rf` of build dirs, wiping several dirs, any delete that risks a sandbox
+prompt and stalls the main loop), hand it to a subagent via the Agent tool instead
+of running it in the main session. The subagent executes the wipe in its own
+context so the main loop is not stalled by a permission gate. Give the subagent the
+EXPLICIT LITERAL ABSOLUTE PATHS to remove (one `rm -rf /full/abs/path` per line, no
+glob/`~`/`$VAR`), the keep-list, and instruct it to verify each path before deleting
+and report back. This is the default for any non-trivial cleanup; we have been
+bitten repeatedly by doing it inline.
 
 Permission prompts from the sandbox stall independent progress and must be
 avoided. The TRIGGER (confirmed 2026-06-24)
