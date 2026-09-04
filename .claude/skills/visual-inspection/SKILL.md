@@ -16,6 +16,22 @@ hosted URL, use `SendUserFile ... display:render`. See also
 `~/projects/visual_raster_inspection.sh` (colorbar/preview recipe) and
 `~/projects/html_for_google_docs.sh` (base64-embedded HTML for Google Docs).
 
+## The Python/GDAL env (don't fight `ModuleNotFoundError`)
+
+The Mac system `python3` has NEITHER `osgeo` (GDAL) NOR `PIL`. Do not waste calls
+rediscovering this. For ANY raster read / overlay / stacking in python on the Mac,
+FIRST activate the `asp_deps` conda env, which carries both (plus numpy) and also
+puts the `gdalinfo`/`gdal_translate`/`gdaldem`/`gdalwarp` CLI tools on PATH:
+```
+source ~/anaconda3/etc/profile.d/conda.sh && conda activate asp_deps
+```
+On pfe, use whatever conda env the current project's ASP install activates (it
+carries the same GDAL + osgeo python). Don't hardcode a project-specific
+`asp_env.sh` path here - those come and go; the durable rule is: activate the ASP
+deps env for GDAL/osgeo/PIL. General rule: whenever a step needs a tool/module,
+note in the project `.sh` notes WHICH env provides it, so a cold restart activates
+it instead of hitting `command not found` / `No module named`.
+
 ## Artifact and Preview Image Sizing
 
 For HTML artifacts and uploaded previews, downsample DRASTICALLY: <=1000 px long side,
