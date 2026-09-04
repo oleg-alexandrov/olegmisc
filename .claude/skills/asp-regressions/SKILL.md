@@ -26,6 +26,23 @@ stale code and disagrees with the nightly. So before concluding anything:
   behind -> tests wrongly "passed". Burned 2026-08-23: local ASP stuck at an old
   HEAD while god had 15 newer local_epi commits.)
 
+## A single-test "regression" with NO matching code change = suspect the DATA
+
+When exactly one test flips to Fail and no god/master commit touched its code path
+(and VW is in sync), the input DATA was almost certainly clobbered - do NOT chase a
+phantom code bug. Check the input files' **ctime, not mtime**: `rsync -a` preserves
+the source mtime, so a file re-copied/overwritten today still shows an old mtime, but
+`stat --format='%n ctime=%z' <file>` reveals when the inode was actually rewritten on
+this fs. Confirmed 2026-09-04: `ss_rpc_mapproject_cambox_bug2` failed because a test
+crop image was overwritten (a stale Mac copy synced onto l1), enlarging the RPC
+footprint 5x; ctime showed "yesterday" while mtime lied "months ago". Fix path when a
+crop got un-trimmed: re-crop it to a small TOP-LEFT window (`gdal_translate -srcwin
+0 0 W H`, origin at pixel 0,0 so the full-image RPC still aligns) sized to match the
+gold's footprint - the tests then pass against the EXISTING gold, no regold. Grep
+`*/run.sh` for the data filename first to see every test that shares it, and re-run
+all of them. Then propagate the fixed file to the Mac (`mac_arm`) and pfe (`pfx`) so a
+later sync cannot re-clobber it. (See machines-tools for the ssh/rsync mechanics.)
+
 ## Where the results live (and the traps)
 
 - `~/projects/BinaryBuilder/status_master.txt` = per-platform overall (localLinux,

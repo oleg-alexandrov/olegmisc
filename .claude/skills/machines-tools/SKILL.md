@@ -100,5 +100,24 @@ stderr - do NOT rely on fragile content-based grep filters:
   content-fragile and occasionally still leaks.
 
 Batch all remote ops into ONE ssh call - MOTD/banner overhead is ~10s per call.
-(Reaching pfe: `ssh pfe` works non-interactively in this environment; `ssh pfx` is
-the SecurID-avoiding config alias if `pfe` ever prompts.)
+(Reaching pfe: use `ssh pfx`, NOT `ssh pfe`. Confirmed 2026-09-04: `ssh pfe` hits
+the sfe bastion which rejects publickey and demands a SecurID passcode -
+`Permission denied (publickey,keyboard-interactive)` - so it CANNOT run headless.
+`pfx` keys straight through to a pfe node. mac_arm keys in headless via the
+passwordless `~/.ssh/id_rsa` and needs no passcode.)
+
+## NEVER add `-o BatchMode=yes` to these ssh probes (CRITICAL)
+
+`mac_arm` and `pfx` authenticate with the passwordless `~/.ssh/id_rsa` key (there is
+NO ssh-agent in the tool environment - `SSH_AUTH_SOCK` is empty). `-o BatchMode=yes`
+suppresses that interactive/key exchange and the connection stalls after printing
+only the login banner - which reads as "host unreachable / hangs" and sends you down
+a false "can't reach pfe/mac" rabbit hole (burned 2026-09-04, wasted several probes
+before dropping BatchMode). So: plain `ssh mac_arm '<cmd>'` / `ssh pfx '<cmd>'`, no
+BatchMode. Bound it with an OUTER `timeout N ssh ...` on the l1 side (never inside the
+remote cmd - see the Mac `timeout` trap above), and give the FIRST proxied connection
+room: use `timeout 45`-`60`, not 6-8s - the initial hop through the proxy/sfe is slow
+and a short timeout kills it before auth completes (another false-negative source).
+To diagnose an ssh that "hangs", run `ssh -v <host> true` and read the auth lines
+(`Offering public key`, `Authenticated ... using "publickey"`, or `Permission denied
+(...keyboard-interactive)`) rather than guessing.
