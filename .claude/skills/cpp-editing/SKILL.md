@@ -49,6 +49,31 @@ Why: Reconstruction loses comments, formatting, and subtle details. "Move" means
 Remove braces from single-statement control flow blocks (if, else, for, while, do-while).
 Keep braces for scope blocks (not attached to control flow) and when needed for clarity with nested conditions.
 
+## Statement Layout - No Busy Lines (Oleg is strict on this)
+
+Give each statement its own line. Do NOT pack several with semicolons
+(`Matrix3x3 m; m.set_identity();`) and do NOT write a cramped one-line braced body
+(`if (w <= 0) { Vector2i sz = ...; w = sz[0]; h = sz[1]; }`). The form is: open
+brace, newline, one statement per line, closing brace on its own line. A short
+trivial function still gets a real body (`double f(double d) {` newline `return ...;`
+newline `}`), not a one-liner. Also do NOT trail an over-long comment on a
+statement line: put the comment on its OWN line ABOVE the statement, then the
+statement(s) below. Medium-size functions are fine; the target is readable, not
+minimal-line-count.
+
+## Prefer Named Variables Over Literal-Plus-Comment in Calls
+
+When a call passes bare literals whose meaning needs a `/*comment*/`, declare
+explicit named variables carrying the value instead. Same information, clearer
+presentation, and it reads without decoding comments:
+```cpp
+// Instead of: csm.createFrameModel(pin, w, h, ... , "" /*distortion type*/, dist,
+//                                  0.0 /*ephem time*/, ...);
+std::string distortion_type = ""; // no lens distortion
+double ephem_time = 0.0;
+csm.createFrameModel(pin, w, h, ... , distortion_type, dist, ephem_time, ...);
+```
+
 ## Forward Declaration Style
 
 ```cpp
@@ -87,6 +112,13 @@ included when using `std::abs` on floats (guarantees the float overload on both)
 ## VisionWorkbench Namespace Conventions
 
 vw stands for VisionWorkbench.
+
+**Never write `using namespace vw;` in a new file (we are removing existing ones).**
+Qualify every VW symbol explicitly: `vw::Matrix3x3`, `vw::Vector2/Vector3`,
+`vw::ArgumentErr`, `vw::vw_out`, `vw::camera::PinholeModel`,
+`vw::cartography::GeoReference`. `vw_throw(...)` stays unqualified (it is a macro).
+`vw_out` and `vw_log` live in `<vw/Core/Log.h>` (namespace vw) - include it when
+you call `vw::vw_out()`, do not rely on it coming in transitively.
 
 - `vw::math::norm_2`, `vw::math::subvector` - in vw::math namespace
 - `vw::cartography::block_write_gdal_image` - always add vw::cartography::
