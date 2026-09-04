@@ -159,7 +159,12 @@ The ASP tools `colormap`/`point2dem --colormap-style` take these names too
 via gdal, tight valid-data crop, p95 clamp, plasma(error)/RdBu_r(signed), nodata
 black, own full-height right colorbar via `make_axes_locatable` (numeric ticks,
 labelsize 16), `ax.axis("off")`, writes a self-contained PNG. Run it in a
-matplotlib+gdal env (pfe `geo`/`isis10`; the ASP env has gdal but NO matplotlib).
+matplotlib+gdal env. On the MAC, base `~/anaconda3/bin/python` lacks `osgeo` (gdal),
+but the `asp_deps` env has BOTH gdal and matplotlib - use
+`~/anaconda3/envs/asp_deps/bin/python` (or just `python3` when `asp_deps` is
+active); `bathy`, `asp`, and `isis_dev` also have both. On pfe use `geo`/`isis10`.
+(Note: on l1 the ASP build env has gdal but NO matplotlib; the Mac asp_deps does
+have matplotlib - keeps biting, so this is the go-to for figures.)
 Note: ASP's `colormap --legend` gives only an UNLABELED strip — for a real labeled
 colorbar use matplotlib (this renderer), not the ASP tool.
 
