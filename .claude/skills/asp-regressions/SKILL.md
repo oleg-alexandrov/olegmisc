@@ -1,9 +1,20 @@
 ---
 name: asp-regressions
-description: Evaluate and triage a FAILED ASP nightly/regression - decide acceptable vs real, reset-to-god first, run-vs-gold coverage judgement (-tap + hillshade + dz median/NMAD), the zero-tolerance stat-diff trap, distinguishing a cloud BUILD break from test drift (fetch GH Actions logs), regold, relaunch launch_master, and iterate. Load whenever an ASP nightly fails and you must judge whether the failures are OK, fix a build break, regold, or re-run the nightly. Complements build-env (mechanics), local-epi-debug (tile notches), dem-comparison.
+description: Hub for ASP regression-test work, and the judgement layer for a FAILED ASP nightly - decide acceptable vs real, reset-to-god first, run-vs-gold coverage judgement (-tap + hillshade + dz median/NMAD), the zero-tolerance stat-diff trap, distinguishing a cloud BUILD break from test drift (fetch GH Actions logs), regold, relaunch launch_master, and iterate. Load whenever an ASP nightly fails, OR whenever you need to find/run/author a StereoPipelineTest regression, judge whether failures are OK, fix a build break, regold, or re-run the nightly. To AUTHOR a new regression test (new or existing tool), see asp-packaging's "Regression test" section. To drive/retrigger the nightly itself, see nightly-regression. Complements build-env (mechanics), local-epi-debug (tile notches), dem-comparison.
 ---
 
 # Evaluating a failed ASP nightly / regression
+
+## Where regression knowledge lives (routing)
+
+Three skills cover regression work. Pick by the verb:
+- AUTHOR a new test (any tool, new or existing) -> asp-packaging, "Regression
+  test (StereoPipelineTest)" section (dir layout, run.sh/validate.sh, seed+verify
+  gold, the metadata-only fake-it trick, `ss*` auto-discovery).
+- DRIVE the nightly (retrigger, monitor, cloud children) -> nightly-regression.
+- JUDGE a failure / regold / reset-to-god -> this skill, below.
+
+## Judging a failure
 
 The judgement layer on top of the build-env skill's mechanics. The question is
 almost always: are these failures BENIGN (regrid/edge drift, regold) or REAL (a

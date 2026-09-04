@@ -9,6 +9,10 @@ package plumbing in `~/projects/BinaryBuilder`, tests in
 
 ## Where the source goes
 
+- New `.cc`/`.h` files: copy the license header from a NEIGHBORING file, and set
+  the copyright year to the CURRENT year (`Copyright (c) 2009-<thisyear>`). The
+  old boilerplate frozen at `2009-2013` is stale. New source in 2026 should read
+  `2009-2026`. Grep-check before commit: `grep -m1 Copyright <newfile>`.
 - User-facing tools: `src/asp/Tools/`. C++ is `<tool>.cc`; Python is `<tool>`
   (no extension) or `<tool>.py`. See the .py rule below - it is not cosmetic.
 - Shared Python library modules (imported, not run): `src/asp/Python/`
@@ -86,6 +90,23 @@ l1 regolds; you seed a local gold to prove the plumbing.
 - Make tiny inputs by cropping real data with `gdal_translate -srcwin x y w h`
   (a few hundred pixels). Prefer a real crop over synthetic, and inspect that the
   output is sensible (e.g. the expected mean shift), not just that it ran.
+- Metadata-only tools need NO image files. A camera builder like `cam_gen`
+  (`--extrinsics` roll/pitch/yaw path, or `--vendor esri`) only READS the text
+  metadata (exterior-orientation table, camera CSV / sample `.tsai`) and matches
+  each row to an image by its file NAME. It never opens the image to write a
+  `.tsai`. So stage only the small metadata in `../data/`, and let `run.sh`
+  `printf` an `image-list` of faux frame names that need not exist on disk. The
+  parsing is fully honest; the test stays tiny (a couple of KB) with no imagery.
+  `ss_cam_gen_extrinsics` (old roll/pitch/yaw way) and `ss_cam_gen_vendor_esri`
+  (`--vendor esri`, EO + ESRI camera CSV) are the two models. Validate by an exact
+  `diff` of each `run/*.tsai` against `gold/`.
+- Seed gold from a VERIFIED camera, not just a self-consistent one. Before
+  committing `gold/`, confirm the produced camera matches an independently
+  known-good result (e.g. `cam_test` reporting a tiny `dR` against the reference
+  camera you trust), so the gold locks in the CORRECT answer, not merely a
+  reproducible one.
+- Tests are auto-discovered by the pytest `runDirs = ss*` wildcard, so a new
+  `ss_<tool>/` dir needs no registration anywhere; the harness picks it up.
 - To verify locally before a full build: copy the tool into the Mac ASP install
   `bin` (`~/projects/StereoPipeline/install/bin`), put that on PATH so
   `which <tool>` resolves, run with the Mac env's python, seed `gold/`, run
