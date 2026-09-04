@@ -34,6 +34,21 @@ FOUR "successful" runs before a human eyeballed craters.
   yellow and you cannot call a flip from it. Needs a distinctive asymmetric feature IN the
   overlap, at a readable zoom.
 
+## DO THIS FIRST - the 30-second metadata test (zero compute, no stereo)
+
+Before any imagery: read the vendor LABEL and cross-check it against the backplane/GCP source.
+A PDS4 (or similar) label often carries the STORED image's geographic corners, e.g. HiRIC's
+`<Image_Corner_Point_Position>` with Up_Left / Up_Right / Down_Left / Down_Right lon-lat, plus
+`<axis_index_order>` (Last Index Fastest = row-major, sample fastest = normal GDAL read). The
+corners tell you unambiguously which way col and row map to the ground (e.g. col0=west,
+colMax=east, row0=north). Now compare that to the GEO/backplane grid you build GCPs from: does
+its "Column"/sample increase in the SAME direction as the image column? Burned 2026-09-04 on
+HiRIC: label corners said col0=west, colMax=east, but the GEO grid had sample 261->110.38E and
+sample 5853->110.31W, i.e. GEO sample counts from the OPPOSITE edge. That mismatch IS the flip,
+provable from metadata alone. If the label lacks corners, derive the image's true col->lon from
+the backplane itself and make the GCP mapping consistent with the IMAGE (`col=(W-1)-Sc` vs
+`col=Sc`). Doing this cross-check up front would have saved days.
+
 ## WHAT WORKS (the procedure - do this)
 
 Produce TWO deliverables so a human AND you can eyeball, then run the flip-test:
