@@ -26,6 +26,41 @@ nothing. Before a re-run with changed IP/matching options, delete the old matche
 (or use a fresh `-o`/`--output-prefix` directory). `rm -rf ba` before re-running is
 the simplest safe move.
 
+## After ANY bundle_adjust (esp. --solve-intrinsics): inspect the residual pointmap SPATIALLY, not just the median
+
+bundle_adjust writes `<out>-final_residuals_pointmap.csv` (cols: lon, lat, height,
+mean_residual_px, num_obs) and `-final_residuals_stats.txt`. ALWAYS inspect the
+pointmap SPATIALLY - colorize the points by column 4 (reprojection error, px) over
+the terrain (plasma, robust clamp), split by site if joint. The MEDIAN hides
+structure that decides whether an intrinsics solve is honest: per-framelet/per-CCD
+striping, a cross-track gradient/tilt, corner blobs, under-constrained strip-end
+framelets (bright tails), or a distortion/pose null-space artifact. This is
+MANDATORY whenever `--solve-intrinsics` is used (a low median can coexist with a
+badly-structured residual field). Two coefficient gotchas learned on CaSSIS:
+`--fixed-distortion-indices i,j` nails specific distortion coeffs (works for CSM
+transverse via a Ceres SubsetManifold, e.g. `0,10` = the transverse x/y CONSTANT
+terms, to kill an optical-center/pose gauge shift); and `--remove-outliers-params
+"pct factor min max"` - the 3rd/4th values CLAMP the removal threshold in PIXELS
+(`e = min(max(e_computed, min), max)`), so `"... 100 100"` means "remove only
+> 100 px" = almost no filtering. For picky GCP/tie filtering use a small ceiling
+(e.g. `"10 10 1 2"`), and remember GCP are NEVER dropped as outliers.
+
+## Replicating a published pipeline: use the pipeline AT EVERY STEP, eval each stage's product
+
+When reproducing results from a published multi-stage pipeline (e.g. CassisPipeline)
+with one changed knob (a distortion, a parameter), run the PIPELINE ITSELF for the
+FULL stage range - do NOT (a) hand-roll your own eval (the pipeline already publishes
+an evaluable product at each stage - read those, e.g. its own dz/dd `eval*/`), or
+(b) mix intermediates from DIFFERENT runs/alignments (regenerating only some stages
+and reusing older copied outputs silently breaks self-consistency - e.g. a fresh
+stage-1 alignment with a copied stage-4 camera set puts the bootstrap DEM and the
+cameras in different frames, mildly degrading good sites and catastrophically
+breaking fragile ones). To change one knob, edit ONLY that config value and run the
+full pipeline so every stage is consistent. EVALUATE each stage's published product
+as it lands to localize any divergence early, never run blind through all stages and
+eval only at the end. (Burned on the CaSSIS unc10relax 5-site replicate 2026-09-05:
+a "run stage 1 then 5-7 with copied stage-4 cams" shortcut broke ox2 to 91 m dz-std.)
+
 ## Interest-point / match-point plots: RED FILLED balls (dots)
 
 Whenever plotting interest points or tie-point matches on an image (match figures,
