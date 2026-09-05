@@ -1,6 +1,6 @@
 ---
 name: dem-sanity-check
-description: Visually check a produced DEM/ortho for GLOBAL geometric errors against a reference - left-right mirror (flip), up-down flip, 180 rotation, a bulk horizontal shift, or vertical inversion - when you are not fully sure the result is oriented correctly. Carries the hard lesson that dz/geodiff/NMAD and bundle-adjust residual are BLIND to a horizontal mirror, and the crater-triplet hillshade test that actually catches it. Load whenever asked to evaluate DEM orientation/correctness, "is it flipped/mirrored/shifted", or before trusting a DEM that was built from a hand-assembled camera (sat_sim/cam_gen, custom GCPs).
+description: The orientation specialist of the inspection hub ([[visual-inspection]]). Catch GLOBAL geometric errors in a produced DEM/ortho vs a reference - left-right mirror (flip), up-down flip, 180 rotation, bulk horizontal shift, vertical inversion. Carries the crater pose-cluster flip-detector tool, the mapproject-vs-independent-reference test, and the hard lessons that dz/geodiff/NMAD and bundle-adjust residual are BLIND to a horizontal mirror, and that a mirror is fixed by flipping the IMAGE (bundle adjustment cannot reflect, so a GCP-column change alone is a no-op). Load whenever asked whether a DEM/ortho is flipped/mirrored/rotated/shifted or correctly oriented, or right after building a DEM from a hand-assembled camera (sat_sim/cam_gen, custom GCPs).
 ---
 
 # DEM sanity check: catching a global flip / mirror / shift
@@ -9,10 +9,15 @@ A produced DEM can be INTERNALLY perfect (tight triangulation error, sub-pixel b
 residual, clean stereo) yet be GLOBALLY WRONG vs reality: left-right mirrored, up-down
 flipped, 180-rotated, bulk-shifted, or vertically inverted. This happens when the camera
 was hand-assembled (sat_sim / cam_gen) or GCPs were cooked from a vendor backplane and a
-cross-track / line convention is reversed. Burned 2026-09-04 on Tianwen-1 HiRIC: the whole
-DEM was L-R MIRRORED (vendor GEO "Column" ran opposite to the stored image sample order, so
-GCP `col = Sc/2` was wrong-handed; the fix was `col = (W-1) - Sc/2`). It shipped through
-FOUR "successful" runs before a human eyeballed craters.
+cross-track / line convention is reversed. Burned 2026-09-04/05 on Tianwen-1 HiRIC: the whole
+DEM was L-R MIRRORED (the stored image's sample order ran opposite to the vendor GEO sample
+convention). It shipped through FOUR "successful" runs before a human eyeballed craters, and
+then cost another day of wrong turns. The REAL fix (verified end-to-end 2026-09-05): **FLIP
+THE INPUT IMAGES left-right** before stereo, and set GCP `col = (W-1) - Sc` to match the
+flipped content. CRITICAL, non-obvious: changing ONLY the GCP column convention (`col = Sc`
+-> `col = (W-1)-Sc`) with the same image is a **NO-OP** — old and column-flipped DEMs came
+out byte-identical — because bundle adjustment CANNOT REFLECT (see below). The reflection the
+data needs can only be supplied by flipping the IMAGE itself.
 
 ## WHAT DOES NOT CATCH IT (do not rely on these for orientation)
 
@@ -34,20 +39,58 @@ FOUR "successful" runs before a human eyeballed craters.
   yellow and you cannot call a flip from it. Needs a distinctive asymmetric feature IN the
   overlap, at a readable zoom.
 
-## DO THIS FIRST - the 30-second metadata test (zero compute, no stereo)
+## FIRST, A HINT (not a proof) - the metadata cross-check (zero compute)
 
-Before any imagery: read the vendor LABEL and cross-check it against the backplane/GCP source.
-A PDS4 (or similar) label often carries the STORED image's geographic corners, e.g. HiRIC's
-`<Image_Corner_Point_Position>` with Up_Left / Up_Right / Down_Left / Down_Right lon-lat, plus
-`<axis_index_order>` (Last Index Fastest = row-major, sample fastest = normal GDAL read). The
-corners tell you unambiguously which way col and row map to the ground (e.g. col0=west,
-colMax=east, row0=north). Now compare that to the GEO/backplane grid you build GCPs from: does
-its "Column"/sample increase in the SAME direction as the image column? Burned 2026-09-04 on
-HiRIC: label corners said col0=west, colMax=east, but the GEO grid had sample 261->110.38E and
-sample 5853->110.31W, i.e. GEO sample counts from the OPPOSITE edge. That mismatch IS the flip,
-provable from metadata alone. If the label lacks corners, derive the image's true col->lon from
-the backplane itself and make the GCP mapping consistent with the IMAGE (`col=(W-1)-Sc` vs
-`col=Sc`). Doing this cross-check up front would have saved days.
+Read the vendor LABEL and cross-check it against the backplane/GCP source. A PDS4 (or similar)
+label often carries the STORED image's geographic corners, e.g. HiRIC's
+`<Image_Corner_Point_Position>` with Up_Left / Up_Right / Down_Left / Down_Right lon-lat. The
+corners suggest which way col and row map to the ground (e.g. col0=west, colMax=east). Compare
+that to the GEO/backplane grid you build GCPs from: does its sample increase in the SAME
+direction as the image column? A mismatch is a STRONG HINT that a flip exists.
+BUT DO NOT treat this as proof (burned on HiRIC, 2026-09-05): the corner reading is
+interpretation-dependent (which edge is "the stored image's first column" is exactly the
+ambiguous thing), and worse, it points you at the GCP-column knob, which is a NO-OP on its own
+(BA cannot reflect). Use the metadata read to RAISE SUSPICION, then PROVE orientation by
+measuring features against an independent reference (next section). The metadata is a smell
+test, not a verdict.
+
+## THE DECISIVE, NON-CIRCULAR TEST (measure features vs an INDEPENDENT reference)
+
+Orientation is a fact about the IMAGE CONTENT, so prove it by comparing content to a reference
+that carries NONE of your pipeline's assumptions. Two layers, cheapest first:
+
+1. **mapproject, NOT stereo (cheap, no DEM build needed) - and do it FIRST, right after ANY
+   camera generation** (sat_sim/cam_gen/bundle_adjust/jitter_solve/hand-built CSM), before
+   spending hours on stereo. A flip is decided by the image, so you do not need a stereo DEM to
+   test it. Mapproject ONE raw image (and, separately, its L-R flip) through its camera onto any
+   prior DEM -> two orthos. Why FIRST: a mirror is insidious because the stereo can be INTERNALLY
+   consistent (great tri-err) yet globally REFLECTED, and pc_align (rigid, no reflection) can
+   NEVER register a mirror - so it masquerades as an un-removable "warp" downstream and burns
+   days. One mapproject-and-compare at camera-gen time catches it immediately. Compare each to an INDEPENDENT
+   real-texture reference of the same area: the vendor's own ortho/DOM mosaic, or a mapprojected
+   CTX/HiRISE image (ASP-sane, well-understood). Whichever ortho (raw or flipped) matches the
+   reference tells you directly whether the raw image is mirrored. This is FAST and settles the
+   direction before you spend hours on stereo. (HiRIC 2026-09-05: raw ortho vs DOM = FLIPPED
+   36/50; flipped ortho vs DOM = SAME 70/39. Decisive.)
+   CIRCULARITY TRAP: the reference MUST be independent. Testing your ortho against your own
+   camera/DEM/GCP re-encodes the very `col` convention you are questioning -> the test always
+   "passes" and proves nothing. Only IMAGE-CONTENT vs an OUTSIDE product is non-circular.
+
+2. **crater pose-cluster tool (automated, robust, beats the eye).** Eyeballing one crater on a
+   thin diagonal lane is unreliable and burned us repeatedly ("boy we are having trouble with
+   eyes"). Instead detect crater centroids in both hillshades/orthos and Hough-cluster the
+   candidate translations between the two point sets; if it is the same scene, ONE translation
+   collects many crater pairs. Run it again with one set mirrored (`x -> W-1-x`). Whichever
+   overlap is larger - identity or reflection - is the orientation; a clear SAME shows identity
+   winning at ~zero shift with roughly 2x the inliers of reflection. Reusable implementation:
+   `~/projects/tianwen_hiric/crater_flip.py` (functions `craters(png,param2,minr,maxr)`,
+   `pose_cluster_inliers(A,B,tol)`, `flip_test(A,B)`; needs cv2/PIL/scipy, e.g. the `asp_deps`
+   env). TUNING that matters: on dense/noisy terrain LOWER `param2` (~12) to detect MANY craters
+   (1000+) - too few (<~40 overlap) reads "inconclusive"; validate the tool first on a known pair
+   (a tile vs itself = SAME; vs its own mirror = FLIP). Co-register both rasters to the SAME grid
+   (warp reference onto the DEM's grid; mask the reference to the DEM's data footprint) so the
+   two crater sets are comparable. This statistical test over 1000+ craters is FAR more reliable
+   than any single-feature glance.
 
 ## WHAT WORKS (the procedure - do this)
 
@@ -80,10 +123,17 @@ camera fed GCPs from a vendor GEO backplane: does the stored image's SAMPLE axis
 direction as the vendor's "Column", and the LINE axis the same as "Row"? Read the GEO grid:
 e.g. HiRIC orbit26 CCD1, sample 307 -> lon 110.456, sample 5888 -> lon 110.387, so increasing
 sample = decreasing lon (west). If the stored .2B is written in the opposite sample order,
-`col = Sc/2` is wrong-handed and everything downstream is a self-consistent mirror. Fixes,
-either is fine: (a) GCP `col = (Wfull-1) - Sc` (then /sub), or (b) flip the input images L-R
-and keep `col = Sc`. Re-run BA -> stereo and re-check with the procedure above. Same reasoning
-for an up-down flip (Row/line reversed) or a 180 rotation (both reversed).
+`col = Sc/2` is wrong-handed and everything downstream is a self-consistent mirror.
+THE FIX (only one actually works): **FLIP THE INPUT IMAGES L-R** and set GCP
+`col = (Wfull-1) - Sc` (then /sub) to match the flipped content. Do NOT expect the GCP-column
+change ALONE to help - it is a NO-OP, because bundle adjustment composes only rotations and
+translations and CANNOT apply a reflection: fed reflected control with an unflipped image, BA
+just re-fits the same non-reflected camera and returns the identical mirrored DEM (verified:
+old and column-only DEMs were byte-identical). The reflection must be supplied by the IMAGE. A
+low BA residual therefore only rules out sat_sim building a det=-1 camera; it never rules out a
+mirrored data-correspondence. Re-run BA -> stereo and re-check with the DECISIVE TEST above (not
+just dz). Same reasoning for an up-down flip (flip images top-bottom, `row = (H-1)-L`) or a 180
+rotation (both).
 
 ## Reporting
 

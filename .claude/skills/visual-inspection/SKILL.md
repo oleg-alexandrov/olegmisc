@@ -1,7 +1,27 @@
 ---
 name: visual-inspection
-description: Visual inspection of geo rasters and artifacts - the warp-to-common-grid, hillshade, red/green overlay, colorbar procedure for eyeballing DEMs/geodiffs/orthos/tri-err, the HTML Artifact tool workflow, and image sizing for artifacts/previews. Load when asked to eyeball, inspect, look at, or compare any raster, or to build an HTML artifact.
+description: Visual inspection of geo rasters and artifacts, and the HUB for all DEM/ortho inspection - the warp-to-common-grid, hillshade, red/green overlay, colorbar procedure for eyeballing DEMs/geodiffs/orthos/tri-err, the HTML Artifact tool workflow, and image sizing. Load ANY time you are asked to inspect, eyeball, look at, check, or compare a DEM/ortho/raster, to judge whether a result "looks right", or to build an HTML artifact - then route to the specialist below.
 ---
+
+## THIS IS THE INSPECTION HUB - route to the specialist
+
+Inspecting a produced DEM/ortho/raster? Start here for the "how to look" mechanics
+(warp-to-common-grid, hillshade, overlay, colorbar, eyeball-every-step), THEN load the
+specialist for the question at hand:
+- **"Is it flipped / mirrored / rotated / upside-down / globally shifted?"** (orientation
+  correctness, especially for a DEM built from a hand-assembled camera - sat_sim/cam_gen/custom
+  GCPs) -> load **[[dem-sanity-check]]**. It carries the crater pose-cluster flip detector, the
+  mapproject-vs-independent-reference test, and the hard mechanism (dz/NMAD and bundle residual
+  are BLIND to a mirror; bundle adjustment CANNOT reflect, so a flip is fixed by flipping the
+  IMAGE, never a GCP-column change alone).
+- **Quantitative difference between two DEMs** (dh/dv/dz, horizontal disparity, a bulk offset)
+  -> load **[[dem-comparison]]**.
+- **Aligning a DEM to a reference** -> load **[[pc-align]]**.
+The universal rule that ties them together: a good NUMBER (small dz/NMAD, sub-pixel residual)
+is NECESSARY but NOT SUFFICIENT - it is blind to orientation. Orientation and registration are
+decided by MEASURING FEATURES against an independent reference (mapproject + crater pose-cluster
+or a red/green hillshade overlay), never by a statistic. Right after ANY camera generation, the
+first move is mapproject-and-compare-to-an-independent-ortho (see [[dem-sanity-check]]).
 
 ## "HTML Artifact" = the Artifact Tool (know the drill)
 
