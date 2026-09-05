@@ -728,3 +728,25 @@ OUT OF MEMORY (OOM) under real compute and the whole session wedges - nothing
 finishes and I cannot continue. RULE: if a script is anticipated to invoke
 parallel_stereo / stereo or bundle_adjust in any NON-TRIVIAL way it must NOT be
 run on the Mac - send it to pfe (qsub) or l1.
+
+## NEVER Run More Than 1 Thread / 1 Process on the pfe (or Athena) Head Node (CRITICAL - keeps recurring)
+
+On a pfe/Athena HEAD/FRONT-END node, run ONLY 1 thread and 1 process. Anything
+with >1 thread/process is REAPED by the policy gate after ~1 minute (and fires a
+NAS policy-violation email) - it does NOT finish, and it silently leaves EMPTY or
+partial output that looks like a different bug. This has bitten repeatedly (Oleg
+keeps flagging it): most ASP tools DEFAULT to ~8 threads, so a bare `dem_mosaic`,
+`point2dem`, `bundle_adjust`, `pc_align`, `geodiff`, `sat_sim`, `mapproject`, etc.
+on the head node trips the gate. RULES:
+- Any ASP/gdal tool run on the head node MUST be forced to a single thread
+  (`--threads 1`; mapproject also `--processes 1`). A bare invocation is a bug.
+- `dem_mosaic --threads 1` on the head node is FINE; bare `dem_mosaic` is NOT
+  (the exact miss on 2026-09-05: bare dem_mosaic got reaped, left a 0%-valid
+  empty mosaic; `--threads 1` produced the real 22.7%-valid mosaic).
+- If in doubt, or for anything heavier than a lone single-thread streaming op,
+  QSUB it (devel for quick) - never the head node.
+- If the head node KILLS a command, do NOT retry it there (re-trips the gate +
+  another email); move it to qsub or shrink to 1 thread / 1 process.
+- NEVER run a multi-step `.sh` inline on the head node - a multi-thread tool can
+  hide inside it. A script that does real work is a qsub job, period.
+Full detail (models, budgets, env): the pfe-nas skill (head-node section).

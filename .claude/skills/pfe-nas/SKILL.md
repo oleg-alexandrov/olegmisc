@@ -3,6 +3,19 @@ name: pfe-nas
 description: NASA Pleiades (pfe) and Athena supercomputer work - qsub/PBS job submission, head-node compute limits, node models, job effectiveness, lfe tape archive, and the ASP dev build on pfe. Load before running any command on pfe/Athena or submitting a qsub job.
 ---
 
+## #1 RULE - HEAD NODE = 1 THREAD / 1 PROCESS, ALWAYS (read this first)
+
+On any pfe/Athena HEAD/FRONT-END node, run ONLY 1 thread and 1 process. More than
+that is REAPED by the policy gate in ~1 minute (+ a NAS violation email), does NOT
+finish, and leaves EMPTY/partial output that masquerades as a different bug. Most
+ASP tools DEFAULT to ~8 threads, so a bare `dem_mosaic`/`point2dem`/`bundle_adjust`/
+`pc_align`/`geodiff`/`sat_sim`/`mapproject` on the head node is a BUG - always force
+`--threads 1` (and `--processes 1` for mapproject), or QSUB it. `dem_mosaic --threads 1`
+is FINE; bare `dem_mosaic` is NOT (burned again 2026-09-05: bare run reaped -> 0%-valid
+empty mosaic; `--threads 1` gave the real one). Never run a multi-step `.sh` inline on
+the head node (a multi-thread tool hides inside). If the head node kills something, do
+NOT retry there - qsub it. This keeps recurring; it is the top-level rule. Detail below.
+
 ## NASA NAS / Pleiades Supercomputer
 
 **Before any pfe work, read these notes files first:**
