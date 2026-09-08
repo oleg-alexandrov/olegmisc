@@ -19,6 +19,11 @@ Use markdown diff blocks:
 `docs/_build/html/`). Full build/cmake mechanics: `~/projects/cmake_build_notes.sh`.
 ASP's own instructions: `docs/building_asp.rst` ("Building the documentation").
 
+**Always build into the standard `_build/html`** (Oleg 2026-09-04). Do NOT use a
+custom output dir like `_build/html_aerialcheck` to "check one page" - it litters
+`_build/` with stray trees. Build the whole thing into `_build/html` and grep the
+log for warnings (below).
+
 **The `sphinx` env is mandatory** - the base/anaconda3 sphinx lacks
 `sphinxcontrib.bibtex` (declared in `docs/conf.py` `extensions`), and a build
 without it dies immediately with `Extension error: Could not import extension
@@ -70,6 +75,14 @@ anchor is `.. _bathy_intro:` (section "Shallow-water bathymetry"), NOT `bathymet
 - Section underlines must be exactly the same length as heading text
   - **CRITICAL: Always count characters carefully - prone to off-by-one errors**
 - Heading levels: `=` top, `-` subsection, `~` sub-sub, `^` sub-sub-sub
+- **Literal/code blocks (after `::`) must be SHORT - keep each line to about 66
+  chars INCLUDING indent** (Oleg 2026-09-04). The ASP HTML renders literal blocks
+  in a narrow fixed-width box; a longer line adds an ugly horizontal scrollbar.
+  Wrap long shell commands with a trailing backslash and indent the continuation.
+  This applies ONLY to `::` literal blocks; option-help text and ordinary prose
+  wrap on their own and are exempt. A data example that cannot be wrapped (e.g. a
+  wide CSV header) is the hard case - show fewer columns rather than let it
+  overflow. Check with: `awk 'length>66 && /^    [^ ]/' file.rst`.
 - **`:ref:` vs `:numref:` - name tools with `:ref:`, not `:numref:` (I keep getting this
   wrong).** `:numref:`geodiff`` renders "Section 16.26" (a NUMBER); `:ref:`geodiff``
   renders "geodiff" (the NAME). So to name a tool inline, use `:ref:` - "made with

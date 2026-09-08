@@ -169,6 +169,21 @@ same projection and grid size", :numref:`mapproj_grid` / :numref:`mapproj-exampl
 Burned 2026-08-28 on the WV green CCD before/after run. Same GSD also lets the
 mapprojected images, DEM, and mosaics share one grid phase.
 
+## mapproject --tr is in METERS, not degrees, even for a longlat DEM (CRITICAL gotcha)
+
+`mapproject`'s `--tr` (grid size) is in the units of the OUTPUT projection, and mapproject
+picks a METRIC projection by default. Even when the input DEM is geographic (longlat), ASP
+"finds a projection in meters first" (`docs/tools/mapproject.rst`, :numref:`mapproj_auto`),
+so the output is UTM/stereographic in meters and `--tr` must be METERS (e.g. `--tr 30`), NOT
+degrees. Passing a degree-scale value (e.g. `--tr 0.0006`) makes it fail at the
+`--query-projection` step with: `The user-set grid size (option --tr) is so small that likely
+it is in degrees, while meters are expected.` (The wrapper then raises `Failed executing:
+mapproject_single --query-projection ...`, which looks like a camera/DEM error but is just the
+units.) FIX: give `--tr` in meters, or set `--t_srs` explicitly to the metric CRS you want.
+This differs from `point2dem`/`gdalwarp`, whose `--tr`/`-tr` follow whatever `--t_srs`/`-t_srs`
+you pass (degrees if longlat). Burned 2026-09-07 on the KH-7 browse-res replicate (`--tr 0.0006`
+in degrees -> "could not sample"/grid-too-small; `--tr 30`/`50` meters fixed it).
+
 ## gdalwarp: Always -r cubicspline, Never the Default Nearest-Neighbor
 
 Always run `gdalwarp` with `-r cubicspline`; never rely on its default nearest-neighbor resampling, which snaps and misregisters continuous rasters (DEMs, geodiffs, error fields) by up to half a pixel.
