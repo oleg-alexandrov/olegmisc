@@ -107,6 +107,16 @@ description: Running Claude autonomously or overnight - the don't-stall rule, in
       is stale (harness presumed dead), else stands down; atomic-lock guarded so runs
       never overlap; self-heals across a still-down service (cron keeps re-firing and
       catches the moment it returns).
+      *** CRON PATH GOTCHA (burned 2026-09-08, wvuluru - the watchdog fired on schedule but
+      died with "claude: command not found" and NEVER resurrected). cron runs with a MINIMAL
+      PATH that does NOT include ~/.local/bin (where `claude` lives) or ~/.local/node/bin. So
+      a watchdog that just calls `claude -c -p` SILENTLY FAILS. FIX, mandatory in every
+      watchdog: (1) call claude by ABSOLUTE path (`/Users/<user>/.local/bin/claude`), AND
+      (2) `export PATH="$HOME/.local/bin:$HOME/.local/node/bin:/usr/local/bin:/usr/bin:/bin"`
+      at the top of the script (claude itself needs node + tools on PATH). Verify with
+      `command -v claude` and test the launch line in a minimal env
+      (`env -i PATH=/usr/bin:/bin sh -c '<the exact claude line>'`) BEFORE trusting the
+      watchdog. A watchdog you have not seen actually relaunch claude is unproven. ***
   WHY BOTH (the thing I got wrong before): CronCreate is SESSION-ONLY - it lives inside
   the running Claude session and DIES WITH IT, so a "service unavailable" outage that
   kills the harness ALSO kills the CronCreate heartbeat and nothing re-arms it. Only an
