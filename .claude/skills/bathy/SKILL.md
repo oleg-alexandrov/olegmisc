@@ -62,6 +62,10 @@ projected into the mask; if it lands on water, the rays are bent. Because the
 decision is on the ground point, it works with raw OR mapprojected input images.
 Mutually exclusive with the per-image masks. Still needs `--bathy-plane` +
 `--refraction-index` (the plane is the bending surface; the mask only says where).
+For a multi-pair block (e.g. an aerial survey), the whole bathy re-run is one
+`multi_stereo` call: the same command that made the DEM, plus `--ortho-bathy-mask
+mask.tif --bathy-plane plane.txt --refraction-index 1.34` in `--stereo_options` and a
+new `--out-prefix`. See [[multi-stereo]] and the aerial example (:numref:`aerial_bathymetry`).
 
 Build the ortho mask by mapprojecting a raw NIR band onto a DEM, then threshold:
 `mapproject dem.tif L_b7.tif L.xml L_b7_map.tif`; `image_calc -c

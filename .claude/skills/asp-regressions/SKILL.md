@@ -115,6 +115,19 @@ on **NeoGeographyToolkit/StereoPipelineTest**. CRUCIAL facts:
   that clobbers the cloud's relaxed-tolerance validate.sh and its subset, breaking cross-platform CI.
   The cloud gold must come from a cloud run (float-sensitive tests differ across arch).
 
+## Prove a tool matches a reference byte-for-byte (fixed-grid gold)
+
+When a new or refactored tool should produce the SAME result as an existing path
+(distributed vs pairwise, a wrapper vs the hand-run tools), make equality byte-EXACT,
+not "close". Recipe (used for multi_stereo, see [[multi-stereo]]):
+- Pin BOTH `--tr` and `--t_srs` in point2dem (fixed grid + projection), so a given
+  point cloud always rasterizes to the identical DEM.
+- Generate the gold from the INDEPENDENT reference path run by hand (e.g. plain
+  parallel_stereo + point2dem + dem_mosaic), NOT from the tool under test.
+- run.sh runs the tool; a `make_gold.sh` kept in the test dir regenerates the gold
+  from the reference path and `cmp`s the two. Byte-identical = proven. That
+  make_gold.sh also documents how the gold was made.
+
 ## Declare-success-and-publish shortcut (benign failures, no rebuild)
 
 When a nightly's only failures are BENIGN (an intended algo change; the build itself is fine) and you

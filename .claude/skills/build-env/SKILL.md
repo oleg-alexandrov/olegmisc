@@ -3,6 +3,15 @@ name: build-env
 description: Building and packaging ASP and its deps - nightly build/regression, asp_deps cloud tarballs, release packaging, the asp_deps conda build env, the Qt6 plugins symlink ban, honest non-editable installs, conda channel cleanup, running the regression tests, cmake/build mechanics, ISIS ninja builds, and reading build warnings. Load before building ASP/VW/ISIS, editing CMake, packaging a release, or running the test suite.
 ---
 
+## ASP/VW C++ build - Mac AND l1 both work (do not assume C++ is l1-only)
+
+`cd <repo>/build && make -jN && make install` builds ASP or VW against `asp_deps`,
+on the Mac mini just as on l1. The Mac has a full working dev build at
+`~/projects/StereoPipeline/build` (and `~/projects/visionworkbench/build`); its
+`install/bin` holds the C++ tools you run. So compile and test C++ locally on
+whichever box you are on. l1 is the box for regolding and heavy runs, not the only
+one that compiles. Per-box build commands: [[machines-tools]].
+
 ## Build/install ale and usgscsm from source into asp_deps, NOT isis_dev
 
 Source builds of ale and usgscsm (the coupled pair) install into the **asp_deps**

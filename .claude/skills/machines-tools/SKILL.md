@@ -8,8 +8,14 @@ description: Machine map and local tooling - the l1/Mac mini/pfe/Athena boxes wi
 - **lunokhod1** (`l1`) - primary dev/build/git box (g++ 12.4 in `asp_deps`, 16
   cores). Build: `make -C ~/projects/StereoPipeline/build -j16`. Remotes:
   `origin`=fork, `god`=org.
-- **Mac mini** (`ssh mac_arm`) - notes/docs machine + secondary build. **Always
-  `make install`** (never bare `make`; installed libs go stale). Storage is
+- **Mac mini** (`ssh mac_arm`) - notes/docs machine + secondary build. It has a
+  FULL working ASP/VW C++ dev build: `make -C ~/projects/StereoPipeline/build
+  install` (VW: `~/projects/visionworkbench/build`), against `asp_deps`;
+  `~/projects/StereoPipeline/install/bin` holds the C++ tools you actually run
+  (`stereo`, `point2dem`, `stereo_tri`, ...). **YOU CAN compile and test C++ right
+  here - never assume C++ needs l1**; l1 is for regolding/heavy runs, not for being
+  the only place that builds. **Always `make install`** (never bare `make`;
+  installed libs go stale). Storage is
   tight - wipe stale `/tmp` cruft (never active/this-session work; if unsure ask).
   **No `timeout`/`gtimeout` on this Mac** - never wrap commands in `timeout` (it
   exits 127 "command not found", which silently looks like the wrapped command
