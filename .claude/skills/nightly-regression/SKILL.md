@@ -60,6 +60,29 @@ re-run only the failed ones / force-publish). Before launching, confirm none is
 already running: `ssh l1 'pgrep -fa launch_master.sh'`; and check the 23:05 UTC
 cron won't collide.
 
+**Publish an already-built nightly when the only failure is minor (recurring ask).**
+Oleg will often say "publish today's build in resume mode, the failing test is
+minor" - he wants the existing on-disk tarballs shipped and the usual Success email,
+NO rebuild. Mechanism: `launch_master.sh resume` re-BUILDS any platform whose status
+is `Fail` (its skip condition is `progress != build_failed && progress != "" &&
+status != Fail`), so a bare resume would rebuild from scratch. To publish as-is,
+first flip the failing platform's status file from `test_done Fail` to `test_done
+Success` (KEEP the same tarball name on the line), then resume - now all four are
+`test_done Success`, resume launches no builds, the poll loop breaks at once, and it
+goes straight to upload-to-GitHub-release + Success email. Recipe:
+```bash
+ssh l1 'cd ~/projects/BinaryBuilder && \
+  echo "asp_tarballs/StereoPipeline-<ver>-<date>-x86_64-Linux.tar.bz2 test_done Success" \
+    > status_localLinux.txt'
+ssh l1 'cd ~/projects/BinaryBuilder && nohup ./auto_build/launch_master.sh resume \
+  > output_master.txt 2>&1 < /dev/null & echo PID $!'
+```
+Use the EXACT tarball basename already in that status file (read it first). This is
+honest here only because the failure is known-minor and the shipped tarball is
+otherwise good - say so; do not silently mask a real breakage. Confirm none running
+and the 23:05 UTC cron won't collide first. (localLinux is the usual culprit since
+it tests on l1; a cloud platform's status file is `status_cloud<Plat>.txt`.)
+
 One cloud platform only (e.g. after a deps re-spin) - fires the Action directly:
 ```bash
 gh=$(ls -d $HOME/*conda3/envs/gh/bin/gh)
