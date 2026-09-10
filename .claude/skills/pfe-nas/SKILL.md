@@ -85,6 +85,18 @@ Bare minimum to remember without reading:
   explicitly (`scp file pfx:/tmp/`, run `ssh pfx bash /tmp/file.sh`); `cd` into a work dir
   before running any tool so its side-outputs land there, not in `~`; anything worth keeping
   goes in a project subdir. Never the bare default.
+- **NEVER copy/read/inspect a file until its WRITER has fully FINISHED (CRITICAL - burned 2026-09-10).**
+  A file appearing on disk (even at a plausible size) does NOT mean it is complete - a tool still
+  writing it grows it incrementally. `rsync`/`scp`/`gdalinfo`/`Read` of a mid-write file yields a
+  TRUNCATED, corrupt, or empty result that looks like a different bug (the classic false "stats are
+  flaky" / "output is empty"). The blunder: launched `geodiff` in the background, saw the output tif at
+  30 MB, rsync'd it - but geodiff was still writing and finished at 130 MB, so the local copy was a
+  broken 32 MB partial. RULE: before ANY copy/read of a produced file, CONFIRM the producer EXITED
+  (wait for the background task's completion notification, an explicit `echo DONE` after the tool in the
+  same shell, or the job's Exit_status) - never race the writer. Then optionally check the size is
+  stable. Only THEN copy, and after copying VERIFY the local size == the remote size (a mismatch means
+  you copied a partial - re-copy). This applies to every produced artifact: geodiff/point2dem/dem_mosaic
+  outputs, stereo products, rendered figures, anything a tool writes. When in doubt, wait.
 - **MIRROR the remote path structure when copying a remote file to local (Oleg's standing
   convention).** When pulling a file from a remote work dir to the local (Mac) work dir, put it
   at the SAME relative path under the local work dir - do NOT flatten or rename it. Remote
