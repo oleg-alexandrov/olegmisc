@@ -8,7 +8,13 @@ description: Machine map and local tooling - the l1/Mac mini/pfe/Athena boxes wi
 - **lunokhod1** (`l1`) - primary dev/build/git box (g++ 12.4 in `asp_deps`, 16
   cores). Build: `make -C ~/projects/StereoPipeline/build -j16`. Remotes:
   `origin`=fork, `god`=org.
-- **Mac mini** (`ssh mac_arm`) - notes/docs machine + secondary build. It has a
+- **Mac mini** (`ssh mac_arm`) - notes/docs machine + secondary build. The alias
+  is defined in `~/.ssh/config` as `HostName localhost`, `Port 3079`,
+  `ProxyJump pfx`, and works non-interactively - just use `ssh mac_arm '<cmd>'`
+  directly; do NOT grep `~/.ssh/config` to rediscover it. It mirrors Oleg's repos
+  at the same paths as l1 (`~/projects/StereoPipeline`, `~/projects/StereoPipelineTest`,
+  etc.; ASP remotes `god`=org, `origin`=fork), so it is the place to check what a
+  Mac-side bot committed/pushed. It has a
   FULL working ASP/VW C++ dev build: `make -C ~/projects/StereoPipeline/build
   install` (VW: `~/projects/visionworkbench/build`), against `asp_deps`;
   `~/projects/StereoPipeline/install/bin` holds the C++ tools you actually run
