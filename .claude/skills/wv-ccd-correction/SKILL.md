@@ -62,6 +62,29 @@ Uluru 2026-09; the runnable tool is `~/projects/sdb_2026_08/uluru_cell.sh` +
   ~880-col CCD plateaus/steps. Ship the DETRENDED grand-average as the correction. This
   is the whole point of detrend: it fixes global shift and the large-scale pattern at
   once, leaving only the local CCD jumps centered on 0.
+- **Fit the detrend baseline on the INTERIOR only, and CLAMP the garbage edges before shipping**
+  (learned the hard way 2026-09-09). The outer ~700 cols at each end are off-border correlation =
+  garbage. If you (a) fit the deg-6 over the full length, the edge-pulled poly inflates the interior
+  residual (dx detrended std rose 0.067 vs 0.032 when fit on interior [700:-700] only); and worse,
+  (b) if you leave those garbage cols IN the saved table, they hold values like +13 px, and
+  wv_correct applies them VERBATIM - shifting the first/last 700 image columns by ~13 px and
+  corrupting the edges. So: fit the poly on interior finite cols only, and after detrend hold each
+  end flat at the median of an interior window (clamp_edges) so the shipped table is benign
+  (near-0, continuous) at the edges. ALWAYS `head`/`tail` the shipped table and confirm the edges
+  are ~0, not ~13, before any wv_correct.
+- **The clamp margin must be WIDER than the detrend fit boundary, and sourced from a CLEAN window
+  PAST the boundary transient** (learned 2026-09-09, Oleg caught a raised strip at the DEM left
+  edge). A deg-6 polynomial detrend fit on [C0:-C0] OSCILLATES at its fit boundary (Runge-like): the
+  detrended residual spikes right at col C0 (e.g. +0.10 px over cols ~700-780 when C0=700), decaying
+  into the interior. If the clamp margin equals C0 and its value is sourced from `median(a[C0:C0+50])`
+  - i.e. from INSIDE that spike - two bad things happen: the flat edge value is biased, and the spike
+  itself (just past the clamp) survives into the applied table, mis-correcting the first ~100 valid
+  columns and raising a strip in the stereo DEM. Fix: set EDGE (clamp margin) well past the transient
+  (e.g. 920 when C0=700) and source the flat value from a clean window `median(a[EDGE:EDGE+100])` that
+  is in real signal, not the spike. ALWAYS plot the shipped correction's first/last ~1600 cols and
+  confirm a smooth flat->signal transition with NO boundary spike before shipping. (A moving-average /
+  Savitzky-Golay high-pass baseline instead of a global poly would avoid the boundary oscillation
+  entirely - consider it if the poly edge keeps biting.)
 - Guiding PRINCIPLE (Oleg): "median at 0". Any systematic band-vs-PAN shift beyond what
   we model is subtracted out; the shipped correction has net-zero shift and only the
   local per-CCD perturbation, so applying it to the band introduces NO systematic shift.
@@ -90,6 +113,24 @@ Uluru 2026-09; the runnable tool is `~/projects/sdb_2026_08/uluru_cell.sh` +
   jitter AND CCD fence artifacts) and AFTER wv_correct (subpixel/centered-at-0 -> cams
   still valid, NO re-bundle; reuse the same adjusted_state.json cams, re-mapproject).
   EXPECT: jitter unchanged, CCD artifact GONE. That is the win.
+
+## Visual inspection is HUGE - inspect 1D graphs AND 2D products, before AND after
+
+Never conclude from stats alone. For the stereo-DEM verify:
+- Use GDAL's `gdaldem hillshade` on the DEM, NOT ASP's hillshade - GDAL's shows the
+  jitter and CCD artifacts MUCH more clearly. CCD artifacts are VERTICAL streaks
+  (along-column fences); jitter is a broader cross-track waviness.
+- After `point2dem --errorimage`, colorize the TRIANGULATION error (a.k.a. intersection
+  error - the two terms are INTERCHANGEABLE; it is `run-IntersectionErr.tif`) and look at
+  it. The CCD artifact shows in BOTH the hillshade AND the tri-err.
+- Plot BEFORE-correction (colorized hillshade DEM + colorized tri-err: expect jitter +
+  lens distortion + CCD fences) and AFTER-correction (same two: expect jitter + lens
+  distortion STILL there, CCD fences reduced/gone). Show them side by side.
+For the 1D correction curves: plot dx/dy BEFORE (raw grand-avg fence) and AFTER
+(re-measured on the corrected band, i.e. after applying the correction + detrend) - the
+after curve should be flat/centered ~0 with the worst spike reduced and NO new spikes.
+And inspect the CORRECTION ITSELF before shipping: detrended, centered ~0, overall
+modest magnitude, worst spike not wild. If it is huge or spiky -> STOP, regression.
 
 ## Plotting + organization conventions
 

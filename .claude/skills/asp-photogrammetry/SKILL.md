@@ -47,6 +47,14 @@ mapproject / parallel_stereo / point2dem instead of the original camera plus
 for these models.) See bundle_adjust.rst (`--inline-adjustments`, the CSM
 adjusted-state note) and csm.rst for context.
 
+## bundle_adjust (and stereo) ID images by BASENAME - same-basename inputs collide
+
+ASP identifies each image by its basename (no dir, no extension). Two inputs that share a
+basename - e.g. every scene's dg_mosaic green is `ms_mos.r100.b3.tif` in a different orderid
+dir - fail bundle_adjust with `ERROR: Found duplicate image: ms_mos.r100.b3`. Fix: stage
+unique-named COPIES (not symlinks) `<oid>_green.{tif,xml}` co-located in one inputs dir, and
+feed those. The camera XML must share the image's basename so `-t dg` pairs them.
+
 ## bundle_adjust caches match files - wipe them when changing IP settings
 
 bundle_adjust REUSES existing `<out-prefix>-*.match` files if present, so re-running
@@ -388,6 +396,15 @@ Verify equivalence once with `cam_test --image img --cam1 run-img.adjusted_state
 when a run did NOT produce adjusted_state.json (older builds / adjust-only .adjust).
 
 ## point2dem --errorimage Always; Mosaic the Error Too
+
+**"Triangulation error" and "intersection error" are the SAME thing** - the closest
+distance between the two camera rays at the triangulated point, written by
+`point2dem --errorimage` as `<prefix>-IntersectionErr.tif`. The terms are used
+interchangeably (prefer "triangulation error" in prose per Oleg's style note). It is
+the go-to 2D diagnostic: jitter, lens distortion, misregistration, blunders, and CCD
+artifacts all show up in it. CCD artifacts appear as VERTICAL (along-column) streaks -
+and to SEE them, colorize the tri-err AND make a `gdaldem hillshade` of the DEM (GDAL's
+hillshade reveals jitter/CCD streaks far better than ASP's hillshade).
 
 Every `point2dem` that makes a DEM gets `--errorimage` (the triangulation
 IntersectionErr is a key diagnostic - distortion/misreg/blunders show there).
