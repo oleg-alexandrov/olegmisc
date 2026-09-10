@@ -30,6 +30,17 @@ run per pair. Which tiled stages actually spawn depends on algorithm/subpixel (a
 pools BLEND, asp_bm pools RFNE); a stage that spawns none emits an empty pool and the
 finalize just builds the VRT.
 
+**GNU parallel over ssh nodes: use `libexec/parallel`, and blank `LD_LIBRARY_PATH`
+(the ss_multi_stereo_mapproj fix, 2026-09-10).** When the pool spans nodes, the
+real GNU `parallel` must be invoked, not ASP's `bin/parallel` wrapper: prepend
+`libexec` to `PATH` so the pool call resolves to the genuine GNU tool. AND blank
+`LD_LIBRARY_PATH` around the parallel call: ssh onto a node inherits the launcher's
+`LD_LIBRARY_PATH`, which points at ASP's bundled libs and shadows the node's system
+`ssh`/OpenSSL, so `ssh` fails to hand off tile commands (the failure that reddened
+the nightly). Blanking it lets the remote `ssh` use its own system libs; the child
+tile command re-establishes the ASP environment itself. Both hunks live in
+`src/asp/Tools/multi_stereo`.
+
 **Output layout: `--out-prefix`** (like parallel_stereo and stereo_dist; the old
 `--out_dir` was removed). Outputs `<prefix>-DEM.tif`, `<prefix>-IntersectionErr.tif`,
 `<prefix>-DRG.tif`; per-pair stereo under `<prefix>-pairs/<L>__<R>/run`.
