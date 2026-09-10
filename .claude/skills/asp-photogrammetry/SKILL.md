@@ -3,6 +3,36 @@ name: asp-photogrammetry
 description: ASP/VW photogrammetry tool usage and knowledge - stereo/mapproject resolution, pc_align, point2dem --errorimage and tri-err cutoffs, dem_mosaic, gdalwarp/proj.db, disparitydebug, robust median/MAD stats, hillshade alignment judging, dh/dv/dz notation, BA/jitter stats, CSM model-state JSON, derived-raster naming, sparse_disp, and the asp_manual.sh/asp_scripts pointers. Load before running any ASP or VW photogrammetry tool (stereo, bundle_adjust, jitter_solve, mapproject, point2dem, pc_align, dem_mosaic, geodiff).
 ---
 
+## DigitalGlobe / WorldView (WV1/2/3, incl. green MS): ALWAYS linescan, NEVER RPC (CRITICAL)
+
+For ANY DigitalGlobe/Maxar/Vantor product (WorldView PAN and MS, including the WV3
+green-band work) we ALWAYS use the LINESCAN camera model, never RPC. This is a
+standing rule for DG, not a per-task choice. Mechanics (verified against ASP docs,
+:numref:`dg_csm` in tutorial.rst + bundle_adjustment.rst):
+- WorldView linescan cameras use the CSM model INTERNALLY, but the ASP session name
+  is still `-t dg` (or `-t dgmaprpc` for mapprojected-RPC input), NOT `-t csm`. The
+  INPUT to bundle_adjust is the image + the delivery XML: `bundle_adjust -t dg
+  <img.tif> <img.xml> ... -o ba/run`. RPC (`-t rpc`) is a smooth polynomial fit that
+  SMOOTHS OUT jitter - do not use it when jitter/CCD artifacts must stay visible.
+- bundle_adjust (and jitter_solve) OUTPUT is an adjusted CSM MODEL STATE per camera:
+  `ba/run-<image>.adjusted_state.json` (refined position + orientation baked in).
+  So: input = DG linescan-from-XML (`-t dg`); output = adjusted CSM linescan state.
+- Downstream (mapproject, parallel_stereo, point2dem) USE those `.adjusted_state.json`
+  files directly, with session `-t csm` (they are self-contained CSM cameras - no
+  `--bundle-adjust-prefix`, no original XML needed). Alternatively the `.adjust` files
+  can be used with the original cameras and `-t dg`, but prefer the state files.
+- Atmospheric refraction + velocity aberration are auto-corrected on load, making the
+  DG linescan very close to the vendor RPC; bundle_adjust + pc_align still recommended.
+- Native GSD for mapproject: read `MEANPRODUCTGSD` from each image's XML (WV3 MS is
+  ~1.2-1.4 m; do NOT round to 2 m - use the published value). Left and right MUST share
+  the SAME `--tr` (see the mapproject-grid rule below) so the mapprojected pair overlays
+  pixel-for-pixel. A subpixel image correction (e.g. wv_correct dx/dy centered at 0)
+  does NOT change the camera, so no re-bundle is needed after applying it - reuse the
+  same adjusted_state.json cams and re-mapproject.
+- Reference DEM for mapproject/align: we FETCH our own (standard practice), typically
+  Copernicus GLO-30 over the footprint, then dem_geoid --reverse-adjustment (EGM2008
+  geoid height -> ellipsoid) + a light blur. We do not assume one is staged.
+
 ## bundle_adjust: prefer inline-adjusted cameras (CSM/pinhole), not --bundle-adjust-prefix
 
 For camera models that support it (CSM frame and linescan, and pinhole), STRONGLY
