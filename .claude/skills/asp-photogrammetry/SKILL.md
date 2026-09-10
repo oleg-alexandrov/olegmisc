@@ -228,7 +228,7 @@ Always run `gdalwarp` with `-r cubicspline`; never rely on its default nearest-n
 
 ## dem_mosaic: Call With `-o output.tif`, Not `-o out`
 
-Recent `dem_mosaic` writes the given name directly when `-o` ends in `.tif` (e.g. `-o mosaic.tif` -> `mosaic.tif`); a bare `-o out` produces `out-tile-0.tif`. Always pass the honest `.tif` output name and reference that file later.
+Recent `dem_mosaic` writes the given name directly when `-o` ends in `.tif` (e.g. `-o mosaic.tif` -> `mosaic.tif`); a bare `-o out` produces the OLD `out-tile-0.tif`. ALWAYS pass the honest `.tif` output name (this is the PREFERRED newer usage) and reference that file later - NEVER the bare-prefix form. This keeps recurring when copying older scripts; when you write or reuse a `dem_mosaic` call, make `-o` end in `.tif`.
 
 ## pc_align: Denser Cloud First, and Direct-vs-Inverse Transform (CRITICAL, easy to get backwards)
 
@@ -303,11 +303,13 @@ truncated/corrupt).
   but WIPE the `run-*-clean.match` (they are tied to the previous solution's outlier removal),
   and run plain `bundle_adjust --match-files-prefix <old_prefix>` in a NEW output dir. Keep the
   parallel_bundle_adjust dir as the match store; the honest solve lives in its own dir.
-- **dem_mosaic always appends `-tile-0.tif` (and `-max`/`-first` etc.) to `-o <prefix>`** - it
-  never writes the exact name you pass, so you get the "pathetic" `mosaic-tile-0.tif`. Give an
-  explicit clear prefix (`-o mosaic_dem` -> `mosaic_dem-tile-0.tif`) and, if a clean single-file
-  name is wanted downstream, `gdal_translate mosaic_dem-tile-0.tif mosaic_dem.tif` (or `mv`) right
-  after, so scripts/plots reference `mosaic_dem.tif` not the tile suffix.
+- **dem_mosaic: ALWAYS `-o output.tif` (with the `.tif` extension), NEVER a bare `-o prefix`** (the
+  newer, preferred usage - see the dedicated section above). Recent dem_mosaic writes the given name
+  DIRECTLY when `-o` ends in `.tif` (`-o mosaic.tif` -> `mosaic.tif`, one clean file). A bare `-o out`
+  is the OLD form and produces the "pathetic" `out-tile-0.tif` (plus `-max`/`-first` variants) that
+  then needs a gdal_translate/mv cleanup - do NOT use it. This keeps biting when copying old scripts
+  (e.g. cop_prep.sh's `-o cop_uluru`); fix them to `-o cop_uluru.tif`. Same rule for any tool whose
+  `-o` historically took a prefix: pass the honest `.tif` name and reference that file downstream.
 - **FOUNDING PRINCIPLE — related outputs go in ONE subdir; co-locate mapprojected images
   with the bundle cameras that made them.** A `bundle_adjust` run's adjusted cameras
   (`<pfx>-*.tsai`/`.adjusted_state.json`) AND the images you mapproject with those cameras
