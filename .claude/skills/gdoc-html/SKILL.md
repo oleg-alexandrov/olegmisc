@@ -29,6 +29,16 @@ semantic structure + **inline** style attributes. It **discards `<style>` blocks
   Base64 images **DO** transfer when copy-pasting the rendered page from a browser
   (Docs re-embeds them). Use JPEG (q~72-88, `sips -s format jpeg -Z 1500`) to keep size
   down - a figure-heavy report is many MB otherwise.
+- **NO TEXT BAKED INTO THE FIGURE - it goes in the caption below, in plain text (Oleg,
+  recurring).** Follow the `visual-inspection` skill rule: the figure carries NO panel
+  titles ("before"/"after"/"hillshade"), NO annotations, NO std values drawn as pixels.
+  Suppress `ax.set_title`. Put ALL of it - what each panel is, left-to-right, and the
+  numbers - in the plain-text `<figcaption>`/paragraph UNDER the image. Keep the only
+  in-figure text (colorbar label + ticks) and size it LARGE (label ~20-24, ticks ~18-20)
+  so it survives the doc downscale; small default matplotlib fonts read as broken. When a
+  figure tool bakes titles in (e.g. an old `pan_validate_fig.py`), FIX the tool
+  (`ax.set_title("")`, bump fonts) before using its output in a report - do not ship the
+  in-image text and re-describe it in the caption too.
 
 ## How to build it
 
