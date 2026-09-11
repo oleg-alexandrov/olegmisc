@@ -24,6 +24,15 @@ now emitted by ALE (USGSCSM DistortionType CASSIS=9). Residual cross-track BOWL
 is pipeline-specific (two-look BA near-degeneracy); real fix needs external
 low-freq control (LOLA/CTX). Alloc e2305. Full diagnosis in the notes.
 
+`~/projects/cassis_usgs/cassis_usgs_notes.sh` - **bulk TGO-CaSSIS DTM
+processing with Jay Laura (USGS)**, started 2026-09-10. Jay wants CaSSIS DTMs
+produced + released at scale on the Hovenweep cluster alongside his CTX/Kaguya
+DTM factory. He shared his `automated-dtm-generation` repo (unpacked in the
+folder, USGS-internal, NOT tracked). Key finding: our CaSSIS flow does NOT fit
+his per-pair linescan `make_dtm_array.sh` framework (offline fetch, built CTX
+reference, pooled multi_stereo, much newer ASP). A/B fork + next steps in the
+notes. Exploratory, awaiting Jay's reply.
+
 `~/projects/PNCB/pncb_registration.sh` - PNCB re-registration (spring 2026,
 active as of 2026-04-21). Plan reorganized 2026-04-21 (context top, steps
 in execution order below). See [project_pncb_rereg.md](project_pncb_rereg.md)
