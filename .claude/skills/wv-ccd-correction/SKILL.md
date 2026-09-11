@@ -1,6 +1,6 @@
 ---
 name: wv-ccd-correction
-description: WorldView (DigitalGlobe/Maxar) CCD artifact correction with wv_correct - measuring a per-column dx/dy correction by correlating a band against its own PAN (green->pan for the WV3 green MS work), building the correction (dg_mosaic concatenate, crop the NTF zero-padding, 4x average-downscale PAN, robust-mean disp_avg, deg-6 detrend), applying it, and verifying it (single-image re-correlate + the ultimate stereo-DEM before/after test). Load before any WorldView CCD / green-band correction, wv_correct, or green<->PAN disparity work.
+description: WorldView (DigitalGlobe/Maxar) CCD artifact correction with wv_correct - measuring a per-column dx/dy correction by correlating a band against its own PAN (green->pan for the WV3 green MS work), building the correction (dg_mosaic concatenate, crop the NTF zero-padding, 4x average-downscale PAN, robust-mean disp_avg, moving-average detrend + edge clamp), applying it, verifying it (single-image re-correlate + the stereo-DEM before/after test), and SHIPPING it into wv_correct's built-in multispectral table (ms_correction_lookup.txt + correction TIF). Load before any WorldView CCD / green-band correction, wv_correct, or green<->PAN disparity work.
 ---
 
 ## What the artifact is
@@ -142,3 +142,42 @@ modest magnitude, worst spike not wild. If it is huge or spiky -> STOP, regressi
 - Green MS native GSD ~1.2-1.4 m (read MEANPRODUCTGSD); PAN ~4x finer.
 - A per-view L/R pick per date is a subtle bias (unsystematic sampling of the along-scan
   phase); going forward consider using both L+R views or a random subset. Keep noting it.
+
+## Shipping a correction into wv_correct (the built-in-table path)
+
+wv_correct's multispectral correction is DATA-DRIVEN - no C++ change, no rebuild of
+logic. Everything lives in `src/asp/WVCorrect/` (source) and is installed to
+`share/wv_correct/`. Mechanism (traced 2026-09):
+- `ms_correction_lookup.txt`: rows `SATID BAND TDI SCANDIR CORRECTION_IMAGE ROW`.
+  wv_correct reads the image XML (`BANDID=Multi`, `SATID`, `SCANDIRECTION`, and
+  `tdi = tdi_multi[band-1]` - so `--band 3` picks green), matches a row, and loads
+  that ROW of that TIF.
+- The CORRECTION_IMAGE is a float32 TIF, ONE ROW per (TDI,scandir) cell, columns
+  `[0:N]=dx`, `[N:2N]=dy`, where N = green image width (WV02 N=8795, WV03 N=10651).
+  Pack with the existing `form_corrections_image.py` (row = concat(dx,dy)); OUR
+  format matches it exactly.
+- Both `--dx/--dy` and the lookup feed the SAME `wv_correct(img,dx,dy)`, so a TIF
+  with the same values == `--dx/--dy`. ALWAYS test both with
+  `--print-per-column-corrections` (must match to float precision) or diff the two
+  corrected images (expect median 0, max ~0.002 px = float32 storage).
+- INSTALL: each shipped data file needs an explicit `install(FILES "src/asp/
+  WVCorrect/<name>" DESTINATION .../share/wv_correct)` in the TOP-LEVEL
+  `CMakeLists.txt` (mirror the WV02 line; add one per new TIF). ONLY the TIFs +
+  lookup ship - the workflow scripts (.m/.py/.sh) are source-only, in NO install
+  rule (ship the product, not the "funny business").
+- Add a tiny regression test (a small green crop + its XML + `wv_correct --band 3`
+  + validate vs gold). Existing `ss_wv_correct*` tests are PAN only. Test data/gold
+  live on disk (l1), NEVER git.
+- COMPRESSION: the per-column residual is noisy, so it compresses poorly - full
+  float32 DEFLATE(pred3) ~300KB, 4-digit rounding saves only ~2.5%. Keep full float32.
+
+## Existing WV2 workflow vs our WV3 refinements (README_MULTISPECTRAL)
+
+The old README_MULTISPECTRAL documents the SAME core (green->PAN per-column
+disparity, multi-scene average, detrend, pack, lookup) with scripts ms_ccd_solve.sh
+/ ccd_process.py / ms_ccd_verify.sh / form_corrections_image.py. Our refinements
+(2026, `src/asp/WVCorrect/wv3_green_combine.py` + a new README section): pan-pad +
+tight centered search (vs wide/raw -13 offset); moving-average-1600 detrend + edge
+clamp (vs ccd_process.py; edge clamp matters - garbage edges shift the first/last
+image columns ~0.2-0.3 px); per-scene outlier scan (one failed-correlation scene at
+std 4.3 inflated a grand-average 8x); and 2D stereo-DEM validation (vs colormap only).
