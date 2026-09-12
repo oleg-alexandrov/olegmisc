@@ -61,38 +61,15 @@ skips those already at `test_done Success`. Before launching, confirm none is
 already running: `pgrep -fa launch_master.sh`; and check the 23:05 UTC cron won't
 collide.
 
-**`resume` does a FULL REBUILD of a failed platform, not just a re-test.** For a
-`test_done Fail` platform it immediately writes `NoTarballYet now_building` and
-launches `build.sh` (recompile + `make-dist.py`, ~1.5-2h, and it OVERWRITES the
-existing tarball). So `resume` is NOT the way to republish after a mere test-drift
-failure. (Burned 2026-09-12: ran a bare `resume` on a localLinux test-drift Fail;
-it kicked off a full rebuild and was mid-`make-dist.py` before I killed it.)
-
-### Publish after a test-drift Fail WITHOUT rebuilding (fake-success then resume)
-
-When only test drift failed (build was fine, the tarball on disk is good) and you
-are CONFIDENT the failure is acceptable/transient, publish by faking the status,
-then resume - resume will skip every rebuild, verify the four tarballs still exist
-on disk, upload the GitHub release, and email Success. Steps (all on l1, in
-`~/projects/BinaryBuilder`):
-1. Confirm nothing is building: `pgrep -fa launch_master.sh; pgrep -fa build.sh`.
-2. Confirm the failed platform's tarball is present and intact (right date/size):
-   `ls -la asp_tarballs/StereoPipeline-<ver>-<date>-<arch>.tar.bz2`.
-3. Fake success by overwriting the platform's status file with the good tarball
-   (RELATIVE path from `~/projects/BinaryBuilder`, the exact format resume reads):
-```bash
-echo "asp_tarballs/StereoPipeline-3.8.0-alpha-<date>-x86_64-Linux.tar.bz2 test_done Success" > status_localLinux.txt
-```
-4. Verify all four `status_*.txt` now read `... test_done Success` and all four
-   tarballs exist (line ~253 of launch_master.sh checks each `$HOME/$buildDir/$tarBall`).
-5. `nohup ./auto_build/launch_master.sh resume > output_master.txt 2>&1 < /dev/null &`
-6. Watch that it does NOT rebuild (`pgrep -fa build.sh|make-dist` stays empty) and
-   that `output_master.txt` proceeds straight to `gh release ... create <date>-daily-build`.
-
-If you accidentally ran a bare `resume` and it started a rebuild: kill the tree
-(`build.sh`, its `ssh`, and `make-dist.py` PIDs), confirm the existing tarball's
-date/size are unchanged (make-dist overwrites only at the end), then do the fake-
-success steps above.
+**FAKE SUCCESS FIRST, then resume - never a bare `resume` to republish.** A bare
+`resume` on a `test_done Fail` platform immediately writes `NoTarballYet
+now_building` and launches `build.sh` (a full recompile + `make-dist.py`, ~1.5-2h,
+which OVERWRITES the good tarball) - it does NOT just re-run the failed test.
+Recovery if you slip and it starts building: kill the tree (`build.sh`, its `ssh`,
+and the `make-dist.py` PID), confirm the existing tarball's date/size are unchanged
+(make-dist overwrites only at the very end), then fake success and resume as below.
+(Burned 2026-09-12: a bare `resume` on a localLinux test-drift Fail was mid-
+`make-dist.py` before I caught it.)
 
 **Publish an already-built nightly when the only failure is minor (recurring ask).**
 Oleg will often say "publish today's build in resume mode, the failing test is
