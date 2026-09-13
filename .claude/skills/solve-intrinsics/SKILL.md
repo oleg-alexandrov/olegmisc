@@ -62,6 +62,42 @@ faster in bundle_adjust and Brown-Conrady is "not advised"; but for a CSM linesc
 RADTAN is the built-in distortion, so use it there. TRANSVERSE overfits easily -
 avoid it as a lens model for a physically-radial/scan distortion.
 
+## FAST screening: the FINAL pointmap.csv as a proxy predictor
+
+`run-final_residuals_pointmap.csv` (columns `lon, lat, height_above_datum,
+mean_residual, num_observations`) lets you compare many bundle/jitter variants
+WITHOUT running stereo for each. Geodiff its `height_above_datum` against the
+reference DEM (sample the ref at each lon/lat) -> the dz distribution PREDICTS the
+DEM's adherence to the reference; `mean_residual` predicts fit. A run whose final
+pointmap has huge dz-NMAD vs the reference (e.g. > 1 km) will produce a BAD DEM -
+reject it before wasting a stereo run. (This caught a radtan solve with pointmap
+dz-NMAD ~2400 m that gave an anti-correlated DEM, hp -0.19.)
+- CAUTION - it is a PROXY, not truth. In BUNDLE the triangulated point is part of
+  the optimization (it can move to conform); in STEREO the tri point is FIXED by
+  the cameras and can no longer move. So a pointmap can look conformant during
+  bundle yet the stereo DEM does not follow. Screen with the pointmap; for any
+  CRITICAL result, still finish with stereo + point2dem and measure hp/dz/dh-dv.
+- The INITIAL pointmap is seeded from the DEM (with `--heights-from-dem`), so its
+  heights are useless for DEM-adherence; only its residual field is meaningful.
+
+## OVERFIT WARNING (distortion absorbs a positioning warp - a real trap)
+
+If the cameras are off by a large HORIZONTAL warp vs the reference (seen as a big
+dh/dv shift), floating distortion (and optical center) will ABSORB that warp into
+unphysical coefficients and produce a low-tri-error but WRONG (anti-correlated)
+DEM. A horizontal km-scale warp is NOT lens distortion. Symptoms: distortion
+coeffs blow up far past the ~1e-7 seed (k1 order 1-10), optical center shifts
+thousands of px, tri error collapses but hp crashes/goes negative. Guard: add GCP
+for horizontal control, loosen `--heights-from-dem-uncertainty` (do not nail
+vertically while the fit must move horizontally), and screen the final pointmap
+(above). If distortion still overfits, the residual is likely a linescan TWIST for
+[[jitter-solve]], not a lens effect. Nuance: SOME real lens distortion usually
+exists, so a single coefficient growing is not automatically fatal if the rest fits
+and the pointmap/DEM improve - the pointmap is only a proxy, so take SEMI-PROMISING
+leads all the way to stereo (not every crazy experiment) before rejecting them. Note: for a CSM RADTAN model, floating
+`other_intrinsics` floats ALL radtan coeffs (seeding only one to non-zero does NOT
+restrict to it - unlike the pinhole "only non-zero optimizes" rule).
+
 ## Inspect the result (do not trust the number alone)
 
 - `pointmap.csv` before vs after (`--csv-format 1:lon,2:lat,4:height_above_datum`);

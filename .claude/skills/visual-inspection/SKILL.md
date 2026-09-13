@@ -238,3 +238,14 @@ the comparison is meaningless. MASKS: overlay the mask on its source image (or s
 masked-vs-raw side by side) and confirm the boundary sits at the shoreline - keeps
 land (runway/buildings), drops water (coral/underwater). Frequent inspection IS the
 work, not overhead.
+
+## GDAL Python gotcha: hold the Dataset ref before ReadAsArray (CRITICAL)
+
+`gdal.Open(f).GetRasterBand(1).ReadAsArray()` on ONE line intermittently throws
+`TypeError: in method 'Band_XSize_get', argument 1 of type 'GDALRasterBandShadow *'`
+- the Dataset is garbage-collected before the Band is read. ALWAYS bind the Dataset
+to a variable that outlives the read:
+    d = gdal.Open(f); a = d.GetRasterBand(1).ReadAsArray()   # d stays alive
+Never `gdal.Open(f).GetRasterBand(1).ReadAsArray()` inline, and never inside a
+comprehension where the Dataset is temporary. Call `gdal.DontUseExceptions()` (or
+UseExceptions) once up front to silence the 4.0 FutureWarning.
