@@ -39,6 +39,22 @@ data needs can only be supplied by flipping the IMAGE itself.
   yellow and you cannot call a flip from it. Needs a distinctive asymmetric feature IN the
   overlap, at a readable zoom.
 
+## point2dem's DEFAULT outlier filter distorts coverage AND terrain judgment
+
+Before judging a DEM's coverage or high-pass terrain agreement, KNOW that point2dem's
+DEFAULT triangulation-error outlier removal silently drops the highest-tri points - and
+in real geometry those cluster at meaningful places (strip ends, panoramic scan-end
+corners, steep relief), not random noise. So the "missing corner" you see may be the
+FILTER, not the stereo: the point cloud (the -PC / -F.tif) can be 100% valid there while
+the gridded DEM is blank. This misled me twice on KH-7 (I concluded "jitter ate the
+corner" when point2dem's default had removed the high-tri corner). RULE: to judge
+coverage/hp honestly, re-grid keeping the points - pass an explicit high
+`--max-valid-triangulation-error` (e.g. 100000) so nothing is dropped, and judge on the
+KEPT cloud. When plotting the tri-error figure, do NOT cap the colorbar at a percentile;
+show the full range to the max so the genuinely high-tri regions (which are real, not
+junk) are visible. Low tri error is not the goal anyway - a low-tri, self-consistent
+geometry can be globally WRONG (see the orientation tests below); correct TERRAIN is.
+
 ## FIRST, A HINT (not a proof) - the metadata cross-check (zero compute)
 
 Read the vendor LABEL and cross-check it against the backplane/GCP source. A PDS4 (or similar)

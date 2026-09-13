@@ -23,6 +23,26 @@ decided by MEASURING FEATURES against an independent reference (mapproject + cra
 or a red/green hillshade overlay), never by a statistic. Right after ANY camera generation, the
 first move is mapproject-and-compare-to-an-independent-ortho (see [[dem-sanity-check]]).
 
+## JUDGE BY DISCRETE RECOGNIZABLE FEATURES, NOT A CORRELATION SCORE (CRITICAL)
+
+The verdict on "does our DEM/ortho match the reference" is made by putting the two side-by-side
+on a common grid and CONFIRMING SPECIFIC, NAMED FEATURES land in the SAME PLACES: the main
+valley, a particular tributary junction, a distinctive ridge line, a named peak, a river bend, a
+crater. NEVER report a scalar score (high-pass corr, raw corr, Spearman, NMAD) AS the verdict.
+A correlation number is un-verifiable by the user and actively misleads - a low-frequency tilt or
+ramp aligning with the reference can inflate it while the real terrain is absent, and it hides
+inversion and warp. Oleg's words (2026-09-11, KH-7): "this kind of oblivious driving without
+visual inspection where I can catch you... you must inspect discrete features rather than you say
+corr score." A score that says "+0.22, fine" let a whole session drive into the wilderness on a
+DEM whose valley you could not even see.
+- EVERY DEM/ortho stage: warp ours + reference to the same grid, colorize + hillshade both,
+  place side-by-side, and NAME the discrete features and whether each lands correctly. Colorize
+  each by its OWN percentile range if there is a big offset, so structure is not washed out.
+- The score MAY accompany the figure, never replace the feature look. If you cannot point at
+  matching discrete features, the result is BAD no matter what the number says.
+- This is the honest, user-checkable judge - it is what lets Oleg catch a mistake by glancing at
+  the figure. Give him figures with recognizable features, not numbers he cannot verify.
+
 ## "HTML Artifact" = the Artifact Tool (know the drill)
 
 When Oleg asks for an "HTML artifact" (or just "artifact"), that means: use the
