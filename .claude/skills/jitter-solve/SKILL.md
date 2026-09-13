@@ -118,11 +118,20 @@ clustered, anchors not extending, etc.):
 
 ## Tradeoffs (how to keep it from exploding)
 
-- ANCHOR POINTS are the main stabilizer: if there are ENOUGH of them and they are
-  TIGHT enough (small `--anchor-dem-uncertainty`), they PREVENT the poses from
-  exploding - they hold the whole strip (and its extrapolated ends) to the anchor
-  DEM while the tie points/GCP do the fine correction. Too few or too loose anchors
-  and the pose can run away (banana). Too tight and they fight a real correction.
+- ANCHOR POINTS are the STABILITY lever, NOT the accuracy lever. Enough of them
+  (and reasonably constrained) PREVENT the poses from exploding - they hold the
+  whole strip, including its extrapolated ends, so it cannot run away (banana).
+  Do NOT reach for anchors to "tighten the fit" to the reference - that is not
+  their job; over-tightening them just fights the real correction. They keep the
+  solution sane while the fit is done by the next lever.
+- HEIGHTS-FROM-DEM is the TIGHTENING / accuracy lever. A SMALLER
+  `--heights-from-dem-uncertainty` pulls the terrain harder onto the reference DEM
+  (better dz/shape where tie points exist). This - not the anchors - is what you
+  tighten to improve the fit. Caveat: it acts only WHERE the heights-from-dem tie
+  points are (see the control-distribution plot - usually the frame OVERLAP, not
+  the strip ends), and tightening it while a large HORIZONTAL warp remains just
+  fights the (still-needed) horizontal move; tighten it only AFTER the horizontal
+  is already placed (dh/dv small).
 - GCP move horizontally (strong) but can overpower `--camera-position-uncertainty`;
   guard with `--gcp-robust-threshold` and keep `--gcp-sigma` gentle (larger) if the
   dh/dv is already small. Heights-from-dem stiffness (`--heights-from-dem-uncertainty`)

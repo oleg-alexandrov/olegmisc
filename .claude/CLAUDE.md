@@ -239,6 +239,21 @@ do NOT claim a specific datum cause (areoid, geoid) unless it is actually verifi
 (Note: this per-document polarity can differ from the visual-inspection skill's default
 RdBu_r; consistency within the document wins - pick the doc's convention and hold it.)
 
+## Scientific figures: EMPTY title, colorbar = UNIT ONLY, everything else in the CAPTION (CRITICAL, long-standing)
+
+A scientific figure carries NO title text and NO in-image labels - ALWAYS keep the title
+EMPTY. Never put stats, counts, clamp values, medians, parameters, a description, or even
+a bare (a)/(b)/(c) panel marker inside the image. The ONLY in-image text allowed is the
+COLORBAR label, and that is the UNIT ONLY, spelled out ("meters", "pixels") - nothing
+else on the colorbar (no "residual", no abbreviation). EVERYTHING else - panel names,
+numbers, what each panel shows - goes in the CAPTION UNDERNEATH, where there is unlimited
+room. In the caption, identify panels by position: "From left to right: heights-from-dem
+tie (median 0.88 px); dem2gcp GCP (...); anchor points (...)." This applies to ALL figures
+everywhere (plots, panels, reports, HTML artifacts, docs). When a plotting script computes
+stats, PRINT them to stdout for the caption; never `set_title` them. Suppress `ax.set_title`
+entirely; use constrained_layout so per-panel colorbars do not collide. (Fuller version
+in the visual-inspection skill.)
+
 ## Docs phrasing: "after jitter correction", not bare "after jitter"
 
 In docs/figure captions, write the full action, not the noun alone: "before/after
