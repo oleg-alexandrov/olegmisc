@@ -93,11 +93,52 @@ This is exactly the fix when the dh/dv feeding dem2gcp has visible noise.
 - Fitting a plausible GCP set to ~2 px residual is NOT success if the resulting
   DEM matches the reference worse. Re-stereo and re-measure every time.
 
+## THREE KINDS OF GROUND CONTROL (know which is doing what)
+
+jitter_solve constrains the solution with up to three distinct kinds of control,
+and the output report CSVs let you see each one. Plot all three ON the reference
+DEM (ground lon/lat, colored by hillshade+terrain) and print the COUNT under each
+- that reveals hold-ups (control missing over the featureless valley, GCP
+clustered, anchors not extending, etc.):
+1. HEIGHTS-FROM-DEM tie points - in `run-final_residuals_pointmap.csv`, the lines
+   tagged `# from DEM`. These are triangulated tie points whose HEIGHT is pulled
+   to the reference DEM (vertical control only). Stiffness = `--heights-from-dem-uncertainty`.
+2. GCP - in the SAME pointmap file, the lines tagged `# GCP` (dem2gcp control).
+   These carry a full XYZ ground position (horizontal + vertical control) with
+   `--gcp-sigma` and the `--gcp-robust-threshold` guard. This is what repairs a
+   horizontal (dh/dv) warp; heights-from-dem alone cannot move horizontally.
+   (So one pointmap.csv holds BOTH kinds - split by the trailing tag.)
+3. ANCHOR POINTS - `run-final_residuals_anchor_points.csv` (columns
+   `lon, lat, height_above_datum, anchor_residual_pixel_norm`). Each ties a chosen
+   image pixel to where its ray meets the anchor DEM. `--num-anchor-points`,
+   `--anchor-dem`, `--anchor-dem-uncertainty`, and `--num-anchor-points-extra-lines`
+   (anchors BEYOND the imaged lines - the plotted anchors visibly extend past the
+   strip, holding the extrapolated pose). Doc: jitter_solve.rst
+   :numref:`jitter_anchor_points` and the pointmap/anchor figure there.
+
+## Tradeoffs (how to keep it from exploding)
+
+- ANCHOR POINTS are the main stabilizer: if there are ENOUGH of them and they are
+  TIGHT enough (small `--anchor-dem-uncertainty`), they PREVENT the poses from
+  exploding - they hold the whole strip (and its extrapolated ends) to the anchor
+  DEM while the tie points/GCP do the fine correction. Too few or too loose anchors
+  and the pose can run away (banana). Too tight and they fight a real correction.
+- GCP move horizontally (strong) but can overpower `--camera-position-uncertainty`;
+  guard with `--gcp-robust-threshold` and keep `--gcp-sigma` gentle (larger) if the
+  dh/dv is already small. Heights-from-dem stiffness (`--heights-from-dem-uncertainty`)
+  trades vertical fit vs letting the geometry move: LOOSE lets the camera altitude
+  drift (can produce unphysical per-frame altitude differences); TIGHTER pulls the
+  height and altitude back toward physical but can fight the horizontal fix.
+- Knot count is the shape-vs-placement lever (few = safe low-order; too many
+  oscillate). Sweet spot is found by sweeping (KH-7: 6 knots).
+
 ## Inspect (report files)
 
-`run-camera_offsets.txt` (how far cameras moved - km = trouble),
-`run-initial/final_residuals_stats.txt`, `pointmap.csv` initial vs final,
-`anchor_points.csv` initial vs final. Plot pointmap/anchor side by side.
+`run-camera_offsets.txt` (how far cameras moved - km = trouble; check per-frame
+CAMERA ELEVATION above ground is physical - two consecutive frames cannot differ
+by tens of km), `run-initial/final_residuals_stats.txt`, the pointmap.csv (split
+by `# from DEM` vs `# GCP`) initial vs final, `anchor_points.csv` initial vs final.
+Plot all on the reference DEM with counts.
 
 ## Doc pointer
 
