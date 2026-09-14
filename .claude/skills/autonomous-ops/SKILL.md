@@ -83,6 +83,25 @@ description: Running Claude autonomously or overnight - the don't-stall rule, in
   never as the pulse. (CaSSIS 2026-07-08: deleted the heartbeat when idle, then launched
   stereo jobs and leaned on run_in_background monitors - the watched job would have
   fallen asleep with no pulse advancing it. Re-arm the heartbeat immediately.)
+- THE MONITOR PROCESS IS NEVER THE PULSE - ALWAYS HAVE AN INDEPENDENT CRON (extra
+  measure, set 2026-09-14 after Oleg caught me asleep). Two ways a lone in-band waiter
+  kills a run, both seen the same day on the Mac disk-cleanup: (1) it can DEADLOCK - a
+  chained rsync waited with `while pgrep -f 'rsync.*polar_db'; do sleep; done`, but that
+  pattern MATCHED THE WAITER'S OWN command line (it contained "archive_rsync_chain" ->
+  "rsync" and a "polar_db" path), so the loop waited on itself forever; and (2) the
+  separate `run_in_background` waiter I leaned on to be re-notified simply DIED (exit
+  144) and nothing re-invoked me - the whole pipeline sat idle until the user poked me.
+  RULES: never write a `pgrep -f PATTERN` wait whose PATTERN can match the waiter itself
+  (match a PID, an exact-basename, or `pgrep -f ... | grep -v <the monitor>`; better,
+  don't hand-roll a wait loop at all). And NEVER let a single in-band background
+  process be your only wake mechanism. For ANY in-flight background/unattended work
+  there must ALWAYS be an INDEPENDENT recurring pulse that does not depend on that
+  process being alive: at minimum an in-session CronCreate heartbeat (arm it even when
+  you skip the OS cron), ideally BOTH layers (CronCreate + OS watchdog). Additionally
+  you MAY delegate the watch/tricky-op to a BACKGROUND SUBAGENT so the MAIN session
+  stays alive and keeps checking (the parent notices a dead/stuck child; an inline wait
+  cannot). The pulse advances the work idempotently from the NOTES, so a deadlocked or
+  dead monitor is caught within one interval instead of stalling until the user returns.
 - CREATE THE CRON ONCE, KEEP IT STABLE, NEVER CHURN IT. The cron is a LOCAL HEARTBEAT
   whose only job is to keep the session ticking so you stay awake - it is INDEPENDENT
   of what runs on remote nodes. Its prompt must be CONTENT-FREE: it points at the
