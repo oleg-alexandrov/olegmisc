@@ -190,6 +190,14 @@ for all match plots (docs, notes, chat). Same rule in the asp-photogrammetry ski
   white zero, red positive), **symmetric clamp** about 0.
 - **nodata = BLACK** for every colorized plot (`cmap.set_bad("black")`, nodata->NaN),
   so it reads as "not covered", distinct from real low values.
+- **STAT the raster BEFORE plotting - never assume a value range.** ASP orthoimages
+  (`point2dem --orthoimage` -> `run-DRG.tif`, and mapprojected `run-L/R.tif`) are
+  NORMALIZED FLOAT ~0..1.2 with a LARGE-NEGATIVE nodata (e.g. -1e6 or -32768), NOT byte
+  0-255. So read the band's nodata, mask it to NaN, and stretch on the VALID-pixel
+  percentiles (p2..p98). A hardcoded assumption bit me on Kabul: masking `ortho > 1` (as if
+  0-255) threw away every valid pixel and the panel plotted blank. Rule: for ANY raster,
+  compute nodata + valid-pixel min/p2/p50/p98 FIRST, then set vmin/vmax from those - the
+  same discipline as the "cheap gdalinfo check on every output" rule. (Oleg 2026-09-14.)
 The ASP tools `colormap`/`point2dem --colormap-style` take these names too
 (`plasma`, `inferno`, `viridis`, ...); the full list is in the ASP
 `docs/tools/colormap.rst`. Canonical plotting recipe with these conventions:
