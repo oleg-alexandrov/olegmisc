@@ -256,4 +256,10 @@ to a variable that outlives the read:
     d = gdal.Open(f); a = d.GetRasterBand(1).ReadAsArray()   # d stays alive
 Never `gdal.Open(f).GetRasterBand(1).ReadAsArray()` inline, and never inside a
 comprehension where the Dataset is temporary. Call `gdal.DontUseExceptions()` (or
-UseExceptions) once up front to silence the 4.0 FutureWarning.
+UseExceptions) once up front to silence the 4.0 FutureWarning. Best practice: define
+one reader helper at the top of every raster script and use it EVERYWHERE (it keeps
+the Dataset alive for the whole read and closes it deterministically):
+    def r1(p):
+        ds = gdal.Open(p); a = ds.GetRasterBand(1).ReadAsArray().astype(float); ds = None; return a
+The same trap bites `gdal.Warp(out, ...)` results: bind `w = gdal.Warp(...); w = None`
+to flush the file to disk before you re-open it, or the re-open reads a stale/empty band.
