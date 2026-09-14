@@ -164,6 +164,15 @@ description: Running Claude autonomously or overnight - the don't-stall rule, in
   literal path per line, no glob/`$VAR`; touch ONLY the tag that is done). The sentinel may stay
   as a completion marker. Arm the cron for the duration of the work, drop-and-WIPE it when done -
   never leave it idling or its files lying around past completion.
+- **"DONE" = the autonomous WORK is finished, even if the user has not returned.** The recurring
+  trap (Oleg flagged it, 2026-09-14): once the task/investigation is complete and you are only
+  emitting "standing by" heartbeats waiting for the user, that IS done - DROP THE CRON NOW. Do not
+  keep it armed to "stand by for their return"; a cron whose every firing just touches the heartbeat
+  and reports "idle, standing by" is spinning for no reason (burning wakeups/tokens and, on the OS
+  layer, risking pointless relaunches). The moment you catch yourself replying "standing by" with no
+  running job and no pending step, that is the signal to run the four-part teardown. The user coming
+  back with a new instruction re-arms a fresh loop if needed; you do not need the cron alive to
+  receive their next message. Waiting for the user is NOT "work in progress".
 - On every wakeup, FIRST run `date` to re-orient - long runs leave you stale.
 
 ## Notes Discipline + Reread-On-Resurrection (MANDATORY for any auto/overnight run)
