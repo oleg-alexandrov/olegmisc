@@ -478,6 +478,18 @@ What it currently contains (grep the headers for detail):
   EXPLICITLY (you set ncpus in the qsub) or use `grep -c ^processor /proc/cpuinfo`;
   ALWAYS verify with `qstat -f <job> | grep cpupercent` (/100 = cores busy).
   Full write-up: qsub_rules.sh RULE E, asp_manual.sh. Burned 2026-08-17.**
+- **asp_mgm (and any non-BM algorithm, and non-BM alignment like local_epipolar)
+  can run ONLY via `parallel_stereo`, NOT the plain `stereo` wrapper** - plain
+  `stereo` errors "Alignment method 'local_epipolar' and/or other algorithms
+  except ASP_BM can be used only with parallel_stereo". Plain `stereo` (single
+  process, all stages in one process) works ONLY for `--stereo-algorithm asp_bm`.
+  So: want asp_mgm on a RAM-limited box (Mac) -> use `parallel_stereo --processes 1`
+  (or 2), which runs tiles with few workers = bounded RAM; each `stereo_corr` worker
+  can use 1-3 GB, so N processes ~ N*(1-3) GB - keep N small on the Mac. `--processes 1`
+  is the safe low-RAM choice; try 2 if RAM allows. Watch for LEFTOVER/zombie stereo_*
+  processes from killed or re-invoked runs: they STACK and OOM the Mac (`pgrep -fl
+  install/bin/stereo`; `pkill -9 -f install/bin/stereo`). NEVER wrap parallel_stereo in
+  a re-invoke loop - each call spawns fresh workers while old ones linger = OOM.
 - pc_align applying a transform to cameras (direct vs inverse; carry via
   bundle_adjust --apply-initial-transform-only --inline-adjustments).
 - ATHENA (Turin) for ASP jobs - fully visible (/nobackup + build mounted),
