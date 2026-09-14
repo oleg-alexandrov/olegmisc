@@ -13,6 +13,9 @@ the same problems. This file is intentionally terse and delegates detail to thos
 notes - the pointer is a promise that the detail exists there.
 
 - Always end files with a newline character (POSIX requirement).
+- **NEVER create a file whose name starts with an underscore (`_`).** Not scratch
+  figures, not temp rasters, not anything - ever. Use a plain descriptive name
+  (`step0_contact.png`, `mp_on_hs_tmp.tif`), never a leading `_`. Applies everywhere.
 - When Oleg says to "remember" something, add it to this CLAUDE.md file.
 - **Project work notes go in `~/projects/`, NOT in `.claude/` memory files.**
   Use `.sh` files (comment-only) in `~/projects/` so they're tracked by the
