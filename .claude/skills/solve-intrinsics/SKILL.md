@@ -115,3 +115,29 @@ doc): :numref:`intrinsics_no_constraints` (first attempt, the seed-nonzero note)
 :numref:`kaguya_ba` (grouped intrinsics, `--intrinsics-to-float`/`-share` syntax),
 :numref:`heights_from_dem`, :numref:`dense_ip`, :numref:`ba_pc_align`. Tool option
 reference: :numref:`bundle_adjust`.
+
+## Per-INDEX distortion fix and DECOUPLING left/right (KH-7, 2026-09)
+
+- `--intrinsics-to-float` / `--intrinsics-to-share` work by GROUP (focal_length,
+  optical_center, other_intrinsics). To keep INDIVIDUAL distortion coefficients fixed:
+- **`--fixed-distortion-indices "0,3,4"`** - comma-separated 0-based indices into the
+  distortion vector that stay fixed while `--solve-intrinsics` floats the rest. The
+  index order is as saved in the camera file; for RADTAN it is `k1,k2,p1,p2,k3`
+  (0..4). IMPORTANT LIMITATION: for CSM this applies to **radial-tangential (RADTAN)
+  ONLY** - NOT the transverse model. (Pinhole: all distortion models.) So you can, e.g.,
+  fix the tangential terms (`2,3`) and float only radial, but you canNOT do a
+  transverse-with-fixed-linear on a CSM this way.
+- `--intrinsics-limits` is a DIFFERENT thing (NOT the per-coeff fix): min/max RATIO
+  pairs bounding each parameter's drift from its initial value, in order
+  [focal_length, optical_center, other_intrinsics]. Use to BOUND, not to fix.
+- `--min-distortion` (default 1e-7): optimized distortion coeffs smaller than this in
+  magnitude are floored (skipped by `--fixed-distortion-indices`).
+- **Decouple left/right distortion:** intrinsics are SHARED across cameras by default.
+  `--intrinsics-to-share none` (or an empty string) gives each frame its OWN distortion
+  (and focal/center). Use when the two looks may have different distortion (sensor
+  rotated between frames, not just tilted). If it only tilts, sharing is fine.
+
+## For the CSM distortion MODELS themselves - the
+enum, the exact RADTAN (5) and TRANSVERSE (20) coefficient layout and index of each
+term, and the seed gotchas (bundle can't float from 0; attenuate mm-scale cubic
+terms; validate the initial pointmap) - see [[lens-distortion]].

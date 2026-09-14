@@ -153,4 +153,5 @@ Plot all on the reference DEM with counts.
 
 `docs/tools/jitter_solve.rst` (num-lines-per-position/orientation, anchor points,
 heights-from-dem, GCP, output report files). Alignment/intrinsics context:
-`docs/bundle_adjustment.rst`. Related: [[solve-intrinsics]], [[dem-sanity-check]].
+`docs/bundle_adjustment.rst`. Related: [[solve-intrinsics]], [[dem-sanity-check]],
+[[lens-distortion]] (CSM distortion models: RADTAN/TRANSVERSE coeff layout + seeding gotchas).
