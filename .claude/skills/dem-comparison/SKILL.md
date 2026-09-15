@@ -58,6 +58,22 @@ Always hillshade with `gdaldem hillshade` (as on CaSSIS), typically
 hillshades. Terrain that shows as VERTICAL in geodiff shows as HORIZONTAL motion in
 the hillshade disparity - that horizontal motion is exactly what we are after.
 
+## Step 2.5 - INSPECT the two hillshades BY EYE first (CRITICAL, do not skip)
+
+Before ANY correlation/disparity, put the two hillshades SIDE BY SIDE and LOOK. Do
+the same ridges, valleys, drainage lines line up? The correlation NUMBER lies: a raw
+or de-tilted elevation correlation of +0.3-0.5 is routinely produced by nothing but a
+shared large-scale RAMP (a basin->mountain trend), while the DEM is a NOISY/pebbly
+mess with ZERO matching fine terrain in the hillshade. Only the hillshade eyeball
+tells you whether real terrain was recovered. If the candidate hillshade is dark and
+grainy (high-frequency noise everywhere) and you cannot trace COP's features in it,
+the DEM is NOT usable for dh/dv no matter what the correlation coefficient says - stop
+and fix the DEM (denoise, bigger corr kernel, better camera model), do not proceed to
+correlate. (Burned 2026-09-14 on KH-7 Vale south: a +0.32 "high-pass" corr masked a
+DEM whose hillshade was pure grain; only the side-by-side hillshade inspection - which
+Oleg forced - revealed there was no real feature match. Inspect hillshades EVERY time
+before disparity.)
+
 ## Step 3 - correlate the two hillshades -> disparity
 
 parallel_stereo in --correlator-mode (pure image correlation, no cameras) with the
