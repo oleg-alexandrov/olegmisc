@@ -251,6 +251,16 @@ set (discovery runs the test binary at build time). Full flags and gotchas:
 `~/projects/isis_2026/isis_2026_notes.sh`; also
 `~/projects/isis_mapproject/isis_mapproject_notes.sh` and `~/projects/env_update.sh`.
 
+**Run ONE ISIS gtest (fast dev loop).** The gtest sources in `isis/tests/*.cpp`
+compile into a single binary target `runISISTests` (NOT `runTests`). Rebuild lib +
+that binary, then filter: `ninja -j8 install runISISTests` then
+`./tests/runISISTests --gtest_filter='CSMSerialNumber.*'` (from the build dir, with
+`ISISROOT`/`ISISDATA`/`ISISTESTDATA` set). ALWAYS `ninja install` before running -
+the test binary rpath-loads libisis from the conda env, so without install your edit
+runs against the STALE env lib and the test appears unchanged. To confirm a code path
+is actually hit, drop a temp `std::cerr << "..."` (add `#include <iostream>`), build,
+run the one test, verify it fires, then strip it and rebuild before committing.
+
 **NEVER install a coverage-instrumented ISIS into `asp_deps` (CRITICAL).** Always
 build `-DbuildCoverage=OFF`. Coverage instruments the WHOLE ISIS lib set (~142 libs:
 libisis ~676 MB plus every mission/camera/projection plugin `.so`, all with baked
