@@ -74,6 +74,18 @@ DEM whose hillshade was pure grain; only the side-by-side hillshade inspection -
 Oleg forced - revealed there was no real feature match. Inspect hillshades EVERY time
 before disparity.)
 
+ALSO make a SAME-RANGE COLOR-hillshade of both (datum-match the candidate: subtract
+median(cand-ref), then color BOTH with the REFERENCE's [2,98]% elevation range +
+hillshade shading). This one figure INSTANTLY uncovers a MASSIVE TILT/warp: if the
+candidate saturates into a hard two-colour split (one half white/high, the other
+blue/low) while the reference shows real terrain, the candidate DEM is a giant ramp
+whose amplitude dwarfs the real relief. QUANTIFY it: candidate elev span (2-98%) vs
+reference span; a ratio >> 1 = the warp dominates. (KH-7 Vale south: candidate span
+9491 m vs COP 245 m = a 39x tilt on a genuinely flat basin - the pinhole panoramic
+warp. No dh/dv is meaningful until that tilt is removed via dem2gcp / a real camera
+model.) So: gray hillshade for FINE-feature match, same-range color-hillshade for the
+GROSS tilt/datum sanity - do BOTH before correlating.
+
 ## Step 3 - correlate the two hillshades -> disparity
 
 parallel_stereo in --correlator-mode (pure image correlation, no cameras) with the
