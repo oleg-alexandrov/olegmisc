@@ -13,6 +13,12 @@ the same problems. This file is intentionally terse and delegates detail to thos
 notes - the pointer is a promise that the detail exists there.
 
 - Always end files with a newline character (POSIX requirement).
+- **Indentation is TWO SPACES per nesting level, everywhere.** Any time
+  something is itemized, nested, or continued - in notes, plain-text docs,
+  code, or code comments - indent each level by exactly two more spaces (2, 4,
+  6, ...). Do NOT use deep column-aligned hanging indents (aligning a
+  continuation line under a label/colon at column 15+); a wrapped or nested
+  line just gets its parent's indent plus two spaces. Applies everywhere.
 - **NEVER create a file whose name starts with an underscore (`_`).** Not scratch
   figures, not temp rasters, not anything - ever. Use a plain descriptive name
   (`step0_contact.png`, `mp_on_hs_tmp.tif`), never a leading `_`. Applies everywhere.
