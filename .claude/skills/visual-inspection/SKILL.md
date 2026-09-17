@@ -176,10 +176,21 @@ the caption); tick `labelsize ~16`; NEVER a shared colorbar. Robust clamp, not m
 Multidirectional hillshade (`gdaldem hillshade -multidirectional`) for DEMs. Full recipe
 (pfe gdal-vs-matplotlib env split): `~/projects/visual_raster_inspection.sh` section 5.
 
-**Interest-point / match-point plots: RED FILLED balls.** When overlaying tie-point
-matches or interest points on an image, draw them as red FILLED circles
-(`scatter(..., c='red', marker='o')`) - filled, not hollow, not yellow. House style
-for all match plots (docs, notes, chat). Same rule in the asp-photogrammetry skill.
+**Interest-point / match-point plots: RED FILLED balls, NO connecting lines.** When
+overlaying tie-point matches or interest points on an image, draw them as red FILLED
+circles (`scatter(..., c='red', marker='o')`) - filled, not hollow, not yellow, and
+make them BIG enough to see (radius ~6-8 px). NEVER draw lines connecting the
+corresponding points across the two panels (no "fan" of correspondence segments) - the
+two hillshades sit side by side and correspondence is read by matching the red-dot
+CLUSTERS by eye (or by shared position-color, the plot_matches.py default), never by
+drawn lines. Do NOT hand-roll this: use `~/bin/plot_matches.py L.tif R.tif f.match
+out.png [width] [maxpts] --red --radius 7` (it also prints the residual-to-best-fit-
+translation, the real-vs-junk metric). House style for ALL match plots (docs, notes,
+chat). Same rule in the asp-photogrammetry skill. **For ANY match/tie-point/.match plot,
+load [[match-plot]] FIRST** - it carries the full procedure (the `plot_matches.py --red
+--radius` invocation, the panel-order-must-match-the-document rule, and the match-file
+block-swap trick). (Reinforced 2026-09-17: a hand-rolled plot drew lime dots + a fan of
+correspondence lines - both wrong; the "no lines" part was previously only implicit.)
 
 **COLORMAP CONVENTION (permanent, Oleg 2026-08-18; used in the ASP doc figures):**
 - **Unsigned / error** (tri-err, |dz|, residual/disparity magnitude): **`plasma`,
