@@ -136,6 +136,25 @@ description: Running Claude autonomously or overnight - the don't-stall rule, in
       `command -v claude` and test the launch line in a minimal env
       (`env -i PATH=/usr/bin:/bin sh -c '<the exact claude line>'`) BEFORE trusting the
       watchdog. A watchdog you have not seen actually relaunch claude is unproven. ***
+  *** INNER MECHANICAL CRON != THE CLAUDE RESURRECTOR (burned 2026-09-15, KH-7 Vale - Oleg
+      caught me "asleep" twice in one run). An OS cron that runs a SHELL PIPELINE (a clip-sweep
+      script, a stereo driver) does mechanical work but does NOT wake Claude to monitor,
+      diagnose, or advance - so if that shell script BREAKS, NOBODY notices and the run silently
+      stalls. The OS-level layer that actually matters is the WATCHDOG that resurrects CLAUDE
+      (`claude -c -p` / `claude -p`); the resurrected Claude then HEALTH-CHECKS the inner
+      pipeline (is its script present? is state advancing? any errors?), repairs it, drives the
+      next step. Never conflate "OS cron runs my pipeline" with "OS watchdog keeps Claude alive"
+      - you need the latter. Running the pipeline WITHOUT a claude-resurrecting layer IS the
+      fall-asleep bug. (Headless `claude -p --dangerously-skip-permissions` CAN run Bash/Edit
+      tools unattended - verified 2026-09-15 - so a resurrected Claude can self-heal.) ***
+  *** VERIFY THE WATCHDOG SCRIPT EXISTS ON DISK + TEST-RUN IT, in a SEPARATE command (burned
+      2026-09-15). I wrote a cron wrapper via `cat > wrapper.sh <<EOF ...` INSIDE a command that
+      then TIMED OUT (a wait-loop after it) before the write flushed -> the file NEVER existed ->
+      the cron fired every tick all night with "No such file or directory", silent, ZERO progress.
+      RULE: after writing ANY watchdog/wrapper/heredoc script, in a FRESH separate command
+      `ls -la <script>` to confirm it is on disk, `chmod +x`, and TEST-RUN it once. A
+      heredoc-created script buried in a long/timeout-prone command is NOT proven to exist;
+      "unproven until seen run" applies to the script's very EXISTENCE, not just its launch line. ***
   WHY BOTH (the thing I got wrong before): CronCreate is SESSION-ONLY - it lives inside
   the running Claude session and DIES WITH IT, so a "service unavailable" outage that
   kills the harness ALSO kills the CronCreate heartbeat and nothing re-arms it. Only an
