@@ -464,7 +464,19 @@ What it currently contains (grep the headers for detail):
 - MAPPROJECTED STEREO - the two-pass workflow (mapproject at NATIVE image GSD,
   same --tr/--t_srs both images, aligned cameras, --alignment-method none,
   eval tri-err/ortho/color-hillshade-DEM/dz/dd-H/dd-V). The high-quality path
-  used for CaSSIS/CTX/Viking/TMC/OHRC.
+  used for CaSSIS/CTX/Viking/TMC/OHRC. Two refinements (RST next_steps.rst
+  :numref:`mapproj-example`, learned on KH-7 Vale 2026-09-18):
+  (1) **Match the L/R grids with `--ref-map`, don't hand-set --tr.** Mapproject the
+  LEFT with NO `--tr` (it auto-guesses the native image GSD - e.g. KH-7 sub8 = 5.76 m),
+  then mapproject the RIGHT with `--ref-map L_map.tif` so it borrows L's exact
+  projection + grid size. parallel_stereo REQUIRES both mapproj images share grid/proj.
+  (2) **Mapproject onto a SMOOTH/BLURRED low-res seed DEM, not a sharp one.** A sharp
+  seed's fine detail imprints artifacts into the correlation/final DEM. Blur the seed
+  with `dem_mosaic --dem-blur-sigma 5 seed.tif -o seed_blur.tif` (hole-fill first if it
+  has holes) and mapproject onto seed_blur; the stereo then recovers real terrain,
+  esp. on steep slopes, instead of draping COP's texture. Use the BLURRED seed only for
+  the stereo mapproject; use the REGULAR (sharp) reference DEM for jitter/BA
+  heights-from-dem and anchors.
 - **parallel_stereo PARALLELISM (--nodes-list + --processes + --threads-
   multiprocess): READ the primer section before setting these on ANY
   parallel_stereo/parallel_bundle_adjust run.** Bare minimum: get_num_cpus()
