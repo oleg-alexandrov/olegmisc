@@ -99,6 +99,19 @@ lesson): --corr-seed-mode 0 with a BOUNDED fixed search sized to the expected sh
 Output disparity = dispDir/run-F.tif (filtered) / run-D.tif (raw). Left=warped,
 right=ref -> run-F is the warped->ref disparity (what dem2gcp wants).
 
+**COST-MODE matters a LOT when the two DEMs differ in scale / tilt / illumination**
+(e.g. one is warped, or a raw KH-7 linescan DEM vs COP). The cost function robust to
+that radiometric/geometric mismatch gives far more valid coverage. Options (see
+`stereodefault.rst`): 0=abs diff, 1=squared diff, 2=NCC (asp_bm default), 3=census
+transform, 4=ternary census (asp_sgm/asp_mgm). Measured head-to-head on a scale-warped
+KH-7-linescan-vs-COP hillshade pair (2026-09-17), same --corr-search: **asp_mgm
+`--cost-mode 3` (census) gave 33% valid, vs 15% for `--cost-mode 4` (ternary census)
+and 12% for asp_bm (NCC).** So on a warped/illumination-mismatched pair, TRY
+`--stereo-algorithm asp_mgm --cost-mode 3` first (census is the most robust); all cost
+modes agreed on the disparity SIGN/gradient, but census recovered the most area
+(including the harder high-relief region). Plot all three dh/dv side by side when
+unsure which locks best - the field that is smooth + highest-coverage is the real one.
+
 ## Step 4 - split into components and PLOT (dh, dv) + geodiff (dz)
 
 disparitydebug turns the raw disparity into horizontal + vertical rasters:
