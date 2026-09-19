@@ -77,9 +77,30 @@ size, min/max/mean/stddev, valid_percent). ANY nudge fails them. So a "fail" aft
 an intentional stereo/tiling change is EXPECTED and is NOT evidence of a real
 regression. Judge the DEM itself, not the diff.
 
+## point2las benign LAS drift (the 2026-09 speedup) - regold
+
+The point2las multithreading rewrite (~3x faster) changed LAS output ONLY on the
+PROJECTED path (a georeferenced cloud with no `--ecef`/`--dem`, the common case):
+it derives the LAS int32 offset/scale from an ESTIMATED, 2x-inflated subsample bbox
+(`projected_pointcloud_bbox_estim`) instead of an exact full pass. The `ss_point2las_*`
+tests `diff` `pdal info --metadata`, so the projected ones FAIL - but ONLY on the
+`offset_x/y/z` and `scale_x/y/z` header lines (scale ~2x larger, offset the estimated
+center). Confirm benign: `count` identical (no dropped-overflow points) and every
+`minx/maxx/.../minz/maxz` data bound identical -> the point coordinates are the same
+to sub-micron; only the quantization header moved. That is a REGOLD, not a bug.
+- FAIL benignly (regold): `ss_point2las_{nozip,nad83,srs,wkt_moon,stddev}` (all
+  projected). PASS bit-identically (exact-bbox path - if THESE drift, it is a real
+  bug): `ss_point2las_ecef`, `ss_point2las_dem`.
+- Cloud stays GREEN: the only point2las-touching cloud-subset test is `ss_pc_align_utm`,
+  which regenerates BOTH its run and gold `.las` fresh with the current binary and
+  compares them tolerantly (`max_err.pl`), so the offset/scale drift is absorbed. The 5
+  dedicated `ss_point2las_*` tests are NOT in the cloud subset. So no cloud regold.
+Verified 2026-09-19: 5 failed / 366 passed on localLinux, exactly this set; regold'd
+and published via resume. Same shape for any future point2las quantization change.
+
 ## Nightly topology & trigger (1 local + 3 CLOUD platforms)
 
-Trigger: a CRON job on **l1 (lunokhod1) at 23:05** runs
+Trigger: a CRON job on **l1 (lunokhod1) at 23:05 Pacific local (NOT UTC)** runs
 `~/projects/BinaryBuilder/auto_build/launch_master.sh` (log: `output_master.txt`).
 l1 is the master and orchestrates FOUR platforms
 (`buildPlatforms="localLinux cloudMacX64 cloudMacArm64 cloudLinuxArm64"`):

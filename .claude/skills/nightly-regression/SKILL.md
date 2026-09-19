@@ -10,10 +10,12 @@ emails Oleg a status line. Full detail: `~/projects/nightly_regression.sh`.
 
 ## Architecture: one orchestrator, four children
 
-**l1 cron** (`05 23 * * *` UTC) runs the orchestrator:
-`~/projects/BinaryBuilder/auto_build/launch_master.sh`. It builds/tests all four
-platforms, polls their status files, then emails and (on success) uploads a
-GitHub release. The four children (the "machines"):
+**l1 cron** (`05 23 * * *` in l1's LOCAL time, which is **America/Los_Angeles** -
+so it fires **23:05 Pacific** = 06:05 UTC in PDT / 07:05 in PST, NOT 23:05 UTC;
+`crontab -l` has no `TZ=` override, so cron uses the system zone) runs the
+orchestrator: `~/projects/BinaryBuilder/auto_build/launch_master.sh`. It
+builds/tests all four platforms, polls their status files, then emails and (on
+success) uploads a GitHub release. The four children (the "machines"):
 
 | Platform | Where it builds | Deps source |
 |---|---|---|
@@ -48,6 +50,46 @@ Key facts that trip people up:
 Status file protocol: `NoTarballYet now_building` -> `<tar> build_done Success`
 (or `Fail build_failed`) -> `<tar> now_testing` -> `<tar> test_done Success|Fail`.
 
+## localLinux build cache (done.txt) - why a rebuild can look "suspiciously fast"
+
+localLinux builds into a PERSISTENT tree `build_asp/` (reused across runs), NOT a
+clean checkout. `build.py` keeps `build_asp/done.txt` listing `<pkg> <git-hash>`
+for `visionworkbench` and `stereopipeline`; on each run it SKIPS any package whose
+current god/master hash matches done.txt ("Package X was already built, skipping").
+So right after a good build (done.txt holds the current hashes), a relaunch does
+NOT recompile - it goes straight to make-dist and repackages in minutes. And even a
+hash MISMATCH triggers an INCREMENTAL cmake build (only changed files), so from-
+scratch is rare: a normal VW+ASP build takes ~an hour, but an incremental one is
+minutes. Do not mistake a fast build for "it didn't build" (or vice versa) - VERIFY
+by reading `output_localLinux.txt` (it prints each `Building CXX object`; a clone
+line `Cloning into '.../visionworkbench-git'` means a true from-scratch). done.txt
+is BLIND to conda-deps (asp_deps) changes - see `~/projects/nightly_regression.sh`
+"done.txt skip cache" for that gotcha.
+
+**Force a genuine from-scratch build** (Oleg sometimes insists, to be 100% sure the
+new code is really in the tarball): delete the cache AND the build+install trees,
+then relaunch. These are 3 literal absolute paths (delegate the wipe to a subagent
+per the standing bulk-wipe rule):
+```
+rm -f  ~/projects/BinaryBuilder/build_asp/done.txt
+rm -rf ~/projects/BinaryBuilder/build_asp/build
+rm -rf ~/projects/BinaryBuilder/build_asp/install
+```
+(`build_asp/misc` and the top-level `last-completed-run` symlink -> `build_asp` stay;
+make-dist reads `last-completed-run/install`.) Then a normal `launch_master.sh` re-
+clones and compiles from zero. To confirm the tarball really has your change, check
+the fresh build clone HEAD (`git -C build_asp/build/stereopipeline/stereopipeline-git
+log --oneline -1`) and `strings <tarball>/libexec/<tool>` for a new symbol - NOT
+`bin/<tool>` (that is a tiny wrapper script; the real ELF is in `libexec/`).
+
+**Killing a running nightly:** launch_master's children run via `ssh lunokhod1
+bash build.sh`, so they are NOT in launch_master's process group and a kill of the
+top PID leaves build.py/make/cc1plus AND the test tools (parallel_stereo,
+bundle_adjust, GNU parallel) running - they reparent to init. Walk descendants and
+kill BY PID (`pgrep -P` recursively from each root), never `pkill -f` a pattern that
+also matches your own kill command. Re-scan for `run_tests.sh` and stereo/BA/parallel
+survivors after the first pass.
+
 ## Retrigger
 
 Full nightly (all four children), from l1 - matches the cron:
@@ -58,13 +100,17 @@ ssh l1 'cd ~/projects/BinaryBuilder && nohup ./auto_build/launch_master.sh \
 `launch_master.sh resume` re-runs each platform whose `status_<platform>.txt` is
 NOT `test_done Success` (i.e. `build_failed`, empty, or `test_done Fail`), and
 skips those already at `test_done Success`. Before launching, confirm none is
-already running: `pgrep -fa launch_master.sh`; and check the 23:05 UTC cron won't
-collide.
+already running: `pgrep -fa launch_master.sh`; and check the 23:05 Pacific-time
+cron won't collide.
 
 **FAKE SUCCESS FIRST, then resume - never a bare `resume` to republish.** A bare
 `resume` on a `test_done Fail` platform immediately writes `NoTarballYet
-now_building` and launches `build.sh` (a full recompile + `make-dist.py`, ~1.5-2h,
-which OVERWRITES the good tarball) - it does NOT just re-run the failed test.
+now_building` and launches `build.sh` - it does NOT just re-run the failed test. Due
+to the done.txt cache (above), that build.sh usually SKIPS recompiling (hashes match)
+and only re-runs `make-dist.py` (minutes), but it STILL OVERWRITES the good tarball
+(and if done.txt is stale/absent it does a full ~1.5-2h recompile). Either way you
+do not want it: flip the status to Success first so resume launches no build.sh at
+all.
 Recovery if you slip and it starts building: kill the tree (`build.sh`, its `ssh`,
 and the `make-dist.py` PID), confirm the existing tarball's date/size are unchanged
 (make-dist overwrites only at the very end), then fake success and resume as below.
@@ -91,7 +137,7 @@ ssh l1 'cd ~/projects/BinaryBuilder && nohup ./auto_build/launch_master.sh resum
 Use the EXACT tarball basename already in that status file (read it first). This is
 honest here only because the failure is known-minor and the shipped tarball is
 otherwise good - say so; do not silently mask a real breakage. Confirm none running
-and the 23:05 UTC cron won't collide first. (localLinux is the usual culprit since
+and the 23:05 Pacific cron won't collide first. (localLinux is the usual culprit since
 it tests on l1; a cloud platform's status file is `status_cloud<Plat>.txt`.)
 
 One cloud platform only (e.g. after a deps re-spin) - fires the Action directly:
