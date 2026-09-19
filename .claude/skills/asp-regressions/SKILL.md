@@ -5,6 +5,10 @@ description: Hub for ASP regression-test work, and the judgement layer for a FAI
 
 # Evaluating a failed ASP nightly / regression
 
+These skills are general-purpose: how to inspect builds and runs and judge
+acceptable-vs-real. They are NOT a log of past regolds or drift. Do not add
+per-incident history.
+
 ## Where regression knowledge lives (routing)
 
 Three skills cover regression work. Pick by the verb:
@@ -77,26 +81,18 @@ size, min/max/mean/stddev, valid_percent). ANY nudge fails them. So a "fail" aft
 an intentional stereo/tiling change is EXPECTED and is NOT evidence of a real
 regression. Judge the DEM itself, not the diff.
 
-## point2las benign LAS drift (the 2026-09 speedup) - regold
+## point2las benign LAS drift - regold
 
-The point2las multithreading rewrite (~3x faster) changed LAS output ONLY on the
-PROJECTED path (a georeferenced cloud with no `--ecef`/`--dem`, the common case):
-it derives the LAS int32 offset/scale from an ESTIMATED, 2x-inflated subsample bbox
-(`projected_pointcloud_bbox_estim`) instead of an exact full pass. The `ss_point2las_*`
-tests `diff` `pdal info --metadata`, so the projected ones FAIL - but ONLY on the
-`offset_x/y/z` and `scale_x/y/z` header lines (scale ~2x larger, offset the estimated
-center). Confirm benign: `count` identical (no dropped-overflow points) and every
-`minx/maxx/.../minz/maxz` data bound identical -> the point coordinates are the same
-to sub-micron; only the quantization header moved. That is a REGOLD, not a bug.
-- FAIL benignly (regold): `ss_point2las_{nozip,nad83,srs,wkt_moon,stddev}` (all
-  projected). PASS bit-identically (exact-bbox path - if THESE drift, it is a real
-  bug): `ss_point2las_ecef`, `ss_point2las_dem`.
-- Cloud stays GREEN: the only point2las-touching cloud-subset test is `ss_pc_align_utm`,
-  which regenerates BOTH its run and gold `.las` fresh with the current binary and
-  compares them tolerantly (`max_err.pl`), so the offset/scale drift is absorbed. The 5
-  dedicated `ss_point2las_*` tests are NOT in the cloud subset. So no cloud regold.
-Verified 2026-09-19: 5 failed / 366 passed on localLinux, exactly this set; regold'd
-and published via resume. Same shape for any future point2las quantization change.
+point2las on the PROJECTED path (georeferenced cloud, no `--ecef`/`--dem`) derives the
+LAS int32 offset/scale from an estimated subsample bbox, not an exact full pass. Tests
+that `diff` `pdal info --metadata` then fail on ONLY the `offset_x/y/z` + `scale_x/y/z`
+header lines. Benign (regold) when `count` and every `minx/maxx/.../minz/maxz` data
+bound are identical: the coordinates are unchanged, only the quantization header moved.
+- Benign-fail (projected): `ss_point2las_{nozip,nad83,srs,wkt_moon,stddev}`. Must stay
+  bit-exact (exact-bbox path; a drift here IS a bug): `ss_point2las_ecef`, `ss_point2las_dem`.
+- Cloud stays green: the `ss_point2las_*` tests are not in the cloud subset; the one
+  point2las-touching cloud test (`ss_pc_align_utm`) regenerates its own gold and compares
+  tolerantly. No cloud regold.
 
 ## Nightly topology & trigger (1 local + 3 CLOUD platforms)
 
