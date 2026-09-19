@@ -62,9 +62,22 @@ hash MISMATCH triggers an INCREMENTAL cmake build (only changed files), so from-
 scratch is rare: a normal VW+ASP build takes ~an hour, but an incremental one is
 minutes. Do not mistake a fast build for "it didn't build" (or vice versa) - VERIFY
 by reading `output_localLinux.txt` (it prints each `Building CXX object`; a clone
-line `Cloning into '.../visionworkbench-git'` means a true from-scratch). done.txt
-is BLIND to conda-deps (asp_deps) changes - see `~/projects/nightly_regression.sh`
-"done.txt skip cache" for that gotcha.
+line `Cloning into '.../visionworkbench-git'` means a true from-scratch).
+
+**Skip nights ship a STALE-dated tarball (harmless, but know it).** On a SKIP no
+compile and no cmake CONFIGURE runs, so make-dist re-packages the UNCHANGED binaries:
+the tarball FILENAME date advances nightly but the binaries' embedded `--version`
+Build date + Build ID stay FROZEN at the last real build. So on a quiet stretch the
+daily tarballs are byte-identical, just re-dated. This is harmless - the code IS the
+latest god/master and `--version` honestly reports the true (older) build date/commit;
+only the filename is optimistic. (Seen 2026-09-19: the 09-13..09-17 daily tarballs all
+reported `Build date 2026-09-12 / ca0d06d6e` because god/master had no new commits in
+that window.) The embedded date is fresh ONLY when a build actually RUNS - because
+`string(TIMESTAMP ASP_BUILD_DATE "%Y-%m-%d" UTC)` at ASP `src/CMakeLists.txt` is
+evaluated at cmake CONFIGURE, and configure runs only when the package is not skipped.
+done.txt is also BLIND to conda-deps (asp_deps) changes - see
+`~/projects/nightly_regression.sh` "done.txt skip cache" for that (real) gotcha: a
+usgscsm/ale respin with unchanged VW/ASP hashes ships binaries linked against OLD deps.
 
 **Force a genuine from-scratch build** (Oleg sometimes insists, to be 100% sure the
 new code is really in the tarball): delete the cache AND the build+install trees,
