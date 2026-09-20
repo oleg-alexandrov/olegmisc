@@ -154,5 +154,6 @@ Refactoring often produces small float noise from evaluation order changes.
 
 ## Reference
 
+- [reference_csm_model_state_format.md](reference_csm_model_state_format.md) - CSM model-state .json is NOT pure JSON (plugin-name header line + JSON); parse by dropping line 1; always check m_distortionType. See csm-models skill.
 - [reference_geodiff_no_csv_datum.md](reference_geodiff_no_csv_datum.md) - geodiff has NO --csv-datum (that is stereo_gui only); silently prints help and exits. Use --csv-format and let the DEM projection set the datum.
 
