@@ -528,7 +528,7 @@ create -> chmod +x source -> rsync -> chmod +x remote -> `ls -la` confirm -> qsu
 
 Every commit MUST include:
 ```
-Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
 ```
 Always use a HEREDOC for commit messages to ensure the trailer is included.
 

@@ -11,6 +11,8 @@ remind user in a day or two to go on with rescale logic plan for ww, so rescale 
 
 ## Recent Projects
 
+`~/projects/ohrc_lronac_align/ohrc_lronac_align_notes.sh` - **OHRC / LRO-NAC co-registration audit** (2026-09-20, Stefano Bertone UMD/GSFC): rigid pose vs internal distortion of Chandrayaan-2 OHRC vs NAC at lunar S pole. Handoff `/nobackupp17/sberton2/OHRC_NAC_handoff_20260918/`. Crux: NAC ref only central 2 km, OHRC 16 km co-centered; quick-look ~8 m near-uniform residual shift in overlap.
+
 `~/projects/sli_fusion/sli_fusion_notes.sh` - **SLI fusion** (2026-06-16, with
 Shashank/sbhusha1). Orthoimage geolocation-assessment tool via ASP ip-matching:
 ref + source orthos -> match points with dx/dy offsets to a GeoPackage (no
