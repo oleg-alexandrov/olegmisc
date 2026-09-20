@@ -5,6 +5,20 @@ description: How to plot/overlay interest-point matches, tie points, or an ASP .
 
 # Plotting interest-point / tie-point matches
 
+## Generating matches when sparse IP fails (dense-from-disparity)
+
+Before plotting, you need matches. Sparse IP (ipfind/ipmatch, or bundle_adjust
+`--ip-per-tile`/`--matches-per-tile`, `--ip-detect-method 1` = SURF) can FAIL between
+radiometrically-different images (e.g. OHRC byte vs NAC reflectance gave 9 garbage
+matches). When the dense CORRELATOR still locks (census `--cost-mode 3`, `--corr-search`
+alone with `--corr-seed-mode 0` is enough), get DENSE matches instead: run
+`parallel_stereo` WITH cameras on the two MAPPROJECTED images + the proper DEM and
+`--num-matches-from-disparity N` - it computes the disparity, samples dense matches on
+the mapproj images, then UNPROJECTS them to the RAW images, writing raw-image matches
+usable by bundle_adjust/jitter_solve even when IP failed. (Doc: bundle_adjustment.rst;
+mechanics in [[bundle-adjust]].) THEN plot those with the house style below.
+
+
 **Trigger:** any request to plot, overlay, show, or sanity-check matches, tie points,
 interest points, a `.match` file, or `.vwip` points on their image(s). Load this BEFORE
 writing plotting code - do not hand-roll a match plot from memory.
