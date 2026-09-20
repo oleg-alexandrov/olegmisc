@@ -44,10 +44,19 @@ notes - the pointer is a promise that the detail exists there.
   (`~/.claude/projects/-Users-oalexan1/memory/MEMORY.md`) too.** They travel together.
 - "Project dir" or "projects dir" means `~/projects`.
 - **Mac and pfe mirror a project at the SAME home-relative path `~/projects/<proj>/...`**
-  (only the home prefix differs: on pfe `~/projects/<proj>` is a symlink to
-  `/nobackupp19/oalexan1/<proj>`; the bytes live on nobackup). So copy back/forth with the
-  SAME relative path, never rename on the fly, and a matching path means the data is in both
-  places. Detail (symlink setup, mirror-the-remote-relative-path rule): the pfe-nas skill.
+  (only the home prefix differs: on pfe, `~/projects` (home6) is the real git-tracked
+  scripts/notes tree, and each project's bulky data dir is a symlink
+  `~/projects/<proj>` -> `/nobackupp19/oalexan1/projects/<proj>`; the bytes live on
+  nobackup UNDER `projects/`). So copy back/forth with the SAME relative path, never
+  rename on the fly, and a matching path means the data is in both places. Detail
+  (symlink setup, mirror-the-remote-relative-path rule): the pfe-nas skill.
+- **EVERY project is a self-contained dir; NOTHING stray outside it.** Every project
+  is a dir under `~/projects` (Mac) mirrored to `/nobackupp19/oalexan1/projects/<proj>`
+  (pfe nobackup) - NEVER a stray top-level dir like `/nobackupp19/oalexan1/<proj>`. A
+  project's data, scripts, and logs ALL live inside its own dir; no loose scripts, data,
+  or logs at the `projects/` root or scattered elsewhere. Scripts are git-added+pushed;
+  logs are transient (wiped after use). If a stray project dir or loose file is found,
+  move it into its project dir (and repoint the pfe home6 symlink to the new location).
 - **NEVER `git commit` or `git push` without explicit instruction.** Show
   what will be committed/pushed and wait for approval. But when told to
   commit or push, do it immediately without hesitation or double-checking.
@@ -644,8 +653,17 @@ literal path, hand Oleg the exact `! <command>` to run, rather than re-issuing i
 
 **Canonical archive/restore/logging policy + recipe: `~/projects/lfe_archive.sh`**
 (reusable tool `~/bin/archive_to_lfe.sh`; DMF `dmls`/`dmget`/`dmput -r`; plain `tar cf`,
-never `-z`). The one rule: LOG EVERY ARCHIVE in that project's own notes, as a running
-inventory near the TOP (tape is invisible otherwise). The archive+wipe WORKFLOW is:
+never `-z`). The one rule: LOG EVERY ARCHIVE **AND EVERY WIPE** in that project's own
+notes, as a running inventory near the TOP (tape is invisible otherwise; a wipe with no
+notes line is unrecoverable-by-memory later). A wipe-log line names what was deleted,
+when, and where it is recoverable from (lfe tape path, or public source + re-fetch
+recipe). **Per-project archive/cleanup scripts live IN the project dir** (git-tracked,
+always `git add`+`push`), never loose at the projects/ root; the script may `cd` into the
+nobackup parent to run, but the file belongs to its project. Only the generic
+`~/projects/archive_to_lfe.sh` tool sits at the root. **LOGS are transient: after the
+archive/wipe is verified and the notes line written, WIPE the `*.log` it produced** (one
+literal path per rm) - no dangling scripts or logs anywhere. Full detail in
+`lfe_archive.sh`. The archive+wipe WORKFLOW is:
 symlink-audit first, prune regenerable intermediates, tar to lfe, VERIFY (tar tf entry
 count == live `find` count, one-file data extract, key members present), `dmput -r` to
 migrate, THEN wipe the /nobackup dir (one literal-path `rm -rf` each; also remove any
