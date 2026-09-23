@@ -74,12 +74,18 @@ later sync cannot re-clobber it. (See machines-tools for the ssh/rsync mechanics
   StereoPipelineTest.tar); their golds are in that tarball, compared TOLERANTLY
   (`max_err.pl`), unlike localLinux's exact diff.
 
-## The zero-tolerance stat-diff trap (local_epi/mapproj DEM tests)
+## The zero-tolerance diff trap (DEM stats and camera adjust files)
 
-Many `validate.sh` do an EXACT `diff` of `gdalinfo -stats` (size, origin, pixel
-size, min/max/mean/stddev, valid_percent). ANY nudge fails them. So a "fail" after
-an intentional stereo/tiling change is EXPECTED and is NOT evidence of a real
-regression. Judge the DEM itself, not the diff.
+Many `validate.sh` do an EXACT `diff` of:
+- `gdalinfo -stats` on DEMs (size, origin, pixel size, min/max/mean/stddev, valid_percent).
+- `.adjust` and `.tsai` camera files in bundle adjust and jitter solve tests.
+
+ANY sub-millimeter shift in camera center, fractional change in rotation, or minor
+regridding nudge fails them. A failure after an intentional solver, triangulation, or
+outlier-filtering update is EXPECTED and is NOT evidence of a real regression. Check
+the initial vs final reprojection errors, residual stats, and camera offsets: when
+residuals improve or remain stable and camera positions agree closely, the test is
+healthy and safe to regold. Judge the underlying geometry and residuals, not the diff.
 
 ## point2las benign LAS drift - regold
 

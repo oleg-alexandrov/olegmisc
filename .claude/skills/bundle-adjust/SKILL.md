@@ -32,6 +32,9 @@ CAMERA_MODEL_TYPE, DEM_FILE) - gdalinfo to confirm. Mapproject all images at ONE
    this one, since it matches the raw image names).
 3. **clean matches** `out/run-<L>__<R>-clean.match` - outlier-filtered raw matches
    (loaded via `--clean-match-files-prefix`). Controlled by `--remove-outliers-params`.
+   Outlier filtering operates per observation: individual bad camera observations
+   are dropped rather than deleting the entire 3D point when >= 2 observations survive.
+   Clean match files exclude any pair where either observation was flagged as an outlier.
 
 Plot match files with the [[match-plot]] skill (red balls, no lines, plot_matches.py).
 
@@ -68,6 +71,15 @@ thousands of matches, full-frame). Measured on KH-7 Vale: ~64k dense raw matches
 images, method 1 gave a few more matches (132 vs 106), both well-distributed; try
 both. `--ip-per-tile` + `--matches-per-tile` (e.g. 1000/1000) force uniform coverage
 across the frame (one tile = 1024^2 px) instead of clustering on high-texture spots.
+
+## Robust median tie-point triangulation (multi-camera)
+
+When a tie point is observed by 3 or more cameras (>= 2 ray pairs), initial
+triangulation combines pairwise ray intersections using the component-wise median
+rather than the arithmetic mean. The median has a ~50% breakdown point per axis,
+preventing a single camera with an erroneous initial pose from dragging the
+initial 3D point off the consensus of the good rays. For a 2-camera point, this
+reduces to the single pair's triangulation unchanged.
 
 ## Related
 [[dem-comparison]] (dem2gcp -> GCP from the ours-vs-ref disparity; census cost-mode 3),
