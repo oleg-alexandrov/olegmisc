@@ -1,6 +1,7 @@
 ---
 name: gdal-rasters
-description: GDAL command-line raster handling and its sharp edges - gdalwarp/gdal_translate/gdalinfo mechanics for cropping, resampling, reprojecting, warping two rasters to a common grid, nodata masking, and turning a float raster into an 8-bit PNG quick-look. Carries the hard-won gotchas: never hardcode -srcnodata (let GDAL read it, or an unmasked nodata gets smeared by cubic resampling and blows up min/max = "washed out"), a float GeoTIFF needs NO normalization, always gdalinfo -mm/-stats a produced raster, and the PROJ/GDAL_DATA env needed for -t_srs. Load before any gdalwarp/gdal_translate/gdalinfo/gdaldem work, cropping or regridding a GeoTIFF, making a PNG from a raster, or when a raster looks washed out / flat / wrong. Complements visual-inspection (eyeballing/overlays) and asp-photogrammetry (ASP tools).
+description: >-
+  GDAL command-line raster handling and its sharp edges - gdalwarp/gdal_translate/gdalinfo mechanics for cropping, resampling, reprojecting, warping two rasters to a common grid, nodata masking, and turning a float raster into an 8-bit PNG quick-look. Carries the hard-won gotchas: never hardcode -srcnodata (let GDAL read it, or an unmasked nodata gets smeared by cubic resampling and blows up min/max = "washed out"), a float GeoTIFF needs NO normalization, always gdalinfo -mm/-stats a produced raster, and the PROJ/GDAL_DATA env needed for -t_srs. Load before any gdalwarp/gdal_translate/gdalinfo/gdaldem work, cropping or regridding a GeoTIFF, making a PNG from a raster, or when a raster looks washed out / flat / wrong. Complements visual-inspection (eyeballing/overlays) and asp-photogrammetry (ASP tools).
 ---
 
 ## The #1 gotcha: nodata + resampling = "washed out" (READ FIRST)

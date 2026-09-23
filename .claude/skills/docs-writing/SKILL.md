@@ -1,6 +1,7 @@
 ---
 name: docs-writing
-description: Documentation and prose writing - building/compiling ASP docs (sphinx, make html) and checking a doc build for warnings, RST formatting and :ref: vs :numref:, citing papers, NEWS.rst conventions, the say-once/short-sentence/words-to-avoid writing style, commit-message style, and how to show diffs. Load before building, compiling, or checking the ASP docs (sphinx-build / make html), or before writing or editing RST docs, NEWS entries, commit messages, PR/issue text, or any prose.
+description: >-
+  Documentation and prose writing - building/compiling ASP docs (sphinx, make html) and checking a doc build for warnings, RST formatting and :ref: vs :numref:, citing papers, NEWS.rst conventions, the say-once/short-sentence/words-to-avoid writing style, commit-message style, and how to show diffs. Load before building, compiling, or checking the ASP docs (sphinx-build / make html), or before writing or editing RST docs, NEWS entries, commit messages, PR/issue text, or any prose.
 ---
 
 ## Displaying Diffs and Changes
