@@ -133,3 +133,22 @@ and a short timeout kills it before auth completes (another false-negative sourc
 To diagnose an ssh that "hangs", run `ssh -v <host> true` and read the auth lines
 (`Offering public key`, `Authenticated ... using "publickey"`, or `Permission denied
 (...keyboard-interactive)`) rather than guessing.
+
+## Running Non-Interactive Commands on l1 (Environment & ISIS Setup)
+
+When executing remote commands on `l1` via `ssh l1 '<cmd>'`, bash runs
+non-interactively without `$PS1`. Line 1 of `/home/oalexan1/.bashrc` on `l1` is:
+```bash
+[ -z "$PS1" ] && return # to not confuse scp and rsync
+```
+Because of this early return, `.bashrc` exits immediately: conda is not activated,
+`ISISROOT`, `ISISDATA`, and `PROJ_DATA` remain unset, and `StereoPipeline/install/bin`
+is missing from `PATH`.
+
+The full environment is defined in `/home/oalexan1/.bashenv`. Always prepend
+`source ~/.bashenv && ...` to any remote command requiring ASP tools, ISIS, GDAL,
+or python:
+```bash
+ssh l1 'source ~/.bashenv && <cmd>' 2>/dev/null
+```
+Combining with `2>/dev/null` drops the login banner while keeping stdout clean.

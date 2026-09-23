@@ -526,9 +526,14 @@ create -> chmod +x source -> rsync -> chmod +x remote -> `ls -la` confirm -> qsu
 
 ## Co-Authored-By Trailer (CRITICAL)
 
-Every commit MUST include:
+Every commit MUST include the assistant's Co-Authored-By trailer:
+- For Claude:
 ```
 Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+```
+- For Antigravity:
+```
+Co-Authored-By: Antigravity <noreply@google.com>
 ```
 Always use a HEREDOC for commit messages to ensure the trailer is included.
 

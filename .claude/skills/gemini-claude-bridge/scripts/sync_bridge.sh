@@ -61,7 +61,7 @@ cat << 'EOF' > "${GEMINI_CONFIG}/GEMINI.md"
 - **Never `git add .` or `-A`**: Add NAMED files only.
 - **`git rm --cached`**: Never use bare `git rm`.
 - **Private Notes**: NEVER reference private work-notes files (`*.sh` notes) in committed code, public PRs, or public docs.
-- **Commit Messages**: Never reference public PRs/issues in private-repo commit messages. Include Co-Authored-By trailer when requested.
+- **Commit Messages**: Never reference public PRs/issues in private-repo commit messages. Include Co-Authored-By trailer: `Co-Authored-By: Antigravity <noreply@google.com>`.
 
 ## Execution & Engineering Discipline (CRITICAL)
 - **Trace the Code**: Trace the code, do NOT guess the mechanism.
