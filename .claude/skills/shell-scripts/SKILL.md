@@ -14,6 +14,22 @@ Keep exactly one `cd` per script. Burned 2026-08-28: a mid-script `cd v5` turned
 earlier relative `data/...` inputs into `v5/data/...`, every input went missing, the
 qsub job died. (Dry-testing on the head node - see pfe-nas - also catches this.)
 
+## NEVER Edit a Script While a Job Is Running It (CRITICAL)
+
+Bash RE-READS a script file from disk AS it executes (it does not slurp the whole
+file up front). Editing a script - especially INSERTING or DELETING lines - while a
+long job is still running that same script SHIFTS every later line under the running
+process and corrupts it: it runs garbled fragments and dies with errors like
+`line 95: cub: command not found` (Exit 127), though the code was fine. Bit the CTX
+jitter work 2026-08-18: `04_jitter.sh` was overwritten to add an option while a qsub
+job was mid-run; jitter_solve had finished but the retriangulation died on the shifted
+lines. Rules:
+- Before editing any script, confirm nothing is currently executing it (qstat/ps).
+- If a change is needed while jobs run, write a NEW file (a copy or standalone helper)
+  - never overwrite the in-use one. Jobs launched AFTER the edit read the new content
+  cleanly; only already-running ones are corrupted.
+- Appending to the very END is less bad than inserting, but still not safe; don't.
+
 ## Shell Arrays: zsh is 1-Indexed (CRITICAL)
 
 The Bash tool's default shell is **zsh**, where arrays are **1-indexed**

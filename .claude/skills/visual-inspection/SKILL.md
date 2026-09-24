@@ -199,6 +199,14 @@ correspondence lines - both wrong; the "no lines" part was previously only impli
   colormap's min be black). Not magma, not viridis - plasma.
 - **Signed** (dz, dh, before-minus-after, DEM-minus-ref): **`RdBu_r`** (blue negative,
   white zero, red positive), **symmetric clamp** about 0.
+- **Within ONE document/report, keep ONE fixed subtraction order and ONE fixed colour
+  polarity - never flip it mid-way** (Oleg gets confused). Pick the document's
+  convention up front and hold it for every panel. (The prior CTX-Jezero artifact used
+  [evaluated - reference] with BLUE = evaluated ABOVE reference, i.e. plain `RdBu` blue
+  at +vmax; that per-document choice can differ from the `RdBu_r` default above -
+  consistency within the document wins.) Do NOT add an artificial vertical shift to make
+  a diff look nicer, and do NOT claim a specific datum cause (areoid, geoid) unless
+  actually verified.
 - **nodata = BLACK** for every colorized plot (`cmap.set_bad("black")`, nodata->NaN),
   so it reads as "not covered", distinct from real low values.
 - **STAT the raster BEFORE plotting - never assume a value range.** ASP orthoimages

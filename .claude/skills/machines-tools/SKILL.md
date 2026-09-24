@@ -11,7 +11,12 @@ description: Machine map and local tooling - the l1/Mac mini/pfe/Athena boxes wi
 - **Mac mini** (`ssh mac_arm`) - notes/docs machine + secondary build. The alias
   is defined in `~/.ssh/config` as `HostName localhost`, `Port 3079`,
   `ProxyJump pfx`, and works non-interactively - just use `ssh mac_arm '<cmd>'`
-  directly; do NOT grep `~/.ssh/config` to rediscover it. It mirrors Oleg's repos
+  directly; do NOT grep `~/.ssh/config` to rediscover it. **NEVER run heavy compute
+  on the Mac mini** (repeatedly burned): it is a notes/light + build box, NOT a
+  compute node. It OOMs under real compute and the whole session wedges - nothing
+  finishes. Any script that invokes `parallel_stereo`/`stereo`/`bundle_adjust`
+  (or correlation) in any non-trivial way must NOT run here - send it to pfe (qsub)
+  or l1. Compiling and light C++ testing here is fine; running real stereo is not. It mirrors Oleg's repos
   at the same paths as l1 (`~/projects/StereoPipeline`, `~/projects/StereoPipelineTest`,
   etc.; ASP remotes `god`=org, `origin`=fork), so it is the place to check what a
   Mac-side bot committed/pushed. It has a
