@@ -9,8 +9,9 @@ this file AND the relevant skill / notes file it points to (build flags, gotchas
 recovery playbooks). A pointer here is a promise the detail exists there - read it
 rather than rediscovering the same problems.
 
-- **ISIS3 build/test/run**: `~/projects/isis_2026/isis_2026_notes.sh` (canonical). One
-  rule without reading: always activate `isis_dev` for ISIS, never `asp_deps`.
+- **ISIS3 build/test/run**: invoke the **[[build-env]]** skill (covers the ISIS ninja
+  build/test); deep reference `~/projects/isis_2026/isis_2026_notes.sh`. One rule without
+  reading either: always activate `isis_dev` for ISIS, never `asp_deps`.
 - **On ANY context compaction/summary OR session resurrection, STOP and re-read the
   active project's notes file top-to-bottom BEFORE acting** - never resume from stale
   summarized memory. During autonomous runs, LOG COPIOUSLY and IMMEDIATELY (each step:
@@ -32,6 +33,12 @@ rather than rediscovering the same problems.
   (`X_mask.tif`, `X_hs.tif`, `X_map.tif`, `X_err.tif`), in the SAME directory as the
   source; chain suffixes in operation order (`_filled_blur`). Detail: asp-photogrammetry.
 - When Oleg says to "remember" something, add it to the relevant skill or this file.
+- **Convention: core reusable knowledge lives in a SKILL - invoke it, don't reach for a
+  `.sh` note.** Skills are the first stop for cross-project how-to (build, photogrammetry,
+  git, pfe, etc.). `.sh` notes in `~/projects/` are for PER-PROJECT work logs and paper
+  trails, plus DEEP/exhaustive reference a skill points to. When a `.sh` holds core
+  knowledge with no skill home, that is a signal to propose a skill (or fold it into an
+  existing one), not to keep growing the `.sh`.
 - **Project work notes go in `~/projects/` as comment-only `.sh` files** (tracked by the
   projects repo), NOT in `.claude/` memory. `.claude/` memory is only for cross-project
   patterns and preferences.
@@ -88,7 +95,7 @@ rather than rediscovering the same problems.
 - **In the home repo (`~`, olegmisc): add ONE NAMED path at a time - never `git add .`
   / `-A` / `-u` / a dir** (it leaks `.ssh/`, `.credentials.json`, `.bash_history`).
   Inspect the staged set before every commit. Sync with `git pull --rebase --autostash`.
-  Detail: `~/projects/git_notes.sh`.
+  Detail: **[[repo-sync]]** / **[[git-repos]]** (deep reference `~/projects/git_notes.sh`).
 - **NEVER add binary/data files without explicit permission** (.cub, .tif, .img, large
   .json, .bsp, .bc, .ply, .lbl, .dat, anything over ~100 KB). Only text/source belongs.
 - **TEST DATA IS NEVER COMMITTED - do not even ask.** Regression `gold/`/`run/` dirs and
@@ -212,7 +219,8 @@ Co-Authored-By: Antigravity <noreply@google.com>
   Detail: pfe-nas, `~/projects/file_cleanup_notes.sh`.
 - **Tape archive (lfe): LOG EVERY ARCHIVE AND EVERY WIPE** in that project's own notes
   (a running inventory at the top). Verify keepers are on tape before deleting. Policy +
-  recipe: `~/projects/lfe_archive.sh`; per-project scripts live in the project dir.
+  recipe: **[[pfe-nas]]** (deep reference `~/projects/lfe_archive.sh`); per-project scripts
+  live in the project dir.
 - **NEVER delete `~/projects/isis3data/` (179 GB kernels) or `~/projects/isis_test_data/`
   (~19 GB `$ISISTESTDATA`) without explicit permission** - both are in active use and
   slow to re-fetch, and look like stale bulk data in a cleanup pass.
