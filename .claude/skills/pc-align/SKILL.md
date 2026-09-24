@@ -11,6 +11,11 @@ than one** and INSPECT the result (never trust the reported error alone). See
 worked example), viking.rst, cassis.rst.
 
 ## Always first: put both on ONE common grid, then hillshade + eyeball
+`pc_align <reference> <source>` aligns the SOURCE (2nd arg) onto the REFERENCE (1st arg),
+and the DENSER cloud MUST be the FIRST (reference) arg for ICP quality. So a dense ASP DEM
+aligned to a coarse truth (e.g. an 18 m CTX DEM vs a 200 m HRSC/MOLA ref) goes FIRST, the
+coarse truth SECOND - the opposite of the "align my DEM to the reference" mental model.
+(This decides which transform to apply to cameras below - see the direction footgun.)
 Regrid ref and source to the SAME proj/extent/resolution (coarser of the two);
 `gdalwarp -r cubicspline` (or `-r average` when downsampling). The reference should extend
 BEYOND the source so a shift has room. Hillshade both (`gdaldem hillshade -multidirectional
@@ -57,10 +62,26 @@ BOTH and compare the after-align dz/dh/dv.
   the aligned cloud is shifted; let point2dem set the extent, or use the ref's extent only if
   you know it still covers the cloud). Then geodiff/hillshade-correlate vs the ref to confirm
   the offset shrank (SDB: dz mean 26.3 -> 0.03 m).
-- To CAMERAS: `<pfx>-transform.txt` is the 4x4; feed it to `bundle_adjust
-  --initial-transform ... --apply-initial-transform-only` (:numref:`ba_pc_align`) to move the
-  cameras, then RE-mapproject + REDO stereo. NEVER pc_align between BA stages in the camera
-  pipeline (spoils horizontal - a hard CaSSIS lesson); pc_align-for-evaluation is fine.
+- To CAMERAS: feed the transform to `bundle_adjust --initial-transform ...
+  --apply-initial-transform-only --inline-adjustments` (:numref:`ba_pc_align`) to move the
+  cameras (it emits baked `adjusted_state.json` - use those directly, see [[bundle-adjust]]),
+  then RE-mapproject + REDO stereo. DIRECTION FOOTGUN: when the REF (denser) is pc_align's
+  FIRST arg apply `run-transform.txt`; if the order is reversed (your cloud first) apply
+  `run-inverse-transform.txt`. ALWAYS VALIDATE, never trust the rule blind - geodiff
+  pc_align's `run-trans_source` (exactly what the aligned cameras triangulate) vs the ref;
+  the median must collapse to ~0. If it doubled, use the other transform. NEVER pc_align
+  between BA stages in the camera pipeline (spoils horizontal - a hard CaSSIS lesson);
+  pc_align-for-evaluation is fine.
+- SEAT BA cameras on a ref DEM without re-solving (remove a residual camera-vs-ground
+  offset): read the offset by geodiff-ing `run-final_residuals_pointmap.csv` vs the ref
+  (`--csv-format '1:lon 2:lat 3:height_above_datum'`; heights are ELLIPSOIDAL above the datum
+  - mind the geoid, e.g. Florida sea level ~ -25 m, so a LAND filter is `height > ~-24 m`,
+  not `>0`, so refracted/underwater points don't bias the shift), then pc_align the
+  land-filtered pointmap onto the ref with `--compute-translation-only` (a pure shift can't
+  introduce a spurious tilt) + `--max-displacement`, and apply the transform to the cameras
+  as above. DOWNSAMPLE the ref DEM first (`gdal_translate -tr`) - a DEM reference loads as a
+  full point cloud (slow, RAM-heavy); NEVER run pc_align on a pfe login node (it crawled at
+  0% loading a 260M-pt DEM there).
 
 ## Failure modes + fixes (distilled)
 - Flat/low-texture hillshades -> IP-seeded correlation fails ("Number of IPs left ... 5");

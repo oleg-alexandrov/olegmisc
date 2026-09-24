@@ -78,7 +78,12 @@ dir. On pfe the reliable ones (call gdal by absolute path or put its bin on PATH
   (GDAL/PROJ wired inside; but its `share/proj` has been missing - if so use the
   ASP bundle share above).
 - On the Mac: `conda activate asp_deps`.
-Set both `PROJ_DATA` and `PROJ_LIB` (GDAL/PROJ versions disagree on which).
+Set both `PROJ_DATA` and `PROJ_LIB` (GDAL/PROJ versions disagree on which). TREAT THE
+WARNING AS A HARD STOP, never cosmetic: even when a same-CRS op survives, any
+`-t_srs`/reproject/geodiff-across-datums/mapproject then produces subtly WRONG georef that
+is hard to catch downstream (it shipped a broken result once and Oleg had to catch it). Fix
+the env and re-run; after any warp/mask/image_calc verify the output still carries the right
+CRS (`gdalinfo | grep -E "PROJCRS|Origin|Pixel Size"`).
 
 ## Head-node hygiene (pfe/Athena)
 
