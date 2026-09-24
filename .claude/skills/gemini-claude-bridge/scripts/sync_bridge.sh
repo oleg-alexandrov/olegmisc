@@ -20,7 +20,7 @@ fi
 mkdir -p "${GEMINI_CONFIG}"
 
 echo "Linking skills directory..."
-ln -sf "${CLAUDE_DIR}/skills" "${GEMINI_CONFIG}/skills"
+ln -sfn "${CLAUDE_DIR}/skills" "${GEMINI_CONFIG}/skills"
 
 echo "Writing skills.json..."
 cat << 'EOF' > "${GEMINI_CONFIG}/skills.json"
