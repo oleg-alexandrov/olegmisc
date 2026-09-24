@@ -239,33 +239,20 @@ warnings traced to conda deps built for the host OS floor instead of the
 intended 11.0 floor. Even cosmetic warnings deserve a one-line "this is
 harmless because X" rather than silence.
 
-## ISIS Builds Use Ninja, Not Make (CRITICAL - stop rediscovering this)
+## ISIS builds/tests -> see the isis-build skill
 
-ISIS3 build uses **Ninja**, not make: `ninja -j8 install` from the build dir
-(`make install` errors). CMake source root is `ISIS3/isis` (`cmake ../isis`), not
-the repo root. To build libs+apps without tests you MUST set `-DBUILD_CORE_TESTS=OFF`
-(`-DBUILD_TESTING=OFF`/`-DbuildTests=OFF` alone are insufficient - gtest still
-fails to link). Building with tests needs the gtest submodule
-(`git -C ~/projects/ISIS3 submodule update --init --recursive`) and `ISISROOT`
-set (discovery runs the test binary at build time). Full flags and gotchas:
-`~/projects/isis_2026/isis_2026_notes.sh`; also
-`~/projects/isis_mapproject/isis_mapproject_notes.sh` and `~/projects/env_update.sh`.
+ISIS3 builds with **Ninja** (`ninja -j install` from the build dir; `make install`
+errors; source root `ISIS3/isis`, not the repo root), in the `isis_dev` env, NEVER
+`asp_deps`. The full recipe, cmake flags (the `-DBUILD_CORE_TESTS=OFF` etc. non-test
+build), the run-ONE-gtest loop (`runISISTests`, not `runTests`), the two `ISISROOT`
+values, the ninja-install deadlock + PRE_TEST fix, and the run-time GUI/gh gotchas are
+all in **[[isis-build]]** (deep reference `~/projects/isis_2026/isis_2026_notes.sh`).
 
-**Run ONE ISIS gtest (fast dev loop).** The gtest sources in `isis/tests/*.cpp`
-compile into a single binary target `runISISTests` (NOT `runTests`). Rebuild lib +
-that binary, then filter: `ninja -j8 install runISISTests` then
-`./tests/runISISTests --gtest_filter='CSMSerialNumber.*'` (from the build dir, with
-`ISISROOT`/`ISISDATA`/`ISISTESTDATA` set). ALWAYS `ninja install` before running -
-the test binary rpath-loads libisis from the conda env, so without install your edit
-runs against the STALE env lib and the test appears unchanged. To confirm a code path
-is actually hit, drop a temp `std::cerr << "..."` (add `#include <iostream>`), build,
-run the one test, verify it fires, then strip it and rebuild before committing.
-
-**NEVER install a coverage-instrumented ISIS into `asp_deps` (CRITICAL).** Always
-build `-DbuildCoverage=OFF`. Coverage instruments the WHOLE ISIS lib set (~142 libs:
-libisis ~676 MB plus every mission/camera/projection plugin `.so`, all with baked
-`.gcda` paths). Any that get bundled into the ASP nightly HANG ASP tools for minutes
-at exit on pfe/Athena (libisis hangs all tools, plugin libs hang on demand). After any
-ISIS build verify no ISIS lib is dirty: `cd $CONDA_PREFIX/lib; for f in lib*.so; do
-strings $f|grep -q '\.gcda' && echo DIRTY $f; done` (prints nothing; libisis ~26 MB not
-~676 MB). Full incident, fix, and `GCOV_PREFIX=/tmp` workaround: `~/projects/isis_2026/isis_2026_notes.sh`.
+**Packaging safety (keep here): a coverage-instrumented ISIS must NEVER reach `asp_deps`
+(CRITICAL).** Coverage instruments the WHOLE ISIS lib set (~142 libs: libisis ~676 MB plus
+every mission/camera/projection plugin `.so`, all with baked `.gcda`), and any that get
+bundled into the ASP nightly HANG every ASP tool for minutes at exit on pfe/Athena. Always
+build `-DbuildCoverage=OFF`, and after ANY ISIS build verify no lib is dirty:
+`cd $CONDA_PREFIX/lib; for f in lib*.so; do strings $f|grep -q '\.gcda' && echo DIRTY $f;
+done` (prints nothing; libisis ~26 MB not ~676 MB). Incident + `GCOV_PREFIX=/tmp` workaround:
+**[[isis-build]]**.

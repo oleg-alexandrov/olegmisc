@@ -9,9 +9,9 @@ this file AND the relevant skill / notes file it points to (build flags, gotchas
 recovery playbooks). A pointer here is a promise the detail exists there - read it
 rather than rediscovering the same problems.
 
-- **ISIS3 build/test/run**: invoke the **[[build-env]]** skill (covers the ISIS ninja
-  build/test); deep reference `~/projects/isis_2026/isis_2026_notes.sh`. One rule without
-  reading either: always activate `isis_dev` for ISIS, never `asp_deps`.
+- **ISIS3 build/test/run**: invoke the **[[isis-build]]** skill; deep reference
+  `~/projects/isis_2026/isis_2026_notes.sh`. One rule without reading either: always
+  activate `isis_dev` for ISIS, never `asp_deps`.
 - **On ANY context compaction/summary OR session resurrection, STOP and re-read the
   active project's notes file top-to-bottom BEFORE acting** - never resume from stale
   summarized memory. During autonomous runs, LOG COPIOUSLY and IMMEDIATELY (each step:
