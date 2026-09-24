@@ -22,7 +22,7 @@ notes - the pointer is a promise that the detail exists there.
 - **NEVER create a file whose name starts with an underscore (`_`).** Not scratch
   figures, not temp rasters, not anything - ever. Use a plain descriptive name
   (`step0_contact.png`, `mp_on_hs_tmp.tif`), never a leading `_`. Applies everywhere.
-- When Oleg says to "remember" something, add it to this CLAUDE.md file.
+- When Oleg says to "remember" something, add it to relevant skill or this CLAUDE.md file.
 - **Project work notes go in `~/projects/`, NOT in `.claude/` memory files.**
   Use `.sh` files (comment-only) in `~/projects/` so they're tracked by the
   projects repo. The `.claude/` memory is only for cross-project patterns
@@ -319,6 +319,12 @@ files. Two more standing duties:
   merging two overlapping skills, splitting one that has grown too broad, renaming,
   re-scoping a description, or retiring a stale one - FLAG it and suggest the change.
   I own noticing this; Oleg approves the restructuring.
+
+### Dual Assistant (Claude & Antigravity) Skill Sharing
+- Skills live canonically in `~/.claude/skills/*/SKILL.md`.
+- Antigravity links to this directory via symlink `~/.gemini/config/skills` and index `~/.gemini/config/skills.json`.
+- Modifying an existing skill: edit directly in `~/.claude/skills/*/SKILL.md`. Both assistants see changes immediately.
+- Adding a new skill: create `~/.claude/skills/<skill-name>/SKILL.md` (ensure valid YAML frontmatter with folded block scalar `description: >-`), then run `~/.claude/skills/gemini-claude-bridge/scripts/sync_bridge.sh` to update `skills.json` and verify frontmatter across all skills.
 
 ## User Interaction
 

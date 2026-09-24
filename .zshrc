@@ -177,3 +177,7 @@ fi
 
 # Disable Claude Code periodic feedback survey prompts
 export CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1
+
+
+# Added by Antigravity CLI installer
+export PATH="/Users/oalexan1/.local/bin:$PATH"

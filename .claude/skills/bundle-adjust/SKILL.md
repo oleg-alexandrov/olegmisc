@@ -65,12 +65,13 @@ thousands of matches, full-frame). Measured on KH-7 Vale: ~64k dense raw matches
   (both draped on COP look similar), FAR better than the warped DEM's hillshade
   (which gave only ~50 dem2gcp GCP). Prefer image-space dense matches over DEM-space.
 
-## ip-detect-method 0 vs 1
+## ip-detect-method 0 vs 1 (OBALoG vs SIFT under varied illumination)
 
-`--ip-detect-method 0` = OBALoG (ASP's own), `1` = SIFT/OpenCV. On KH-7 Vale mapproj
-images, method 1 gave a few more matches (132 vs 106), both well-distributed; try
-both. `--ip-per-tile` + `--matches-per-tile` (e.g. 1000/1000) force uniform coverage
-across the frame (one tile = 1024^2 px) instead of clustering on high-texture spots.
+`--ip-detect-method 0` = OBALoG (ASP's native detector), `1` = OpenCV SIFT.
+- On historical terrestrial / KH-7 Vale mapproj images, method 1 gave slightly more matches (132 vs 106), both well-distributed.
+- CRITICAL FINDING (OHRC / LRO NAC lunar linescans): under low-sun, grazing illumination, or subtle cross-illumination differences, SIFT (`1`) severely under-matches or starves pairs (often 7 to 38 raw matches, 0 clean matches), falsely making healthy frames look like unmatchable "junk" or "poisoning" the network. In contrast, OBALoG (`0`, with ASP's image normalization) yielded 8,000 to 11,000 matches uniformly across every pair, solving cleanly to sub-pixel (<0.5 px) reprojection.
+- RULE: For planetary, shadow-dominated, low-contrast, or varying illumination imagery, prefer `--ip-detect-method 0` (OBALoG).
+- `--ip-per-tile` + `--matches-per-tile` (e.g. 1000/1000 or 2000/1000) force uniform coverage across the frame (one tile = 1024^2 px) instead of clustering on high-texture spots.
 
 ## Robust median tie-point triangulation (multi-camera)
 

@@ -8,3 +8,7 @@ if [ "$do_switch" != "" ] && [ "$shell" = "" ]; then
 fi
 
 if [ -f ~/.bashrc ]; then source ~/.bashrc; fi
+
+
+# Added by Antigravity CLI installer
+export PATH="/Users/oalexan1/.local/bin:$PATH"

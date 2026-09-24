@@ -626,3 +626,7 @@ if [ -f ~/.unaliases ]; then source ~/.unaliases; fi
 # Aliases
 if [ -f ~/.bash_aliases ]; then source ~/.bash_aliases; fi
 
+
+
+# Added by Antigravity CLI installer
+export PATH="/Users/oalexan1/.local/bin:$PATH"
