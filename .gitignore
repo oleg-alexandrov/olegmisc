@@ -1,3 +1,72 @@
-.Trash/
+# Ignore all files and directories by default
+/*
+
+# Root dotfiles and configuration
+!/.gitignore
+!/.bash*
+!/.zshrc
+!/.zshenv
+!/.zsh_colors
+!/.vimrc
+!/.screenrc
+!/.tkdiffrc
+!/.gdbinit
+!/.xsession
+
+# Specific subdirectories we care for
+!/bin/
+!/.claude/
+!/.config/
+!/.vim/
+!/.vscode/
+!/.emacs.d/
+!/.fvwm/
+!/.xemacs/
+!/.Isis/
+!/Library/
+
+# In .config, ignore untracked tool configs/keys
+/.config/*
+!/.config/Code/
+!/.config/git/
+!/.config/karabiner/
+/.config/karabiner/*
+!/.config/karabiner/karabiner.json
+
+# In .vscode, ignore installed extensions
+/.vscode/*
+!/.vscode/*.json
+!/.vscode/*.code-snippets
+
+# In .Isis, ignore cache/gui history
+/.Isis/*
+!/.Isis/IsisPreferences
+
+# In Library, ignore everything except VS Code settings
+/Library/*
+!/Library/Application Support/
+/Library/Application Support/*
+!/Library/Application Support/Code/
+/Library/Application Support/Code/*
+!/Library/Application Support/Code/User/
+/Library/Application Support/Code/User/*
+!/Library/Application Support/Code/User/keybindings.json
+!/Library/Application Support/Code/User/settings.json
+
+
+# Inside .claude, ignore session logs, cache, backups, daemon, and runtime data
+/.claude/*
+!/.claude/CLAUDE.md
+!/.claude/settings.json
+!/.claude/hooks/
+!/.claude/skills/
+!/.claude/projects/
+/.claude/projects/*
+!/.claude/projects/-Users-oalexan1/
+/.claude/projects/-Users-oalexan1/*
+!/.claude/projects/-Users-oalexan1/memory/
+
+# Ignore netrw history and transient files
 .vim/.netrwhist
-.ssh/
+/.bash_history
+/.claude.json

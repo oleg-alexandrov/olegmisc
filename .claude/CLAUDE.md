@@ -77,9 +77,11 @@ rather than rediscovering the same problems.
 - **NO inline backticks in ANY GitHub prose** (PR body, issue, comment, review, commit
   message): set identifiers/filenames/flags/paths in *italics* with single asterisks.
   Backticks appear ONLY in a standalone fenced code block, never in a running sentence.
-- The em-dash ban and this backtick ban are the two always-on GitHub prose rules; apply
-  both reflexively before any `gh pr`/`gh issue`/`gh api` write. Writing GitHub text is
-  itself the trigger to load github-issues for the rest of its rules.
+- **Flowing paragraphs in GitHub prose**: write paragraphs as continuous single lines
+  without manual line breaks or hard wrapping. Let the markdown renderer wrap.
+- The em-dash ban, flowing-paragraph rule, and backtick ban are the always-on GitHub prose
+  rules; apply them reflexively before any `gh pr`/`gh issue`/`gh api` write. Writing GitHub
+  text is itself the trigger to load github-issues for the rest of its rules.
 - **`gh` CLI and GraphQL breakage**: `gh` lives in `~/anaconda3/envs/gh/bin/gh` (Mac) or
   `~/miniconda3/envs/gh/bin/gh` (l1), never bare `gh`. NEVER run `gh issue view`, `gh pr view`,
   or `gh pr edit` (they fail on a deprecated Projects-classic GraphQL query). ALWAYS use the
