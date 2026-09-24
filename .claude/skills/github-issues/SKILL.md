@@ -55,14 +55,15 @@ the rationale inline.
 
 ## AI attribution
 
+The assistant must self-inspect its identity before claiming who it is. Do NOT claim to be Claude when running as Antigravity, or vice versa. Check your environment and system identity:
+- If running as Antigravity: attribute as Antigravity (e.g. *Reported with Antigravity/AI assistance.* or *Done with Antigravity/AI assistance.*).
+- If running as Claude: attribute as Claude (e.g. *Reported with Claude/AI assistance.* or *Done with Claude/AI assistance.*).
+
 End with a single plain line, with no horizontal rule above it:
 
-    Reported with Claude/AI assistance.
+    Reported with <BotName>/AI assistance.
 
-Use "Done with Claude/AI assistance." for a PR. Describe only the bot. Never mention
-the user's hour, schedule, or circumstances. Use one disclaimer per issue or PR, in
-the body, not repeated on every comment. For DOI-USGS repos such as ISIS3, usgscsm,
-and ale this attribution is welcome and expected.
+Use "Done with <BotName>/AI assistance." for a PR or completed implementation. Describe only the bot. Never mention the user's hour, schedule, or circumstances. Use one disclaimer per issue or PR, in the body, not repeated on every comment. For DOI-USGS repos such as ISIS3, usgscsm, and ale this attribution is welcome and expected.
 
 ## Guess the PR number in changelog entries, do not two-step
 
@@ -74,17 +75,64 @@ number is usually max(latest PR number, latest issue number) plus 1. We are usua
 right. After the PR opens, VERIFY the number it actually got and correct the entry
 if the guess was wrong.
 
-## Filing mechanics
+## Filing mechanics and GitHub CLI (gh) gotchas
 
 The gh CLI is not on PATH. Use the full path and target the correct repo. See the
-git-repos skill for the gh path. File against the upstream repo, for example
-DOI-USGS/ISIS3, not a fork. Write the body to a file and pass it with --body-file so
-the formatting survives.
+git-repos skill for the gh path:
+- Mac mini:  `/Users/oalexan1/anaconda3/envs/gh/bin/gh`
+- lunokhod1: `/home/oalexan1/miniconda3/envs/gh/bin/gh`
 
-Editing a PR body: `gh pr edit <n> -R <repo> --body-file <file>` can SILENTLY FAIL
-to apply on repos that still have Projects (classic). It aborts on a GraphQL
-"Projects (classic) is being deprecated" error and leaves the body unchanged.
-Always verify the body after editing. If it did not take, update via the REST API,
-which does not touch the Projects path:
-`gh api -X PATCH repos/<owner>/<repo>/pulls/<n> -F body=@<file>`. The same REST
-fallback works for issues (`.../issues/<n>`).
+File against the upstream repo, for example DOI-USGS/ISIS3, not a fork. Write the body
+to a file and pass it with --body-file so the formatting survives.
+
+### CRITICAL: GraphQL Projects (classic) deprecation error
+
+`gh issue view`, `gh pr view`, and `gh pr edit` ALL hit the deprecated GraphQL
+"Projects (classic)" query and FAIL on almost every repo (NeoGeographyToolkit,
+DOI-USGS, etc.) with:
+`GraphQL: Projects (classic) is being deprecated in favor of the new Projects experience...`
+
+- **NEVER run `gh issue view` or `gh pr view`**: They consistently fail on this GraphQL error.
+- **NEVER run `gh pr edit`**: It either fails explicitly or exits 0 while silently leaving the body unchanged.
+- **ALWAYS use the REST API (`gh api`)** for viewing, editing, commenting, or closing issues and PRs.
+
+### Canonical `gh api` REST recipes
+
+1. **View an issue**:
+   ```bash
+   $gh api repos/OWNER/REPO/issues/NUM --jq '{title, body, state, state_reason, comments}'
+   ```
+
+2. **View a PR**:
+   ```bash
+   $gh api repos/OWNER/REPO/pulls/NUM --jq '{title, body, state}'
+   ```
+
+3. **View comments on an issue/PR**:
+   ```bash
+   $gh api repos/OWNER/REPO/issues/NUM/comments --jq '.[].body'
+   ```
+
+4. **Edit an issue or PR body/title**:
+   ```bash
+   jq -n --rawfile body /path/to/body.md '{body:$body}' | \
+     $gh api --method PATCH repos/OWNER/REPO/issues/NUM --input -
+   ```
+
+5. **Post a comment** (send as JSON via `--input` or stdin, NEVER with `-f body=@file`):
+   ```bash
+   jq -n --rawfile body /path/to/comment.md '{body:$body}' | \
+   $gh api --method POST repos/OWNER/REPO/issues/NUM/comments --input -
+   ```
+   **CRITICAL GOTCHA**: Never use `$gh api ... -f body=@file`. The `-f` flag treats the
+   argument as a literal string, posting the characters `@file` verbatim into the issue!
+   Always format valid JSON and pass via `--input`.
+
+6. **Close an issue**:
+   ```bash
+   # Completed:
+   $gh api -X PATCH repos/OWNER/REPO/issues/NUM -f state=closed -f state_reason=completed
+   # Not planned:
+   $gh api -X PATCH repos/OWNER/REPO/issues/NUM -f state=closed -f state_reason=not_planned
+   ```
+
