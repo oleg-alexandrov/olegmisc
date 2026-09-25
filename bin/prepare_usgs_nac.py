@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
-# Fetch and prepare USGS-controlled LRO NAC images with USGS South Pole
-# custom SPICE kernels, radiometric calibration, echo correction, and CSM model state generation.
+# Fetch and prepare LRO NAC images: radiometric calibration, echo correction,
+# and CSM model state generation.
 #
 # Follows ASP documentation (examples/lronac.rst):
-#   lronac2isis -> spiceinit (USGS polar) -> lronaccal -> lronacecho -> isd_generate
+#   lronac2isis -> spiceinit -> lronaccal -> lronacecho -> isd_generate
 # Wipes all intermediate files (.IMG, .lbl, raw .cub, .cal.cub), keeping only final
 # .cal.echo.cub, .cal.echo.json, and .ode.json.
 #
+# spiceinit uses the standard mission kernels by default. Pass --usgs-polar to
+# override with the USGS South Pole custom polar kernels (only valid for the
+# 2009-2013 controlled images those kernels cover).
+#
 # Usage:
-#   python3 prepare_usgs_nac.py [--list image_list.txt] [PRODUCT_ID ...]
+#   python3 prepare_usgs_nac.py [--list image_list.txt] [--usgs-polar] [PRODUCT_ID ...]
 
 import argparse
 import json
@@ -45,7 +49,7 @@ def fix_distortion_coeff(json_path):
       json.dump(d, f, indent=2)
     print(f"Patched scalar coefficient {coeff} -> [{coeff}] in {os.path.basename(json_path)}")
 
-def process_product(pid, out_dir):
+def process_product(pid, out_dir, use_polar=False):
   pid = pid.strip().upper()
   if not pid:
     return
@@ -95,11 +99,15 @@ def process_product(pid, out_dir):
     cmd_ingest = f"{ISISROOT}/bin/lronac2isis from={img_path} to={raw_cub}"
     run_cmd(cmd_ingest, env=env_isis)
 
-  # Step 2: spiceinit with USGS custom polar kernels on raw_cub
-  cmd_spice = (
-    f"{ISISROOT}/bin/spiceinit from={raw_cub} "
-    f"spk={SPK_MK} ck={CK_MK} web=false"
-  )
+  # Step 2: spiceinit on raw_cub. Vanilla (standard mission kernels) by default;
+  # the USGS South Pole custom polar kernels only when explicitly requested.
+  if use_polar:
+    cmd_spice = (
+      f"{ISISROOT}/bin/spiceinit from={raw_cub} "
+      f"spk={SPK_MK} ck={CK_MK} web=false"
+    )
+  else:
+    cmd_spice = f"{ISISROOT}/bin/spiceinit from={raw_cub} web=false"
   out_spice = run_cmd(cmd_spice, env=env_isis)
   print("spiceinit attached kernels successfully.")
 
@@ -131,11 +139,16 @@ def process_product(pid, out_dir):
   env_asp["PROJ_DATA"] = f"{SP}/share/proj"
   env_asp["ISISDATA"] = ISISDATA
 
+  # cam_test is a sanity check only; a failure here must not block the cleanup of
+  # intermediates or the rest of an unattended batch, since the final products exist.
   cmd_camtest = f"cam_test --image {final_cub} --cam1 {final_cub} --cam2 {final_json} --sample-rate 5000"
-  out_test = run_cmd(cmd_camtest, env=env_asp, cwd=out_dir)
-  for line in out_test.splitlines():
-    if "pixel diff" in line or "diff norm" in line or "diff (meters)" in line or "Median:" in line:
-      print(f"  {line}")
+  try:
+    out_test = run_cmd(cmd_camtest, env=env_asp, cwd=out_dir)
+    for line in out_test.splitlines():
+      if "pixel diff" in line or "diff norm" in line or "diff (meters)" in line or "Median:" in line:
+        print(f"  {line}")
+  except Exception as e:
+    print(f"Warning: cam_test validation failed for {pid} (non-fatal): {e}")
 
   # Step 8: Clean up all intermediate files, keeping ONLY final cal.echo products
   for intermediate in [img_path, lbl_path, lbl_lower, raw_cub, cal_cub, old_cub, old_json]:
@@ -151,6 +164,11 @@ def main():
   parser.add_argument("--list", help="File with list of product IDs")
   parser.add_argument("--outdir", default="/nobackupp19/oalexan1/projects/sfs_BCU2314-BDU1224-MM/usgs_south",
                       help="Output directory on pfe")
+  parser.add_argument("--usgs-polar", dest="usgs_polar", action="store_true", default=False,
+                      help="Use the USGS South Pole custom polar SPICE kernels in "
+                           "spiceinit instead of the standard mission kernels "
+                           "(only valid for the 2009-2013 controlled images). "
+                           "Default: standard mission kernels.")
   args = parser.parse_args()
 
   pids = list(args.products)
@@ -167,7 +185,7 @@ def main():
   os.makedirs(args.outdir, exist_ok=True)
   for pid in pids:
     try:
-      process_product(pid, args.outdir)
+      process_product(pid, args.outdir, use_polar=args.usgs_polar)
     except Exception as e:
       print(f"Error processing {pid}: {e}")
 
