@@ -164,6 +164,10 @@ def main():
   parser.add_argument("--list", help="File with list of product IDs")
   parser.add_argument("--outdir", default="/nobackupp19/oalexan1/projects/sfs_BCU2314-BDU1224-MM/usgs_south",
                       help="Output directory on pfe")
+  # TODO: switch this default to False (vanilla standard mission kernels) once the
+  # controlled usgs_south run is done. Vanilla is the common case; polar kernels
+  # apply only to the 2009-2013 South Pole controlled images. Kept True for now so
+  # the live usgs_south run, which passes no flag, is not disrupted mid-flight.
   parser.add_argument("--usgs-polar", dest="usgs_polar", action="store_true", default=True,
                       help="Use the USGS South Pole custom polar SPICE kernels in "
                            "spiceinit (default: True, valid for 2009-2013 controlled images).")
