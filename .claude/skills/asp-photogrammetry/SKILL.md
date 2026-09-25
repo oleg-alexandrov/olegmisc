@@ -166,6 +166,21 @@ This differs from `point2dem`/`gdalwarp`, whose `--tr`/`-tr` follow whatever `--
 you pass (degrees if longlat). Burned 2026-09-07 on the KH-7 browse-res replicate (`--tr 0.0006`
 in degrees -> "could not sample"/grid-too-small; `--tr 30`/`50` meters fixed it).
 
+## Batch mapprojection: Run sequentially across images, give each image all cores (CRITICAL)
+
+When batch-mapprojecting a large set of images (e.g. dozens of linescan scenes on a cluster or multicore workstation), NEVER wrap `mapproject` in an outer GNU `parallel` loop or concurrent background jobs (`parallel -j N` or `&`). `mapproject` is an internally parallelized tool that splits images into tiles and spawns sub-processes and threads.
+
+Nesting an outer parallel loop with inner mapproject tiling causes a multiplicative explosion of processes and memory:
+- Outer jobs x inner tiles x threads per tile.
+- For complex camera models (such as CSM linescan), each instance allocates gigabytes of state, ephemeris, and cache.
+- Multiple concurrent jobs quickly exhaust node memory (e.g. blowing past 128 GB), triggering kernel OOM kills or starving the OS/scheduler (causing PBS `Exit_status = -4`).
+
+Correct batch pattern:
+- Process images **sequentially** in a shell loop (`while read -r cmd; do eval "$cmd"; done < tasks.sh`).
+- Allocate all available node cores to the single tool invocation: `mapproject --threads $NUM_CORES ...`.
+- Memory footprint remains strictly bounded (e.g. 4 to 6 GB per image instead of 120+ GB).
+- Total wall time is virtually identical because all CPU cores are fully utilized, but the run is robust, reliable, and produces clean sequential progress logs.
+
 ## dem_mosaic: Call With `-o output.tif`, Not `-o out`
 
 Recent `dem_mosaic` writes the given name directly when `-o` ends in `.tif` (e.g. `-o mosaic.tif` -> `mosaic.tif`); a bare `-o out` produces the OLD `out-tile-0.tif`. ALWAYS pass the honest `.tif` output name (this is the PREFERRED newer usage) and reference that file later - NEVER the bare-prefix form. This keeps recurring when copying older scripts; when you write or reuse a `dem_mosaic` call, make `-o` end in `.tif`.

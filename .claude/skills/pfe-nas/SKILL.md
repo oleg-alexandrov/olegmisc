@@ -143,7 +143,45 @@ Bare minimum to remember without reading:
   notes edit flow is: edit `~/projects/<proj>/notes.sh` on the Mac, `git add`+commit+push from
   the Mac, then `rsync` it to pfe. Never treat the pfe copy as authoritative - it can be wiped;
   the Mac is where everything is preserved.
-- **Every qsub script: `exec >` redirect to a work-dir log (never PBS `-o`) AND `umask 022` (readable outputs). Details: `qsub_convention.sh` / `qsub_rules.sh`.**
+- **PBS spool output placement (`-o "$W/" -j oe`) and preventing `/home6/oalexan1` litter (CRITICAL).**
+  When submitting a job via `qsub`, if `-o <dir>/` is omitted, PBS places the stdout/stderr
+  spool file into the directory from which `qsub` was run. Over a non-interactive ssh session
+  (`ssh pfx "qsub ..."`), that directory defaults to `/home6/oalexan1`, so stray `<jobname>.o<jobid>`
+  files litter the home directory. Even if the worker script redirects its own output via
+  `exec > "$W/log.txt"`, PBS *always* generates its own spool file for scheduler accounting, node
+  allocation headers, and job abort diagnostics. FIX: ALWAYS `cd "$W"` before submitting AND
+  pass `-o "$W/" -j oe` in the `qsub` command (or `#PBS -o <workdir>/` and `#PBS -j oe`). When a
+  directory ending in `/` is passed to `-o`, PBS names the file `<jobid>.OU` inside `$W/`, keeping
+  `/home6/oalexan1` completely clean.
+- **PBS system aborts vs application errors (`Exit_status = -4`, MOM heartbeat loss).**
+  Negative exit codes in PBS (such as `Exit_status = -4` or `-11`) are issued by the PBS
+  daemon/server, NOT by the user application or bash script. Specifically, `Exit_status = -4`
+  indicates "Job aborted on PBS server initialization / MOM heartbeat lost". This happens when
+  the node's MOM daemon dies or ceases communicating with the PBS server, typically caused by
+  kernel memory starvation (OOM) killing the MOM process, kernel lockup, or compute node hardware
+  faults. When diagnosing a failed job, do NOT assume a negative exit status is an application
+  script bug. Check both the PBS spool file (`$W/<jobid>.OU`) and the historical record via
+  `/PBS/bin/qstat -x -f <jobid>` (inspect `Exit_status`, `comment`, and `resources_used`).
+- **"Sequential Items, Parallel Per-Item" rule: NEVER nest GNU parallel with multi-thread ASP tools (CRITICAL).**
+  Tools like `mapproject`, `parallel_stereo`, and `bundle_adjust` are already internally
+  parallelized: they partition images into tiles and spawn multiple worker processes and threads.
+  Wrapping an outer GNU `parallel -j N` or background process loop around such a tool multiplies
+  processes and threads ($N_{\text{outer}} \times N_{\text{inner}} \times \text{threads}$). For complex linescan
+  camera models (such as CSM with orbital ephemeris), each instance requires several gigabytes of
+  RAM. Running multiple `mapproject` jobs concurrently quickly exhausts the node's 128 GB memory,
+  starving Linux and killing the PBS MOM daemon (`Exit_status = -4`).
+  RULE: Process batch items **sequentially** in a simple shell loop (`while read -r cmd; do eval "$cmd"; done < tasks.sh`),
+  and allocate all available node CPU cores to each single tool invocation (`--threads $NCPUS`).
+  Total wall-clock throughput is identical because all cores stay busy, memory consumption remains
+  strictly bounded (4 to 6 GB per image instead of 120+ GB), and execution progress is clean,
+  linear, and verifiable.
+- **Bash `set -e` arithmetic trap: `count=$((count + 1))`, never `((count++))`.**
+  In GNU Bash under `set -e`, when `count=0`, the postfix expression `((count++))` evaluates to `0`.
+  In bash arithmetic evaluation, a value of 0 is treated as a logical failure (exit code 1).
+  Because `set -e` is active, the shell terminates immediately before the loop executes its first
+  iteration, leaving no diagnostic other than a silent job exit with code 1.
+  RULE: Always use `count=$((count + 1))` in bash scripts running under `set -e`.
+- **Every qsub script: `exec >` redirect to a work-dir log AND `umask 022` (readable outputs). Details: `qsub_convention.sh` / `qsub_rules.sh`.**
 - **MONITOR EVERY JOB TO COMPLETION AND CONFIRM SUCCESS BEFORE DRAWING ANY CONCLUSION (CRITICAL - burned 2026-09-09).** A conclusion from a job you did not confirm finished is worthless. A single `devel` job with all the work in it silently hit the walltime at 59/98 items; the analysis was then run on the PARTIAL output and a big (wrong) conclusion was drawn from it. RULE: a job that did not COMPLETE SUCCESSFULLY is a job to FIX (diagnose + resubmit the missing part), not a result to interpret. Before concluding anything from a job's output: (1) confirm the job left the queue by finishing, not by being killed/walltimed (`qstat -x -f <jobid>` shows `job_state=F` plus `Exit_status=0` for success; nonzero or a walltime-equal `resources_used.walltime` = truncated); (2) read the PBS FINAL REPORT / accounting for run time, cpu usage, wall time, and EXIT STATUS - it is normally the `-o`/`-j oe` file named `<jobname>.o<jobid>` in the submit dir, but the name can differ (or is empty when the worker does its own `exec >` log, in which case read the tail of that work-dir log AND `qstat -x`); (3) verify the OUTPUT ITSELF is complete (expected product count, e.g. 98/98, not 59/98). Only then analyze. Corollary: never pack a large batch into ONE `devel` job to dodge queue contention - `devel` has a short walltime and WILL truncate it; use the planned batched `normal`-queue jobs and finish them all.
 - **CHECK JOB EFFECTIVENESS on any long/multi-node pfe job - do not assume it parallelizes.** Effectiveness (efficiency) = CPU-time-used / (cores-allocated x walltime); 1.0 = every allocated core busy every second, low = idle cores wasting the allocation. THE overall number is `qstat`'s `Eff` column, equivalently from `qstat -f <jobid>`: `resources_used.cput / (resources_used.ncpus x resources_used.walltime)`. This is already JOB-WIDE - `cput` sums CPU-time over ALL nodes/chunks and `ncpus` is the TOTAL cores - so for a MULTI-NODE run it covers every node at once; you do NOT poll each node to get the overall figure (that answers "is the whole job effective"). Instantaneous aggregate = `resources_used.cpupercent` (divide by 100 = cores busy right now, summed across all nodes; e.g. 529 = 5.3 of 28). Any LOW value SUSTAINED over time (e.g. 7% on 28 cores = ~2 cores busy) is SUSPECT - investigate, do not ignore. To then LOCALIZE which node/rank is the laggard in a multi-node job: `exec_host`/`exec_vnode` in `qstat -f` lists every node; ssh each and compare `uptime` load avg vs its core count (pdsh/clush across all at once if available). Common cause: a serial per-item loop starving the node -> fix is batching/concurrency across items, not bigger per-item threads. Caveat: cput-efficiency can look low for legitimately I/O-bound or sync-heavy phases - judge over time, not one instant. (Caught the un-batched Jezero stereo_transverse.sh this way, 2026-06-26: Eff 7%, cpupercent 529.)
 
