@@ -495,7 +495,15 @@ wasted compute. Claude HAS EYES (Read an image and see it) - so use them constan
 - Masks especially: overlay the mask on the source image (or show masked vs raw) and
   verify the land/water boundary is right at the shoreline, not eating land or keeping
   water. otsu/KDE thresholds are fragile; never trust one unlooked-at.
-Frequent visual inspection is not overhead - in mapping work it IS the work.
+## Batch Mapprojection: Use Canonical SfS Tools, Do Not Reinvent the Wheel
+
+When mapprojecting a large corpus of imagery (from tens to 1300+ images on large grids, e.g. 20k x 20k):
+- NEVER write ad-hoc mapprojection loops or custom submission scripts from scratch.
+- ALWAYS use the canonical tools in `~/projects/sfs/`:
+  - `~/projects/sfs/batch_mapproject.sh`: Partitions image lists into chunked batches (default 30 images) and dispatches concurrent PBS jobs.
+  - `~/projects/sfs/mapproject_chunk.sh`: Per-chunk compute node worker with non-fatal error handling, out-of-bounds recovery, and tile cleanup.
+- Features: Arbitrary sensors (LRO NAC, OHRC, CTX), paired camera list support (`cameraList.txt`), fixed resolution (`TR`), per-image GSD (`TR_COL`), target extent (`PROJWIN`), and core dump suppression (`ulimit -c 0`).
+- Full guide: **[[sfs]]**.
 
 ## Related specialists (this hub routes to them)
 
@@ -503,6 +511,7 @@ Tool-specific depth was factored out - load the specialist when you go deep on a
 - **[[bundle-adjust]]** - match files (--mapprojected-data, the three sets), dense matches
   from disparity (+ the mapproj-DEM nodata trap), adjusted_state.json vs --bundle-adjust-prefix,
   parallel_bundle_adjust, match caching, residual-pointmap inspection, pose blunder catch.
+- **[[sfs]]** - Shape-from-Shading photoclinometry and the canonical batch mapprojection framework.
 - **[[pc-align]]** - alignment methods, denser-cloud-first, apply-to-DEM/cameras, the
   direct-vs-inverse footgun, seating BA cameras on a reference DEM.
 - **[[gdal-rasters]]** - gdalwarp/gdal_translate/gdalinfo, common-grid warp, resampling
