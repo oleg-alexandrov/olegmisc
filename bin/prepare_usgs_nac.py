@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-# Fetch and prepare LRO NAC images: radiometric calibration, echo correction,
-# and CSM model state generation.
+# Fetch and prepare USGS-controlled LRO NAC images: radiometric calibration,
+# echo correction, and CSM model state generation.
 #
+# Dedicated project fork for USGS South Pole controlled images (BCU2314-BDU1224-MM).
 # Follows ASP documentation (examples/lronac.rst):
-#   lronac2isis -> spiceinit -> lronaccal -> lronacecho -> isd_generate
+#   lronac2isis -> spiceinit (USGS polar) -> lronaccal -> lronacecho -> isd_generate
 # Wipes all intermediate files (.IMG, .lbl, raw .cub, .cal.cub), keeping only final
 # .cal.echo.cub, .cal.echo.json, and .ode.json.
 #
-# spiceinit uses the standard mission kernels by default. Pass --usgs-polar to
-# override with the USGS South Pole custom polar kernels (only valid for the
-# 2009-2013 controlled images those kernels cover).
+# spiceinit uses the USGS South Pole custom polar kernels by default.
+# Pass --no-usgs-polar to use standard mission kernels.
 #
 # Usage:
-#   python3 prepare_usgs_nac.py [--list image_list.txt] [--usgs-polar] [PRODUCT_ID ...]
+#   python3 prepare_usgs_nac.py [--list image_list.txt] [--no-usgs-polar] [PRODUCT_ID ...]
 
 import argparse
 import json
@@ -49,7 +49,7 @@ def fix_distortion_coeff(json_path):
       json.dump(d, f, indent=2)
     print(f"Patched scalar coefficient {coeff} -> [{coeff}] in {os.path.basename(json_path)}")
 
-def process_product(pid, out_dir, use_polar=False):
+def process_product(pid, out_dir, use_polar=True):
   pid = pid.strip().upper()
   if not pid:
     return
@@ -164,11 +164,11 @@ def main():
   parser.add_argument("--list", help="File with list of product IDs")
   parser.add_argument("--outdir", default="/nobackupp19/oalexan1/projects/sfs_BCU2314-BDU1224-MM/usgs_south",
                       help="Output directory on pfe")
-  parser.add_argument("--usgs-polar", dest="usgs_polar", action="store_true", default=False,
+  parser.add_argument("--usgs-polar", dest="usgs_polar", action="store_true", default=True,
                       help="Use the USGS South Pole custom polar SPICE kernels in "
-                           "spiceinit instead of the standard mission kernels "
-                           "(only valid for the 2009-2013 controlled images). "
-                           "Default: standard mission kernels.")
+                           "spiceinit (default: True, valid for 2009-2013 controlled images).")
+  parser.add_argument("--no-usgs-polar", dest="usgs_polar", action="store_false",
+                      help="Do not use USGS polar kernels; use standard mission kernels in spiceinit.")
   args = parser.parse_args()
 
   pids = list(args.products)
