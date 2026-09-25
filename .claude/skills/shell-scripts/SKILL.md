@@ -100,6 +100,10 @@ an exec-redirect log with a START/DONE banner, and the literal qsub submit line 
 header comment. Keep `key=value` form in echo lines. Reference workers:
 `sfs_mons_mouton/ba_htdem_gcp.sh`, `cassis_asp/gusev_cnet_gcp.sh`.
 
+Always include `umask 022` and `ulimit -c 0` at the top of every worker script
+before launching compute tools, so outputs are readable and aborts exit cleanly
+without dumping multi-GB core files that hang compute nodes and abort PBS jobs.
+
 ## Multi-Option Commands in Scripts
 
 Put each command-line option (and each `export`) on its own line WITH ITS VALUE, using
