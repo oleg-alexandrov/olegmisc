@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 # Fetch and prepare USGS-controlled LRO NAC images with USGS South Pole
-# custom SPICE kernels and CSM model state generation.
+# custom SPICE kernels, radiometric calibration, echo correction, and CSM model state generation.
+#
+# Follows ASP documentation (examples/lronac.rst):
+#   lronac2isis -> spiceinit (USGS polar) -> lronaccal -> lronacecho -> isd_generate
+# Wipes all intermediate files (.IMG, .lbl, raw .cub, .cal.cub), keeping only final
+# .cal.echo.cub, .cal.echo.json, and .ode.json.
 #
 # Usage:
 #   python3 prepare_usgs_nac.py [--list image_list.txt] [PRODUCT_ID ...]
@@ -44,16 +49,28 @@ def process_product(pid, out_dir):
   pid = pid.strip().upper()
   if not pid:
     return
-  cub_path = os.path.join(out_dir, f"{pid}.cub")
-  json_path = os.path.join(out_dir, f"{pid}.json")
+
+  final_cub = os.path.join(out_dir, f"{pid}.cal.echo.cub")
+  final_json = os.path.join(out_dir, f"{pid}.cal.echo.json")
+  raw_cub = os.path.join(out_dir, f"{pid}.raw.cub")
+  cal_cub = os.path.join(out_dir, f"{pid}.cal.cub")
+  old_cub = os.path.join(out_dir, f"{pid}.cub")
+  old_json = os.path.join(out_dir, f"{pid}.json")
   img_path = os.path.join(out_dir, f"{pid}.IMG")
+  lbl_path = os.path.join(out_dir, f"{pid}.LBL")
+  lbl_lower = os.path.join(out_dir, f"{pid}.lbl")
 
   print(f"\n=======================================================")
   print(f"Processing USGS Controlled NAC image: {pid}")
   print(f"=======================================================")
 
-  if os.path.exists(cub_path) and os.path.exists(json_path) and os.path.getsize(json_path) > 1000:
-    print(f"Already prepared: {cub_path} and {json_path}")
+  # If already fully prepared as final cal.echo product, clean any residual raw files and exit
+  if os.path.exists(final_cub) and os.path.exists(final_json) and os.path.getsize(final_json) > 1000:
+    print(f"Already prepared final product: {final_cub} and {final_json}")
+    for residual in [img_path, lbl_path, lbl_lower, raw_cub, cal_cub, old_cub, old_json]:
+      if os.path.exists(residual):
+        os.remove(residual)
+        print(f"Removed residual intermediate file {os.path.basename(residual)}.")
     return
 
   # Environment for ISIS tools
@@ -63,34 +80,48 @@ def process_product(pid, out_dir):
   env_isis["ALESPICEROOT"] = ISISDATA
   env_isis["PATH"] = f"{ISISROOT}/bin:{os.path.expanduser('~/bin')}:{env_isis.get('PATH', '')}"
 
-  # Step 1: Fetch EDR .IMG via fetch_lro_nac.sh if cub not present
-  if not os.path.exists(cub_path):
+  # Step 1: If pre-existing uncalibrated .cub exists, rename it to raw.cub
+  if os.path.exists(old_cub) and not os.path.exists(raw_cub):
+    os.rename(old_cub, raw_cub)
+
+  # Fetch and ingest if raw_cub does not exist
+  if not os.path.exists(raw_cub):
     if not os.path.exists(img_path):
       fetch_script = os.path.expanduser("~/bin/fetch_lro_nac.sh")
       cmd_fetch = f"{fetch_script} {pid} {out_dir}"
       run_cmd(cmd_fetch, env=env_isis)
 
-    # Step 2: Ingest with lronac2isis
-    cmd_ingest = f"{ISISROOT}/bin/lronac2isis from={img_path} to={cub_path}"
+    # Ingest with lronac2isis
+    cmd_ingest = f"{ISISROOT}/bin/lronac2isis from={img_path} to={raw_cub}"
     run_cmd(cmd_ingest, env=env_isis)
 
-  # Step 3: spiceinit with USGS custom polar kernels
+  # Step 2: spiceinit with USGS custom polar kernels on raw_cub
   cmd_spice = (
-    f"{ISISROOT}/bin/spiceinit from={cub_path} "
+    f"{ISISROOT}/bin/spiceinit from={raw_cub} "
     f"spk={SPK_MK} ck={CK_MK} web=false"
   )
   out_spice = run_cmd(cmd_spice, env=env_isis)
   print("spiceinit attached kernels successfully.")
 
-  # Step 4: isd_generate
-  cmd_isd = f"{ISISROOT}/bin/isd_generate -k {cub_path} {cub_path} -o {json_path}"
+  # Step 3: lronaccal (radiometric calibration)
+  cmd_cal = f"{ISISROOT}/bin/lronaccal from={raw_cub} to={cal_cub}"
+  run_cmd(cmd_cal, env=env_isis)
+  print(f"Radiometric calibration complete: {cal_cub}")
+
+  # Step 4: lronacecho (echo correction)
+  cmd_echo = f"{ISISROOT}/bin/lronacecho from={cal_cub} to={final_cub}"
+  run_cmd(cmd_echo, env=env_isis)
+  print(f"Echo correction complete: {final_cub}")
+
+  # Step 5: isd_generate from final cal.echo.cub
+  cmd_isd = f"{ISISROOT}/bin/isd_generate -k {final_cub} {final_cub} -o {final_json}"
   run_cmd(cmd_isd, env=env_isis)
-  print(f"Generated raw ISD JSON: {json_path}")
+  print(f"Generated raw ISD JSON: {final_json}")
 
-  # Step 5: Patch distortion coefficient for USGSCSM compatibility
-  fix_distortion_coeff(json_path)
+  # Step 6: Patch distortion coefficient for USGSCSM compatibility
+  fix_distortion_coeff(final_json)
 
-  # Step 6: Validate with cam_test
+  # Step 7: Validate with cam_test
   env_asp = os.environ.copy()
   env_asp["PATH"] = f"{SP}/bin:{SP}/libexec:{env_asp.get('PATH', '')}"
   isis_asp = "/swbuild/oalexan1/miniconda3/envs/isis10asp"
@@ -100,21 +131,22 @@ def process_product(pid, out_dir):
   env_asp["PROJ_DATA"] = f"{SP}/share/proj"
   env_asp["ISISDATA"] = ISISDATA
 
-  cmd_camtest = f"cam_test --image {cub_path} --cam1 {cub_path} --cam2 {json_path} --sample-rate 5000"
+  cmd_camtest = f"cam_test --image {final_cub} --cam1 {final_cub} --cam2 {final_json} --sample-rate 5000"
   out_test = run_cmd(cmd_camtest, env=env_asp, cwd=out_dir)
   for line in out_test.splitlines():
     if "pixel diff" in line or "diff norm" in line or "diff (meters)" in line or "Median:" in line:
       print(f"  {line}")
 
-  # Step 7: Clean up .IMG to conserve space
-  if os.path.exists(img_path):
-    os.remove(img_path)
-    print(f"Removed temporary EDR {img_path} to save storage.")
+  # Step 8: Clean up all intermediate files, keeping ONLY final cal.echo products
+  for intermediate in [img_path, lbl_path, lbl_lower, raw_cub, cal_cub, old_cub, old_json]:
+    if os.path.exists(intermediate):
+      os.remove(intermediate)
+      print(f"Removed intermediate file {os.path.basename(intermediate)} to save storage.")
 
-  print(f"Successfully finished {pid}!")
+  print(f"Successfully finished {pid}! Final product: {final_cub}")
 
 def main():
-  parser = argparse.ArgumentParser(description="Fetch and prepare USGS controlled LRO NAC images.")
+  parser = argparse.ArgumentParser(description="Fetch and prepare USGS controlled LRO NAC images with calibration and echo correction.")
   parser.add_argument("products", nargs="*", help="Product IDs (e.g. M135007317RE)")
   parser.add_argument("--list", help="File with list of product IDs")
   parser.add_argument("--outdir", default="/nobackupp19/oalexan1/projects/sfs_BCU2314-BDU1224-MM/usgs_south",

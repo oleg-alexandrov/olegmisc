@@ -29,17 +29,22 @@ curl -sS -L -O "$url"               # ~125-260 MB, from pds.lroc.im-ldi.com
 ```
 `~/bin/fetch_lro_nac.sh M167222041RE . --prep` does all of this (and the ingest).
 
-## ISIS ingest pipeline (order matters)
+## ISIS ingest pipeline (order matters, per ASP examples/lronac.rst)
 
 ```
 lronac2isis from=$f.IMG      to=$f.cub          # PDS3 -> cub; NO kernels needed
 spiceinit   from=$f.cub                         # attach SPICE (needs populated ISISDATA)
 lronaccal   from=$f.cub      to=$f.cal.cub       # radiometric (needs lro/calibration)
 lronacecho  from=$f.cal.cub  to=$f.cal.echo.cub  # echo correction
+isd_generate -k $f.cal.echo.cub $f.cal.echo.cub -o $f.cal.echo.json # CSM model state
 ```
 - `lronac2isis` alone gives the correct raw cub + **dimensions** (a full NAC frame
   is **2532 samples x 52224 lines**) and needs no kernels.
 - `spiceinit`/`lronaccal` need a POPULATED ISISDATA (base kernels + lro/calibration).
+- **Intermediate file cleanup discipline**: Always wipe intermediate files (`$f.IMG`,
+  `$f.cub`, `$f.cal.cub`, `$f.lbl`), keeping ONLY the final calibrated product
+  (`$f.cal.echo.cub` and `$f.cal.echo.json`) to conserve storage and prevent using
+  uncalibrated data in SfS.
 
 ## ENV GOTCHA on pfe (burned 2026-09-20)
 
