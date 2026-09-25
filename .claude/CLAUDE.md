@@ -104,6 +104,9 @@ rather than rediscovering the same problems.
   / `-A` / `-u` / a dir** (it leaks `.ssh/`, `.credentials.json`, `.bash_history`).
   Inspect the staged set before every commit. Sync with `git pull --rebase --autostash`.
   Detail: **[[repo-sync]]** / **[[git-repos]]** (deep reference `~/projects/git_notes.sh`).
+- **Offer to git-add tools and scripts**: Proactively offer to git-add new tools and
+  scripts (e.g. in `~/bin/`). Foundational goal: distill insights into generic,
+  shareable tools.
 - **NEVER add binary/data files without explicit permission** (.cub, .tif, .img, large
   .json, .bsp, .bc, .ply, .lbl, .dat, anything over ~100 KB). Only text/source belongs.
 - **TEST DATA IS NEVER COMMITTED - do not even ask.** Regression `gold/`/`run/` dirs and
