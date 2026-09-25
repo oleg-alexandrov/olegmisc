@@ -1,6 +1,10 @@
 ---
 name: remote-ci
-description: Diagnose a remote/cloud/nightly ASP build or CI failure via gh. Load the MOMENT any of these come up - "nightly build failed", "cloud build", "remote build", "the ARM build broke", "check my email about the build", a GitHub Actions failure email, "CI failed", "the run failed", or ANY use of `gh` at all. Carries the gh conda-env path (gh is NOT on PATH - never run bare `gh`), the email -> run-id -> `--log-failed` diagnosis recipe, and how to read past the cascade to the ONE root failure. Complements git-repos (repo slugs, REST/GraphQL recipes, github_notes.sh) and asp-regressions (judging acceptable-vs-real, regold, re-run).
+description: >-
+  Diagnose a remote/cloud/nightly ASP build or CI failure via gh: the gh conda-env path
+  (never bare gh), the email to run-id to --log-failed recipe, and reading past the cascade
+  to the one root failure. Load on any cloud/nightly build failure, a GitHub Actions
+  failure, or any use of gh.
 ---
 
 # Diagnosing a remote / cloud / nightly CI failure

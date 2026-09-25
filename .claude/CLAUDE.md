@@ -17,6 +17,9 @@ rather than rediscovering the same problems.
   summarized memory. During autonomous runs, LOG COPIOUSLY and IMMEDIATELY (each step:
   command, product path, key stats, next step) so a cold-started self can continue from
   the notes alone. Detail: the autonomous-ops skill.
+- **When asked to "resume"/"continue" a task without a named project, run `git -C
+  ~/projects log` and check which files changed most recently** to infer what is meant;
+  a `git -C ~/projects diff` on the relevant recent file is often enough focused context.
 
 ## Files, notes, and project layout
 

@@ -1,6 +1,10 @@
 ---
 name: coregister-linescan
-description: Co-register a target linescan camera set (e.g. Chandrayaan-2 OHRC) to a FIXED well-registered reference set (e.g. LRO NAC) - the pairwise workflow (each target image to its nearest-illumination reference, mapproject at the GSD sweet spot on one DEM, dense matches via num-matches-from-disparity when IP fails, bundle_adjust with the reference held fixed, then jitter_solve on top ONLY if a residual tilt remains). Carries the param guidance (don't over-constrain camera position; anchor points must not dominate tri points) and the verify-by-recorrelation step. Load when bringing one camera set into agreement with another that is already internally tight, planning such a batch, or deciding bundle-vs-jitter. Complements bundle-adjust, jitter-solve, sun-illumination, dem-comparison, dem2gcp, lro-nac, csm-models.
+description: >-
+  Co-register a target linescan camera set (e.g. Chandrayaan-2 OHRC) to a fixed
+  well-registered reference set (e.g. LRO NAC): pairwise mapproject, dense matches,
+  reference-fixed bundle_adjust, then jitter_solve if a tilt remains. Load when bringing
+  one camera set into agreement with another, or deciding bundle-vs-jitter.
 ---
 
 Goal: a reference set is already internally TIGHT (e.g. LRO NAC, bundle-adjusted to

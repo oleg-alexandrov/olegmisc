@@ -35,14 +35,13 @@ source 1.3.0 did not change it) and NOT a per-mission `spiceql_mission` issue. T
 working paths are `isd_generate -k <cube>` (furnish from the spiceinit'd cube) or
 `-w` (web SpiceQL, when the server is up).
 
-## Nightly Build and Regression Tests
+## Nightly build and regression tests -> nightly-regression
 
-Cron job on lunokhod1 at 23:05 runs the full build/test/release pipeline
-for Linux (local) + macOS x64/arm64 (GitHub Actions). Full reference:
-`~/projects/nightly_regression.sh`. Key files in
-`~/projects/BinaryBuilder/auto_build/` (launch_master.sh, build.sh,
-run_tests.sh, utils.sh). Email via msmtp on completion. Mac CI gold
-updates: `~/projects/update_cloud_tests.sh`.
+The nightly build/test/release pipeline (l1 cron, localLinux + cloud children, the
+`auto_build/` files launch_master.sh/build.sh/run_tests.sh/utils.sh, email + release) is
+owned by the **nightly-regression** skill (it owns driving the nightly); judging failures
+and regold by **asp-regressions**. Deep reference: `~/projects/nightly_regression.sh`. Mac
+CI gold updates: `~/projects/update_cloud_tests.sh`.
 
 ## Nightly asp_deps Cloud Tarballs (CRITICAL - canonical location)
 
@@ -183,19 +182,13 @@ Run a test: `cd` in, `bash run.sh > output.txt 2>&1`, then `bash validate.sh`
   libs and disagrees with the nightly. Rebuild+install the updated repo before
   concluding anything. (Burned 2026-07-06: local VW was 2 commits behind a
   ray-DEM intersection change, so local tests wrongly "passed".)
-- **A FAILED NIGHTLY - triage, regold, republish (ONE runbook, do not
-  rediscover):** which platform + which tests = `report.txt` (test root, the
-  full localLinux suite) and `~/projects/BinaryBuilder/status_master.txt`
-  (per-platform); the REAL per-test output is the `ss*/run/` dirs. **TRAP: the
-  `ss*/validate_out.txt` files are STALE manual scratch (check mtime), they do
-  NOT reflect the nightly - ignore them; the honest diff is re-running
-  `validate.sh` on `run/`.** Rank failures fast: `bash bin/triage_fails.sh` in
-  the suite. When benign (float/threshold drift after an intentional change),
-  regold the failing names with `python2 bin/runs_to_golds.py <names>`, then
-  force-publish via resume (flip `status_localLinux.txt` to Success, then
-  `launch_master.sh resume`). Full linear runbook + a worked 2026-08-07 example:
-  `~/projects/nightly_regression.sh` ("FAILED NIGHTLY -> REGOLD -> REPUBLISH"),
-  triage detail in `~/projects/asp_regression_tests.sh` ("TRIAGING A FAILED NIGHTLY").
+- **A FAILED NIGHTLY -> triage, regold, republish:** owned by the **asp-regressions**
+  skill (judge acceptable-vs-real, the `ss*/validate_out.txt` stale-scratch trap, regold
+  with `python2 bin/runs_to_golds.py <names>`, republish via `launch_master.sh resume`) and
+  **nightly-regression** (drive/retrigger). One command that lives only here: rank failures
+  fast with `bash bin/triage_fails.sh` in the suite. Deep reference (worked 2026-08-07
+  example): `~/projects/nightly_regression.sh`; triage detail in
+  `~/projects/asp_regression_tests.sh`.
 - **MANDATORY: run regression tests after every ASP code change** - find ALL
   matching dirs (`grep -rl <tool> ~/projects/StereoPipelineTest/ss*/run.sh`) and
   run them all, not just one; flag if a changed path has no test coverage.

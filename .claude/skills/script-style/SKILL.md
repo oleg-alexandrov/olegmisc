@@ -43,6 +43,11 @@ lines stay short and the alignment stays tight.
 Same idea for Python help strings built with `+ \`: put the `+ \` one space past the
 longest fragment, and start each fragment at the same indent.
 
+Never put a comment after a trailing `\` continuation (`cmd \  # note`): the `\` escapes
+the trailing space, the `#...` becomes a comment, and the command ends there (the
+continuation silently breaks). Put the comment on its own line above, or omit it. This
+holds for scripts and for paste-able commands shown in chat.
+
 ## No decorative separators
 
 Never use runs of `-`, `=`, `#`, or `*` as a rule between paragraphs or sections,

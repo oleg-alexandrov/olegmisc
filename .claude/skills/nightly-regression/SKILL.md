@@ -1,6 +1,10 @@
 ---
 name: nightly-regression
-description: How the ASP nightly build/regression works end-to-end and how to drive it - the l1 launch_master.sh orchestrator, its four "children" (localLinux built on l1 + the three cloud GitHub-Actions builds cloudMacX64 / cloudMacArm64 / cloudLinuxArm64), where deps come from, the status-file + email + daily-build-release flow, and the exact commands to RETRIGGER (full nightly or one platform), MONITOR, and diagnose a failure. Load whenever the ASP nightly is mentioned - "retrigger the nightly", "relaunch launch_master", "wake up the cloud children", "the nightly failed", "daily build", "regold and re-run" - or when driving the cloud CI. Complements remote-ci (gh --log-failed diagnosis), asp-regressions (judge test drift / regold), build-env, git-repos.
+description: >-
+  How the ASP nightly build/regression works and how to drive it: the l1 launch_master
+  orchestrator, its localLinux plus three cloud children, status files, and the
+  retrigger/monitor/republish commands. Load whenever the ASP nightly is mentioned or you
+  drive the cloud CI.
 ---
 
 # ASP nightly build + regression

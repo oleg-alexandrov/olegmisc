@@ -1,6 +1,10 @@
 ---
 name: lro-nac
-description: Fetch and prepare LRO NAC (Lunar Reconnaissance Orbiter Narrow Angle Camera) images from a product id - the ODE REST codes that actually work (pt=EDRNAC4, not EDRNAC), the fetch tool, the ISIS ingest pipeline (lronac2isis / spiceinit / lronaccal / lronacecho), the isis10-vs-isis10asp env gotcha, CSM JSON via isd_generate, and pairing a freshly-fetched raw cub with an existing adjusted-state json (no re-bundle when dims match). Load whenever fetching, preparing, calibrating, or CSM-ing an LRO NAC image, or when you need a NAC raw cub that is missing. Complements isis-data (broader ISIS/kernel hub + lronac_processing.sh) and csm-models.
+description: >-
+  Fetch and prepare LRO NAC images from a product id: the ODE REST codes that work
+  (pt=EDRNAC4), the fetch tool, the ISIS ingest pipeline, the isis10-vs-isis10asp env
+  gotcha, CSM JSON via isd_generate, and pairing a fresh cub with an existing
+  adjusted-state json. Load when fetching, preparing, or calibrating an LRO NAC image.
 ---
 
 We keep relearning how to prepare NAC - this skill is the durable version. Canonical

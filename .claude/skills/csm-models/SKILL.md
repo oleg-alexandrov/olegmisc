@@ -1,6 +1,10 @@
 ---
 name: csm-models
-description: The USGS CSM (Community Sensor Model) camera files ASP uses - the peculiar ".json" model-state format (a plugin-name header line followed by JSON, NOT pure JSON), the ISD-vs-model-state distinction, the m_* field layout (sun/sensor ephemeris time-series, quaternions, body radii, distortion), frame vs linescan vs pushframe/SAR, how to parse and inspect them (cam_test, orbit_plot, sfs --query for sun az/el), and model state embedded in .cub. Load whenever reading/parsing/editing a CSM .json camera or *.adjusted_state.json, a model-state or ISD file, checking a camera's distortion, or extracting sun/sensor geometry from a camera. See also ASP docs examples/csm.rst. Complements lens-distortion (distortion coeff layout), solve-intrinsics, jitter-solve, asp-photogrammetry.
+description: >-
+  The USGS CSM camera files ASP uses: the model-state .json format (plugin-name header
+  line then JSON, not pure JSON), ISD-vs-model-state, the m_* field layout, distortion,
+  and how to parse/inspect them. Load when reading, parsing, or editing a CSM .json or
+  adjusted_state.json camera.
 ---
 
 ## The format that keeps surprising us: model-state ".json" is NOT pure JSON

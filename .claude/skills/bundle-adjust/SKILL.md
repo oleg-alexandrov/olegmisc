@@ -1,6 +1,11 @@
 ---
 name: bundle-adjust
-description: bundle_adjust mechanics - the --mapprojected-data workflow (find matches on mapprojected images, transfer to raw), the THREE match sets it writes (mapproj / raw-unprojected / clean) and their naming, DENSE unprojected raw matches via --num-matches-from-disparity (and the mapproj-DEM-must-be-clean nodata trap), ip-detect-method 0 vs 1, generous-outlier-removal when cameras are bad, using the baked adjusted_state.json cameras directly (never --bundle-adjust-prefix), parallel_bundle_adjust for many images, match-file caching, and spatially inspecting the residual pointmap after --solve-intrinsics. Load before running bundle_adjust/parallel_bundle_adjust, choosing which match file to feed dem2gcp/jitter_solve, or debugging why clean matches are too few.
+description: >-
+  bundle_adjust mechanics: the --mapprojected-data workflow, the three match sets it
+  writes, dense raw matches via --num-matches-from-disparity, using the baked
+  adjusted_state.json directly (never --bundle-adjust-prefix), parallel_bundle_adjust, and
+  inspecting the residual pointmap. Load before running bundle_adjust or choosing which
+  match file to feed dem2gcp/jitter_solve.
 ---
 
 # bundle_adjust match files (esp. --mapprojected-data)

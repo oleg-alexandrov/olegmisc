@@ -14,16 +14,6 @@ description: How Oleg's projects are organized and worked - project context, the
 - For cutting VW point releases and keeping the conda-forge feedstock
   building (alpha → point release → repoint bot's PR branch → merge →
   restore alpha), see `~/projects/vw_conda_release.sh`.
-- **ISAAC / Astrobee ISS panorama-mesh** (interesting project, worth
-  revisiting): two Astrobee robots (bumble, queen), each with nav_cam +
-  sci_cam + haz_cam, scanned the JEM/Kibo module from several bays,
-  rotating in place. Fused into one registered, textured mesh via
-  theia_sfm -> rig_calibrator -> depth fusion -> texrecon. Documented in
-  ASP `docs/examples/sfm_iss.rst`. Work notes:
-  `~/projects/20220608_Isaac9/isaac9_notes.sh`. The hard part is that
-  panorama acquisition is rotation-only (near-zero baseline), so
-  triangulation is near-degenerate. Flagged to reprocess with better
-  fusion understanding, possibly without the noisy haz_cam.
 
 ## Notes & Paper Trail (CRITICAL)
 

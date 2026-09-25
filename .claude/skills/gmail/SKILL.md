@@ -1,6 +1,10 @@
 ---
 name: gmail
-description: Reading Oleg's email through the claude_ai_Gmail MCP tools. Carries the hard lesson that search_threads returns a STALE, truncated snapshot of a thread (it relevance-matches the thread but serves an OLD message set, missing everything newer), so you must open the thread with get_thread and read it NEWEST-FIRST; plus the gmail-vs-NASA two-mailbox split, the "probe with a known recent word" debug trick, and how to recover a big thread that get_thread saved to a file. Load whenever searching for or reading Oleg's email via the Gmail MCP (search_threads / get_thread), or when a recent message "cannot be found".
+description: >-
+  Reading Oleg's email via the claude_ai_Gmail MCP. Carries the key lesson that
+  search_threads serves a stale, truncated thread snapshot, so open the thread with
+  get_thread and read newest-first. Load when searching or reading Oleg's Gmail, or when a
+  recent message cannot be found.
 ---
 
 # Reading Oleg's Gmail via the MCP

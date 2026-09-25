@@ -1,6 +1,10 @@
 ---
 name: asp-regressions
-description: Hub for ASP regression-test work, and the judgement layer for a FAILED ASP nightly - decide acceptable vs real, reset-to-god first, run-vs-gold coverage judgement (-tap + hillshade + dz median/NMAD), the zero-tolerance stat-diff trap, distinguishing a cloud BUILD break from test drift (fetch GH Actions logs), regold, relaunch launch_master, and iterate. Load whenever an ASP nightly fails, OR whenever you need to find/run/author a StereoPipelineTest regression, judge whether failures are OK, fix a build break, regold, or re-run the nightly. To AUTHOR a new regression test (new or existing tool), see asp-packaging's "Regression test" section. To drive/retrigger the nightly itself, see nightly-regression. Complements build-env (mechanics), local-epi-debug (tile notches), dem-comparison.
+description: >-
+  Hub for ASP regression-test work and judging a FAILED ASP nightly: acceptable-vs-real,
+  reset-to-god, run-vs-gold coverage, the zero-tolerance stat-diff trap,
+  build-break-vs-drift, regold, relaunch. Load when an ASP nightly fails, or to find, run,
+  or judge a StereoPipelineTest regression.
 ---
 
 # Evaluating a failed ASP nightly / regression
@@ -100,25 +104,15 @@ bound are identical: the coordinates are unchanged, only the quantization header
   point2las-touching cloud test (`ss_pc_align_utm`) regenerates its own gold and compares
   tolerantly. No cloud regold.
 
-## Nightly topology & trigger (1 local + 3 CLOUD platforms)
+## Nightly topology & trigger -> nightly-regression
 
-Trigger: a CRON job on **l1 (lunokhod1) at 23:05 Pacific local (NOT UTC)** runs
-`~/projects/BinaryBuilder/auto_build/launch_master.sh` (log: `output_master.txt`).
-l1 is the master and orchestrates FOUR platforms
-(`buildPlatforms="localLinux cloudMacX64 cloudMacArm64 cloudLinuxArm64"`):
-- **localLinux** = l1 itself: built AND tested locally (build.sh + run_tests.sh -> pytest -> report.txt).
-- **cloudMacX64 / cloudMacArm64 / cloudLinuxArm64** = the 3 REMOTES, all in the CLOUD
-  (**GitHub Actions**, NOT pfe/NAS). Triggered from l1 by `gh workflow run <wf> -R <repo>`
-  (see `auto_build/build.sh build_cloud_macos()`), polled with `gh run list`, artifacts
-  pulled with `gh run download`. Build+test happen in the cloud; l1 just monitors.
-- Aggregated status: `~/projects/BinaryBuilder/status_master.txt` (one line per platform,
-  Success/Fail) and per-platform `status_<platform>.txt` (`<tarball> test_done Success|Fail`,
-  or `now_building`/`now_testing` while live). launch_master uploads to the GitHub release
-  area and emails oleg.alexandrov@gmail.com ONLY if ALL 4 pass; any Fail => no upload, mail says Fail.
-- Resume without rebuilding the good ones: `launch_master.sh resume`.
-- KEY TRIAGE SIGNAL: localLinux can FAIL while all 3 cloud PASS because **the cloud runs only a
-  ~12-test SUBSET**, not the full l1 suite. So a test that fails on l1 is often simply NOT run on
-  the cloud. Check before assuming the cloud "agrees". (Do NOT say "pfe" - the remotes are cloud CI.)
+The l1 launch_master orchestrator, the four children (localLinux + 3 cloud), the status
+files, the 23:05 Pacific cron, and the retrigger/resume commands are owned by the
+**nightly-regression** skill (it owns the nightly topology and driving it). The one triage
+signal to keep in mind while judging failures: localLinux can FAIL while all 3 cloud PASS
+because **the cloud runs only a ~12-test SUBSET**, not the full l1 suite. So a test that
+fails on l1 is often simply NOT run on the cloud. Check before assuming the cloud "agrees".
+(Do NOT say "pfe" - the remotes are cloud CI on GitHub Actions.)
 
 ## The cloud (remote) test scheme is SEPARATE from l1 - do not clobber it
 
@@ -153,18 +147,17 @@ not "close". Recipe (used for multi_stereo, see [[multi-stereo]]):
 
 ## Declare-success-and-publish shortcut (benign failures, no rebuild)
 
-When a nightly's only failures are BENIGN (an intended algo change; the build itself is fine) and you
-do NOT want to rebuild, publish the already-built tarballs directly:
-1. Regold the failed l1 tests: `cp -f ssX/run/* ssX/gold/` then re-run `ssX/validate.sh` (needs
-   `conda activate asp_deps` for gdalinfo; validate adds `../bin` for cmp_stats.sh). Confirm "Validation succeeded".
-2. Edit the failing `~/projects/BinaryBuilder/status_<platform>.txt`: change `test_done Fail` -> `test_done Success`.
-3. `cd ~/projects/BinaryBuilder && bash auto_build/launch_master.sh resume`. Resume SKIPS every platform
-   already at `test_done Success` (no rebuild, no re-test), aggregates `status_master.txt`, and if all 4
-   are Success calls `upload_to_github` (creates `<date>-daily-build` release on NeoGeographyToolkit/
-   StereoPipeline, keeps last 2) and emails the status. That email is the "passing build" confirmation.
-Order matters if also pushing an algo change to god: PUBLISH the current build FIRST (gold matching the
-built tarball), THEN push the new code to god and roll the gold forward, so the published tarball and
-its gold stay consistent at publish time.
+When a nightly's only failures are BENIGN (an intended algo change; the build itself is
+fine) and you do NOT want to rebuild, publish the already-built tarballs directly: regold
+the failed l1 tests (see "Regold, relaunch, iterate" below), flip the failing
+`status_<platform>.txt` from `test_done Fail` to `test_done Success` (KEEP the same tarball
+name), then `launch_master.sh resume` - which skips every platform already at Success,
+launches no build, and goes straight to upload + Success email. Full step-by-step recipe
+(status-file echo, the resume mechanics): the **nightly-regression** skill (it owns the
+republish runbook, "Publish an already-built nightly").
+Order matters if also pushing an algo change to god: PUBLISH the current build FIRST (gold
+matching the built tarball), THEN push the new code to god and roll the gold forward, so
+the published tarball and its gold stay consistent at publish time.
 
 ## Hillshade / colormap / IP-match failures (Horn's method, gdaldem split)
 

@@ -87,51 +87,26 @@ such as sigma=10. etc. Have rationale. Log all this rationale, var names and val
 precise stage actual script invocation including the qsub cmd for reproductibilty later.
 So basically a premable with all defined followed by precise invocation you will launch.
 
-## Readable Shell Script Style - `~/projects/shell_style.sh` (CRITICAL, no reminders needed)
+## Readable Shell Script Style - `~/projects/shell_style.sh`
 
-**When rewriting or revisiting ANY script, OFFER to bring it to the preferred
-style below** (do not silently leave it ugly). The single worst offense: a
-lengthy comment placed AFTER code on the same line, spilling across continuation
-lines. NEVER do that. A comment is BRIEF and goes on its OWN line(s) BEFORE the
-code; a tiny same-line note on a var (`nprocs=$1; shift  # per node`) is fine.
-Keep `key=value` form in echo lines (easy to read); otherwise avoid verbosity.
-The preferred style in one line: positional `shift` args (workDir first), clean
-relative-path var block echoed to the log, `umask 022`, exec-redirect log with
-START/DONE banner, one option per line with aligned backslashes, the literal qsub
-line in the header, no line over 90 chars, brief up-front comments.
-
-EVERY new `.sh` worker follows the readable style in `~/projects/shell_style.sh`:
-positional `shift` arg parsing (not `${1:?verbose}` blocks), a clean relative-path
-var block echoed to the log, `umask 022`, exec-redirect log, one option per line
-with aligned backslashes, and the literal qsub submit line in the header comment.
-HARD rules Oleg keeps reminding on (just do them): NO line over 90 chars, code or
-comment - measure with `awk '{if(length($0)>90)print NR,length($0)}'`, never
-eyeball, and break the long ones (split a long multi-var `export` into separate
-lines). A big comment goes on its OWN line(s) BEFORE the code, NEVER as a trailing
-right-side comment that wraps across many lines (a short single-line trailing note
-on a var is fine). Readable, human, not verbose/ugly. Reference workers:
+The pure formatting rules (<=90-char lines measured with `awk
+'{if(length($0)>90)print NR,length($0)}'`, one option per line with aligned backslashes,
+no caps for emphasis, brief comments on their own line, never a comment after a `\`
+continuation) are owned by the **script-style** skill - load it before writing or editing
+a `.sh`. What is specific to a `.sh` WORKER (not formatting), keep here: every new worker
+follows `~/projects/shell_style.sh` - positional `shift` arg parsing (workDir first, not
+`${1:?verbose}` blocks), a clean relative-path var block echoed to the log, `umask 022`,
+an exec-redirect log with a START/DONE banner, and the literal qsub submit line in the
+header comment. Keep `key=value` form in echo lines. Reference workers:
 `sfs_mons_mouton/ba_htdem_gcp.sh`, `cassis_asp/gusev_cnet_gcp.sh`.
 
 ## Multi-Option Commands in Scripts
 
-In shell scripts, put each command-line option on its own line, WITH ITS VALUE
-on that same line: `--option val \`. One option per line, never several options
-on one line, and never split an option from its value. Same for each `export`.
-Use trailing `\` continuation backslashes (single space before the `\`, matching
-the surrounding scripts; or align to one column with the backslash alignment tool
-below where that reads tidier). This applies when AUTHORING a new script and when
-showing a command invocation in chat, not only when editing an existing script -
-it recurred (a proposed bundle_adjust block bunched options onto one line), so
-default to one-option-per-line for every multi-option command, everywhere.
-
-**Comment lines in scripts never exceed 90 characters.** Wrap a longer comment
-onto continuation comment lines. Measure line length with a tool (e.g. `awk
-'{if(length($0)>90)print NR,length($0)}'`), never eyeball it.
-
-**NEVER put a comment after a `\` line-continuation** (`cmd \  # note`): the `\`
-escapes the trailing space, the `#...` is a comment, and the command ENDS there
-(continuation broken). This applies to scripts AND to paste-able commands shown
-to Oleg. Keep comments on their own lines, or omit them.
+Put each command-line option (and each `export`) on its own line WITH ITS VALUE, using
+trailing `\` continuations. The one-option-per-line, aligned-backslash, <=90-char, and
+no-comment-after-backslash rules are owned by the **script-style** skill; apply them when
+AUTHORING a new script AND when showing a command invocation in chat, not only when editing
+an existing one.
 
 **When documenting a command in RST, list the options first, before the positional
 file arguments, with the output file last.** Keep each standalone command line under

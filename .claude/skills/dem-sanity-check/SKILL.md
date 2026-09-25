@@ -1,6 +1,10 @@
 ---
 name: dem-sanity-check
-description: The orientation specialist of the inspection hub ([[visual-inspection]]). Catch GLOBAL geometric errors in a produced DEM/ortho vs a reference - left-right mirror (flip), up-down flip, 180 rotation, bulk horizontal shift, vertical inversion. Carries the crater pose-cluster flip-detector tool, the mapproject-vs-independent-reference test, and the hard lessons that dz/geodiff/NMAD and bundle-adjust residual are BLIND to a horizontal mirror, and that a mirror is fixed by flipping the IMAGE (bundle adjustment cannot reflect, so a GCP-column change alone is a no-op). Load whenever asked whether a DEM/ortho is flipped/mirrored/rotated/shifted or correctly oriented, or right after building a DEM from a hand-assembled camera (sat_sim/cam_gen, custom GCPs).
+description: >-
+  Catch GLOBAL geometric errors in a produced DEM/ortho vs a reference: left-right mirror,
+  up-down flip, 180 rotation, bulk shift, vertical inversion. Load when asked whether a
+  DEM/ortho is flipped/mirrored/rotated/shifted, or right after building a DEM from a
+  hand-assembled camera (sat_sim/cam_gen, custom GCPs).
 ---
 
 # DEM sanity check: catching a global flip / mirror / shift

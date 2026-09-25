@@ -1,6 +1,10 @@
 ---
 name: sun-illumination
-description: Sun azimuth/elevation analysis for camera co-registration and SfS work - compute per-camera sun az/el (ASP sfs --query on cub+json, or from the CSM m_sunPosition, validated identical), make the sun-azimuth ROSE plot (polar scatter of the reference set vs the target set), and reason about it (grazing polar sun -> shadows dominate -> cross-set matching needs SAME-azimuth pairs; is the target's trouble illumination diversity or not). Load ANY time you do lunar (or other) camera registration / co-registration / SfS work, or need to explain a matching difficulty by illumination. Complements csm-models, dem-comparison, sfs work.
+description: >-
+  Sun azimuth/elevation analysis for camera co-registration and SfS: compute per-camera
+  sun az/el (sfs --query or CSM m_sunPosition), make the sun-azimuth rose plot, and reason
+  about grazing-sun shadow-matching. Load for any lunar or planetary camera registration or
+  SfS work, or to explain a matching difficulty by illumination.
 ---
 
 Load this for ANY SfS / lunar (or other planetary) camera registration work - there is

@@ -1,13 +1,10 @@
 ---
 name: jitter-solve
 description: >-
-  Refine per-line camera poses of a CSM LINESCAN with jitter_solve to remove jitter, twist,
-  or a low-frequency bend, constrained to a reference DEM and/or GCP. Load when asked to run
-  jitter_solve, "solve for jitter", remove a linescan twist/wobble, or set num-lines-per-position/orientation,
-  anchor points, or GCP for a linescan refine. Carries knot-count rules (few for twist vs scaling
-  for long linescans), the 1000-line orientation smear floor, OBALoG over SIFT for low-sun/varying
-  illumination, two-pass workflow, the mandatory --mapproj-dem metric, anchor-to-tri balancing,
-  Ceres limits for massive sets (Mons Mouton / SfS), and ground-evaluation discipline.
+  Refine per-line CSM linescan poses with jitter_solve to remove jitter, twist, or a
+  low-frequency bend, constrained to a reference DEM and/or GCP. Load when asked to run
+  jitter_solve, solve for jitter, remove a linescan twist or wobble, or set
+  num-lines-per-position/orientation, anchor points, or GCP for a linescan refine.
 ---
 
 # jitter_solve: refining linescan per-line poses (jitter / twist)
@@ -29,15 +26,10 @@ is usually a rigid rotation pc_align removes, leaving a small residual for jitte
 ## OBALoG vs SIFT: match detector for varying illumination
 
 When generating match files to feed `jitter_solve` (via `bundle_adjust` or
-`parallel_stereo --num-matches-from-disparity` on mapprojected images):
-- **SIFT (`--ip-detect-method 1`) fails under varying or grazing illumination.** On
-  lunar south pole OHRC/NAC images, SIFT severely under-matched or starved pairs (finding
-  only 7 to 38 matches, 0 clean matches), causing healthy images to look unmatchable.
-- **OBALoG (`--ip-detect-method 0`) is vastly superior.** With ASP image normalization,
-  OBALoG produced 8,300 to 11,200 raw matches and ~8,000 to 10,400 clean matches uniformly
-  across all pairs, solving cleanly to sub-pixel (<0.5 px) reprojection.
-- **Rule**: For planetary, shadow-dominated, low-contrast, or cross-illumination
-  mapprojected scenes, always use `--ip-detect-method 0` (OBALoG).
+`parallel_stereo --num-matches-from-disparity` on mapprojected images), use
+`--ip-detect-method 0` (OBALoG), not SIFT (`1`), for planetary, shadow-dominated,
+low-contrast, or cross-illumination scenes. Detail: the **bundle-adjust** skill (it owns
+the OBALoG-vs-SIFT lesson and the ~8000-11000 vs 7-38 match counts).
 
 ## Knot count: two-view twist vs long linescan scaling
 
