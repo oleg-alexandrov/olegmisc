@@ -1,12 +1,12 @@
 ---
 name: image-gcp-gen
 description: >-
-  Generate Ground Control Points (GCPs) from an uncalibrated or misregistered camera image against an existing registered orthoimage and DEM with gcp_gen, undo mapprojection to raw image coordinates, and run single-camera bundle_adjust with fixed GCPs to bootstrap cameras into an established reference frame before joint bundle adjustment.
+  Generate Ground Control Points (GCPs) from an uncalibrated or misregistered camera image against an existing registered orthoimage and DEM with gcp_gen, undo mapprojection to raw image coordinates, quantify planar shift with image_align, and run single-camera bundle_adjust with fixed GCPs to bootstrap cameras into an established reference frame before joint bundle adjustment.
 ---
 
-# Image GCP Generation and Single-Camera Registration (`gcp_gen`)
+# Image GCP Generation and Single-Camera Registration (`image_align` + `gcp_gen`)
 
-This skill documents how to register an uncalibrated or poorly oriented camera image against an existing georeferenced orthoimage and DEM using Ames Stereo Pipeline's `gcp_gen` tool and single-camera `bundle_adjust`.
+This skill documents how to register an uncalibrated or poorly oriented camera image against an existing georeferenced orthoimage and DEM using Ames Stereo Pipeline's `image_align`, `gcp_gen`, and single-camera `bundle_adjust`.
 
 ## Why Use This Workflow
 
@@ -14,12 +14,20 @@ When introducing new images to an existing block of co-registered imagery (e.g. 
 
 In a joint multi-view solve:
 - Matches across large initial pointing errors produce huge reprojection residuals.
-- Standard outlier filters (`remove-outliers-params`) will either purge those tie points entirely or allow the large error to pull the established cameras off track (gauge drift).
+- Standard outlier filters (`remove-outliers-params`) will either purge those tie points entirely or allow large pointing errors to corrupt established cameras (gauge drift).
 - Optimizers can get trapped in false local minima or fail to converge.
 
-The `gcp_gen` workflow decouples the problem: it matches in planar ortho space, transfers correspondences back to raw sensor coordinates, creates 3D ground control points (GCPs), and solves each camera **individually** against the fixed reference frame. Once all cameras are brought into close agreement ($\le 1\text{ to }2\text{ meters}$), a joint multi-view bundle adjustment can be executed safely with tight initial conditions.
+The `gcp_gen` workflow decouples the problem:
+1. Match in planar ortho space where terrain distortion is minimized.
+2. Transfer correspondences back to raw sensor coordinates via `undo_mapproj`.
+3. Create 3D Ground Control Points (GCPs) constrained to the reference DEM.
+4. Solve each candidate camera **individually** against the fixed reference frame.
 
-## The End-to-End Pipeline
+Once all cameras are brought into close agreement ($\le 1\text{ to }2\text{ meters}$), joint multi-view bundle adjustment and jitter correction can be executed safely with tight initial conditions.
+
+---
+
+## Canonical Pipeline
 
 ### Step 1: Initial Mapprojection
 Mapproject the candidate image onto the reference DEM using its initial, unrefined camera model:
@@ -29,30 +37,68 @@ mapproject --tr 0.5 -t csm \
   ref_dem.tif candidate.cub candidate_init.json candidate_map.tif
 ```
 
-Both `candidate_map.tif` and the reference `ref_ortho.tif` now share the same map projection and spatial resolution. Planar displacements (shifts and rotations) can be matched directly without raw camera geometric distortions.
+Both `candidate_map.tif` and the reference `ref_ortho.tif` now share the same map projection and spatial resolution.
 
-### Step 2: Generate GCPs with `gcp_gen`
-Pass the candidate raw image, its mapprojection, the reference orthoimage, and the DEM to `gcp_gen`:
+### Step 2: Measure Planar Shift with `image_align`
+Before creating GCPs, run `image_align` in translation mode between the reference ortho and candidate map.
+
+**Argument Order**: The fixed reference ortho MUST be specified first, and the candidate image second (the same convention used in `pc_align`):
+
+```bash
+image_align \
+  --alignment-transform translation \
+  --ip-detect-method 0 \
+  --inlier-threshold 50 \
+  --ip-per-tile 2500 \
+  --ip-per-image 0 \
+  ref_ortho.tif \
+  candidate_map.tif \
+  --output-prefix align_dir/run \
+  -o align_dir/run_aligned.tif
+```
+
+Inspect the resulting transform file `align_dir/run-transform.txt`:
+```text
+1 0 <dx>
+0 1 <dy>
+0 0 1
+```
+
+Compute the planar shift magnitude:
+```bash
+shift_mag=$(awk 'NR==1 {dx=$3} NR==2 {dy=$3} END {print sqrt(dx*dx+dy*dy)}' align_dir/run-transform.txt)
+echo "Alignment shift magnitude: ${shift_mag} px"
+```
+
+**Decision Gate**:
+- If `align_dir/run-transform.txt` does not exist: interest point matching failed (poor contrast, divergent illumination, or zero overlap). Stop and do not proceed to GCP generation.
+- If `shift_mag` is below the target threshold (e.g. $< 1\text{ px}$): the camera pointing is already well-registered; GCP generation can be skipped.
+- If `shift_mag` is large: proceed to GCP generation and single-camera bundle adjustment.
+
+### Step 3: Synthesize 3D GCPs with `gcp_gen`
+Pass the candidate raw image, candidate mapprojection, reference orthoimage, and DEM to `gcp_gen`:
 
 ```bash
 gcp_gen \
-  --camera-image candidate.cub \
+  --ip-detect-method 0 \
+  --inlier-threshold 50 \
+  --ip-per-tile 2500 \
+  --ip-per-image 0 \
+  --gcp-sigma 1.0 \
+  --camera-image "$(pwd)/candidate.cub" \
   --mapproj-image candidate_map.tif \
   --ortho-image ref_ortho.tif \
   --dem ref_dem.tif \
-  --ip-detect-method 0 \
-  --individually-normalize \
-  --gcp-sigma 1.0 \
-  --output-prefix gcp_cand/run \
-  --output-gcp candidate.gcp
+  --output-prefix align_dir/run \
+  -o candidate.gcp
 ```
 
-#### What Happens Under the Hood:
-1. **Matching in Ortho Space**: `gcp_gen` detects and matches interest points between `candidate_map.tif` and `ref_ortho.tif`.
-2. **Undoing Mapprojection (`undo_mapproj`)**: `gcp_gen` inspects the GeoTIFF metadata of `candidate_map.tif` to identify the camera model and DEM used. For each matched point $(x_{\text{map}}, y_{\text{map}})$, it projects backwards through the camera model to calculate the raw image coordinates $(col_{\text{raw}}, row_{\text{raw}})$.
-3. **Ground Control Point Synthesis**: For the corresponding reference point $(x_{\text{ortho}}, y_{\text{ortho}})$, `gcp_gen` looks up the latitude, longitude, and DEM elevation, writing a standard `.gcp` file containing fixed 3D ground coordinates paired with raw sensor coordinates.
+#### Key Mechanics:
+1. **Match Cache Sharing**: By passing the exact same `--output-prefix align_dir/run` as `image_align`, `gcp_gen` detects `run-*.match` on disk and reuses the cached interest points in under a second instead of rematching from scratch.
+2. **Undoing Mapprojection (`undo_mapproj`)**: `gcp_gen` reads the camera model and DEM recorded in `candidate_map.tif` metadata, unprojects matched ortho coordinates back through the camera ray, and determines raw image coordinates $(col_{\text{raw}}, row_{\text{raw}})$.
+3. **3D Coordinate Generation**: Looks up the reference longitude, latitude, and DEM elevation for each inlier match, producing a `.gcp` file with 3D ground coordinates and candidate sensor coordinates.
 
-### Step 3: Single-Camera Pose Adjustment
+### Step 4: Single-Camera Pose Adjustment
 Run `bundle_adjust` on the single candidate image with the ground points held fixed:
 
 ```bash
@@ -64,9 +110,9 @@ bundle_adjust \
   -o ba_single/run
 ```
 
-Because `--fix-gcp-xyz` keeps the 3D ground locations rigid, Ceres adjusts only the candidate camera trajectory (position and orientation) to fit the control points. This completes in seconds and produces `run-candidate.adjusted_state.json`.
+Because `--fix-gcp-xyz` keeps 3D ground coordinates rigid, Ceres adjusts only the candidate camera trajectory (position and orientation) to fit the control points. This completes in seconds and produces `run-candidate.adjusted_state.json`.
 
-### Step 4: Verification by Re-Mapprojection
+### Step 5: Verification by Re-Mapprojection
 Mapproject the candidate image again using the newly adjusted camera:
 
 ```bash
@@ -75,33 +121,35 @@ mapproject --tr 0.5 -t csm \
   candidate_corrected_map.tif
 ```
 
-Overlay `candidate_corrected_map.tif` with `ref_ortho.tif` in `stereo_gui` to confirm alignment.
+Re-run `image_align` against `ref_ortho.tif` or overlay in `stereo_gui` to confirm that residual translation is reduced to sub-pixel level.
 
 ---
 
-## Best Practices & Practical Gotchas
+## Critical Gotchas & Best Practices
 
-### 1. Illumination & Shadow Matching (Critical for Lunar Polar Imagery)
+### 1. The `--camera-image` Exact Path Match Requirement
+`gcp_gen` verifies that `--camera-image` matches the `INPUT_IMAGE_FILE` string embedded in the GeoTIFF metadata header of `--mapproj-image`.
+- If `mapproject` recorded an absolute path (`/path/to/candidate.cub`), passing a relative path (`candidate.cub`) causes `gcp_gen` to abort with:
+  `ERROR: The image file in the mapproj header does not match the camera image.`
+- **Rule**: Always pass canonical absolute paths (`$(pwd)/candidate.cub` or `realpath`) to `--camera-image`.
+
+### 2. Illumination & Solar Azimuth Matching
 - Never match an image against an ortho with opposite or orthogonal shadows. In polar regions, crater shadows rotate with solar azimuth.
-- Always pair each candidate image with the reference image or mosaic that has the **closest solar azimuth** ($\Delta\text{az} \le 5^\circ$).
-- If multiple reference images are available, catalog solar azimuths first (e.g. via `sfs --query -t csm`) and match candidate swaths against their closest illumination twin.
+- Always pair each candidate image with the reference image that has the **closest solar azimuth** ($\Delta\text{az} \le 5^\circ$).
+- Catalog solar azimuths first (e.g. via `sfs --query -t csm` or CSM state `m_sunPosition`) to select optimal reference pairs.
 
-### 2. Interest Point Detector Selection
-- Default to `--ip-detect-method 0` (Integral OBALoG). In ASP, OBALoG is native, robust to scale, and often produces orders of magnitude more valid matches on planetary surfaces than SIFT.
-- Use `--individually-normalize` on floating-point rasters with deep shadows to prevent extreme dynamic range differences from hiding valid features.
-- If feature detectors fail due to low contrast or subtle terrain, compute a dense match file via stereo correlation (`parallel_stereo --correlator-mode`) on the mapprojected pair and feed it to `gcp_gen` via `--match-file`.
+### 3. Tile DEMs vs Large Regional DEMs
+- For localized tiles (e.g. central 2x2 km or 3x3 km study area), use the corresponding tile DEM (e.g. `sfs_initial_central_2km_1m.tif`).
+- Ensure the bounding box of both the candidate mapprojection and reference ortho intersects the valid data extent of the DEM.
 
-### 3. Restrain Degrees of Freedom
-- In the bootstrapping single-camera solve, refine only rigid camera position and orientation (`--camera-position-uncertainty 100 100`).
-- Do NOT attempt to solve fine orientation knots (jitter) or camera intrinsics during this initial stage. Jitter correction requires an already tight alignment to prevent knot oscillations.
+### 4. Detector & Matching Parameters
+- Default to `--ip-detect-method 0` (Integral OBALoG). It is native, fast, and robust across illumination scales.
+- Use `--ip-per-tile 2500 --ip-per-image 0` to ensure uniform spatial distribution of tie points across the overlap area.
+- Set `--gcp-sigma 1.0` (matching the 0.5–1.0 m ground resolution of high-resolution sensors).
 
-### 4. DEM Path Integrity
-- `undo_mapproj` reads the absolute DEM path recorded in the GeoTIFF header of the mapprojected image.
-- If the DEM was moved or renamed, `bundle_adjust` and `gcp_gen` will reject the unprojection unless `--accept-provided-mapproj-dem` is passed.
+### 5. Restrain Degrees of Freedom
+- In the bootstrap solve, solve only rigid camera position and orientation (`--camera-position-uncertainty 100 100`).
+- Do NOT solve jitter or camera intrinsics during this initial stage. Jitter correction should only be run after initial alignment is achieved.
 
-### 5. Inspecting Results
-- Inspect the generated match file in `stereo_gui`:
-  ```bash
-  stereo_gui candidate.cub ref_ortho.tif gcp_cand/run-candidate__ref_ortho.match
-  ```
-- Inspect the GCP residuals in `ba_single/run-pointmap.csv` to ensure mean errors are sub-pixel before feeding the adjusted camera into a joint bundle.
+### 6. Reference Script Implementation
+- Canonical reference implementation: `~/projects/sfs/sfs_sim_align.sh` (lines 184–243).
