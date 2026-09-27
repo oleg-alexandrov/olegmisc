@@ -118,7 +118,17 @@ When releasing new or updated geoid rasters:
 
 5. **Update Remote CI Dependency Tarballs (`BinaryBuilder` Releases)**:
    - For `asp_deps_mac_arm64_v4`, `asp_deps_mac_x64_v4`, and `asp_deps_linux_arm_v1`:
-     Unpack `asp_deps_p1.tar.gz`, copy updated `share/geoids/` and `libegm2008`, re-tar without leading path prefix, verify gzip integrity, and upload with `--clobber`.
+     Unpack `asp_deps_p1.tar.gz`, copy updated `share/geoids/` and `libegm2008`, and re-tar without leading path prefix.
+     **CRITICAL: Always enable `shopt -s dotglob` before `tar -czf ... *`**:
+     A bare shell glob `*` skips hidden files (`.*`). In conda environments that track a root `.condarc` (e.g. `asp_deps_x64`), omitting `.condarc` causes `conda-unpack` on the CI runner to abort with `FileNotFoundError: .../.condarc`. This aborts prefix rewriting midway and breaks `git` (`git: 'remote-https' is not a git command`).
+     ```bash
+     cd env_dir
+     shopt -s dotglob
+     COPYFILE_DISABLE=1 tar -czf ../asp_deps_p1.tar.gz *
+     cd ..
+     tar -tzf asp_deps_p1.tar.gz | grep "^\.condarc$" # verify if original had it
+     gh release upload <tag> asp_deps_p1.tar.gz -R NeoGeographyToolkit/BinaryBuilder --clobber
+     ```
    - For `asp_deps_linux_v2` (linux intel):
      Run `conda-pack` on `lunokhod1` from `~/miniconda3/envs/asp_deps`:
      ```bash

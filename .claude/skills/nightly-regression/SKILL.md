@@ -165,6 +165,36 @@ $gh workflow run build_test_mac_arm64.yml -R NeoGeographyToolkit/StereoPipeline 
 $gh workflow run build_test_mac_x64.yml   -R NeoGeographyToolkit/StereoPipeline --ref master
 ```
 
+**Harvesting a completed cloud run and publishing via resume:**
+When a manually retriggered cloud run finishes on GitHub Actions, fetch its artifact and stage the tarball so `launch_master.sh resume` can publish the daily release:
+```bash
+gh=$(ls -d $HOME/*conda3/envs/gh/bin/gh | head -1)
+cd ~/projects/BinaryBuilder
+
+# 1. Download artifact from the completed run (e.g. for build_test_mac_x64)
+"$gh" run download <RUN_ID> -R NeoGeographyToolkit/StereoPipeline
+# Creates StereoPipeline-Artifact-build_test_mac_x64/
+
+# 2. Verify test results in output_test.txt
+grep "test_status 0" StereoPipeline-Artifact-build_test_mac_x64/output_test.txt
+
+# 3. Stage the tarball into asp_tarballs/
+mkdir -p asp_tarballs
+tarball=$(ls StereoPipeline-Artifact-build_test_mac_x64/StereoPipeline-*.tar.bz2 | head -1)
+cp -fv "$tarball" asp_tarballs/
+tarball_name="asp_tarballs/$(basename "$tarball")"
+
+# 4. Set status file to test_done Success
+echo "$tarball_name test_done Success" > status_cloudMacX64.txt
+
+# 5. Clean up artifact directory
+rm -rf StereoPipeline-Artifact-build_test_mac_x64
+
+# 6. Resume launch_master.sh to publish release and email status
+nohup ./auto_build/launch_master.sh resume > output_master.txt 2>&1 < /dev/null & echo PID $!
+```
+All four status files are now `test_done Success`, so resume skips building, breaks out of the poll loop, and proceeds directly to release creation and email.
+
 ## Monitor
 
 ```bash
