@@ -91,19 +91,44 @@ When releasing new or updated geoid rasters:
    - Release on `NeoGeographyToolkit/StereoPipeline` with a new incremented tag (e.g. `geoid2.0`). Do not overwrite older releases.
    - Attach `geoids.tgz`.
 
-3. **Update `geoid-feedstock`**:
+3. **Update `geoid-feedstock` & Build for All Four Platforms**:
    - Update `recipe/meta.yaml` with the new release tag URL and sha256 checksum.
-   - Increment the package version (e.g. `asp3.6.0`).
-   - Build for target platforms using `conda-build` with isolated package cache:
+   - Increment package version and build number (e.g. version `asp3.7.0`, build 2).
+   - Build for all four platforms:
+     * `osx-arm64`: Run `conda-build` locally on Mac mini (arm64).
+     * `osx-64`: Run `CONDA_SUBDIR=osx-64 conda-build` on Mac mini.
+     * `linux-64`: Run modern `conda-build` on `lunokhod1` (using `cassis_build` env).
+     * `linux-aarch64`: Run `conda-build` inside the `asp_arm` Docker container (`/projects` mount).
+   - Upload each `.conda` package to Anaconda channel `nasa-ames-stereo-pipeline`:
      ```bash
-     export CONDA_PKGS_DIRS=/tmp/pkgs_<platform>
-     conda-build -c nasa-ames-stereo-pipeline -c conda-forge recipe/
+     anaconda upload -u nasa-ames-stereo-pipeline <package>.conda
      ```
-   - Upload to Anaconda:
+   - Verify on the channel:
      ```bash
-     anaconda upload -u nasa-ames-stereo-pipeline <built-package>.tar.bz2
+     curl -s https://api.anaconda.org/package/nasa-ames-stereo-pipeline/geoid | jq '.files[] | select(.version=="asp3.7.0") | {subdir: .attrs.subdir, basename: .basename}'
      ```
 
-4. **Update Consumer Recipes**:
-   - In `BinaryBuilder/Packages.py` (`class geoid`): Update `src` URL and sha256 checksum.
-   - In `stereopipeline-feedstock/recipe/build.sh` and `build_from_source.sh`: Update download URL.
+4. **Update Consumer Recipes & Environments**:
+   - In `BinaryBuilder/Packages.py` (`class geoid`): Update URL and sha1 checksum.
+   - In `stereopipeline-feedstock/recipe/build.sh` and `build_from_source.sh`: Update URL.
+   - Install `geoid` package into `asp_deps` across local and remote environments:
+     * `lunokhod1`: `~/miniconda3/envs/asp_deps`
+     * Mac mini: `asp_deps` and `asp_deps_x64`
+     * Docker: `asp_arm` `/opt/conda/envs/asp_deps`
+
+5. **Update Remote CI Dependency Tarballs (`BinaryBuilder` Releases)**:
+   - For `asp_deps_mac_arm64_v4`, `asp_deps_mac_x64_v4`, and `asp_deps_linux_arm_v1`:
+     Unpack `asp_deps_p1.tar.gz`, copy updated `share/geoids/` and `libegm2008`, re-tar without leading path prefix, verify gzip integrity, and upload with `--clobber`.
+   - For `asp_deps_linux_v2` (linux intel):
+     Run `conda-pack` on `lunokhod1` from `~/miniconda3/envs/asp_deps`:
+     ```bash
+     ~/.local/bin/conda-pack -p ~/miniconda3/envs/asp_deps -o asp_deps.tar.gz --force \
+       --ignore-missing-files --ignore-editable-packages --n-threads -1 \
+       --exclude "lib/libVw*" --exclude "lib/libAsp*" \
+       --exclude "include/vw/*" --exclude "include/asp/*"
+     split -b 1900M -d -a 1 asp_deps.tar.gz asp_deps_p
+     mv asp_deps_p0 asp_deps_p1.tar.gz
+     mv asp_deps_p1 asp_deps_p2.tar.gz
+     gh release upload asp_deps_linux_v2 -R NeoGeographyToolkit/BinaryBuilder \
+       asp_deps_p1.tar.gz asp_deps_p2.tar.gz --clobber
+     ```
