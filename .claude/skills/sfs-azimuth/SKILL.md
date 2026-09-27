@@ -45,8 +45,9 @@ sfs --threads 1 --query \
   ```
 
 ### Critical Gotcha 2: Large CSM Pose Sample Loading Overhead (>20k States)
-- High-rate pushbroom / linescan cameras (such as LRO NAC with 22,528 lines) contain over 20,000 pose, velocity, and quaternion samples in their Input Sensor Data (ISD) JSON.
-- When CSM initializes `USGS_ASTRO_LINE_SCANNER_SENSOR_MODEL`, constructing spline/Lagrange interpolators across 20,000+ states takes **8 to 10 seconds per camera**.
+- **Mechanism**: In ALE (`ale/base/type_sensor.py`), the default ephemeris reduction mode is `none`. Consequently, `num_samples = self.image_lines + 1`.
+- For standard full-length LRO NAC images with 22,528 lines, the generated ISD JSON contains exactly **22,529 pose positions and 22,529 orientation quaternions** (one sample per scanline).
+- When CSM initializes `USGS_ASTRO_LINE_SCANNER_SENSOR_MODEL`, constructing spline/Lagrange interpolators across 22,529 states takes **8 to 10 seconds of CPU time per camera**.
 - This overhead occurs once per camera during model instantiation. For hundreds or thousands of images, serial execution takes hours. Mitigation: parallelize across cores using chunked lists.
 
 ## 4. The Canonical Batch Script: `~/projects/sfs/sfs_query.sh`
