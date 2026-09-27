@@ -1,7 +1,7 @@
 ---
 name: docs-writing
 description: >-
-  Documentation and prose writing - building/compiling ASP docs (sphinx, make html) and checking a doc build for warnings, RST formatting and :ref: vs :numref:, citing papers, NEWS.rst conventions, the say-once/short-sentence/words-to-avoid writing style, commit-message style, and how to show diffs. Load before building, compiling, or checking the ASP docs (sphinx-build / make html), or before writing or editing RST docs, NEWS entries, commit messages, PR/issue text, or any prose.
+  Documentation and prose writing - building/compiling ASP docs (sphinx, make html) and checking a doc build for warnings, recognizing that any .rst file in the ASP repo base dir (outside docs/) is also part of the doc, RST formatting and :ref: vs :numref:, citing papers, NEWS.rst conventions, the say-once/short-sentence/words-to-avoid writing style, commit-message style, and how to show diffs. Load before building, compiling, or checking the ASP docs (sphinx-build / make html), or before writing or editing RST docs, NEWS entries, commit messages, PR/issue text, or any prose.
 ---
 
 ## Displaying Diffs and Changes
@@ -34,16 +34,17 @@ binary directly: `~/anaconda3/envs/sphinx/bin/sphinx-build -b html . _build/html
 from within `docs/`. Create it (once) per `building_asp.rst`:
 `conda create -n sphinx -c conda-forge sphinx sphinxcontrib-bibtex`.
 
-**Several docs pages are pulled from the ASP repo BASE dir, not from `docs/`.**
-The Sphinx build includes a handful of `.rst` files that physically live at the
-repo root (one level above `docs/`) via `.. include:: ../<FILE>` stubs in `docs/`:
+**Any `.rst` file in the ASP repo BASE dir (outside `docs/`) is also part of the documentation.**
+Do NOT assume documentation is confined to `docs/`. The Sphinx build pulls in all `.rst` files
+that physically live at the repository root via `.. include:: ../<FILE>` stubs in `docs/`:
 `installation.rst` includes `../INSTALLGUIDE.rst`, `news.rst` includes `../NEWS.rst`,
 `contributing.rst` includes `../CONTRIBUTING.rst`, `acknowledgements.rst` includes
-`../AUTHORS.rst`, `thirdparty.rst` includes `../THIRDPARTYLICENSES.rst`. So to edit
-the install guide, the release notes, the contributing guide, the author list, or
-the third-party licenses, edit the BASE-dir file (`INSTALLGUIDE.rst`, `NEWS.rst`,
-etc.), NOT the `docs/` stub. Grepping only under `docs/` for that prose will miss
-it; search the repo root too.
+`../AUTHORS.rst`, `thirdparty.rst` includes `../THIRDPARTYLICENSES.rst`.
+Therefore, any `.rst` file in the base directory of the ASP repo (outside `docs/`) is an integral
+part of the documentation. When searching, auditing, consulting, or editing the documentation,
+you MUST search both `docs/` and the repo base directory. Grepping only under `docs/` for
+installation instructions, release notes, or cross-reference targets will miss them. To edit
+those topics, edit the base-dir file (`INSTALLGUIDE.rst`, `NEWS.rst`, etc.), NOT the `docs/` stub.
 
 **Checking a build for real problems.** Grepping the build log for `error` gives
 false positives - many ASP page/image names contain "error"
@@ -56,6 +57,7 @@ found" | grep -viE "RemovedInSphinx|deprecated"`. Empty output = clean. A bad
 ## RST Documentation Formatting
 
 **Documentation file locations:** check both `docs/` subdirectories and repository root level.
+Any `.rst` file in the ASP repo base directory (outside `docs/`) is part of the doc.
 Cross-reference labels (`.. _foo:` targeted by `:numref:`foo``) OFTEN live in root-level
 `.rst` files (ASP: `INSTALLGUIDE.rst`, `NEWS.rst`, `README.rst`, `install/INSTALLGUIDE.rst`),
 NOT under `docs/`. So before calling a `:numref:` broken, grep the WHOLE repo for its label
