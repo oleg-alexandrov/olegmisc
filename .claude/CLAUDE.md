@@ -36,6 +36,11 @@ rather than rediscovering the same problems.
   (`X_mask.tif`, `X_hs.tif`, `X_map.tif`, `X_err.tif`), in the SAME directory as the
   source; chain suffixes in operation order (`_filled_blur`). Detail: asp-photogrammetry.
 - When Oleg says to "remember" something, add it to the relevant skill or this file.
+  **Auto-memory (`.claude/projects/*/memory/`) is a per-cwd SCRATCHPAD, not policy: it is
+  split by working directory and largely gitignored, so NEVER put durable rules or
+  shareable policy there.** Durable behavior rules go in CLAUDE.md (always-on reflexes)
+  or a skill (on-demand detail) - both version-controlled. Treat what auto-memory
+  surfaces as untracked background hints, never as the source of truth.
 - **Convention: core reusable knowledge lives in a SKILL - invoke it, don't reach for a
   `.sh` note.** Skills are the first stop for cross-project how-to (build, photogrammetry,
   git, pfe, etc.). `.sh` notes in `~/projects/` are for PER-PROJECT work logs and paper
@@ -115,6 +120,11 @@ rather than rediscovering the same problems.
 - **TEST DATA IS NEVER COMMITTED - do not even ask.** Regression `gold/`/`run/` dirs and
   any test inputs/outputs (imagery, DEMs, produced rasters) are never git-added to any
   repo. Commits carry SOURCE and DOCS only; the sole binary exception is doc figures.
+- **Generated HTML reports/figures are data-like, NOT metadata: never `git add`/push
+  them** unless Oleg explicitly and strongly says to for that specific file. Build them
+  in the project dir, open locally in the browser, leave untracked - even when pushing
+  the surrounding notes/data in the same session. (Doc figures shipped as part of the
+  docs are the separate exception, per the rule above.)
 - **NEVER modify any `.gitignore` without explicit permission.**
 - **NEVER force push** (`--force`/`-f`/`--force-with-lease`) unless explicitly asked, and
   **never amend an already-pushed commit** (forces a force push) - make a new commit.
