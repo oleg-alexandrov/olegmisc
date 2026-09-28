@@ -3,6 +3,42 @@ name: autonomous-ops
 description: Running Claude autonomously or overnight - the don't-stall rule, in-session CronCreate heartbeat plus OS-level watchdog resurrector, per-bot namespacing under ~/.claude/autorun, submit-job-then-arm-cron discipline, and dropping the cron when done. Load whenever asked to run overnight, run autonomously, monitor a long/PBS job, or set up a recurring heartbeat.
 ---
 
+## STANDING CHECK - HUNT FOR STALE WATCHDOG CRONS (read first)
+
+**A watchdog cron that outlives its task silently burns days of usage. This has
+happened and it is serious. Two obligations, both mandatory:**
+
+- **CHECK-AND-ADVISE, proactively.** Whenever this skill loads, whenever the user asks
+  why usage/tokens/cost are climbing (especially "I haven't used Claude and it's still
+  going up"), and any time you set up OR finish autonomous work, RUN
+  `crontab -l 2>/dev/null` and `ls -la ~/.claude/autorun/` and look for stale apparatus.
+  Any `watchdog_<tag>.sh` crontab line whose project work is DONE is a runaway - name it,
+  explain it is resurrecting `claude -c -p` on a schedule for no reason, and offer to run
+  the four-part teardown. Do not wait to be asked; a rising-usage question is a direct cue
+  to look here FIRST.
+- **A RESURRECTED SESSION THAT FINDS NOTHING TO DO MUST TEAR ITSELF DOWN, not log-and-exit.**
+  If a watchdog-resurrected `claude -c -p` reads the notes and concludes the work is
+  complete ("unchanged", "holding for direction", "standing by", "nothing to advance"),
+  that conclusion IS the signal that the cron should already be gone. Run the full
+  four-part teardown (drop the crontab line, touch the sentinel, CronDelete the in-session
+  heartbeat, wipe the apparatus files) THEN exit. Never let a resurrected session keep
+  emitting idle "nothing to do" messages - each one is a full model session billed to
+  reach a conclusion the last dozen already reached.
+
+**BLUNDER, 2026-09-28 (KH-7 Vale, tag `kh7jitter`).** The sub4 phase finished
+(deliverable `sub4/jg24`), but the OS watchdog crontab line
+(`5,25,45 * * * * .../watchdog_kh7jitter.sh`) was never dropped. For DAYS it fired every
+~40 min, resurrecting a full Opus session that read the notes, logged
+"Unchanged - sub4 phase complete, deliverable sub4/jg24. Holding for direction," and
+exited - roughly 36 idle full-model sessions/day around the clock, burning usage while
+Oleg was away and not touching Claude at all. He caught it only because usage kept
+climbing with his hands off the keyboard. Root cause: the "drop the cron when work is
+DONE" rule below was not honored, and every resurrected session log-and-exited instead
+of tearing down. Fix was to `crontab -r` (it was the only line) and remove the heartbeat.
+Lesson: completion of the WORK is the trigger to teardown - do not leave a watchdog
+"standing by for the user's return," and if you wake up and there is nothing to do, that
+is your cue to disarm, not to sleep again.
+
 ## Overnight / Autonomous Runs and Self-Wakeup
 
 **Overnight / autonomous + self-wakeup (full detail: `~/projects/claude_overnight_notes.sh`):**
