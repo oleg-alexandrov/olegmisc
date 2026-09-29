@@ -2,7 +2,9 @@
 
 # Align trailing backslash continuation characters to a consistent column
 # within a range of lines. Finds the longest content line in the range and
-# places all backslashes one space past that, or at the given column.
+# places all backslashes one space past that, or at the given column. Lines
+# ending in "+ \\" (Python string concatenation) are aligned on the "+", so
+# this works for both shell continuations and Python help-string blocks.
 #
 # Usage:
 #   align_backslashes.py <file> <start_line> <end_line>              # print
@@ -45,29 +47,36 @@ def main():
     s = start - 1
     e = end
 
-    # Strip trailing backslash and measure content width
+    # Strip trailing backslash and measure content width. A line ending in
+    # "+ \\" (Python string concatenation) is handled as a unit: the "+" is
+    # aligned to the column and the backslash follows one space later. A bare
+    # trailing "\\" (shell) is aligned directly.
     stripped = []
     for i in range(s, e):
         line = lines[i].rstrip("\n")
         if line.rstrip().endswith("\\"):
             content = line.rstrip()[:-1].rstrip()
-            stripped.append((i, content, True))
+            has_plus = content.endswith("+")
+            if has_plus:
+                content = content[:-1].rstrip()
+            stripped.append((i, content, True, has_plus))
         else:
-            stripped.append((i, line.rstrip(), False))
+            stripped.append((i, line.rstrip(), False, False))
 
     # Find target column: longest content + 1 space, or user-specified
     if col is None:
         max_len = 0
-        for _, content, has_bs in stripped:
+        for _, content, has_bs, _ in stripped:
             if has_bs and len(content) > max_len:
                 max_len = len(content)
         col = max_len + 1
 
     # Rebuild lines
-    for idx, content, has_bs in stripped:
+    for idx, content, has_bs, has_plus in stripped:
         if has_bs:
             padding = max(1, col - len(content))
-            lines[idx] = content + " " * padding + "\\\n"
+            tail = "+ \\\n" if has_plus else "\\\n"
+            lines[idx] = content + " " * padding + tail
 
     if inplace:
         with open(filepath, "w") as f:

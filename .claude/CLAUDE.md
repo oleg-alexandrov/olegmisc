@@ -64,8 +64,9 @@ rather than rediscovering the same problems.
 
 ## Writing style (always-on, all output)
 
-- **No em dashes** to join clauses: end the sentence with a period, or use a colon. A
-  short hyphen inside a compound word is fine.
+- **No em dashes or semicolons** to join clauses: end the sentence with a period, use a
+  colon, or use a comma where it fits. Break a long clause chain into shorter sentences.
+  A short hyphen inside a compound word is fine.
 - Say **"fails"**, never "chokes" (or "errors out", "rejects", "throws").
 - **"triangulation error"**, not "ray intersection error" (the point2dem `--errorimage`
   band). Fine to write both once, then use "triangulation error" throughout.
@@ -74,6 +75,10 @@ rather than rediscovering the same problems.
 - **Shell command blocks: NEVER put a comment to the right of a `\` continuation line**
   - the trailing backslash stops escaping the newline and the command silently breaks.
   Put comments above, or in a note below. Detail: shell-scripts.
+- **ANY time you edit backslash-continued lines (shell `\` or Python `+ \`), run
+  `~/bin/align_backslashes.py <file> <start> <end> --inplace` BEFORE showing the result.**
+  Never present misaligned continuations for Oleg to correct. The tool handles both
+  shell and Python `+ \` (aligns the `+`). This is a quiet, mandatory step, not a hook.
 - **Scientific figures: EMPTY title, NO in-image labels; the ONLY in-image text is the
   colorbar label = UNIT ONLY, spelled out ("meters"). Everything else in the CAPTION.**
   Print stats to stdout for the caption; never `set_title` them. Detail: visual-inspection.

@@ -8,11 +8,11 @@
 # Wipes all intermediate files (.IMG, .lbl, raw .cub, .cal.cub), keeping only final
 # .cal.echo.cub, .cal.echo.json, and .ode.json.
 #
-# spiceinit uses the USGS South Pole custom polar kernels by default.
-# Pass --no-usgs-polar to use standard mission kernels.
+# spiceinit uses standard mission kernels by default.
+# Pass --usgs-polar to use the USGS South Pole custom polar kernels (2009-2013).
 #
 # Usage:
-#   python3 prepare_usgs_nac.py [--list image_list.txt] [--no-usgs-polar] [PRODUCT_ID ...]
+#   python3 prepare_usgs_nac.py [--list image_list.txt] [--usgs-polar] [PRODUCT_ID ...]
 
 import argparse
 import json
@@ -49,7 +49,7 @@ def fix_distortion_coeff(json_path):
       json.dump(d, f, indent=2)
     print(f"Patched scalar coefficient {coeff} -> [{coeff}] in {os.path.basename(json_path)}")
 
-def process_product(pid, out_dir, use_polar=True):
+def process_product(pid, out_dir, use_polar=False):
   pid = pid.strip().upper()
   if not pid:
     return
@@ -121,8 +121,8 @@ def process_product(pid, out_dir, use_polar=True):
   run_cmd(cmd_echo, env=env_isis)
   print(f"Echo correction complete: {final_cub}")
 
-  # Step 5: isd_generate from final cal.echo.cub
-  cmd_isd = f"{ISISROOT}/bin/isd_generate -k {final_cub} {final_cub} -o {final_json}"
+  # Step 5: isd_generate from final cal.echo.cub with linear reduction
+  cmd_isd = f"{ISISROOT}/bin/isd_generate -k {final_cub} {final_cub} --reduction linear -o {final_json}"
   run_cmd(cmd_isd, env=env_isis)
   print(f"Generated raw ISD JSON: {final_json}")
 
@@ -162,17 +162,13 @@ def main():
   parser = argparse.ArgumentParser(description="Fetch and prepare USGS controlled LRO NAC images with calibration and echo correction.")
   parser.add_argument("products", nargs="*", help="Product IDs (e.g. M135007317RE)")
   parser.add_argument("--list", help="File with list of product IDs")
-  parser.add_argument("--outdir", default="/nobackupp19/oalexan1/projects/sfs_BCU2314-BDU1224-MM/usgs_south",
-                      help="Output directory on pfe")
-  # TODO: switch this default to False (vanilla standard mission kernels) once the
-  # controlled usgs_south run is done. Vanilla is the common case; polar kernels
-  # apply only to the 2009-2013 South Pole controlled images. Kept True for now so
-  # the live usgs_south run, which passes no flag, is not disrupted mid-flight.
-  parser.add_argument("--usgs-polar", dest="usgs_polar", action="store_true", default=True,
+  parser.add_argument("--outdir", default="/nobackupp19/oalexan1/projects/sfs_BCU2314-BDU1224-MM/lronac_all",
+                      help="Output directory on pfe (default: lronac_all)")
+  parser.add_argument("--usgs-polar", dest="usgs_polar", action="store_true", default=False,
                       help="Use the USGS South Pole custom polar SPICE kernels in "
-                           "spiceinit (default: True, valid for 2009-2013 controlled images).")
+                           "spiceinit (valid only for 2009-2013 controlled images).")
   parser.add_argument("--no-usgs-polar", dest="usgs_polar", action="store_false",
-                      help="Do not use USGS polar kernels; use standard mission kernels in spiceinit.")
+                      help="Do not use USGS polar kernels; use standard mission kernels in spiceinit (default).")
   args = parser.parse_args()
 
   pids = list(args.products)

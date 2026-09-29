@@ -120,8 +120,14 @@ forces a horizontal scroll bar; break it across continuation lines (`\`) instead
 ## Backslash Alignment Tool
 
 `~/bin/align_backslashes.py <file> <start_line> <end_line> [--inplace] [--column N]`
-Aligns trailing `\` continuation characters in shell scripts. Auto-detects
-target column from longest content line, or use `--column N` to fix it.
+Aligns trailing `\` continuation characters. Auto-detects target column from
+longest content line, or use `--column N` to fix it. Handles both shell (bare
+trailing `\`) and Python string concatenation (lines ending in `+ \`, where it
+aligns the `+`).
+
+MANDATORY: any time you edit backslash-continued lines, run this tool before
+showing the result. Do NOT hand-align (especially Python `+ \` blocks, easy to
+get wrong) and do NOT present misaligned continuations for correction.
 
 ## Column Alignment Tool
 
