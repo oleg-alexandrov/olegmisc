@@ -184,6 +184,21 @@ median from a missing UTM meridian-convergence `Rz(gamma)` term, gamma~0.7 deg.)
   (focal/center in mm, `pitch = pixel_mm`) are equivalent IF consistent, but pixel+pitch=1
   is the convention here and removes a class of unit-mismatch blunders.
 
+## Give an unconstrained solve a datum: --tri-weight (default 0.1, already ON)
+
+A bundle with no fixed cameras, no GCP, and no reference DEM is gauge-free (7 free DOF:
+translate, rotate, scale) and can drift as a block, the classic polar-SfS failure.
+`--tri-weight` closes that: it adds a soft XYZError tying every optimized triangulated point
+to its position from the PREVIOUS iteration, with `sigma = GSD/tri_weight` so the residual is
+in PIXELS like the reprojection terms (BundleAdjustCostFuns.cc `addTriConstraint`). Every
+point then resists moving from where it started, which pins the whole network. So a "free"
+refinement stage is NOT actually unconstrained: `--tri-weight` DEFAULTS to 0.1 (ON) in both
+bundle_adjust and jitter_solve, applied whenever the value is > 0. Larger is tighter, too
+large blocks convergence (it cannot lower the reprojection error). Suggested 0.1 to 0.5, leave
+`--tri-robust-threshold` at its 0.1 default and tune tri-weight instead. It SKIPS GCP and
+`--heights-from-dem` points (those carry their own constraint), so it composes with a DEM
+stage: DEM-tied points get the DEM, all the rest get tri-weight.
+
 ## Related
 [[dem-comparison]] (dem2gcp -> GCP from the ours-vs-ref disparity; census cost-mode 3),
 [[jitter-solve]] (feed it the raw matches + GCP; guard GCP with --gcp-robust-threshold,

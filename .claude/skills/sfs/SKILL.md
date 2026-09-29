@@ -103,16 +103,36 @@ correspondence. Work in ONE fixed work dir on pfe, paths relative.
 (for lunar 83-90 South use Barker LDEM_83S_10MPP_ADJ.TIF at 10 m/pixel; the 5 m
 product only reaches 87-90 South) to 1 m/pixel with cubic spline, ASP 256-block
 tiling, and a `-te` snapped OUTWARD to half-integer edges so 1 m pixel centers
-land on integers (required later by `sfs_blend`, :numref:`terrain_bounds`). Then
-blur to suppress LOLA spikes and use the blurred DEM for everything downstream.
+land on integers (required later by `sfs_blend`, :numref:`terrain_bounds`).
+
+**DEM naming rule (honesty).** A DEM's name must encode its state, because mapproject
+BURNS the DEM path into every output (`DEM_FILE=...` in the geoheader) and later tools
+look it up. Two orthogonal axes: EXTENT (`_extra` = the product box PADDED, e.g. +2 km,
+the working DEM mapproject and BA actually use since footprints spill past the ROI; a bare
+name would be the exact product-box DEM) and PROCESSING. `_extra.tif` means the honest
+regrid with NO blur or other processing. ANY operation applied to a DEM (blur, fill, ...)
+MUST be reflected in the name (`_extra_blur.tif`, `_extra_fill.tif`, ...): never let a
+processed DEM hide behind a plain name. Use the honest unprocessed `_extra` DEM for
+everything downstream, mapproject AND the `--heights-from-dem` constraint. Do NOT blur by
+default: a sigma-2 blur smears fine terrain and adds bias while barely moving the
+statistics on km-scale relief, so it does not make the DEM better. Blur only if LOLA
+spikes actually cause artifacts, and use the blurred DEM only as a mapproject drape
+surface, never as the height constraint. IMPORTANT defensive exception: if a plain name
+was ALREADY burned into products as a DIFFERENT (processed) DEM, do NOT recycle that name.
+Vacate it (leave no file at that path) and use explicit `_noblur` / `_blur` names, so a
+burned-in lookup FAILS LOUD instead of silently resolving to the wrong terrain. (This
+project did exactly that: its maps carry `DEM_FILE=ref/lola_1mpp_extra.tif` from when that
+name held the blurred DEM, so the honest DEM is now `ref/lola_1mpp_extra_noblur.tif`, the
+blurred one is `ref/lola_1mpp_extra_blur.tif`, and bare `_extra.tif` is deliberately gone.)
 
 ```bash
 proj="+proj=stere +lat_0=-90 +lon_0=0 +k=1 +x_0=0 +y_0=0 +R=1737400 +units=m +no_defs"
 gdalwarp -overwrite -r cubicspline -tr 1 1 -t_srs "$proj" \
   -te 71240.5 162789.5 90731.5 178256.5 \
   -co COMPRESSION=LZW -co TILED=yes -co INTERLEAVE=BAND \
-  -co BLOCKXSIZE=256 -co BLOCKYSIZE=256 -co BIGTIFF=yes src.tif ref/lola_1mpp.tif
-dem_mosaic --dem-blur-sigma 2 ref/lola_1mpp.tif -o ref/lola_1mpp_extra.tif --threads 1
+  -co BLOCKXSIZE=256 -co BLOCKYSIZE=256 -co BIGTIFF=yes src.tif ref/lola_1mpp_extra.tif
+# optional, only if spikes bite; blurred DEM is for mapproject drape ONLY:
+# dem_mosaic --dem-blur-sigma 2 ref/lola_1mpp_extra.tif -o ref/lola_1mpp_extra_blur.tif --threads 1
 ```
 
 Build this on a compute node (devel), not the head node. Confirm 100% valid and a
@@ -146,7 +166,7 @@ export NO_MOSAIC=1
 export CHUNK_SIZE=121   # images per one-node job; sized to yield ~10 jobs
 export MODEL=bro_ele
 export WALLTIME=4:00:00
-~/projects/sfs/batch_mapproject.sh ref/lola_1mpp_extra.tif \
+~/projects/sfs/batch_mapproject.sh ref/lola_1mpp_extra_noblur.tif \
   lists/azimuth_images.txt ignored maps $(pwd) lists/azimuth_cameras.txt
 ```
 
@@ -175,7 +195,7 @@ env with `-v` (only set vars, see the gotcha below).
 qsub -m n -r n -N ba -l walltime=23:01:00 -W group_list=e2305 \
   -j oe -S /bin/bash -l select=10:ncpus=20:model=bro_ele \
   -v "IMG_DIR=lronac_all,OVERLAP_LIMIT=75,NUM_ITERATIONS=0,PROCESSES=10,THREADS=8" -- \
-  ~/projects/sfs/bundle_adjust.sh lists/filtered_map.txt ref/lola_1mpp_extra.tif maps ba/run $(pwd)
+  ~/projects/sfs/bundle_adjust.sh lists/filtered_map.txt ref/lola_1mpp_extra_noblur.tif maps ba/run $(pwd)
 ```
 
 The `.match` files under `ba/` are the deliverable, reusable in a later controlled
@@ -242,7 +262,7 @@ qsub -m n -r n -N ba_free -l walltime=8:00:00 -W group_list=e2305 \
 # Stage 3: dem - final tighten to the terrain (feeds on ba_free)
 qsub -m n -r n -N ba_htdem -l walltime=8:00:00 -W group_list=e2305 \
   -j oe -S /bin/bash -l select=1:ncpus=20:model=bro_ele \
-  -v "REF_DEM=ref/lola_1mpp_extra.tif" -- \
+  -v "REF_DEM=ref/lola_1mpp_extra_noblur.tif" -- \
   ~/projects/sfs/bundle_adjust_refine.sh \
   ba_free/run-image_list.txt ba_free/run-camera_list.txt ba/run ba_htdem $(pwd)
 ```
