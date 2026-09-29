@@ -187,34 +187,69 @@ After the matches-only harvest (Step 5), the controlled solve is a three-stage
 chain, all done by ONE script `~/projects/sfs/bundle_adjust_refine.sh`, which
 reuses the harvested matches and turns the two optional constraints on via env:
 `FIXED_LIST` (subset of images whose cameras are held fixed) and `REF_DEM`
-(adds `--heights-from-dem` + `--mapproj-dem`).
+(adds `--heights-from-dem` + `--mapproj-dem`). This mirrors the documented
+registration refinement in the ASP manual (:numref:`sfs_ba_refine`), using fixed
+registered anchors in place of the manual's stereo-DEM + `pc_align` alignment.
 
-- **Always `--match-files-prefix` (raw matches), NEVER `--clean-match-files-prefix`.**
-  The clean matches from a `NUM_ITERATIONS=0` harvest were outlier-filtered against
-  UN-optimized (drifted) cameras, so they are over-filtered and would silently
-  starve the solve. The raw matches are the honest input. The script bakes this in.
-- **Assemble the lists offline, 1-to-1.** For stage 1 the image list is the
-  survivors (cub paths from the full dir), and the camera list is 1-to-1 with it,
-  but each anchor image points at its REGISTERED (USGS) `.json`, not the vanilla
-  one. The `FIXED_LIST` is that same anchor image subset. Stages 2 and 3 take the
-  previous stage's `outDir/run-image_list.txt` and `run-camera_list.txt` (they
-  already point at the adjusted cameras BA wrote).
+**Each stage feeds on the previous one.** They go from most-constrained to
+least-, then re-tighten to the ground:
+
+1. **fixed** (`FIXED_LIST` set, no DEM): the registered anchor (USGS) cameras are
+   held FIXED and pull the free cameras into their frame. This establishes the
+   coordinate system. Output `ba_fix`.
+2. **free** (nothing set): starting from `ba_fix`, ALL cameras are relaxed and
+   refined together with no external constraint, letting the network settle to a
+   consistent minimum. Output `ba_free`.
+3. **dem** (`REF_DEM` set): starting from `ba_free`, the reference terrain is added
+   as a constraint for the final vertical/registration tighten. Output `ba_htdem`.
+   `DEM_UNCERTAINTY` defaults to 20 m (per the manual); use 10 to trust the DEM
+   more, up to 100 if the cameras are believed far from it. Be mindful of this
+   value: past runs tried both 20 and 10 with little practical difference, so 20
+   is hardcoded, but it is worth reconsidering when moving to a wildly different
+   reference DEM, where how much to trust the terrain matters more.
+
+Baked-in behavior (do not override): matches are reused via `--match-files-prefix`
+plus `--skip-matching`, so they are never recomputed, and NEVER
+`--clean-match-files-prefix` (the clean matches from a `NUM_ITERATIONS=0` harvest
+were outlier-filtered against UN-optimized cameras, so they are over-filtered and
+would starve the solve). `--camera-weight 0` lets cameras move; intermediate
+cameras are saved.
+
+**Assemble the lists offline, 1-to-1.** For stage 1 the image list is the
+survivors (cub paths from the full dir), and the camera list is 1-to-1 with it,
+but each anchor image points at its REGISTERED (USGS) `.json`, not the vanilla one.
+`FIXED_LIST` is that same anchor image subset. Stages 2 and 3 take the previous
+stage's `outDir/run-image_list.txt` and `run-camera_list.txt` (they already point
+at the adjusted cameras BA wrote).
+
+The reuse stages are serial `bundle_adjust` (matching is skipped), so one node
+each. Run each on its own qsub; each waits for the previous:
 
 ```bash
-# Stage 1: fixed - anchor (USGS) cameras hold the frame, everything else floats
-FIXED_LIST=lists/usgs_fixed_images.txt \
+# Stage 1: fixed - anchor (USGS) cameras hold the frame
+qsub -m n -r n -N ba_fix -l walltime=8:00:00 -W group_list=e2305 \
+  -j oe -S /bin/bash -l select=1:ncpus=20:model=bro_ele \
+  -v "FIXED_LIST=lists/usgs_fixed_images.txt" -- \
   ~/projects/sfs/bundle_adjust_refine.sh \
   lists/filtered_images.txt lists/filtered_cameras_mixed.txt ba/run ba_fix $(pwd)
 
-# Stage 2: free - refine ALL cameras, nothing fixed, no terrain constraint
-~/projects/sfs/bundle_adjust_refine.sh \
+# Stage 2: free - relax ALL cameras, no constraint (feeds on ba_fix)
+qsub -m n -r n -N ba_free -l walltime=8:00:00 -W group_list=e2305 \
+  -j oe -S /bin/bash -l select=1:ncpus=20:model=bro_ele -- \
+  ~/projects/sfs/bundle_adjust_refine.sh \
   ba_fix/run-image_list.txt ba_fix/run-camera_list.txt ba/run ba_free $(pwd)
 
-# Stage 3: dem - tie the free result to the reference terrain
-REF_DEM=ref/lola_1mpp_extra.tif \
+# Stage 3: dem - final tighten to the terrain (feeds on ba_free)
+qsub -m n -r n -N ba_htdem -l walltime=8:00:00 -W group_list=e2305 \
+  -j oe -S /bin/bash -l select=1:ncpus=20:model=bro_ele \
+  -v "REF_DEM=ref/lola_1mpp_extra.tif" -- \
   ~/projects/sfs/bundle_adjust_refine.sh \
   ba_free/run-image_list.txt ba_free/run-camera_list.txt ba/run ba_htdem $(pwd)
 ```
+
+Validate each stage's `<outDir>/run-final_residuals_stats.txt`: the median
+reprojection error per camera should fall to about 1-2 px (:numref:`sfs_usage`);
+if not, the solve did not converge.
 
 This supersedes the old `bundle_adjust_fix.sh` / `bundle_adjust_heights_from_dem.sh`
 / `bundle_adjust_reuse_matches.sh` (removed; the last used a stale isis5.0.1 env and
