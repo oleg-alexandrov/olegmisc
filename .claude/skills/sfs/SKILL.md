@@ -181,6 +181,56 @@ qsub -m n -r n -N ba -l walltime=23:01:00 -W group_list=e2305 \
 The `.match` files under `ba/` are the deliverable, reusable in a later controlled
 BA (USGS-polar cameras held fixed, see coregister-linescan / image-gcp-gen).
 
+## Controlled Refinement Family: bundle_adjust_refine.sh (fixed -> free -> dem)
+
+After the matches-only harvest (Step 5), the controlled solve is a three-stage
+chain, all done by ONE script `~/projects/sfs/bundle_adjust_refine.sh`, which
+reuses the harvested matches and turns the two optional constraints on via env:
+`FIXED_LIST` (subset of images whose cameras are held fixed) and `REF_DEM`
+(adds `--heights-from-dem` + `--mapproj-dem`).
+
+- **Always `--match-files-prefix` (raw matches), NEVER `--clean-match-files-prefix`.**
+  The clean matches from a `NUM_ITERATIONS=0` harvest were outlier-filtered against
+  UN-optimized (drifted) cameras, so they are over-filtered and would silently
+  starve the solve. The raw matches are the honest input. The script bakes this in.
+- **Assemble the lists offline, 1-to-1.** For stage 1 the image list is the
+  survivors (cub paths from the full dir), and the camera list is 1-to-1 with it,
+  but each anchor image points at its REGISTERED (USGS) `.json`, not the vanilla
+  one. The `FIXED_LIST` is that same anchor image subset. Stages 2 and 3 take the
+  previous stage's `outDir/run-image_list.txt` and `run-camera_list.txt` (they
+  already point at the adjusted cameras BA wrote).
+
+```bash
+# Stage 1: fixed - anchor (USGS) cameras hold the frame, everything else floats
+FIXED_LIST=lists/usgs_fixed_images.txt \
+  ~/projects/sfs/bundle_adjust_refine.sh \
+  lists/filtered_images.txt lists/filtered_cameras_mixed.txt ba/run ba_fix $(pwd)
+
+# Stage 2: free - refine ALL cameras, nothing fixed, no terrain constraint
+~/projects/sfs/bundle_adjust_refine.sh \
+  ba_fix/run-image_list.txt ba_fix/run-camera_list.txt ba/run ba_free $(pwd)
+
+# Stage 3: dem - tie the free result to the reference terrain
+REF_DEM=ref/lola_1mpp_extra.tif \
+  ~/projects/sfs/bundle_adjust_refine.sh \
+  ba_free/run-image_list.txt ba_free/run-camera_list.txt ba/run ba_htdem $(pwd)
+```
+
+This supersedes the old `bundle_adjust_fix.sh` / `bundle_adjust_heights_from_dem.sh`
+/ `bundle_adjust_reuse_matches.sh` (removed; the last used a stale isis5.0.1 env and
+clean matches). `bundle_adjust_dem_gcp.sh` is a separate GCP-based variant, not part
+of this chain.
+
+## Prior SfS matches/refinement projects (context, notes live in each dir)
+
+When you need more context on this pipeline, the prior runs kept full work notes in
+their own project dirs (read the `*_notes.sh` there):
+`~/projects/sfs_m2m_ca`, `~/projects/sfs_m2m_sp`, `~/projects/sfs_m2m_mp` (the
+mare/south-pole/cold-area m2m sites that first ran the harvest -> fixed -> dem chain),
+and the current `~/projects/sfs_BCU2314-BDU1224-MM` (matches_pipeline_notes.sh). The
+generic scripts in `~/projects/sfs/` are the reusable distillation; the per-site
+notes carry the exact invocations, list-assembly, and what went wrong.
+
 ## qsub and Autonomous Orchestration (sanity checks, do not blunder)
 
 - **qsub `-v` fails on UNSET variables** (`qsub: cannot send environment with the
