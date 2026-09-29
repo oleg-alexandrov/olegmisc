@@ -91,12 +91,162 @@ export WALLTIME="04:00:00"
 
 ---
 
+## End-to-End Polar LRO NAC Matches Pipeline (precise invocations)
+
+This is the proven sequence for producing interest-point matches over a delivery
+box from a large azimuth-sorted LRO NAC set (used on the m2m and BCU sites). Each
+step is spelled out so it is not rediscovered. All lists stay in one solar-azimuth
+order, one line per image, with image/camera/mapprojected lists in exact
+correspondence. Work in ONE fixed work dir on pfe, paths relative.
+
+**Step 1 - reference DEM (1 m/pixel, half-integer grid).** Regrid the LOLA source
+(for lunar 83-90 South use Barker LDEM_83S_10MPP_ADJ.TIF at 10 m/pixel; the 5 m
+product only reaches 87-90 South) to 1 m/pixel with cubic spline, ASP 256-block
+tiling, and a `-te` snapped OUTWARD to half-integer edges so 1 m pixel centers
+land on integers (required later by `sfs_blend`, :numref:`terrain_bounds`). Then
+blur to suppress LOLA spikes and use the blurred DEM for everything downstream.
+
+```bash
+proj="+proj=stere +lat_0=-90 +lon_0=0 +k=1 +x_0=0 +y_0=0 +R=1737400 +units=m +no_defs"
+gdalwarp -overwrite -r cubicspline -tr 1 1 -t_srs "$proj" \
+  -te 71240.5 162789.5 90731.5 178256.5 \
+  -co COMPRESSION=LZW -co TILED=yes -co INTERLEAVE=BAND \
+  -co BLOCKXSIZE=256 -co BLOCKYSIZE=256 -co BIGTIFF=yes src.tif ref/lola_1mpp.tif
+dem_mosaic --dem-blur-sigma 2 ref/lola_1mpp.tif -o ref/lola_1mpp_extra.tif --threads 1
+```
+
+Build this on a compute node (devel), not the head node. Confirm 100% valid and a
+half-integer origin with `gdalinfo -stats`.
+
+**Step 2 - azimuth-sorted lists.** Get per-image sun azimuth (`sfs --query`, see
+the sfs-azimuth skill and `query_azimuth.sh`), then sort by the 0-360 azimuth
+column and derive matching image and camera lists:
+
+```bash
+sort -k3,3 -n azimuth_tables.txt > lists/azimuth.txt
+awk '{print $1}' lists/azimuth.txt > lists/azimuth_images.txt
+sed 's/\.cal\.echo\.cub$/.cal.echo.json/' lists/azimuth_images.txt > lists/azimuth_cameras.txt
+```
+
+Azimuth sorting is what makes `--overlap-limit` in the next BA match images of
+similar illumination (matched shadows), which is what co-registration needs.
+
+**Step 3 - batch mapproject (embarrassingly parallel, one node per chunk).** Leave
+`TR` UNSET so it uses legacy `--tr 1` (still 1 m/pixel) whose output name
+`<id>.cal.echo.map.tr1.tif` is exactly what `bundle_adjust.sh` expects; setting
+`TR=1` names them `<id>.map.tif` and BA finds none. Full-path image lists let the
+worker use the cubes directly. On pfe a non-interactive ssh has no `qsub` on PATH,
+so pass `QSUB_BIN=/PBS/bin/qsub`.
+
+```bash
+cd /nobackupp19/oalexan1/projects/<site>
+export QSUB_BIN=/PBS/bin/qsub
+export PROJWIN="71240.5 162789.5 90731.5 178256.5"
+export NO_MOSAIC=1
+export CHUNK_SIZE=121   # images per one-node job; sized to yield ~10 jobs
+export MODEL=bro_ele
+export WALLTIME=4:00:00
+~/projects/sfs/batch_mapproject.sh ref/lola_1mpp_extra.tif \
+  lists/azimuth_images.txt ignored maps $(pwd) lists/azimuth_cameras.txt
+```
+
+**Step 4 - cull, then rebuild lists in the same azimuth order.** Non-intersecting
+footprints leave no file; all-shadow frames have a near-zero maximum. Keep frames
+whose `gdalinfo` maximum is at or above the LRO NAC lit-vs-shadow cutoff (0.005),
+preserving azimuth order. INSPECT the max-value distribution before trusting the
+threshold (:ref: the sfs-azimuth and visual-inspection skills), do not assume it.
+
+```bash
+sed 's#lronac_all/\(M[0-9]*[LR]E\)\.cal\.echo\.cub#maps/\1.cal.echo.map.tr1.tif#' \
+  lists/azimuth_images.txt > lists/azimuth_map.txt
+~/projects/sfs/filter_by_max.sh lists/azimuth_map.txt lists/filtered_map.txt $(pwd) 0.005
+```
+
+`bundle_adjust.sh` rebuilds its image/camera/mapprojected lists from the ids on
+each line of the list it is given, so passing `filtered_map.txt` keeps all three
+in lockstep.
+
+**Step 5 - matches-only bundle adjust.** `NUM_ITERATIONS=0` harvests the match
+files (written during matching, before any solve) without a drift-prone solve of
+free cameras. `IMG_DIR` points at the cube/camera dir (default `img`). Forward the
+env with `-v` (only set vars, see the gotcha below).
+
+```bash
+qsub -m n -r n -N ba -l walltime=23:01:00 -W group_list=e2305 \
+  -j oe -S /bin/bash -l select=10:ncpus=20:model=bro_ele \
+  -v "IMG_DIR=lronac_all,OVERLAP_LIMIT=75,NUM_ITERATIONS=0,PROCESSES=10,THREADS=8" -- \
+  ~/projects/sfs/bundle_adjust.sh lists/filtered_map.txt ref/lola_1mpp_extra.tif maps ba/run $(pwd)
+```
+
+The `.match` files under `ba/` are the deliverable, reusable in a later controlled
+BA (USGS-polar cameras held fixed, see coregister-linescan / image-gcp-gen).
+
+## qsub and Autonomous Orchestration (sanity checks, do not blunder)
+
+- **qsub `-v` fails on UNSET variables** (`qsub: cannot send environment with the
+  job`, rc=1). A fixed `-v A,B,C,...` list where any name is unset silently breaks
+  EVERY submission (the loop prints its "Will do list" banner but no job id, and
+  `qstat` shows nothing). Build `-v` from only the set variables. `batch_mapproject.sh`
+  now does this; do the same in any hand-written qsub.
+- **Gate the next pipeline step on JOB STATE, never on output-file existence.** A
+  PBS product file appears the instant writing begins and looks done while still
+  half-written (a monitor once fired on a half-blurred DEM). A monitor's exit
+  condition must be that the job LEFT THE QUEUE by finishing (`qstat <id>` shows no
+  `R`/`Q`; `qstat -x -f <id>` gives `job_state=F`, `Exit_status=0`), then verify the
+  product. Detail in the pfe-nas skill.
+- **Dry-test one image before the batch.** Run a single `mapproject` on a small
+  sub-box (`--threads 1 --processes 1`, head-node-legal) to prove the DEM + cube +
+  paired camera + projwin + naming chain works before submitting dozens of jobs.
+- **Autonomous stepwise pattern (no cron):** prepare -> a detached, qstat-gated
+  background poll waits for that job to finish and re-triggers the agent -> launch
+  the next step -> monitor -> inspect -> next. Each poll is one cheap `qstat` over
+  ssh; the agent is idle (not billed) between polls and wakes exactly when the jobs
+  finish. This is the right mechanism, not a recurring cron.
+
+## Timing and Scale Guidance for Planning (measured, past runs)
+
+Node cpus: `ivy`/`has` = 20, `bro_ele` = 28, Athena `tur_ath` = 256 (submit only
+from the Athena front end). bro_ele bills ~1 SBU/node-hour. Requested `walltime=`
+values are ceilings; the numbers below are MEASURED durations.
+
+| Case | Site | Images | Mapproject | Bundle adjust (measured) | parallel_sfs (measured) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| m2m ca | 7.5x14 km | 1334 | 1 ivy/chunk 40 | 16 ivy, matches: **3:22** | 4 ivy, 4000x4000 clip: 2.4-5.5 h |
+| m2m sp | 10x10 km | 1758 (613 usgs) | 1 ivy/chunk 40 | batched 3-4 ivy | 4 has, hit the 12 h ceiling |
+| nobile_2 | 14.3x11 km | 1762 | 1 ivy/chunk 25 (48 jobs) | 1 ivy: **0:51-1:41** | 3 h |
+| nobile_7 | ~11x5 km | ~419-1200 | - | 1-node local: 200 matches 57 GB/2.5 h; 600 62 GB/2:17; 1000 (post leak-fix) 52 min/5 GB | 16 ivy: **5.9-7.6 h** |
+| ridge | 16x13 km | 1032 (subset 75) | 1 ivy/chunk 105 (10 jobs) | 8-20 ivy | 32 ivy: **6.5 h**; 20000x18000 est 400 core-h -> ~12.5 h on 32 cores |
+| 1414A | small tiles | 157 (BA 422) | tur_ath/chunk 16, ~15-30 min/chunk | tur_ath 256 cpu: **~5 min for 422 cubs** | 4 bro_ele/tile: ~4 h |
+| mons_mouton | 117 tiles | ~3000 | per-tile bro_ele, 1-3 h | 301 cams, 3-pass: ~50 SBU | 4 bro_ele/tile (~135 img): **5.5-6.6 h, ~22-26 SBU/tile** |
+
+Planning takeaways:
+- **Matches-only BA is fast once matching parallelizes.** 1334 images on 16 ivy
+  nodes finished in 3.4 h (not the 23 h ceiling); 422 cubs on one 256-cpu tur_ath
+  node took ~5 min. So a ~1000-image matches-only BA on 8-10 bro_ele nodes should
+  finish in a few hours. Athena `tur_ath` is dramatically faster per node for the
+  matching stage (256 cpu) and, being fewer nodes, less exposed to the
+  `parallel_bundle_adjust` ssh-spawn failure.
+- **Single-node local BA RAM scales hard with `--max-pairwise-matches`** (600
+  matches = 62 GB). `bundle_adjust.sh` sets 5000, which is fine when
+  `parallel_bundle_adjust` distributes across nodes, but do not run that on one
+  node without watching memory.
+- **Mapproject** is one node per 25-105 image chunk, chunks concurrent; each chunk
+  a few hours at most on the small delivery box.
+- **parallel_sfs** is the long pole: ~4 bro_ele nodes per ~2048-4000 px tile,
+  4-7 h wall, ~22-26 SBU/tile. Budget the height-uncertainty (`estimError`) pass
+  separately, it is single-core and much slower.
+
+---
+
 ## Canonical SfS Toolkit Reference (`~/projects/sfs/`)
 
 The `~/projects/sfs/` repository contains the core pipeline scripts developed for photoclinometry on Pleiades and Athena:
 
+* **`make_ref_dem.sh`**: Reproject and regrid a source DEM to a fixed half-integer target grid with ASP 256-block tiling, optional spike blur. Builds the SfS reference DEM.
 * **`batch_mapproject.sh`**: Chunked PBS job orchestrator for multi-node parallel mapprojection.
 * **`mapproject_chunk.sh`**: Robust per-node worker script with error recovery and tile cleanup.
+* **`filter_by_max.sh`**: Order-preserving cull of mapprojected images by their `gdalinfo` maximum (drops shadowed and non-intersecting frames), keeping azimuth order.
+* **`bundle_adjust.sh`**: `parallel_bundle_adjust` wrapper. Env tunables `IMG_DIR`, `OVERLAP_LIMIT`, `NUM_ITERATIONS` (0 for matches-only), `PROCESSES`, `THREADS`. Submit via qsub across N nodes.
 * **`parallel_sfs.sh`**: Distributed Shape-from-Shading runner across multiple tiles and nodes.
 * **`sfs_sim_align.sh`**: Measures pointing errors against simulated illumination and runs single-camera bundle adjustment before SfS.
 * **`query_azimuth.sh`**: Fast extraction of camera solar azimuth and elevation via `sfs --query`.
