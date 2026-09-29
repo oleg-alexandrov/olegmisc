@@ -199,6 +199,20 @@ large blocks convergence (it cannot lower the reprojection error). Suggested 0.1
 `--heights-from-dem` points (those carry their own constraint), so it composes with a DEM
 stage: DEM-tied points get the DEM, all the rest get tri-weight.
 
+## --match-files-prefix vs --clean-match-files-prefix: they read DIFFERENT files
+
+Confirmed in `matchFileMultiPrefix` (IpMatchingAlgs.cc): `--clean-match-files-prefix <p>`
+reads `<p>-A__B-clean.match` (the outlier-filtered set), while `--match-files-prefix <p>`
+reads the RAW `<p>-A__B.match`. They are mutually exclusive (bundle_adjust errors if both
+are given). So pointing `--match-files-prefix` at a dir that ALSO holds `-clean.match` files
+still loads the RAW ones, it does NOT silently prefer clean (no need to wipe the clean files
+first when the prefix is explicit and the `-o` dir is different). Every run WRITES its own
+`-clean.match` into its `-o` dir. Chain idiom: harvest / first solve with
+`--match-files-prefix` (raw), then reuse a GOOD solve's cleaned set downstream with
+`--clean-match-files-prefix` pointing at that solve's `-o` prefix. NEVER reuse the
+`-clean.match` from a `--num-iterations 0` harvest: they were filtered against un-optimized
+cameras and are over-culled.
+
 ## Related
 [[dem-comparison]] (dem2gcp -> GCP from the ours-vs-ref disparity; census cost-mode 3),
 [[jitter-solve]] (feed it the raw matches + GCP; guard GCP with --gcp-robust-threshold,
