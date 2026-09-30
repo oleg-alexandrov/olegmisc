@@ -213,6 +213,17 @@ first when the prefix is explicit and the `-o` dir is different). Every run WRIT
 `-clean.match` from a `--num-iterations 0` harvest: they were filtered against un-optimized
 cameras and are over-culled.
 
+## Drop --save-intermediate-cameras: it saves ALL cameras EVERY iteration
+
+`--save-intermediate-cameras` writes the FULL camera set once per solver iteration, and for
+many cameras that dominates runtime. Measured (BCU2314 refine, 978 CSM linescan cameras):
+each full save took ~213 s and ran once per iteration, so ~80 iterations spent ~4.7 h JUST
+writing cameras while the actual solve was ~12 s/iteration. There is no "every K iterations"
+knob, so just OMIT the flag in ALL bundle scripts (bundle_adjust.sh, bundle_adjust_refine.sh,
+bundle_adjust_dem_gcp.sh; check jitter_solve.sh too). bundle_adjust still writes the FINAL
+cameras. Add it back only when actively debugging a long solve that you expect to stop early,
+and even then know the per-iteration cost.
+
 ## Related
 [[dem-comparison]] (dem2gcp -> GCP from the ours-vs-ref disparity; census cost-mode 3),
 [[jitter-solve]] (feed it the raw matches + GCP; guard GCP with --gcp-robust-threshold,

@@ -129,6 +129,15 @@ MANDATORY: any time you edit backslash-continued lines, run this tool before
 showing the result. Do NOT hand-align (especially Python `+ \` blocks, easy to
 get wrong) and do NOT present misaligned continuations for correction.
 
+ALWAYS pass the FULL continuation block as `<start_line> <end_line>`, never a
+partial slice. The tool aligns every `\` in the given range to the column of the
+LONGEST content line WITHIN that range. If the range covers only part of a block,
+it re-aligns that slice to the slice's own (shorter) max, leaving the rest of the
+block at its old column, so the block ends up SPLIT across two backslash columns.
+Also beware: after deleting lines, downstream line numbers shift, so re-derive the
+block's real start/end before calling the tool (stale ranges are how the split
+happens). After running, sweep the block to confirm one uniform `\` column.
+
 ## Column Alignment Tool
 
 `~/bin/align_columns.py <file> <start_line> <end_line> [--inplace]`
