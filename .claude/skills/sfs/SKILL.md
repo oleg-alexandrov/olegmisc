@@ -340,6 +340,66 @@ overlay to catch ghosting between the two illumination groups, and eyeball
 `all_max_mosaic.tif` for self-consistency and any global shift vs a LOLA hillshade. This
 is the go/no-go gate before SfS.
 
+## Smeared cameras in a max-lit mosaic: detect, inspect, and fix cheaply
+
+A max-lit mosaic can show diagonal **brush-stroke smears** while the terrain underneath
+stays put (craters co-located, NOT a shift). That is one or a few badly-posed cameras
+whose content drapes stretched in the wrong place; max-lit keeps the bright streak.
+
+DETECT - the smoking gun is the mapproj offset stats, NOT the reprojection stats:
+- `<ba>/run-final_residuals_stats.txt` (image, mean, median, count = reprojection px) is
+  BLIND to a self-consistent-but-wrong camera: a smear camera can reproject at ~0.15 px
+  (it fits its own handful of tie points perfectly) yet be km off in absolute terms.
+- `<ba>/run-mapproj_match_offset_stats.txt` (image, 25/50/75/85/95%, count = METERS
+  between where this image lands a feature and where the others land it) is the detector:
+  a smear lights up with a huge upper-percentile (km), while its median stays small.
+- Cross-check `<ba>/run-camera_offsets.txt` (horiz, vert center move, m) and the match
+  count: a smear has a large offset AND a substantial in-box footprint (hundreds-thousands
+  of matches). A near-zero-match camera (count < ~50) with a giant offset is a DROPOUT,
+  not a smear: it drifted off the box and contributes nothing (leaves a black notch, an
+  absence). RULE: mapproj-offset flags smears AND dropouts; only offset + big footprint
+  smears. Drop BOTH from the camera set before a re-solve/SfS, but only smears need a
+  mosaic rebuild.
+- Join these per-camera files against the azimuth-ordered image list to see which
+  illumination half a culprit falls in (that is which half-mosaic it contaminates).
+
+INSPECT (which chunk):
+- The per-chunk partials `map_htdem/max_mosaic_<beg>_<end>.tif` isolate ~50 images each,
+  so a suspect chunk shows the smear far more starkly than the blended full mosaic (where
+  the good images partly overwrite it). Render the suspect chunk alone to confirm the
+  culprit lives there. Each image sits in exactly ONE chunk (by azimuth index), so a
+  culprit contaminates exactly one chunk, one half, and the full mosaic.
+- Quick 8-bit overview of a reflectance mosaic (values ~0-0.2): `gdal_translate -of PNG
+  -ot Byte -outsize 1600 0 -scale 0 0.11 0 255 -a_nodata 0 in.tif out.png`. On pfe use the
+  `geo` conda env for a clean gdal (see [[pfe-nas]]); a proj.db warning means the env is
+  wrong. `gdalinfo -stats` for the min/max/mean to pick the -scale ceiling.
+
+FIX cheaply (rebuild ONLY what the culprit touched, NO re-mapproject): the per-image
+`map_htdem/*.map.tr1.tif` survive, and each chunk kept its input list
+`map_htdem/map_list_<beg>_<end>.txt`. So rebuild just the affected chunk, then the one
+contaminated half, then the full, all via `dem_mosaic --max` (batch_max_mosaic.sh):
+```bash
+# 1. cleaned chunk: drop the culprit id(s) from its map list, re-max-lit
+grep -v M1139778716 map_htdem/map_list_550_600.txt > map_htdem/map_list_550_600_clean.txt
+~/projects/sfs/batch_max_mosaic.sh map_htdem/map_list_550_600_clean.txt                \
+  map_htdem/max_mosaic_550_600_clean.tif $(pwd)
+# 2. cleaned half: same chunk mosaics, culprit chunk -> its cleaned version
+sed 's#max_mosaic_550_600\.tif#max_mosaic_550_600_clean.tif#' map_htdem/half2_list.txt \
+  > map_htdem/half2_clean_list.txt
+~/projects/sfs/batch_max_mosaic.sh map_htdem/half2_clean_list.txt                      \
+  map_htdem/half2_clean_max_mosaic.tif $(pwd)
+# 3. cleaned full: unchanged half1 + cleaned half2
+printf 'map_htdem/half1_max_mosaic.tif\nmap_htdem/half2_clean_max_mosaic.tif\n'        \
+  > map_htdem/all_clean_list.txt
+~/projects/sfs/batch_max_mosaic.sh map_htdem/all_clean_list.txt                        \
+  map_htdem/all_clean_max_mosaic.tif $(pwd)
+```
+These are same-grid max-lit (no reprojection), quick enough for one serial `devel` qsub
+(dem_mosaic --threads 20 needs a compute node, never > 2 threads on a login node). Wrap
+the three calls in a tiny project worker and qsub it (see the BCU2314
+`bcu_redo_clean_mosaics.sh` precedent). VERIFY: the streaks are gone AND the craters did
+not move; if the terrain shifted you dropped a GOOD camera by mistake.
+
 ## Prior SfS matches/refinement projects (context, notes live in each dir)
 
 When you need more context on this pipeline, the prior runs kept full work notes in
