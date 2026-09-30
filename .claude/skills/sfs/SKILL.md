@@ -99,6 +99,32 @@ step is spelled out so it is not rediscovered. All lists stay in one solar-azimu
 order, one line per image, with image/camera/mapprojected lists in exact
 correspondence. Work in ONE fixed work dir on pfe, paths relative.
 
+**Step 0 - query and download candidate LRO NAC images.** Query the PDS ODE REST
+API for all NAC images intersecting the site using `query_lro.py` (or `query_lro.sh`).
+Pass either the bounding box coordinates or the site DEM directly, with optional
+filters for incidence angle (low sun) and ground resolution. Output direct `.IMG`
+download URLs for batch downloading and clean product IDs:
+
+```bash
+# Query ODE by lat/lon box, emitting download URLs and product IDs
+~/projects/sfs/query_lro.sh \
+  --lat-lon -84.95 -84.45 20.7 27.0 \
+  --min-incidence 70 --max-incidence 90 \
+  --max-resolution 1.5 \
+  --output-urls lists/urls.txt \
+  --output-products lists/products.txt
+
+# Or query directly using the reference DEM bounding box (plus 1 km margin)
+~/projects/sfs/query_lro.sh \
+  --dem ref/lola_1mpp_extra.tif --margin-km 1.0 \
+  --min-incidence 70 --max-incidence 90 \
+  --output-urls lists/urls.txt \
+  --output-products lists/products.txt
+
+# Download images in bulk (resumable with retries)
+~/projects/sfs/download_all.sh lists/urls.txt
+```
+
 **Step 1 - reference DEM (1 m/pixel, half-integer grid).** Regrid the LOLA source
 (for lunar 83-90 South use Barker LDEM_83S_10MPP_ADJ.TIF at 10 m/pixel; the 5 m
 product only reaches 87-90 South) to 1 m/pixel with cubic spline, ASP 256-block
@@ -392,7 +418,10 @@ The `~/projects/sfs/` repository contains the core pipeline scripts developed fo
 * **`bundle_adjust.sh`**: `parallel_bundle_adjust` wrapper. Env tunables `IMG_DIR`, `OVERLAP_LIMIT`, `NUM_ITERATIONS` (0 for matches-only), `PROCESSES`, `THREADS`. Submit via qsub across N nodes.
 * **`parallel_sfs.sh`**: Distributed Shape-from-Shading runner across multiple tiles and nodes.
 * **`sfs_sim_align.sh`**: Measures pointing errors against simulated illumination and runs single-camera bundle adjustment before SfS.
+* **`query_lro.py` / `query_lro.sh`**: Query PDS ODE REST API for LRO NAC images by lat/lon box or DEM extent, emitting product IDs and direct `.IMG` download URLs.
+* **`download_all.sh`**: Resumable multi-file URL downloader with retries (feeds directly from `query_lro.py --output-urls`).
 * **`query_azimuth.sh`**: Fast extraction of camera solar azimuth and elevation via `sfs --query`.
 * **`query_gsd.sh`**: Automatic querying of native ground sampling distance via `mapproject --query-projection`.
 * **`blend_img_mosaic.sh` / `avg_mosaic.sh`**: Weighted-mean blending of mapprojected images with shadow suppression.
 * **`bundle_adjust_dem_gcp.sh`**: Bundle adjustment constrained by DEM surface and ground control points.
+
