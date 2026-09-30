@@ -75,6 +75,10 @@ rather than rediscovering the same problems.
 - **Shell command blocks: NEVER put a comment to the right of a `\` continuation line**
   - the trailing backslash stops escaping the newline and the command silently breaks.
   Put comments above, or in a note below. Detail: shell-scripts.
+- **There is NO `timeout`/`gtimeout` on the Mac.** Never wrap a Mac command in
+  `timeout` (it exits 127 "command not found" and the real command never runs, which
+  looks like the command failed). To bound an ssh probe use `ssh -o ConnectTimeout=N`;
+  to bound anything else, run it in the background and poll. Detail: machines-tools.
 - **ANY time you edit backslash-continued lines (shell `\` or Python `+ \`), run
   `~/bin/align_backslashes.py <file> <start> <end> --inplace` BEFORE showing the result.**
   Never present misaligned continuations for Oleg to correct. The tool handles both
