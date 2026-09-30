@@ -276,6 +276,44 @@ This supersedes the old `bundle_adjust_fix.sh` / `bundle_adjust_heights_from_dem
 clean matches). `bundle_adjust_dem_gcp.sh` is a separate GCP-based variant, not part
 of this chain.
 
+## Pre-SfS max-lit alignment sanity check (do this BEFORE any SfS)
+
+After the refine chain, prove the newest cameras co-register the whole set before
+committing to SfS. Mapproject all survivors with the NEWEST (final-stage) cameras onto
+the honest DEM, build per-chunk max-lit mosaics in illumination (azimuth) order, then
+max-lit the FIRST-half image group and the SECOND-half group SEPARATELY, and finally
+max-lit those two halves into one grand mosaic. The point of the two halves: they are
+two DISJOINT illumination groups, so if the cameras are well registered the terrain
+features coincide when overlaid; ghosting or doubling between the halves is residual
+misregistration. Stopping at two halves (not going down to individual frames) is enough
+to localize misalignment while staying cheap. Template: `sfs_m2m_ca`
+`sfs_ca_align_notes.sh` Step 6 (which merged all partials directly; the halves split is
+the added diagnostic).
+
+```bash
+# 1. batch mapproject; each chunk auto-writes map_htdem/max_mosaic_<beg>_<end>.tif.
+#    Pass the final-stage adjusted camera list as the 6th arg. Do NOT set NO_MOSAIC.
+export CHUNK_SIZE=50          # generous, not excessive (~20 chunks per ~1000 images)
+export WALLTIME=6:00:00
+~/projects/sfs/batch_mapproject.sh ref/lola_1mpp_extra_noblur.tif \
+  lists/filtered_images.txt ba_htdem/run map_htdem $(pwd) ba_htdem/run-camera_list.txt
+# 2. split partials into two illumination halves by beg (imagecount/2), max-lit each.
+#    batch_max_mosaic.sh runs dem_mosaic --threads 20: qsub it or drop to --threads 2,
+#    NEVER > 2 threads on a pfe login node.
+cd map_htdem; ls max_mosaic_*.tif | awk -F'[_.]' '$3<500'  > half1_list.txt
+              ls max_mosaic_*.tif | awk -F'[_.]' '$3>=500' > half2_list.txt; cd -
+~/projects/sfs/batch_max_mosaic.sh map_htdem/half1_list.txt map_htdem/half1_max_mosaic.tif $(pwd)
+~/projects/sfs/batch_max_mosaic.sh map_htdem/half2_list.txt map_htdem/half2_max_mosaic.tif $(pwd)
+# 3. grand max-lit of the two halves.
+printf 'map_htdem/half1_max_mosaic.tif\nmap_htdem/half2_max_mosaic.tif\n' > map_htdem/halves_list.txt
+~/projects/sfs/batch_max_mosaic.sh map_htdem/halves_list.txt map_htdem/all_max_mosaic.tif $(pwd)
+```
+
+Then inspect ([[visual-inspection]]): warp half1 vs half2 to a common grid and red/green
+overlay to catch ghosting between the two illumination groups, and eyeball
+`all_max_mosaic.tif` for self-consistency and any global shift vs a LOLA hillshade. This
+is the go/no-go gate before SfS.
+
 ## Prior SfS matches/refinement projects (context, notes live in each dir)
 
 When you need more context on this pipeline, the prior runs kept full work notes in

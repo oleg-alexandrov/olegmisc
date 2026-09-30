@@ -149,9 +149,16 @@ is your cue to disarm, not to sleep again.
   (Burned 2026-07-07: churned the cron on a node switch; it fired once, never
   re-fired, and the pipeline sat idle ~11h after the BA finished. The BA was
   fine - the monitor died.)
-- STANDING POLICY - TWO HEARTBEAT LAYERS FOR ALL AUTONOMOUS WORK (set 2026-07-08).
-  The session-only vs OS-level distinction is the crux, so respect both layers.
-  For ANY unattended/auto session or long pipeline, ALWAYS arm BOTH:
+- POLICY, NO OS-LEVEL CRON UNLESS THE USER EXPLICITLY ASKS (set 2026-09-29, overrides
+  the "arm BOTH layers" default below). Default autonomous setup is the IN-SESSION
+  CronCreate heartbeat ONLY. Do NOT build the OS-level watchdog/resurrector on your own
+  initiative: it resurrects full `claude -c -p` sessions and BURNS TOKENS fast, which the
+  user is cost-sensitive about, and he accepts the outage risk (if the harness dies, the
+  pipeline just waits for him to return). Build the OS layer ONLY when the user explicitly
+  asks for it by name. Everything below about the OS watchdog applies ONLY in that case.
+- STANDING POLICY - HEARTBEAT LAYERS FOR AUTONOMOUS WORK (set 2026-07-08, amended
+  2026-09-29). The session-only vs OS-level distinction is the crux. Arm the IN-SESSION
+  layer by default; arm the OS layer ONLY on explicit request (see the policy line above):
   (1) IN-SESSION heartbeat = CronCreate. Pick the interval to fit the work - roughly
       every 20-40 min (tighter for fast-moving stages, looser for long jobs). Its prompt
       is content-free, points at the project notes, touches
@@ -194,9 +201,11 @@ is your cue to disarm, not to sleep again.
   WHY BOTH (the thing I got wrong before): CronCreate is SESSION-ONLY - it lives inside
   the running Claude session and DIES WITH IT, so a "service unavailable" outage that
   kills the harness ALSO kills the CronCreate heartbeat and nothing re-arms it. Only an
-  OS-level cron, independent of the harness, can bring Claude back. The old blanket "no
-  OS-level crontab" rule predated this understanding and is RETIRED. OS cron is now
-  REQUIRED for durable auto work, on LOCAL machines only, NEVER on pfe.
+  OS-level cron, independent of the harness, can bring Claude back. So when the OS layer
+  IS wanted, it must be a LOCAL-machine cron, NEVER on pfe. BUT per the 2026-09-29 policy
+  above it is OFF by default: build it ONLY when the user explicitly asks. The old blanket
+  "no OS-level crontab" rule is retired only to the extent that OS cron is PERMITTED on
+  explicit request, it is NOT the default.
   PER-BOT NAMESPACING (REQUIRED - a single shared watchdog/heartbeat/sentinel is LOSSY
   with 2+ concurrent auto bots: a survivor keeps the shared heartbeat fresh so a dead bot
   is never resurrected, and the first `.auto_done` disarms everyone). So EACH concurrent
