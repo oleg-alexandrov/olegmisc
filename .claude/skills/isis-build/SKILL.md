@@ -96,6 +96,18 @@ If dirty: `rm build/CMakeCache.txt`, reconfigure with `-DbuildCoverage=OFF`, `ni
 re-verify. Emergency workaround for an already-shipped dirty build: run ASP tools with
 `GCOV_PREFIX=/tmp GCOV_PREFIX_STRIP=99` (gcov writes land in node-local /tmp, tools exit clean).
 
+## isis links libale: an ale ABI bump crashes the pre-built conda isis (CRITICAL)
+
+`libisis` LINKS `libale`, so an `ale` C++ ABI change breaks a conda `isis` that was
+built against the old ABI. The conda `isis` pins ale loosely (`ale =1.2.0=asp*`), so
+conda auto-picks the newest ale build; if that ale grew `ale::Orientations` (PR #726
+added `m_quat*` members), `SpiceRotation::LoadCache` corrupts the heap (double free)
+on every camera load. This shipped as ale `asp_8` (2026-09-30, reported by Ryodo
+Hemmi); fixed by ale `asp_9` (pre-#726 libale + python-only odtk fix), NOT by
+rebuilding isis. When bumping conda ale, either keep libale ABI-identical or rebuild
++ republish this conda isis in the same respin. Detail + recipe: build-env skill and
+~/projects/isis_ale_rebuild_notes.sh.
+
 ## ninja install deadlock on a stale env libisis, and the real fix
 
 Symptom during `ninja install`: `FAILED: tests/runISISTests[1]_tests.cmake` with a

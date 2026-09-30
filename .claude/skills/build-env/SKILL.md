@@ -35,6 +35,33 @@ source 1.3.0 did not change it) and NOT a per-mission `spiceql_mission` issue. T
 working paths are `isd_generate -k <cube>` (furnish from the spiceinit'd cube) or
 `-w` (web SpiceQL, when the server is up).
 
+## Bumping the conda `ale` package: libale ABI vs the pre-built isis/usgscsm (CRITICAL)
+
+The conda `ale` package ships **both** `libale` (a C++ lib) and the python `ale`.
+The pre-built conda `isis` and `usgscsm` **link `libale`** and carry only a LOOSE
+pin `ale =1.2.0=asp*`, so `conda` auto-selects the newest `ale` build number. If a
+new `ale` build changes the `libale` **ABI** (e.g. PR #726 grew `ale::Orientations`
+by adding `m_quatW/X/Y/Z` members), the un-rebuilt conda isis/usgscsm allocate the
+OLD object size and the new constructor writes past it -> heap corruption / double
+free on every ISIS camera load. This shipped as the ale `asp_8` regression (crashed
+`spiceinit`/`campt`); the fix was `asp_9` = the `asp_7` C++ source (pre-#726 libale,
+byte-identical, 292640 on osx-arm64) + only the PYTHON odtk fix on top.
+
+RULE when respinning the conda `ale` package:
+- If the change is python-only, build from a branch whose `libale` C++ is
+  **unchanged** from the currently-shipped build (verify: `libale` size/`git diff
+  --stat ... -- '*.h' '*.cpp'` EMPTY vs the build isis/usgscsm were compiled
+  against - NOT vs some intermediate umbrella branch; the baseline is what USERS
+  have). Then no isis/usgscsm rebuild is needed.
+- If `libale` ABI must change, you MUST rebuild AND republish `isis` and `usgscsm`
+  against the new `ale` in the SAME respin (bump their build numbers), or users get
+  the ABI crash. A green nightly does NOT catch this - the cloud test subset barely
+  loads ISIS cameras; test with a fresh `conda create stereo-pipeline=<v> ale=<new>`
+  then `campt from=<cube>`.
+- Prevent-recurrence (deferred as of 2026-09-30): give `ale` a `run_exports` exact
+  build pin and tighten isis/usgscsm off the loose `=asp*`.
+Full incident + the asp_9 recipe: ~/projects/isis_ale_rebuild_notes.sh.
+
 ## Nightly build and regression tests -> nightly-regression
 
 The nightly build/test/release pipeline (l1 cron, localLinux + cloud children, the
