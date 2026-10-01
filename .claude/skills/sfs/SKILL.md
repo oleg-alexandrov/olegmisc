@@ -363,6 +363,28 @@ cosmetic): make the env overridable in the shared scripts, e.g.
 `export ISISROOT=${ISISROOT:-$HOME/miniconda3/envs/asp_deps}`, so each machine/job sets the
 right one, rather than a hard flip to `isis10asp` (the Mac still has `asp_deps`).
 
+## sfs_sim_align.sh: get a GCP for EVERY image, not just misaligned ones (ALIGN_THRESH)
+
+`sfs_sim_align.sh` defaults `ALIGN_THRESH=2.0` px: after image_align measures the per-image
+shift, if shift < 2 px it prints "image already aligned, stopping" and exits BEFORE gcp_gen,
+so a default `batch_sfs_sim.sh` run emits a GCP only for the few images that exceed 2 px.
+That is a "correct-only-if-needed" optimization, good for a "which images are misaligned?"
+verify pass but WRONG when the goal is a GCP per image to feed a joint re-solve / trans_gcp.
+Oleg's rule (2026-10-01): PREFER a GCP for EVERY image regardless of shift - a "stay put"
+GCP (shift ~0.2 px) is still a valuable constraint and the joint solver benefits from the
+full set. Two ways to force it (prior art: PNCB/pncb_registration.sh, 2026-04-20, same goal):
+  - `ALIGN_THRESH=0` (env, pass-through via batch_sfs_sim `-v`): forces the FULL pipeline
+    (sim + align + gcp_gen + per-image BA + re-mapproject) on every image. Works today, no
+    code edit; extra cost is the per-image BA (~11-15 min/img). This is what PNCB used.
+  - `--gcp-only` (sfs_sim_align.sh arg): bypasses the threshold AND stops right after gcp_gen
+    (no BA/remap) - cheaper, cleaner when you only need the GCP set. BUT batch_sfs_sim.sh does
+    NOT forward it yet; add a `GCP_ONLY=1` env pass-through to expose it.
+Re-runs are cheap: sfs_sim_align.sh REUSES an existing per-image mapproject (.meas.map.tif)
+and sim-intensity.tif if present, so a second pass only redoes align + gcp. TODO (dunno):
+the default ALIGN_THRESH=2.0 is an older convenience default - reconsider making the
+GCP-for-all path (ALIGN_THRESH=0 or --gcp-only) the norm for registration/joint-solve runs,
+and expose --gcp-only through batch_sfs_sim.
+
 ## SBU accounting - compute it when a job finishes (especially SfS)
 
 When any pfe job completes, especially an SfS / parallel_sfs run, COMPUTE its SBU cost and

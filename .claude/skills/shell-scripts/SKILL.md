@@ -46,6 +46,18 @@ passes `$Q` as ONE argument (qsub errors "illegally formed destination"). Fixes:
 INLINE all args into the command (no arg-bundle variable), or force splitting with
 `${=Q}` / `${(z)Q}`, or wrap in `bash -c`. Bit us building qsub arg strings for pfe.
 
+## Do NOT Name a Variable `GROUPS` (or Other Reserved Bash Names) (CRITICAL)
+
+`GROUPS` is a **special bash builtin** array (the current user's group IDs); **assignments
+to it are silently ignored** (no error). So `GROUPS="0 1 2 3 4"; for g in $GROUPS` iterates
+the user's numeric GIDs (e.g. `32305`), not your values - and `bash -n` does NOT catch it
+(it does not execute). This wasted a full qsub run: a 5-group loop keyed on `$GROUPS` did
+nothing (the one GID pointed at an empty list) yet exited 0. Rename to `GRPS`/`GLIST`/etc.
+Other reserved names to avoid for your own variables: `GROUPS`, `PIPESTATUS`, `BASH_*`,
+`FUNCNAME`, `SECONDS`, `RANDOM`, `LINENO`, `PPID`, `UID`, `EUID`, `PWD`, `OLDPWD`, `REPLY`,
+`IFS`, `PATH`, `HOME`, `SHLVL`, `HOSTNAME`. When a loop over your list runs zero iterations
+or picks up strange numeric tokens, suspect a reserved-name collision.
+
 ## No `timeout` on Mac - Just Don't (CRITICAL, keeps recurring)
 
 The Mac (the local Bash-tool shell AND `ssh mac_arm`) has NO `timeout`/`gtimeout`.
