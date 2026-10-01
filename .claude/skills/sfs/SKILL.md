@@ -123,6 +123,16 @@ download URLs for batch downloading and clean product IDs:
 
 # Download images in bulk (resumable with retries)
 ~/projects/sfs/download_all.sh lists/urls.txt
+
+# Or run automated head-node friendly batch ingest (fetch + lronac2isis +
+# spiceinit + lronaccal + lronacecho + isd_generate linear reduction + cam_test):
+~/projects/sfs/batch_prepare_lro.sh lists/products.txt lronac_all --no-usgs-polar
+
+# For USGS South Pole controlled anchor images (using custom polar SPICE kernels):
+~/projects/sfs/batch_prepare_lro.sh lists/usgs_products.txt usgs_south --usgs-polar
+
+# Single product manual ingest:
+~/projects/sfs/prepare_lro_nac.py --outdir lronac_all M109041171LE
 ```
 
 **Step 1 - reference DEM (1 m/pixel, half-integer grid).** Regrid the LOLA source

@@ -110,8 +110,11 @@ dem_mosaic --max --threads 20 --dem-list $SEL/ml_primary_all.txt -o $SEL/maxlit_
 printf '%s\n' $SEL/maxlit_q{0,1,2,3}_extra.tif   > $SEL/ml_extra_all.txt
 dem_mosaic --max --threads 20 --dem-list $SEL/ml_extra_all.txt   -o $SEL/maxlit_extra_all.tif
 ```
-The driver `sfs_select_bcu2314.sh` wraps exactly this (with env + counts). Grand candidate
-count = unique images across all sub_q*_{primary,extra}.txt.
+The canonical driver `~/projects/sfs/sfs_select_full_site.sh` wraps exactly this (with env + counts):
+```bash
+~/projects/sfs/sfs_select_full_site.sh <map_list.txt> <azimuth_table.txt> <out_dir> <curr_dir> [threshold]
+```
+Grand candidate count = unique images across all sub_q*_{primary,extra}.txt.
 
 For the VERY-LARGE-terrain variant, insert `split_quadrants.py` before the azimuth split and
 pass each quadrant's projwin to image_subset_2x as the 5th arg (`--t_projwin`).

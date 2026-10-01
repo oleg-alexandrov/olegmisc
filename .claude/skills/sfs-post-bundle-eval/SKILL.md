@@ -100,6 +100,12 @@ Emit the flagged ids to `lists/removed_ids.txt`. On BCU2314 this flagged 52 of 9
 concentrated in the near-north grazing-sun chunks (one chunk lost 14 of ~48 drifted
 dropouts).
 
+Canonical detection tool:
+```bash
+# Automated suspect camera detection from bundle statistics:
+~/projects/sfs/sfs_flag_bad_cameras.py ba_htdem/run -o lists/removed_ids.txt --report lists/flagged_report.txt
+```
+
 ## 2b. GSD vs mapproj-offset vs sim-shift: what each metric REALLY measures (and role matters)
 
 Measured on BCU2314 (978 LRO NAC cameras, 2026-10-01) by joining three per-image signals:
@@ -157,8 +163,12 @@ re-mapproject. Two scopes:
 - ONE culprit, few chunks: rebuild only the affected chunk -> its half -> the total
   (BCU2314 `bcu_redo_clean_mosaics.sh`, `_clean` suffix).
 - MANY suspects, preemptive prune: drop the whole `lists/removed_ids.txt` from EVERY
-  chunk's map list and rebuild all 20 chunks -> both halves -> total (BCU2314
-  `bcu_prune_and_remosaic.sh`, `_pruned` suffix). Sketch:
+  chunk's map list and rebuild all chunks -> both halves -> total using the canonical runner:
+```bash
+# Rebuild all chunks, halves, and grand mosaic with removed_ids pruned:
+~/projects/sfs/sfs_prune_and_remosaic.sh map_htdem lists/removed_ids.txt $(pwd) 500 20
+```
+Or manually in a loop:
 ```bash
 for ml in $(ls map_htdem/map_list_*.txt | grep -E 'map_list_[0-9]+_[0-9]+\.txt$' | sort -t_ -k3 -n); do
   be=...; en=...                                 # parse from the name

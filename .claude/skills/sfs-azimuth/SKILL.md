@@ -92,6 +92,17 @@ To visualize coverage across datasets (e.g. baseline catalog vs newly ingested a
 - **Concentric Radial Tiers**: Radius is an arbitrary visual separator, not physical data. Place baseline images on an inner circle ($r=1.0$) and additional images on an outer circle ($r=1.35$).
 - **Styling**: Solid colored balls with dark edge rings; dashed guideline circles; gray shading across the astronomically forbidden southern sector (300° to 60°).
 
+### Canonical Plotting Tool: `~/projects/sfs/plot_sfs_azimuth.py`
+```bash
+# Generate polar rose plot from sfs_query.sh output:
+~/projects/sfs/plot_sfs_azimuth.py azimuth_table.txt -o solar_azimuth_polar.png
+
+# Compare two datasets on dual concentric rings:
+~/projects/sfs/plot_sfs_azimuth.py baseline_azimuth.txt --table2 additional_azimuth.txt \
+  --label1 "Baseline Catalog" --label2 "Additional Imagery" \
+  -o solar_azimuth_comparison.png
+```
+
 ### Matplotlib Recipe:
 ```python
 import matplotlib.pyplot as plt
