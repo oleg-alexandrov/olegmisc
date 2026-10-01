@@ -118,6 +118,25 @@ hide. Specific comparisons to eyeball (all after warping to a COMMON grid/extent
 REVIEW YOUR OWN PLOTS after making them - re-open the PNG and read it critically, don't just
 save and move on. Keep ADDING inspected figures to the running HTML artifact as you go.
 
+## When Oleg asks for files TO VIEW, hand him ONE copy-pasteable command (standing preference)
+
+Whenever Oleg asks for a path to files so he can look at them (DEMs, hillshades,
+colorized diffs/disparity, orthos, matches), do NOT just list paths. After rsync'ing the
+files to the Mac at their MIRRORED relative paths, give him a single copy-pasteable block:
+a `cd <the one work dir>` line, then the viewer command (`sg` / `stereo_gui`, `sw`, etc.)
+with ONE file per line, backslash-continued and the `\` columns ALIGNED (run
+`~/bin/align_backslashes.py` before showing it), and trailing `&` to background it. Group
+sensibly with `--grid-cols N` (e.g. hillshades on the top row, colorized disparity below).
+He pastes one block and sees everything. Example shape:
+```
+cd ~/projects/<proj>
+sg --grid-cols 2                          \
+  left_hill.tif                           \
+  right_hill.tif                          \
+  dx_cmap.tif                             \
+  dy_cmap.tif &
+```
+
 ## Visual Raster Inspection - "Claude has eyes"
 
 Claude can SEE images - use vision to verify rasters (orthos, DEMs, geodiffs,

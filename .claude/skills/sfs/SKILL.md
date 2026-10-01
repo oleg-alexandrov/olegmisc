@@ -322,6 +322,16 @@ Full detail is in the [[sfs-post-bundle-eval]] skill; the essentials:
   re-mapproject (one devel qsub). Name by state (`_clean`/`_pruned`). VERIFY the streaks are
   gone AND craters did not move (else a good camera was dropped). Log removed ids in notes.
 
+## SfS image selection (SUMMARY -> [[sfs-image-selection]])
+
+Once the cameras are pruned, pick a minimal-but-covering SUBSET for the SfS solve (the full
+set is too expensive). Recipe (ASP `image_subset`): break the box into overlapping
+quadrants, group by Sun azimuth (50-150 imgs), feed LOW-RES sub images (sub8>sub4>sub2), run
+`image_subset` per group (with `--t_projwin` = the quadrant), and a 2nd pass on the remainder
+for 2x coverage. Tools in `~/projects/sfs`: `prepare_lowres.sh`, `split_quadrants.py`,
+`image_subset_2x.sh`. Outputs are mapproj image lists (latest bundle cameras), converted to
+cub+cam for SfS later. Full detail: [[sfs-image-selection]].
+
 ## Prior SfS matches/refinement projects (context, notes live in each dir)
 
 When you need more context on this pipeline, the prior runs kept full work notes in
@@ -331,6 +341,43 @@ mare/south-pole/cold-area m2m sites that first ran the harvest -> fixed -> dem c
 and the current `~/projects/sfs_BCU2314-BDU1224-MM` (matches_pipeline_notes.sh). The
 generic scripts in `~/projects/sfs/` are the reusable distillation; the per-site
 notes carry the exact invocations, list-assembly, and what went wrong.
+
+## pfe env: the hardcoded `asp_deps` ISISROOT in these scripts is DEAD but INERT (TODO: clean up)
+
+The generic scripts (`sfs_exposures.sh`, `parallel_sfs.sh`, `dem_mosaic_list.sh`,
+`bundle_adjust.sh`, `bundle_adjust_refine.sh`, `mapproject_chunk.sh`) all hardcode
+`export ISISROOT=$HOME/miniconda3/envs/asp_deps`. That env NO LONGER EXISTS on pfe (only
+`asp_deps_stale_nfs`; the live ISIS env is `isis10asp`). It does not matter in practice:
+every ASP tool is a `bin/` WRAPPER that UNSETS inherited `GDAL_DATA`/`PROJ_DATA`, re-points
+them at the bundle's `share/` (via `libexec/libexec-funcs.sh`), OVERRIDES
+`ISISROOT="$TOPLEVEL"` (the bundle), and sets `LD_LIBRARY_PATH` + `CSM_PLUGIN_PATH`. So for
+any wrapped tool the scripts' dead `asp_deps` ISISROOT/`$ISISROOT/bin`/`ALESPICEROOT` are
+discarded before the real binary runs (`ISISDATA` happens to still resolve, 179 GB kernels,
+unused by CSM). Verified live 2026-09-30: `bin/gdalinfo`/`bin/gdal_translate` on a polar
+DEM run clean, no proj.db warning. TWO caveats worth remembering: (1) this only holds for
+tools called THROUGH `$SP/bin/` wrappers, NOT bare `libexec/` ELF binaries nor non-ASP
+python `osgeo` calls, so `tile_dem.py` (bare `gdal_translate` + `from osgeo import gdal`)
+must be run under a real gdal env (`geo`) or with `$SP/bin` first on PATH; (2) the dead
+strings are a future landmine if anyone adds a non-wrapped call. TODO (dunno, low priority,
+cosmetic): make the env overridable in the shared scripts, e.g.
+`export ISISROOT=${ISISROOT:-$HOME/miniconda3/envs/asp_deps}`, so each machine/job sets the
+right one, rather than a hard flip to `isis10asp` (the Mac still has `asp_deps`).
+
+## SBU accounting - compute it when a job finishes (especially SfS)
+
+When any pfe job completes, especially an SfS / parallel_sfs run, COMPUTE its SBU cost and
+log it in the project notes: SBU = nodes x walltime_hours x model_rate. Rates (from
+`/u/scicon/tools/bin/node_stats.sh`, "SBU rate per node type"): bro_ele 1.0, sky_ele 1.59,
+cas_ait 1.64, rom_ait 4.06, mil_ait 4.38, mil_a100 37.86. Pull per-job nodes + walltime
+from `/PBS/bin/qstat -x -f <jobid>` (Resource_List.nodect, resources_used.walltime) and sum
+across the stage's jobs. After a BIG job (e.g. a 20-tile parallel_sfs run) ALSO run
+`acct_ytd | grep <gid>` and note what it reports (Used / Allocation / Remain) even though it
+normally lags ~24h - record BOTH the computed figure and the acct_ytd figure (they should
+match once accounted; a mismatch means jobs are still unaccounted). Watch the fiscal-year
+rollover (Oct 1): the allocation can change sharply (e2305 was 25000 SBU in FY2026 but
+1250 in FY2027), so "% of budget" must use the CURRENT-FY allocation from acct_ytd, not a
+remembered number. Rule of thumb: a 20-tile lunar SfS run is ~350 node-hours (~350 SBU on
+bro_ele) - budget the next run against the live acct_ytd remaining.
 
 ## qsub and Autonomous Orchestration (sanity checks, do not blunder)
 
