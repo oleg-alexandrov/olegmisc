@@ -135,6 +135,27 @@ coverage step itself does not provide.
   before prepare_lowres. Related lever: a gentle sun-elevation floor drops the softest
   grazing frames - but keep useful low-sun images (low sun = strong shading for SfS).
 
+### The drop is from the SfS SUBSET only, NOT from the bundle solve (role-dependence)
+
+A coarse, large-footprint frame is a LIABILITY here (it smears in max-lit/SfS) but an ASSET
+for the bundle/jitter solve: its wide footprint ties together images that have no other
+intermediate overlap and bridges illumination/temporal gaps. So dropping it for the SfS
+subset does NOT mean dropping it from bundle_adjust - keep it in the solve, exclude it only
+from the SfS/max-lit cover. Decide the two sets separately. Detail + the measured metric
+behavior: [[sfs-post-bundle-eval]] section 2b.
+- Practical cutoff: flag GSD over ~1.75-2 m/px (well above the healthy ~1.3 m bulk) as an
+  SfS-subset caution, ideally ALONGSIDE a large bundle mapproj-dem offset. CAVEAT: GSD and
+  mapproj-offset are strongly correlated (~0.52), so mapproj-offset is partly a coarseness
+  proxy - a high value on a coarse frame may just mean "coarse", not "misregistered". To
+  tell a truly misposed frame from a merely-coarse one, use the resolution-agnostic SfS
+  sim-align shift ([[sfs-run-align]]), which is independent of GSD.
+- COVERAGE-HOLE GATE (do this before actually removing): a coarse frame may be the SOLE
+  coverage for some ground patch or the only bridge across an illumination gap. Removing it
+  then opens a HOLE - real estate with no substitute. Before dropping, confirm other frames
+  still cover that footprint (re-run the coverage subset WITHOUT the candidate and check no
+  region loses its only contributor; or eyeball a valid-count mosaic). If it is the only
+  cover there, keep it and accept the local softness rather than lose the terrain.
+
 ## Gotchas and tuning
 
 - THRESHOLD: 0.01 is the ASP default but is often TOO PERMISSIVE - nearly every image adds

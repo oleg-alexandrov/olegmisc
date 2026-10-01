@@ -100,6 +100,43 @@ Emit the flagged ids to `lists/removed_ids.txt`. On BCU2314 this flagged 52 of 9
 concentrated in the near-north grazing-sun chunks (one chunk lost 14 of ~48 drifted
 dropouts).
 
+## 2b. GSD vs mapproj-offset vs sim-shift: what each metric REALLY measures (and role matters)
+
+Measured on BCU2314 (978 LRO NAC cameras, 2026-10-01) by joining three per-image signals:
+native GSD (`query_gsd.sh` -> `lists/*_gsd*.txt`), the bundle mapproj-dem offset 95th pct
+(`run-mapproj_match_offset_stats.txt`), and the SfS sim-align shift
+([[sfs-run-align]] / `shift_report.txt`). The correlations are the whole lesson:
+- **Spearman(GSD, mapproj-offset95) = +0.52 (strong).** A coarse image's tie points
+  localize fuzzily, so meters-off-consensus inflates EVEN WHEN THE POSE IS FINE. So
+  mapproj-offset is PARTLY A COARSENESS PROXY, not pure misregistration - which is exactly
+  why thresholding raw mapproj-offset is a weak/self-fulfilling failure predictor (it just
+  re-finds the coarsest frames).
+- **Spearman(GSD, sim-shift) = -0.05 (zero).** The SfS sim-align shift is
+  RESOLUTION-AGNOSTIC - it measures true image-to-terrain registration independent of pixel
+  scale. It is the CLEAN pose-quality metric. (And it is independent of the bundle stats,
+  so it is non-circular external validation of a prune: on BCU2314 sim-shift independently
+  re-flagged 37 of 52 hand-removed cameras.)
+- The two failure metrics (mapproj-offset and sim-shift) are themselves ~uncorrelated
+  (Spearman ~ -0.09): they fail on different axes, so OR-combining them beats either alone.
+
+PREDICTOR RULE (refined): to judge whether a camera is truly MISREGISTERED, use sim-shift
+(or GSD-normalized mapproj-offset), NOT raw mapproj-offset. Raw mapproj-offset alone just
+rejects coarse frames. Reserve a hard mapproj-offset reject for the extreme tail
+(>~5-10 m) where it co-fires with low match count (genuine smears/dropouts, section 2).
+
+### An image's value is ROLE-DEPENDENT - a bundle asset can be an SfS liability
+
+High-GSD (coarse, large-footprint) frames are a TIE-COVERAGE ASSET for bundle_adjust:
+their wide footprint stitches together images that have no intermediate overlap otherwise -
+they bridge illumination and temporal gaps and supply correspondences where the set is
+otherwise disconnected. KEEP them for the bundle/jitter solve. BUT the SAME coarse frames
+are a LIABILITY for max-lit and SfS: draped on a fine (e.g. 1 m) DEM they stretch coarse
+content and SMEAR (section 2/3), and they add no real detail. So the "keep for bundle" set
+is NOT the "keep for the SfS/max-lit subset" set - decide the two separately. On BCU2314
+the 5 worst primary-tier offenders were all top ~2% GSD (2.5-4.35 m/px vs median 1.28,
+p90 1.54), flagged high by mapproj-offset mostly BECAUSE they were coarse, with only mildly
+elevated sim-shift ("fine but coarse", not grossly misposed).
+
 ## 3. Localize a smear to a chunk and image
 
 Each image sits in exactly ONE chunk (by azimuth index), so a culprit contaminates exactly

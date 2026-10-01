@@ -380,10 +380,13 @@ full set. Two ways to force it (prior art: PNCB/pncb_registration.sh, 2026-04-20
     (no BA/remap) - cheaper, cleaner when you only need the GCP set. BUT batch_sfs_sim.sh does
     NOT forward it yet; add a `GCP_ONLY=1` env pass-through to expose it.
 Re-runs are cheap: sfs_sim_align.sh REUSES an existing per-image mapproject (.meas.map.tif)
-and sim-intensity.tif if present, so a second pass only redoes align + gcp. TODO (dunno):
-the default ALIGN_THRESH=2.0 is an older convenience default - reconsider making the
-GCP-for-all path (ALIGN_THRESH=0 or --gcp-only) the norm for registration/joint-solve runs,
-and expose --gcp-only through batch_sfs_sim.
+and sim-intensity.tif if present, so a second pass only redoes align + gcp. DECISION
+(Oleg, 2026-10-01): for any registration / joint-solve / trans_gcp run, SET `ALIGN_THRESH=0`
+so a GCP is produced for EVERY image - make that the norm, do NOT rely on the default 2.0
+(which drops the sub-2px majority). `--gcp-only` is the cheaper variant (no per-image BA) but
+needs a `GCP_ONLY=1` pass-through added to batch_sfs_sim first; ALIGN_THRESH=0 works today.
+TODO (dunno): consider flipping sfs_sim_align.sh's default to 0 (or wiring batch_sfs_sim to
+require the knob explicitly) so the cutoff can't silently drop GCPs again.
 
 ## SBU accounting - compute it when a job finishes (especially SfS)
 
