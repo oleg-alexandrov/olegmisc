@@ -16,6 +16,8 @@ description: Git repository reference and GitHub CLI - the lunokhod1 repo table 
 | 5 | **projects** (scripts/notes) | `/home/oalexan1/projects` | master | `oleg-alexandrov/projects.git` | (no god) |
 | 6 | **home dir** (dotfiles) | `/home/oalexan1` | master | `oleg-alexandrov/olegmisc.git` | (no god) |
 
+**Binary/PNG policy for `projects`:** NEVER commit binary files, figures, or plots (`*.png`, `*.tif`, `*.cub`, `*.img`, etc.) to the `projects` repo. Figures and plots are visual inspection artifacts and must remain untracked on disk. Only scripts, notes, docs, and text metadata belong in git.
+
 Convention: `origin` = user's fork, `god` = upstream org (for ASP, VW, BinaryBuilder).
 
 **BinaryBuilder has several heads and is pushed DIRECTLY to BOTH remotes.**

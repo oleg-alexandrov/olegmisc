@@ -138,3 +138,10 @@ ax.set_rticks([])
 ax.legend(loc='lower center', bbox_to_anchor=(0.5, -0.15), ncol=2)
 plt.savefig('solar_azimuth_polar_plot.png', dpi=300, bbox_inches='tight')
 ```
+
+## 6. Version Control Discipline: Do Not Commit PNGs to Git
+
+Generated polar rose plots (`*.png`) and figures are visual inspection artifacts, NOT text metadata:
+- **Never add `.png` files to the git repository**: Leave generated figures untracked on disk in the project directory.
+- **Commit text metadata only**: In `lists/`, only the parsed azimuth table (`lists/azimuth_table.txt`) and matching image/camera text lists (`lists/*.txt`) belong in git.
+

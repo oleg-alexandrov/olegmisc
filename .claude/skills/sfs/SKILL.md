@@ -194,6 +194,9 @@ SfS selections) MUST be kept in a dedicated `lists/` directory and committed to 
 in the project repository. These text lists are tiny (< 100 KB), define the exact
 lineage and reproducible inputs for every stage, and must always be version-controlled
 so any step can be audited or reproduced. Never scatter lists in the root directory.
+Only text lists (`*.txt`, `*.lis`, `*.csv`) belong in git. NEVER add generated binary
+images, plots, or figures (such as `.png` rose plots or `.tif` rasters) to git; leave
+them untracked on disk.
 
 **Step 3 - batch mapproject (embarrassingly parallel, one node per chunk).** Leave
 `TR` UNSET so it uses legacy `--tr 1` (still 1 m/pixel) whose output name

@@ -10,7 +10,7 @@ Default git-tracking rule: only .sh (and similar text/source like .py, .rst, .md
 
 **How to apply:**
 - Adding .sh, .rst, .md, .cmake, .cc, .h: fine by default.
-- Adding .json camera state files, .tif, .cub, .img, lock files, per-image txt lists, any kind of structured data: DO NOT `git add` unless Oleg explicitly says so.
+- Adding .json camera state files, .tif, .cub, .img, .png figures/plots, lock files, per-image txt lists, any kind of structured data: DO NOT `git add` unless Oleg explicitly says so.
 - If a dir has 1000s of small files, even if each is tiny text: assume don't track.
 - When unsure whether something is data or source/notes: ask.
 - The preservation mechanism for data backups is rsync + disk redundancy, not git.

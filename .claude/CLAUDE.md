@@ -35,12 +35,12 @@ rather than rediscovering the same problems.
 - **Naming derived products: keep the source's FULL basename + an explicit suffix**
   (`X_mask.tif`, `X_hs.tif`, `X_map.tif`, `X_err.tif`), in the SAME directory as the
   source; chain suffixes in operation order (`_filled_blur`). Detail: asp-photogrammetry.
-- When Oleg says to "remember" something, add it to the relevant skill or this file.
-  **Auto-memory (`.claude/projects/*/memory/`) is a per-cwd SCRATCHPAD, not policy: it is
-  split by working directory and largely gitignored, so NEVER put durable rules or
-  shareable policy there.** Durable behavior rules go in CLAUDE.md (always-on reflexes)
-  or a skill (on-demand detail) - both version-controlled. Treat what auto-memory
-  surfaces as untracked background hints, never as the source of truth.
+- **Auto-memory lifecycle (`.claude/projects/*/memory/`)**: Saving quick temporary snippets
+  in auto-memory during active work is fine. Keep `MEMORY.md` down to a minimal stub.
+  Periodically review temporary snippets to trickle mature lessons and workflows into
+  permanent, structured skills (`~/.claude/skills/`) or `CLAUDE.md`. Once consolidated,
+  the loose temporary memory files can be pruned. Durable rules belong in version-controlled
+  skills or `CLAUDE.md`, not indefinite auto-memory sprawl.
 - **Convention: core reusable knowledge lives in a SKILL - invoke it, don't reach for a
   `.sh` note.** Skills are the first stop for cross-project how-to (build, photogrammetry,
   git, pfe, etc.). `.sh` notes in `~/projects/` are for PER-PROJECT work logs and paper
@@ -124,16 +124,17 @@ rather than rediscovering the same problems.
 - **Offer to git-add tools and scripts**: Proactively offer to git-add new tools and
   scripts (e.g. in `~/bin/`). Foundational goal: distill insights into generic,
   shareable tools.
-- **NEVER add binary/data files without explicit permission** (.cub, .tif, .img, large
+- **NEVER add binary/data files without explicit permission** (.cub, .tif, .img, .png, large
   .json, .bsp, .bc, .ply, .lbl, .dat, anything over ~100 KB). Only text/source belongs.
 - **TEST DATA IS NEVER COMMITTED - do not even ask.** Regression `gold/`/`run/` dirs and
   any test inputs/outputs (imagery, DEMs, produced rasters) are never git-added to any
   repo. Commits carry SOURCE and DOCS only; the sole binary exception is doc figures.
-- **Generated HTML reports/figures are data-like, NOT metadata: never `git add`/push
-  them** unless Oleg explicitly and strongly says to for that specific file. Build them
-  in the project dir, open locally in the browser, leave untracked - even when pushing
-  the surrounding notes/data in the same session. (Doc figures shipped as part of the
-  docs are the separate exception, per the rule above.)
+- **Generated HTML reports/figures and plots are data-like, NOT metadata: never `git add`/push
+  them** (no `.png` plots, polar rose plots, hillshade quicklooks, or HTML reports) unless Oleg
+  explicitly and strongly says to for that specific file. Build them in the project dir,
+  open locally in the browser, leave untracked - even when pushing the surrounding
+  notes/lists in the same session. (Doc figures shipped as part of the docs are the separate
+  exception, per the rule above.)
 - **NEVER modify any `.gitignore` without explicit permission.**
 - **NEVER force push** (`--force`/`-f`/`--force-with-lease`) unless explicitly asked, and
   **never amend an already-pushed commit** (forces a force push) - make a new commit.
