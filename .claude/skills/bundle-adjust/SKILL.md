@@ -224,6 +224,20 @@ bundle_adjust_dem_gcp.sh; check jitter_solve.sh too). bundle_adjust still writes
 cameras. Add it back only when actively debugging a long solve that you expect to stop early,
 and even then know the per-iteration cost.
 
+## Keep a dense GCP set from hogging the network: --max-gcp-to-tri-points-ratio (build 2026/10)
+
+A dem2gcp GCP set can be enormous (a disparity-derived GCP per matched feature - e.g. 32 M
+points on a lunar polar SfS site). Left unbounded it dominates memory and lets the GCP
+swamp the triangulated tie points. As of ASP build 2026/10, `bundle_adjust` has
+`--max-gcp-to-tri-points-ratio <r>` (default -1 = off): it reduces the GCP to at most r x the
+triangulated-point count by random subset (r = 1.0 caps GCP at the tri count);
+:numref:`gcp_vs_tri`. jitter_solve has this plus `--max-num-tri-points` and
+`--max-anchor-points-to-tri-points-ratio` (see [[jitter-solve]]). gcp-sigma is set at the
+dem2gcp step (~ the GSD in meters; SMALLER sigma = STRONGER pull, so sigma ~1 m "takes
+precedence", not 5); guard outliers with `--gcp-robust-threshold`, not a loose sigma.
+**AVAILABILITY: build-2026/10+ only - VERIFY** (`bundle_adjust --help | grep max-gcp-to-tri`).
+Older builds LACK it; if absent, bound the GCP count with dem2gcp `--max-num-gcp` instead.
+
 ## Related
 [[dem-comparison]] (dem2gcp -> GCP from the ours-vs-ref disparity; census cost-mode 3),
 [[jitter-solve]] (feed it the raw matches + GCP; guard GCP with --gcp-robust-threshold,

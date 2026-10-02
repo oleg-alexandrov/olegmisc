@@ -342,6 +342,20 @@ for 2x coverage. Tools in `~/projects/sfs`: `prepare_lowres.sh`, `split_quadrant
 `image_subset_2x.sh`. Outputs are mapproj image lists (latest bundle cameras), converted to
 cub+cam for SfS later. Full detail: [[sfs-image-selection]].
 
+## Run SfS over a site + co-register images to it (SUMMARY -> [[sfs-run-align]])
+
+With the subset chosen, run SfS and register every image to the result. Two phases: (1) tile
+the reference DEM, run `parallel_sfs` per tile, `dem_mosaic`-assemble one site SfS DEM, and
+inspect it (geodiff vs the reference + hillshade - no tile seams); (2) per image render an
+SfS-simulated view, `image_align` it to measure the pixel shift (shift_report), and optionally
+`gcp_gen` a GCP (use `ALIGN_THRESH=0` to force a GCP for EVERY image, not just >2 px ones).
+Then hillshade-correlate the SfS DEM vs the reference (LOLA) for the GLOBAL horizontal shift
+gate, and if re-registering, dem2gcp-from-matches -> a GCP -> a final bundle_adjust (or
+jitter_solve) to pull the SfS result into the LOLA frame. Full detail + the proven params,
+the metric expertise (GSD/mapproj-offset/sim-shift), and the queue/build gotchas:
+[[sfs-run-align]], which in turn leans on [[sfs-post-bundle-eval]], [[jitter-solve]],
+[[bundle-adjust]], [[dem-comparison]], [[pc-align]].
+
 ## Prior SfS matches/refinement projects (context, notes live in each dir)
 
 When you need more context on this pipeline, the prior runs kept full work notes in

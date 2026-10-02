@@ -51,6 +51,11 @@ Count NL from the camera json (`m_nLines`).
      creating an along-track streaked/smeared image.
    - **Rule**: Keep orientation knots at `1000` lines/knot or coarser unless high-frequency
      jitter is conclusively proven.
+   - **Coupling with anchors**: `1000` (the finer, floor value) is safer to use when you
+     ALSO deploy MANY anchor points (lightly weighted - see the anchor-balance section): the
+     dense anchors damp the extra orientation freedom so it stabilizes instead of oscillating.
+     Finer orientation + sparse anchors is the oscillation risk; finer orientation + many
+     light anchors is fine. Still never go below 1000.
 
 ## Constraints and invocation
 
@@ -111,11 +116,36 @@ When refining a multi-camera linescan network (such as OHRC co-registering to LR
 
 ## Anchor points vs triangulated points balance
 
+- **Set anchor STRENGTH via `--anchor-dem-uncertainty` (meters), NOT `--anchor-weight`**:
+  the weight form is DEPRECATED (weight `w` == uncertainty `1/w`); the docs/`--help` both
+  steer to the uncertainty. LARGER uncertainty = LOOSER = lighter anchors. To deploy MANY
+  anchors that stabilize pose WITHOUT freezing the solve to the DEM, use a large uncertainty
+  (~50-150 m), not a tight one.
+- **`--num-anchor-points` is PER IMAGE** (not a global total): e.g. `--num-anchor-points 5000`
+  makes ~5000 per image, distributed; `--num-anchor-points-per-tile` and
+  `--num-anchor-points-extra-lines` are the other count levers. Over-provision and let
+  `--max-anchor-points-to-tri-points-ratio` prune if needed.
 - **Anchors must NOT dominate triangulated tie points**: Anchors provide stability across
   shadowed or low-match regions. They are not an accuracy lever.
 - Check printed counts at startup: Ensure triangulated match points outnumber anchor points
   substantially (aim for 10:1 to 20:1 ratio, e.g. 216k tri points vs 12k anchors).
 - If anchors dominate, the solver freezes the cameras to the DEM and real corrections fail.
+
+### Explicit balance controls (NEW, build 2026/10 - verify availability first)
+
+As of ASP build 2026/10, `jitter_solve` has three flags (all default -1 = off) to bound and
+balance the network for large runs (:numref:`jitter_anchor_points`):
+- `--max-num-tri-points <N>` - cap triangulated points (random subset).
+- `--max-gcp-to-tri-points-ratio <r>` - cap GCP at r x the (possibly reduced) tri-point count.
+- `--max-anchor-points-to-tri-points-ratio <r>` - cap anchor points at r x the tri-point count.
+`bundle_adjust` has `--max-gcp-to-tri-points-ratio` only (:numref:`gcp_vs_tri`). Setting a
+ratio = 1.0 is a CEILING (that control class <= tri count), not a target - the quality aim is
+still tri points OUTNUMBERING anchors (~10:1); drop the anchor ratio to ~0.1-0.25 if anchors
+crowd the tri points. Use these to keep a dense dem2gcp GCP set (and anchors) from hogging the
+network instead of hand-tuning `--max-pairwise-matches` / `--max-num-gcp`.
+**AVAILABILITY: these are build-2026/10+ only. VERIFY before use** (`jitter_solve --help |
+grep max-gcp-to-tri`). Older builds LACK them; if absent, fall back to bounding counts with
+`--max-num-gcp` (at dem2gcp) + `--max-pairwise-matches`.
 
 ## Large-scale linescan blocks (Mons Mouton / SfS lessons)
 

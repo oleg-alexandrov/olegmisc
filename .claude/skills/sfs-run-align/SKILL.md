@@ -144,6 +144,26 @@ from the SfS frame into the LOLA frame -> one merged GCP for a final bundle_adju
 `sfs_gcp`). Do this ONLY after the shift eval, and typically on the user's call - it is not
 automatic.
 
+Two things that raise GCP yield through the transfer:
+- **A more-filled disparity transfers more GCP** (dem2gcp maps each GCP through the
+  SfS->ref disparity; holes -> GCP lost at `--search-len 0`). But MEASURED on BCU2314
+  (2026-10-01), `gdaldem hillshade -multidirectional` gave LESS fill than ASP
+  `hillshade -e 10`, not more: 57% vs 66.6% valid. Multidirectional averages several
+  azimuths so it fills shadows but WASHES OUT the directional contrast that
+  hillshade-to-hillshade asp_mgm correlation lives on, and loses more matches to the flat
+  contrast than it gains from un-shadowed pixels. So for this correlation PREFER the grazing
+  single-azimuth `hillshade -e 10` (harsh shadows = high texture = more valid disparity).
+  The median shift was ~identical either way (-2.2/-1.0 m), so the global offset is robust
+  to the hillshade method. (Don't assume "multidirectional = more fill" for correlation -
+  contrast matters more than shadow-fill here.)
+- **A GCP on a no-disparity hole is THROWN OUT, not kept untransformed** (dem2gcp.cc
+  `find_disparity` + the `if (!is_valid(disp)) continue;` in the main loop): it tries the
+  interpolated then raw disparity at the pixel and, failing both, drops the point from the
+  output. The `--search-len` option (DEFAULT 0) optionally searches an N-px neighborhood for
+  the nearest valid disparity ("a desperate measure... should not be overused"); leave it 0
+  to drop holes cleanly. So throw-out is the default and desired behavior - and it is exactly
+  why the filled multidirectional disparity above matters (fewer holes = fewer drops).
+
 ## Autonomous execution notes (this pipeline is long and multi-stage)
 
 Each stage is a qsub; gate the next on job_state=F (never on output-file existence - a PBS
