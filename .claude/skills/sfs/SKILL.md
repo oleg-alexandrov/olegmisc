@@ -175,7 +175,7 @@ Build this on a compute node (devel), not the head node. Confirm 100% valid and 
 half-integer origin with `gdalinfo -stats`.
 
 **Step 2 - azimuth-sorted lists.** Get per-image sun azimuth (`sfs --query`, see
-the sfs-azimuth skill and `query_azimuth.sh`), then sort by the 0-360 azimuth
+the sfs-azimuth skill and `sfs_query.sh`), then sort by the 0-360 azimuth
 column and derive matching image and camera lists:
 
 ```bash
@@ -186,6 +186,14 @@ sed 's/\.cal\.echo\.cub$/.cal.echo.json/' lists/azimuth_images.txt > lists/azimu
 
 Azimuth sorting is what makes `--overlap-limit` in the next BA match images of
 similar illumination (matched shadows), which is what co-registration needs.
+
+**List Management & Git Tracking Policy.**
+All lists (`lists/*.txt`) and metadata produced across the pipeline (azimuth tables,
+sorted image/camera lists, cull/filter lists, outlier/bad camera lists, primary/secondary
+SfS selections) MUST be kept in a dedicated `lists/` directory and committed to git
+in the project repository. These text lists are tiny (< 100 KB), define the exact
+lineage and reproducible inputs for every stage, and must always be version-controlled
+so any step can be audited or reproduced. Never scatter lists in the root directory.
 
 **Step 3 - batch mapproject (embarrassingly parallel, one node per chunk).** Leave
 `TR` UNSET so it uses legacy `--tr 1` (still 1 m/pixel) whose output name
