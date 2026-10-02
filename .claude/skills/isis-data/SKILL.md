@@ -15,11 +15,34 @@ parameter XML at `$ISISROOT/bin/xml/<app>.xml`. Always pass real arguments (or
 **LRO NAC end-to-end + generic ISIS kernel fetch: `~/projects/lronac_processing.sh`.**
 Full ingest pipeline (lronac2isis → spiceinit → lronaccal → lronacecho), CSM JSON
 via isd_generate, ODE search, illumination/azimuth analysis, and failure modes
-(missing CK, ALE driver crash, sub-solar lon vs ground azimuth). Kernel fetch
-(section 5): `downloadIsisData <mission> $ISISDATA` for a full sync, or targeted
-`rclone --config $ISISROOT/etc/isis/rclone.conf copy <mission>:kernels/ck/ ...
---include="<file>" --no-traverse -P` for a single missing CK. Update on any new
-gotcha.
+(missing CK, ALE driver crash, sub-solar lon vs ground azimuth).
+
+### Pleiades ISIS & rclone Environment
+On Pleiades (pfe), the ISIS environment containing both `rclone` and `downloadIsisData` is `isis10`:
+```bash
+export ISISROOT=/swbuild/oalexan1/miniconda3/envs/isis10
+export ISISDATA=/nobackupnfs1/oalexan1/projects/isis3data
+export ALESPICEROOT=$ISISDATA
+export PATH=$ISISROOT/bin:$PATH
+```
+The USGS rclone configuration is at `$ISISROOT/etc/isis/rclone.conf` (with remotes `lro:`, `mro:`, `base:`, etc.).
+
+### Targeted Kernel Fetch Recipe
+Reconstructed CK pointing files are ~1.5 GB each so are fetched on demand. When observations are more recent than the local archive:
+1. Update the database index files first (without these, `spiceinit` reports "No Camera Kernels found"):
+   ```bash
+   rclone copy -P --config=$ISISROOT/etc/isis/rclone.conf \
+     lro:kernels/ck/ $ISISDATA/lro/kernels/ck/ --include="*.db" --no-traverse
+   rclone copy -P --config=$ISISROOT/etc/isis/rclone.conf \
+     lro:kernels/spk/ $ISISDATA/lro/kernels/spk/ --include="*.db" --no-traverse
+   ```
+2. Pull the specific observation month's CK, SPK, or SCLK files with `--no-traverse`:
+   ```bash
+   rclone copy -P --config=$ISISROOT/etc/isis/rclone.conf \
+     lro:kernels/ck/ $ISISDATA/lro/kernels/ck/ \
+     --include="moc42r_YYYYDDD_YYYYDDD_v01.bc" --no-traverse -P
+   ```
+Always pass `--no-traverse` when targeting specific files from the USGS S3 bucket to avoid slow directory listings over thousands of objects.
 
 ## NEVER hand-build a local metakernel to make isd_generate / ALE run (CRITICAL)
 
