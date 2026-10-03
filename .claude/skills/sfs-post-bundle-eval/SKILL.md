@@ -241,7 +241,14 @@ Then produce the grand comparison mosaics:
 
 ### Coverage Comparison & Decision Gate
 Compare `good_max_mosaic.tif` against `all_max_mosaic.tif`:
-- If `good_max_mosaic.tif` covers the site without notches or unlit voids, the degraded set can be safely discarded for SfS and mosaic generation.
+- When the promising tier contains >= 80% of candidate images across balanced azimuths, it typically achieves 100.00% site coverage (missing pixels = 0).
+- Run a quick raster mask comparison:
+  ```python
+  good_mask = (~np.isnan(good_arr)) & (good_arr != nodata) & (good_arr > 0)
+  all_mask  = (~np.isnan(all_arr))  & (all_arr  != nodata) & (all_arr  > 0)
+  missing_in_good = np.count_nonzero(all_mask & (~good_mask))
+  ```
+- If `missing_in_good == 0`, the degraded set can be completely and safely discarded for SfS and final mosaics.
 - If holes or gaps appear in `good_max_mosaic.tif` that are filled in `all_max_mosaic.tif`, identify the specific missing geometries and selectively retain only the minimally necessary frames from the degraded set.
 
 ## Related
