@@ -225,8 +225,17 @@ Mapproject each tier separately into independent directories:
 
 Each batch chunk automatically produces a per-chunk max-lit mosaic (`max_mosaic_<beg>_<end>.tif`).
 
-Then produce the three comparison max-lit mosaics:
-1. `good_max_mosaic.tif`: Max-lit combination of all chunks in `map_htdem_good/`.
+For the promising (`good`) images, subdivide the per-chunk max-lits into two illumination halves:
+1. `good_half1_max_mosaic.tif`: Max-lit of the first half of good chunks (`beg < N/2`).
+2. `good_half2_max_mosaic.tif`: Max-lit of the second half of good chunks (`beg >= N/2`).
+
+Evaluating `good_half1` versus `good_half2`:
+- Contrasts two distinct solar azimuth regimes with opposing illumination shadows.
+- Highlights crisp shading relief and fine crater details that can be washed out when merging everything into a single all-sun grand mosaic.
+- Provides a direct co-registration gate (red/green overlay) to confirm alignment between opposite illumination angles before final fusion.
+
+Then produce the grand comparison mosaics:
+1. `good_max_mosaic.tif`: Max-lit combination of `good_half1_max_mosaic.tif` and `good_half2_max_mosaic.tif` (all promising images).
 2. `bad_max_mosaic.tif`: Max-lit combination of all chunks in `map_htdem_bad/`.
 3. `all_max_mosaic.tif`: Max-lit combination of `good_max_mosaic.tif` and `bad_max_mosaic.tif`.
 
