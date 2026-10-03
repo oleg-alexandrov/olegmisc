@@ -88,7 +88,33 @@ Bare minimum to remember without reading:
   (do it at the moment of writing, every time): every remote script goes to `pfx:/tmp/...`
   explicitly (`scp file pfx:/tmp/`, run `ssh pfx bash /tmp/file.sh`); `cd` into a work dir
   before running any tool so its side-outputs land there, not in `~`; anything worth keeping
-  goes in a project subdir. Never the bare default.
+  goes in a project subdir. Never the bare default. **CAVEAT: the `/tmp` trick above is ONLY
+  valid for a script run IMMEDIATELY on the SAME head node you wrote it to - see the next
+  bullet; for a qsub job it FAILS.**
+- **`/tmp` IS NODE-LOCAL AND NOT TRANSFERABLE ACROSS NODES - NEVER put a qsub job script (or
+  any file the job reads) in `/tmp`.** Each compute node has its OWN `/tmp`, so a script
+  written to `/tmp` on the head node is INVISIBLE to the qsub job: the job runs, finishes in
+  ~0 s with EMPTY output (or `No such file`), SILENTLY - looks like the job "did nothing."
+  Put every job script and every input the job reads on the SHARED filesystem (the
+  `/nobackupp19` project workdir, or `~`/`/home6`), and pass THAT path to `qsub -- <path>`.
+  Same hazard also bites the non-qsub head-node case: the `pfe`/`pfx` alias LOAD-BALANCES
+  front-ends, so a `/tmp` file written on one front end is gone on the next `ssh` (lands on a
+  different node). BOTTOM LINE: `/tmp` on NAS is never shared across nodes - always use
+  shared storage for anything another node (or a later ssh) must read. Bitten 2026-10-03
+  (a probe script left in head-node `/tmp` gave an empty qsub result) and before.
+- **THREAD COUNT inside a qsub job: use `$NCPUS`, NOT bare `nproc`.** PBS Pro sets `$NCPUS`
+  to the job's allocated `ncpus`. Verified on NAS 2026-10-03 inside a `select=1:ncpus=28`
+  job: `NCPUS=28` (correct) but **`nproc` returns 1** - it honors the launch-time CPU-affinity
+  mask, which PBS pins to a single core during job setup - so a tool run as `--threads $(nproc)`
+  goes SINGLE-THREADED. Also in-job: `OMP_NUM_THREADS=1` (PBS default - any OpenMP tool is
+  1-thread unless overridden), `nproc --all=56` (all logical cores w/ hyperthreading - would
+  over-subscribe the 28 physical allocated), and `wc -l < $PBS_NODEFILE = 28` (also correct,
+  a fine fallback). RULE: pass `--threads $NCPUS` (fallback `wc -l < $PBS_NODEFILE`, last
+  resort `nproc --all`). ASP/VW's own default is ~8 (via `~/.vwrc`), which badly under-uses a
+  full node - ALWAYS set threads = numCpu. This bit the overnight jitter hard: a 140k
+  jitter_solve ran 1-thread for ~3 h with zero pass progress; switching to `--threads $NCPUS=28`
+  finished it in ~2 h. `jitter_gcp.sh`/`bundle_adjust_dem_gcp.sh` now default to `$NCPUS`.
+  (Deeper ASP/VW fix still owed: make the library default = cores, overridable, incl. pc_align.)
 - **NEVER copy/read/inspect a file until its WRITER has fully FINISHED (CRITICAL - burned 2026-09-10).**
   A file appearing on disk (even at a plausible size) does NOT mean it is complete - a tool still
   writing it grows it incrementally. `rsync`/`scp`/`gdalinfo`/`Read` of a mid-write file yields a
