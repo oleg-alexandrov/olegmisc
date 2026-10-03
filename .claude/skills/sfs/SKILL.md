@@ -226,6 +226,12 @@ threshold (:ref: the sfs-azimuth and visual-inspection skills), do not assume it
 ```bash
 sed 's#lronac_all/\(M[0-9]*[LR]E\)\.cal\.echo\.cub#maps/\1.cal.echo.map.tr1.tif#' \
   lists/azimuth_images.txt > lists/azimuth_map.txt
+
+# On Pleiades/HPC: NEVER run multi-process filter_by_max on the head node.
+# Submit as a quick 1-node PBS job with PROCS=28 (runs in ~4-5 minutes):
+# qsub -q normal -m n -r n -N filter_max -l walltime=00:30:00 -W group_list=e2305 \
+#   -j oe -S /bin/bash -l select=1:ncpus=28:model=bro_ele -v "PROCS=28" -- \
+#   ~/projects/sfs/filter_by_max.sh lists/azimuth_map.txt lists/filtered_map.txt $(pwd) 0.005
 ~/projects/sfs/filter_by_max.sh lists/azimuth_map.txt lists/filtered_map.txt $(pwd) 0.005
 ```
 
@@ -233,14 +239,23 @@ sed 's#lronac_all/\(M[0-9]*[LR]E\)\.cal\.echo\.cub#maps/\1.cal.echo.map.tr1.tif#
 each line of the list it is given, so passing `filtered_map.txt` keeps all three
 in lockstep.
 
+**Edge-case guardrail (empty sliver images):**
+Images with only a few isolated lit pixels (e.g. 1 to 100 pixels) at the bounding
+box edge can pass the `0.005` max threshold, but will fail in `bundle_adjust`'s
+downsampled image statistics step (`ImageUtils.cc`, targeting 1M pixels with step
+size ~14) with `ERROR: No valid pixels to compute statistics for`. Ensure that
+surviving images have sufficient non-nodata pixels (e.g. > 1,000 pixels) before
+launching parallel bundle adjustment.
+
 **Step 5 - matches-only bundle adjust.** `NUM_ITERATIONS=0` harvests the match
 files (written during matching, before any solve) without a drift-prone solve of
 free cameras. `IMG_DIR` points at the cube/camera dir (default `img`). Forward the
-env with `-v` (only set vars, see the gotcha below).
+env with `-v` (only set vars). Always pass explicit `-q normal` (Pleiades requires
+queue specification) and `walltime=8:00:00` (`bro_ele` rejects >8h walltimes).
 
 ```bash
-qsub -m n -r n -N ba -l walltime=23:01:00 -W group_list=e2305 \
-  -j oe -S /bin/bash -l select=10:ncpus=20:model=bro_ele \
+qsub -q normal -m n -r n -N ba -l walltime=8:00:00 -W group_list=e2305 \
+  -j oe -S /bin/bash -l select=10:ncpus=28:model=bro_ele \
   -v "IMG_DIR=lronac_all,OVERLAP_LIMIT=75,NUM_ITERATIONS=0,PROCESSES=10,THREADS=8" -- \
   ~/projects/sfs/bundle_adjust.sh lists/filtered_map.txt ref/lola_1mpp_extra_noblur.tif maps ba/run $(pwd)
 ```
@@ -262,25 +277,21 @@ registered anchors in place of the manual's stereo-DEM + `pc_align` alignment.
 least-, then re-tighten to the ground:
 
 1. **fixed** (`FIXED_LIST` set, no DEM): the registered anchor (USGS) cameras are
-   held FIXED and pull the free cameras into their frame. This establishes the
-   coordinate system. Output `ba_fix`.
-2. **free** (nothing set): starting from `ba_fix`, ALL cameras are relaxed and
+   held FIXED and pull the free cameras into their frame. Uses raw harvested matches
+   (`--match-files-prefix ba/run`). This establishes the coordinate system. Output `ba_fix`.
+2. **free** (`USE_CLEAN=1`, matchPrefix `ba_fix/run`): starting from `ba_fix`, ALL cameras are relaxed and
    refined together with no external constraint, letting the network settle to a
    consistent minimum. Output `ba_free`.
-3. **dem** (`REF_DEM` set): starting from `ba_free`, the reference terrain is added
+3. **dem** (`USE_CLEAN=1`, `REF_DEM` set, matchPrefix `ba_fix/run`): starting from `ba_free`, the reference terrain is added
    as a constraint for the final vertical/registration tighten. Output `ba_htdem`.
    `DEM_UNCERTAINTY` defaults to 20 m (per the manual); use 10 to trust the DEM
-   more, up to 100 if the cameras are believed far from it. Be mindful of this
-   value: past runs tried both 20 and 10 with little practical difference, so 20
-   is hardcoded, but it is worth reconsidering when moving to a wildly different
-   reference DEM, where how much to trust the terrain matters more.
+   more, up to 100 if the cameras are believed far from it.
 
-Baked-in behavior (do not override): matches are reused via `--match-files-prefix`
-plus `--skip-matching`, so they are never recomputed, and NEVER
-`--clean-match-files-prefix` (the clean matches from a `NUM_ITERATIONS=0` harvest
-were outlier-filtered against UN-optimized cameras, so they are over-filtered and
-would starve the solve). `--camera-weight 0` lets cameras move; intermediate
-cameras are saved.
+**Clean-match reuse discipline**:
+- Stage 1 uses the RAW harvested matches (`ba/run`), because the clean matches from a
+  `NUM_ITERATIONS=0` harvest were outlier-filtered against un-optimized cameras and are over-culled.
+- Stages 2 and 3 pass `USE_CLEAN=1` pointing `matchPrefix` to `ba_fix/run` (`--clean-match-files-prefix ba_fix/run`).
+  These clean matches were filtered against a real registered solve, removing bad matches while preserving network connectivity.
 
 **Assemble the lists offline, 1-to-1.** For stage 1 the image list is the
 survivors (cub paths from the full dir), and the camera list is 1-to-1 with it,
@@ -293,25 +304,26 @@ The reuse stages are serial `bundle_adjust` (matching is skipped), so one node
 each. Run each on its own qsub; each waits for the previous:
 
 ```bash
-# Stage 1: fixed - anchor (USGS) cameras hold the frame
-qsub -m n -r n -N ba_fix -l walltime=8:00:00 -W group_list=e2305 \
+# Stage 1: fixed - anchor (USGS) cameras hold the frame (uses raw ba/run matches)
+qsub -q normal -m n -r n -N ba_fix -l walltime=8:00:00 -W group_list=e2305 \
   -j oe -S /bin/bash -l select=1:ncpus=20:model=bro_ele \
   -v "FIXED_LIST=lists/usgs_fixed_images.txt" -- \
   ~/projects/sfs/bundle_adjust_refine.sh \
   lists/filtered_images.txt lists/filtered_cameras_mixed.txt ba/run ba_fix $(pwd)
 
-# Stage 2: free - relax ALL cameras, no constraint (feeds on ba_fix)
-qsub -m n -r n -N ba_free -l walltime=8:00:00 -W group_list=e2305 \
-  -j oe -S /bin/bash -l select=1:ncpus=20:model=bro_ele -- \
-  ~/projects/sfs/bundle_adjust_refine.sh \
-  ba_fix/run-image_list.txt ba_fix/run-camera_list.txt ba/run ba_free $(pwd)
-
-# Stage 3: dem - final tighten to the terrain (feeds on ba_free)
-qsub -m n -r n -N ba_htdem -l walltime=8:00:00 -W group_list=e2305 \
+# Stage 2: free - relax ALL cameras (reusing ba_fix clean matches)
+qsub -q normal -m n -r n -N ba_free -l walltime=8:00:00 -W group_list=e2305 \
   -j oe -S /bin/bash -l select=1:ncpus=20:model=bro_ele \
-  -v "REF_DEM=ref/lola_1mpp_extra_noblur.tif" -- \
+  -v "USE_CLEAN=1" -- \
   ~/projects/sfs/bundle_adjust_refine.sh \
-  ba_free/run-image_list.txt ba_free/run-camera_list.txt ba/run ba_htdem $(pwd)
+  ba_fix/run-image_list.txt ba_fix/run-camera_list.txt ba_fix/run ba_free $(pwd)
+
+# Stage 3: dem - final tighten to the terrain (reusing ba_fix clean matches)
+qsub -q normal -m n -r n -N ba_htdem -l walltime=8:00:00 -W group_list=e2305 \
+  -j oe -S /bin/bash -l select=1:ncpus=20:model=bro_ele \
+  -v "USE_CLEAN=1,REF_DEM=ref/lola_1mpp_extra_noblur.tif" -- \
+  ~/projects/sfs/bundle_adjust_refine.sh \
+  ba_free/run-image_list.txt ba_free/run-camera_list.txt ba_fix/run ba_htdem $(pwd)
 ```
 
 Validate each stage's `<outDir>/run-final_residuals_stats.txt`: the median

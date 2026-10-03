@@ -130,6 +130,15 @@ Bare minimum to remember without reading:
   mkdir -p ~/projects; ln -s /nobackupp19/oalexan1/<mydir> ~/projects/<mydir>` (only if the
   home symlink is wanted). The DATA is on nobackup; `/home6` only ever holds the symlink, never
   the bytes. Symlink-wipe procedure in `pleiades_notes.sh`.
+- **Lustre quota (`nb`/`nbquota`) vs `du` discrepancy on `/nobackupp19` (~200-250 GB gap).**
+  `nb` reports actual allocated blocks across Lustre OSTs, while `du -sh` sums apparent file
+  sizes. Because photogrammetry projects store thousands of large rasters (ISIS cubes, GeoTIFFs,
+  disparities) and tens of thousands of match files, Lustre extent striping (1 MB to 4 MB chunks
+  per OST) and directory indexing consistently cause the charged block quota to exceed the `du`
+  sum by ~6% to 8% (e.g. ~200-250 GB on a ~3 TB dataset). A ~200 GB gap does NOT indicate phantom
+  files in someone else's directory or loose files at the root (verified 2026-10-02: scanned
+  `/nobackupp19/*` across other groups, finding 0 files owned by `oalexan1` outside
+  `/nobackupp19/oalexan1`). All data lives legitimately under `/nobackupp19/oalexan1/projects/`.
 - **Mac and pfe are kept in sync at the SAME HOME-RELATIVE PATH `~/projects/<proj>/...` (only
   the absolute home prefix differs).** A project is at `~/projects/<proj>` on BOTH machines:
   on the Mac `/Users/oalexan1/projects/<proj>` is the real dir; on pfe `/home6/oalexan1/projects/<proj>`

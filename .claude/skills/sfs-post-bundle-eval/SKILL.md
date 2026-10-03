@@ -194,7 +194,49 @@ rebuilt halves + total. The streaks/blur must be gone AND the craters must NOT h
 if terrain shifted, a GOOD camera was dropped by mistake. Log every removed id in the
 project notes.
 
+## 5. Dual-tier (promising vs degraded) stratification and max-lit coverage comparison
+
+After the final bundle adjustment with height constraints (`ba_htdem`), images can be
+stratified into two distinct tiers: "promising" (clean, sharp, well-registered) versus
+"degraded" (coarse GSD, large mapprojection offset, or low tie-point count). Comparing the
+max-lit coverage of the promising set against the full set reveals whether high-quality images
+provide adequate coverage, or if excluding degraded frames causes coverage loss (notches/holes).
+
+### Metric Extraction & Stratification
+1. Query per-image native GSD using the latest `ba_htdem` cameras onto the honest reference DEM:
+   ```bash
+   ~/projects/sfs/query_gsd.sh ref/lola_1mpp_extra_noblur.tif lists/filtered_images.txt \
+     ba_htdem/run-camera_list.txt lists/image_gsd.txt
+   ```
+2. Extract the 75th percentile mapprojection offset and match count from `ba_htdem/run-mapproj_match_offset_stats.txt`.
+3. Split images into two disjoint lists:
+   - **Promising / Good Set**:
+     - GSD <= 2.0 m/px
+     - 75th percentile mapprojection offset <= 2.0 m
+     - Sufficient tie-point count (e.g. >= 50-100 matches)
+   - **Degraded / Bad Set**:
+     - All remaining images (coarse GSD > 2.0 m, large offset > 2.0 m, or starved matches)
+4. Sort BOTH lists strictly by solar azimuth (preserving illumination order).
+
+### Separate Batch Mapprojection & Max-Lit Hierarchies
+Mapproject each tier separately into independent directories:
+- `map_htdem_good/`: Batch mapprojection of promising images.
+- `map_htdem_bad/`: Batch mapprojection of degraded images.
+
+Each batch chunk automatically produces a per-chunk max-lit mosaic (`max_mosaic_<beg>_<end>.tif`).
+
+Then produce the three comparison max-lit mosaics:
+1. `good_max_mosaic.tif`: Max-lit combination of all chunks in `map_htdem_good/`.
+2. `bad_max_mosaic.tif`: Max-lit combination of all chunks in `map_htdem_bad/`.
+3. `all_max_mosaic.tif`: Max-lit combination of `good_max_mosaic.tif` and `bad_max_mosaic.tif`.
+
+### Coverage Comparison & Decision Gate
+Compare `good_max_mosaic.tif` against `all_max_mosaic.tif`:
+- If `good_max_mosaic.tif` covers the site without notches or unlit voids, the degraded set can be safely discarded for SfS and mosaic generation.
+- If holes or gaps appear in `good_max_mosaic.tif` that are filled in `all_max_mosaic.tif`, identify the specific missing geometries and selectively retain only the minimally necessary frames from the degraded set.
+
 ## Related
 [[sfs]] (the parent pipeline; this is its pre-SfS gate), [[bundle-adjust]] (the stats files
 and the solve), [[jitter-solve]], [[visual-inspection]] (overlay/hillshade/colorbar),
 [[pfe-nas]] (gdal env, /tmp node-local, qsub), [[dem-comparison]].
+
