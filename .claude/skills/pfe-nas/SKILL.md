@@ -110,7 +110,10 @@ Bare minimum to remember without reading:
   the same thing on both machines. `rsync -R` (relative) or `scp` into a pre-`mkdir -p`'d
   matching subdir. Same for l1/any remote. (Flattening breaks the work-dir-relative-path
   convention and makes provenance unclear; corrected 2026-09-02.)
-- **NEVER wipe anything on lfe.** lfe access from l1: `ssh pfx` then `ssh lfe`.
+- **NEVER wipe or overwrite anything on lfe (CRITICAL).** Tape is the ultimate,
+  irreplaceable original archive. Never delete, clobber, or overwrite any dataset on lfe.
+  lfe access from l1 or Mac: `ssh pfx` then `ssh lfe`.
+
 - **Archive/wipe hygiene (paper trail; see `~/projects/lfe_archive.sh`):** LOG EVERY
   archive AND every wipe in that project's own notes (what, when, and where it is
   recoverable - lfe tar path, or public source + re-fetch recipe). Per-project
