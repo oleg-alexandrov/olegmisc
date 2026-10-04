@@ -144,9 +144,11 @@ rather than rediscovering the same problems.
 - **Always `cd /absolute/path &&` into the correct repo in the SAME command** as any git
   op (shell state does not persist between tool calls; a bare git op runs in the home
   dir). cwd NEVER carries over from a prior tool call, even one seconds ago. A
-  PreToolUse Bash hook (`~/.claude/hooks/git-cd-guard.sh`) now BLOCKS any
-  push/commit/add/merge/etc. lacking a literal `cd /abs &&` or `git -C /abs` - if denied,
-  rewrite with the explicit path, do not retry bare.
+  PreToolUse Bash hook (`~/.claude/hooks/git-cd-guard.sh`) now BLOCKS ANY git command -
+  reads too (status/log/fetch/tag), since a wrong-repo read returns a confident wrong
+  answer - unless it has a literal `cd /abs &&` or `git -C /abs` (only `git --version`,
+  `git help`, `git config --global/--system` are exempt). If denied, rewrite with the
+  explicit path, do not retry bare.
 - **A git op that reports "Everything up-to-date" (or "nothing to commit") right after you
   committed is IMPOSSIBLE in the right repo - it means the command ran in the wrong dir.
   STOP and verify which repo it hit; never label it "harmless"/"no-op"/"should be fine"
