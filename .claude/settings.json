@@ -38,6 +38,10 @@
           {
             "type": "command",
             "command": "$HOME/.claude/hooks/docs-build-reminder.sh"
+          },
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/git-cd-guard.sh"
           }
         ]
       }

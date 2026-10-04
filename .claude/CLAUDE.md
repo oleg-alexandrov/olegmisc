@@ -141,8 +141,17 @@ rather than rediscovering the same problems.
 - **Prefer rebase over a merge/branchy history**: on a rejected push, integrate with
   `git pull --rebase` (or fetch + `git rebase origin/master`). Rebasing local unpushed
   commits is fine and is NOT a force push. Detail: repo-sync.
-- **Always `cd` into the correct repo in the SAME command** as any git op (shell state
-  does not persist between tool calls; bare `git merge` runs in the home dir).
+- **Always `cd /absolute/path &&` into the correct repo in the SAME command** as any git
+  op (shell state does not persist between tool calls; a bare git op runs in the home
+  dir). cwd NEVER carries over from a prior tool call, even one seconds ago. A
+  PreToolUse Bash hook (`~/.claude/hooks/git-cd-guard.sh`) now BLOCKS any
+  push/commit/add/merge/etc. lacking a literal `cd /abs &&` or `git -C /abs` - if denied,
+  rewrite with the explicit path, do not retry bare.
+- **A git op that reports "Everything up-to-date" (or "nothing to commit") right after you
+  committed is IMPOSSIBLE in the right repo - it means the command ran in the wrong dir.
+  STOP and verify which repo it hit; never label it "harmless"/"no-op"/"should be fine"
+  and move on.** Pre-absolving an unexpected result instead of checking it is the tell of
+  masking a bug. Verify, then state the outcome plainly.
 - **`~/projects/` is tracked by `~/projects/.git`** - always `git -C ~/projects`. Subdirs
   with their OWN `.git` (StereoPipeline, visionworkbench, ISIS3, BinaryBuilder, ale,
   usgscsm, StereoPipelineTest) are NEVER added to the projects repo. "Commit what
