@@ -164,9 +164,61 @@ Two things that raise GCP yield through the transfer:
   to drop holes cleanly. So throw-out is the default and desired behavior - and it is exactly
   why the filled multidirectional disparity above matters (fewer holes = fewer drops).
 
+## Phase 3 - Blend with initial terrain (sfs_blend)
+
+After completing SfS (and any camera re-registration or after jitter correction), the
+produced SfS DEM is blended with the initial reference terrain (typically the LOLA DEM) to
+replace regions in permanent shadow where there is no illumination signal. The tool
+`sfs_blend` (:numref:`sfs_blend`, :numref:`sfs_usage`) performs this transition smoothly.
+
+Key parameters from `sfs_usage.rst`:
+- `--image-threshold 0.005`: lit vs shadow threshold in the max-lit mosaic.
+- `--lit-blend-length 25`: distance in pixels to blend towards the lit region.
+- `--shadow-blend-length 5`: distance in pixels to blend towards the shadowed region.
+- `--min-blend-size 25` (or 50): minimum dimension of shadowed craters where blending is
+  skipped, retaining the SfS DEM so small shadowed crater geometry is not erased.
+- `--weight-blur-sigma 5`: Gaussian standard deviation for weight transition smoothing.
+- `--cache-size-mb 4096`: ASP image cache size.
+
+Prerequisites:
+The reference DEM (`--lola-dem`), the SfS DEM (`--sfs-dem`), and the maximally lit mosaic
+(`--max-lit-image-mosaic`) MUST share the exact same grid extent, pixel resolution, and
+spatial projection down to the sub-pixel coordinate. If prepared following Step 1
+(half-integer snapped bounds) and Phase 1, they match natively. If bounds differ slightly,
+regrid via VRT (`USE_VRT=1` or `gdalbuildvrt -te ... -tr ...`) before blending.
+
+Execution:
+`sfs_blend` is a fast C++ multi-threaded tool. On a 20k x 15k pixel DEM (~300 Mpix), it
+runs in approximately 10 to 20 minutes on 28-40 cores. Use the `devel` queue on Pleiades
+(e.g. model `sky_ele`, 40 cpus) for rapid turnaround.
+
+Invocation:
+```bash
+sfs_blend \
+  --threads 40 \
+  --lola-dem ref/lola_1mpp_extra_noblur.tif \
+  --sfs-dem sfs_dem.tif \
+  --max-lit-image-mosaic secondary_all_clean.tif \
+  --image-threshold 0.005 \
+  --lit-blend-length 25 \
+  --shadow-blend-length 5 \
+  --min-blend-size 25 \
+  --weight-blur-sigma 5 \
+  --cache-size-mb 4096 \
+  --output-dem sfs_dem_blend.tif \
+  --output-weight sfs_dem_weight.tif
+```
+
+Post-blend verification:
+1. `geodiff sfs_dem_blend.tif ref/lola_1mpp_extra_noblur.tif -o blend_vs_lola`:
+   Verify vertical differences in permanently shadowed regions fall to 0 where LOLA takes
+   over, with a smooth transition in boundary zones.
+2. `hillshade -e 10 sfs_dem_blend.tif sfs_dem_blend_hill.tif`:
+   Inspect boundary zones for artificial cliffs, ringing, or stepping artifacts.
+
 ## Autonomous execution notes (this pipeline is long and multi-stage)
 
-Each stage is a qsub; gate the next on job_state=F (never on output-file existence - a PBS
+Each stage is a qsub; gate the next on job_state=F (never on output-file existence. A PBS
 product appears while still half-written). Drive it with a detached qstat-gated background
 poll per job set (re-invokes once on completion) plus, if running unattended, an in-session
 CronCreate heartbeat. Log SBU per stage (nodes x walltime x model-rate) and check

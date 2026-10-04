@@ -31,6 +31,16 @@ writing plotting code - do not hand-roll a match plot from memory.
   two panels** - no "fan" of correspondence segments. Correspondence is read by matching
   the red-dot CLUSTERS by eye between the two side-by-side panels, never by drawn lines.
   (Hand-rolled lime dots + connecting lines is exactly the wrong thing; caught 2026-09-17.)
+- **BIG dots, always - and this applies to EVERY overlaid point set, not just IP/tie
+  points**: the same visibly-large filled red marker is the rule for `pointmap.csv`
+  residual points AND for jitter `*-residuals_anchor_points.csv` ANCHOR points plotted on a
+  DEM. A 1 px speckle is unreadable (caught 2026-10-03 on an anchor-extent plot: dots at
+  matplotlib `s=0.6` were invisible). For a dense CSV cloud (tens/hundreds of thousands of
+  points) where `--radius 7` would smear into a solid sheet, still size UP (matplotlib
+  `s~=9`, i.e. radius a few px) and THIN the set (plot ~50k, every k-th) plus modest alpha
+  (~0.5) so the spatial EXTENT/coverage reads clearly - never shrink the dot to fit the
+  count. Overlay anchor/pointmap CSVs on the DEM IN THE DEM's PROJECTION (reproject lon/lat
+  columns first; at the poles lon/lat is a mess), per [[visual-inspection]].
 
 ## Use the canonical tool - do NOT hand-roll
 

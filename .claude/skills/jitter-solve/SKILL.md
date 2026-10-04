@@ -163,6 +163,33 @@ When running `jitter_solve` on massive datasets (e.g. 3,650 LRO NAC images at Mo
    then optimize with `--camera-position-uncertainty` and zero matches (`--clean-match-files-prefix empty/`).
 5. **Uncertainty hierarchy**: Maintain `GCP sigma < heights-from-dem-uncertainty < anchor-dem-uncertainty`.
 
+## Borderline / edge images: the padded anchor DEM is MANDATORY once poses get finer
+
+The padded `--anchor-dem` above is not only a massive-dataset concern. A SINGLE borderline
+image (footprint pokes past the domain edge) will smear the instant you make the orientation
+poses finer, even in an otherwise-clean solve. Mechanism (BCU2314, 2026-10-03): refining
+`--num-lines-per-orientation` from 4000 to 2000 gave an under-observed span of one west-edge
+frame its own orientation knot. That span images terrain just OUTSIDE the domain (and in
+shadow, so no tie points). Anchors are spread over the whole image and even beyond its first/
+last line (:numref:`jitter_anchor_points`: "uniformly distributed over each image ... can even
+go beyond the first and last image line ... where there may be no interest point matches"), but
+their ground coverage is BOUNDED BY THE ANCHOR DEM EXTENT. With the anchor DEM ending at the
+domain, that knot got ZERO anchors, floated, and its projected footprint EXPLODED ~7x into a
+streak (mapprojected-footprint area and valid-fraction jump: 0% inside the bad window at 4000
+lines vs 98.5% at 2000). The camera CENTER barely moved (<1 m), so per-camera stats (camera
+offset, mapproj offset, reproj error) are BLIND; only the max-lit mosaic (a localized smear /
+"explosion") and the mapprojected-footprint bbox reveal it. See [[sfs-post-bundle-eval]] for the
+per-chunk-partial + per-image localization recipe.
+
+RULE: any time you go finer on orientation knots AND the set has edge/borderline frames, the
+`--anchor-dem` MUST extend well beyond the domain (a genuine source DEM, e.g. regrid the Barker
+LDEM, NOT a fabricated pad). +4 km (4000 px at 1 m) each side fixed it here; 10 to 40 km for
+long trajectories. Keep `--heights-from-dem` / `--mapproj-dem` at the domain DEM; only the
+ANCHOR DEM grows. More anchors or tighter `--anchor-dem-uncertainty` INSIDE the domain do NOT
+help this (the span has no in-domain anchors at any density/weight). Immediate mosaic fix if you
+cannot re-solve: drop the one frame and rebuild the max-lit (its real footprint is a sliver
+neighbors cover); the real fix is the padded anchor DEM.
+
 ## GCP: optional, and a double-edged lever
 
 `dem2gcp` turns an ours-vs-reference hillshade disparity into GCP (gcp-sigma =

@@ -112,6 +112,29 @@ modes agreed on the disparity SIGN/gradient, but census recovered the most area
 (including the harder high-relief region). Plot all three dh/dv side by side when
 unsure which locks best - the field that is smooth + highest-coverage is the real one.
 
+### Canonical tools (do NOT hand-roll, and do NOT grab the wrong one)
+
+Three scripts in `~/projects/sfs/`. Pick by WHAT you feed and WHETHER you want alignment:
+- **`hillshade_corr.sh <leftDem> <rightDem> <stereoDir> <currDir> [maxSearch]`** - the
+  STANDALONE DEM-to-DEM correlator and the DEFAULT for a dh/dv readout. gdaldem-hillshades
+  both DEMs, runs `parallel_stereo --correlator-mode --stereo-algorithm asp_mgm --cost-mode 3`,
+  emits `run-F_b1_nodata.tif`=dx / `run-F_b2_nodata.tif`=dy. NO pc_align. Env: STEREO_ALGO,
+  COST_MODE, HILLSHADE_OPTS (default `-multidirectional -compute_edges`).
+- **`hillshade_correlator.sh`** - same idea but uses ASP `hillshade -e 10` (single azimuth)
+  and can ALSO pc_align (now OPT-IN: `DO_PC_ALIGN=1`, default off). The ALIGNMENT variant;
+  reach for it only when you want the aligned DEM + transform, not just dh/dv.
+- **`correlator.sh <left> <right> <stereoDir> <maxDispSpread> <currDir>`** - for already-
+  TEXTURED same-grid images (max-lit orthos, NOT DEMs/hillshades). Uses **asp_bm** + nodata
+  0.005. No align.
+
+ALGORITHM BY INPUT (the mistake to never repeat): **hillshades -> asp_mgm** (smooth/low
+texture; asp_bm block-matching finds almost nothing, ~0-12% valid, then downstream pc_align
+fails for want of matches). **Textured orthos / max-lits -> asp_bm.** For a cross-algorithm
+sensitivity check of a DEM shift, the honest independent measurement is not asp_bm-on-
+hillshades (it blanks); it is asp_bm on the max-lit ORTHOS (`correlator.sh`) vs asp_mgm on the
+hillshades (`hillshade_corr.sh`) - different algorithm AND different imagery (BCU2314 2026-10-03:
+the two agreed at demeaned r=0.88/0.75, confirming the shift was real, not an asp_mgm artifact).
+
 ## Step 4 - split into components and PLOT (dh, dv) + geodiff (dz)
 
 disparitydebug turns the raw disparity into horizontal + vertical rasters:

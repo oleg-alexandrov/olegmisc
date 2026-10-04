@@ -173,6 +173,11 @@ re-derive it each time, do NOT skip a step):**
    NEVER by dz/geodiff std (blind to horizontal misregistration on low relief).
 5. Colorize a geodiff/tri-err/dz with a matplotlib colorbar (per-panel, numeric
    ticks only; plasma for error, RdBu_r for signed), not bare grayscale.
+   **SIGNED/DIFFERENCE MAPS - POLARITY (Oleg's standing convention): BLUE = NEGATIVE,
+   RED = POSITIVE.** Use `cmap="RdBu_r"` (or `bwr`/`coolwarm`), NEVER plain `RdBu` - plain
+   RdBu is the OPPOSITE (red=negative, blue=positive) and is wrong here. This covers every
+   dh/dv/dz/geodiff/disparity map. Center the scale on 0 (symmetric vmin/vmax) so white = no
+   difference. (Burned 2026-10-04: shipped dh/dv + geodiff panels in plain RdBu, backwards.)
 This applies to the mapproj ortho-on-hillshade geometry check too: warp the ortho
 and the DEM hillshade to the same grid, then look.
 

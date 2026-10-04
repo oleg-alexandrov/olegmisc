@@ -524,5 +524,8 @@ The `~/projects/sfs/` repository contains the core pipeline scripts developed fo
 * **`query_azimuth.sh`**: Fast extraction of camera solar azimuth and elevation via `sfs --query`.
 * **`query_gsd.sh`**: Automatic querying of native ground sampling distance via `mapproject --query-projection`.
 * **`blend_img_mosaic.sh` / `avg_mosaic.sh`**: Weighted-mean blending of mapprojected images with shadow suppression.
+* **`sfs_blend.sh`**: Blends an SfS DEM back toward the reference (LOLA) DEM in permanent shadow with `sfs_blend`, using smooth transition weights and crater size filtering (:numref:`sfs_blend`).
+* **`hillshade_corr.sh`**: Standalone DEM-to-DEM hillshade correlator using `parallel_stereo --correlator-mode` with `asp_mgm` (dh/dv shift measurement without modifying DEMs).
 * **`bundle_adjust_dem_gcp.sh`**: Bundle adjustment constrained by DEM surface and ground control points.
 
+Scripts are maintained in `~/projects/sfs/` and unified into the public repository `~/projects/SfsPipeline` (`bin/`).
