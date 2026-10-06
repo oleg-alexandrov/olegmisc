@@ -36,6 +36,8 @@ Final results:
 - `average_mosaic.tif` - the shadow-masked seamless BLEND over the SfS images
   (customer request, ships alongside the max-lit one). See the recipe below.
 - `height_uncertainty.tif` - height error in meters (optional, `estimError=1` pass).
+  Run it on the FINAL blended SfS DEM, not LOLA: tile the blend, `launch_sfs_tiles.sh
+  ... 1`, then mosaic the per-tile `-height-error.tif`. So it waits for a settled blend.
 
 Visualizable: `sfs_dem_blend_hill.tif` (hillshade of the blend; ASP `hillshade -e 10`).
 
@@ -53,7 +55,10 @@ Ortho directories (two, per inventory.yaml):
   deliveries are flat.)
 - `map_images_native_res/` - the sub-1 m frames mapprojected at their own native
   GSD, plus `gsd.csv` (id, native GSD). Intersect the <1 m list with the shipped
-  ortho set so this is the native cut of what ships.
+  ortho set so this is the native cut of what ships. Build it with
+  `mapproject_native_res.sh` (a loop over a paired image/camera list that mapprojects
+  each at native GSD, no `--tr`, and writes `gsd.csv` from the actual output pixel
+  sizes). The <1 m list comes from the per-image GSD query (`query_gsd.sh`).
 
 Cameras (when the customer asks, e.g. Ross): `cameras/` with the final jitter (or
 bundle-adjust) `adjusted_state.json` CSM model-state files, the linear-reduced set,
@@ -115,11 +120,15 @@ wherever the contributing-image count changes). Build it over the SAME images th
 max-lit mosaic used (the SfS set), then snap to the delivery grid:
 
 ```bash
-# single-site (VIPER / SP / BCU): one blend over the SfS maps, then regrid
+# single-site (VIPER / SP / BCU): one blend over the SfS maps, then snap to the grid
 blend_img_mosaic.sh lists/sfs_maps.txt average_mosaic_raw.tif 0.005 $(pwd) 28
-gdalwarp -tr 1 1 -te <xmin ymin xmax ymax> -r cubicspline -overwrite \
-  average_mosaic_raw.tif average_mosaic.tif
+regrid_to_grid.sh average_mosaic_raw.tif average_mosaic.tif \
+  "<xmin ymin xmax ymax>" 1 $(pwd)
 ```
+
+`blend_img_mosaic.sh` (the blend) and `regrid_to_grid.sh` (the grid snap) are the two
+canonical SfsPipeline tools for the average mosaic; do not hand-roll `dem_mosaic` +
+`gdalwarp`.
 
 For a very large tiled site (Mons Mouton) blend in two levels - per tile, then
 across the per-tile results - before the regrid:
