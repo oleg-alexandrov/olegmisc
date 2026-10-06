@@ -39,7 +39,9 @@ Final results:
   Run it on the FINAL blended SfS DEM, not LOLA: tile the blend, `launch_sfs_tiles.sh
   ... 1`, then mosaic the per-tile `-height-error.tif`. So it waits for a settled blend.
 
-Visualizable: `sfs_dem_blend_hill.tif` (hillshade of the blend; ASP `hillshade -e 10`).
+Visualizable: `sfs_dem_blend_hill.tif` (hillshade of the blend;
+`gdaldem hillshade -multidirectional -compute_edges -alt 10`, which is crisper and
+keeps detail in the deep shadows better than ASP `hillshade -e 10`).
 
 Auxiliary: `sfs_dem.tif` (raw SfS, pre-blend), `lola_1mpp.tif` (the regridded LOLA
 domain DEM), `sfs_dem_weight.tif` (blend weight), `sfs_dem_blend_lola-diff.tif`
