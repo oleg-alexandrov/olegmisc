@@ -379,6 +379,16 @@ the metric expertise (GSD/mapproj-offset/sim-shift), and the queue/build gotchas
 [[sfs-run-align]], which in turn leans on [[sfs-post-bundle-eval]], [[jitter-solve]],
 [[bundle-adjust]], [[dem-comparison]], [[pc-align]].
 
+## Package the delivery (SUMMARY -> [[sfs-delivery]])
+
+The final stage, after SfS + re-registration + blend. Gather the blended SfS DEM,
+the max-lit AND the shadow-masked average ortho mosaics, LOLA, weight,
+height-uncertainty, the image-id lists, the two ortho directories (1 m/pixel and
+native-GSD), and the final jitter/bundle-adjust camera JSON into a results dir with
+a filled inventory.yaml manifest and a readme. Codified in the SfsPipeline repo
+(WORKFLOW.md steps 10 and 12, inventory.yaml). Ship the in-production camera version,
+not an experimental peer run. Full detail: [[sfs-delivery]].
+
 ## Prior SfS matches/refinement projects (context, notes live in each dir)
 
 When you need more context on this pipeline, the prior runs kept full work notes in
