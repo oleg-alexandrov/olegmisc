@@ -21,6 +21,22 @@ better version than you'd write. Do not assume local is authoritative.
 - Prefer rebase over merge always; when a push is rejected, `git pull --rebase`, never
   a plain merge that branches history.
 
+## NEVER fork code to a new branch without explicit user permission
+
+A new branch splits development and creates confusion: the fork drifts ahead while the
+default branch stagnates, so anyone who clones the default (or reproduces a result from
+it) silently gets the OLD code, and the divergence sends debugging down a wrong path.
+- Do NOT create or push a NEW branch unless the user EXPLICITLY asks for one.
+- When told to "push" and unsure which branch, push to the SAME / CURRENT branch (for a
+  shared repo that is normally the default: main/master) - never invent a new branch.
+- A branch is warranted only for a real PR; get explicit permission first and say why.
+  Consolidate stray branches back onto the default and delete them once merged.
+Burned 2026-10-05: a prior session created a `dev` branch on CassisPipeline; all real
+work accumulated on `dev` while the DEFAULT `main` sat ~2 months behind (old distortion
+lens + old stereo engine). A colleague reproducing from the default `main` got different
+numbers, and the branch split wasted a long debugging detour. Fix was to fast-forward
+`main` to `dev` and delete `dev`. Had the work just stayed on `main`, none of it happens.
+
 ## `git pull --rebase` aborts: "untracked working tree files would be overwritten"
 
 This means untracked LOCAL files collide with files the remote now TRACKS. Do NOT
