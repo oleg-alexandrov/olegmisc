@@ -20,6 +20,18 @@ description: Git repository reference and GitHub CLI - the lunokhod1 repo table 
 
 Convention: `origin` = user's fork, `god` = upstream org (for ASP, VW, BinaryBuilder).
 
+**git-cd-guard hook: every git op needs a LITERAL absolute path, no exceptions.**
+A PreToolUse hook (`~/.claude/hooks/git-cd-guard.sh`) BLOCKS any git command,
+reads included (status, log, fetch, rev-list, tag), unless it carries a literal
+`cd /abs/path &&` or `git -C /abs/path`. Two failure modes that waste turns:
+- A VARIABLE path does NOT satisfy the hook. `git -C $SP status` is blocked just
+  like bare `git status`. Write the path out in full every time, e.g.
+  `git -C /home/oalexan1/projects/StereoPipeline status`.
+- In a multi-command block, give EACH git call its own literal `git -C /abs`
+  prefix. Do not rely on one leading `cd /abs &&` to cover later git calls in the
+  same block. Spell out `git -C /abs a` then `git -C /abs b` on separate lines.
+If denied, rewrite with the explicit literal path. Never retry the bare form.
+
 **BinaryBuilder has several heads and is pushed DIRECTLY to BOTH remotes.**
 Unlike ASP/VW (where `god` receives changes only via reviewed PRs), BinaryBuilder
 changes go straight to `god` (NeoGeographyToolkit, the canonical) AND to `origin`
