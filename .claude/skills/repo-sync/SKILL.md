@@ -37,6 +37,22 @@ lens + old stereo engine). A colleague reproducing from the default `main` got d
 numbers, and the branch split wasted a long debugging detour. Fix was to fast-forward
 `main` to `dev` and delete `dev`. Had the work just stayed on `main`, none of it happens.
 
+## Wiping files that live in a repo-tracked dir (commit first, check after)
+
+Before a bulk wipe or cleanup in a directory the repo tracks, remember some files are
+version-controlled. A blanket `rm -rf <dir>` on a dir that holds BOTH data and tracked
+text (e.g. a delivery results dir with rasters plus a readme / inventory / notes)
+deletes the tracked text too, and git then shows it as a working-tree deletion.
+- Commit (or confirm already-committed) the tracked text FIRST, then wipe only the
+  data. Keep tracked text out of blanket data wipes (target the rasters/dirs, not the
+  whole folder).
+- After ANY wipe, run `git status`. Restore collateral deletions of valuable tracked
+  files with `git checkout -- <path>` (they live in history and on the real product
+  host). NEVER commit a deletion of a tracked readme / manifest / notes on autopilot.
+Burned 2026-10-06: `rm -rf <site>_results` on the Mac swept three tracked delivery text
+files (readme, inventory.yaml, a sub-readme) along with the rasters, showing as `D` in
+git. Fix was `git checkout --` to restore them, not to commit the deletion.
+
 ## `git pull --rebase` aborts: "untracked working tree files would be overwritten"
 
 This means untracked LOCAL files collide with files the remote now TRACKS. Do NOT
