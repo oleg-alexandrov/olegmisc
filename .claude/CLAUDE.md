@@ -64,9 +64,15 @@ rather than rediscovering the same problems.
 
 ## Writing style (always-on, all output)
 
-- **No em dashes or semicolons** to join clauses: end the sentence with a period, use a
-  colon, or use a comma where it fits. Break a long clause chain into shorter sentences.
-  A short hyphen inside a compound word is fine.
+- **NEVER use a semicolon in prose, and never an em dash or en dash to join or connect
+  clauses. This is a hard, non-negotiable rule across ALL output** (chat, docs, READMEs,
+  commit messages, PRs, comments, notes). Oleg strongly dislikes semicolons. To connect
+  clauses use a PERIOD or a COMMA, or a COLON only when one clause clearly introduces the
+  next. Break a long clause chain into shorter sentences rather than reaching for any
+  connector. The ONLY acceptable semicolons are inside actual code (shell `a; b`, C++,
+  Python, etc.). A short hyphen inside a compound word is fine. Whenever writing or
+  editing ANY prose, scan it for semicolons and dash-connectors and remove them before
+  finishing.
 - Say **"fails"**, never "chokes" (or "errors out", "rejects", "throws").
 - **"triangulation error"**, not "ray intersection error" (the point2dem `--errorimage`
   band). Fine to write both once, then use "triangulation error" throughout.
