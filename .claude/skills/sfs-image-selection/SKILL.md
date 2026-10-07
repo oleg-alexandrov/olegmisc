@@ -3,8 +3,9 @@ name: sfs-image-selection
 description: >-
   Select a minimal-but-covering SUBSET of images for Shape-from-Shading after the cameras
   are refined and pruned. Covers the ASP image_subset recipe: break the terrain into
-  overlapping quadrants, group by Sun azimuth (50-150 images), build low-resolution
-  mapprojected sub images, run image_subset per group, and a second pass for 2x coverage.
+  overlapping quadrants, group by Sun azimuth ANGLE (not by count, thin dense angles and keep
+  rare ones whole), build low-resolution mapprojected sub images, run image_subset per group,
+  and a second pass for 2x coverage.
   Load when choosing which images to feed SfS, running image_subset, preparing low-res sub
   images, splitting a site into quadrants, or thinning a large mapproj set to a
   representative cover. The output lists are mapprojected images (with the latest bundle
@@ -29,9 +30,9 @@ then the next-most-additional, etc., writing a ranked list "image_path count". I
 1. QUADRANTS with overlap - split the box into 4 overlapping quadrants; process each
    separately (fewer images, faster, more locally relevant). Pass the quadrant box to
    image_subset `--t_projwin` so coverage is scored only inside it.
-2. Sun AZIMUTH groups - within a quadrant, split by azimuth into bins of 50-150 images
-   ([[sun-illumination]] / [[sfs-azimuth]]). This bounds the per-call count AND yields a
-   subset with diverse illumination.
+2. Sun AZIMUTH groups - within a quadrant, split by azimuth ANGLE into slices
+   ([[sun-illumination]] / [[sfs-azimuth]]), per the "DIVIDE THE AZIMUTHS BY ANGLE" rules
+   below. This yields a subset with diverse illumination and bounds the per-call count.
 3. LOW-RES sub images - feed image_subset low-res mapprojected `sub` images (from
    stereo_gui pyramids), not full-res. Prefer sub8, else sub4, sub2, full; never coarser
    than sub8 (sub16/sub32 lose too much for reliable coverage).
@@ -46,18 +47,40 @@ enough (e.g. BCU2314 ~19x15 km), SKIP spatial quadrants and split the FULL SITE 
 alone - fewer, cleaner groups, no overlap bookkeeping. Run on the NORMAL queue, not devel
 (image_subset is heavy at full-site scale).
 
-DIVIDE THE AZIMUTHS CAREFULLY, NOT BLINDLY. Do NOT just cut into fixed-width bins (e.g. 4x90
-deg) - the Sun-azimuth distribution is usually CLUSTERED, especially at the poles where low
-sun bunches near due-north (az ~0/360). First INSPECT the distribution (count per candidate
-bin, min/median/max azimuth). Then form SEVERAL groups that each span a good, balanced range
-AND count of azimuths, aiming for ~100-200 images per group: MERGE sparse/near-empty bins
-into a neighbor, and SPLIT dense bins in two at their median azimuth. Worked example
-(BCU2314, 926 maps): a blind 4x90-deg split gave 420 / 1 / 41 / 464 - two groups far over
-image_subset's limit and one with a single image. Regrouped into FIVE balanced groups: the
-lone 90-180 image (az 90.8, adjacent to the 0-90 range) clumped with the low-az range; the
-big low-az range [0,180) split at its median; the sparse [180,270) left whole; the big
-[270,360] range split at its median -> ~210 / 211 / 41 / 232 / 232. Compute the median split
-points from the data (do not hardcode). Each group then yields a primary + extra subcover.
+DIVIDE THE AZIMUTHS BY ANGLE, NOT BY COUNT. The objective is a subset that is REPRESENTATIVE
+in illumination DIRECTION. So the grouping axis is the Sun AZIMUTH ANGLE itself, not equal
+image counts. Bin by angle, then let image_subset THIN each bin: a bin with a gazillion
+near-identical-azimuth frames must be sparsed out (it only needs to fill the same ground), a
+bin with few frames is kept nearly whole. Count-balancing matters ONLY as image_subset's
+practical ceiling (~200-250 small images per call), not as a goal.
+
+The method:
+  1. INSPECT the distribution first (count per candidate angle bin, min/median/max azimuth).
+     At the poles the low Sun is strongly CLUSTERED (often bimodal: a morning lobe and an
+     evening lobe) with near-empty gaps between - never assume it is uniform.
+  2. ISOLATE a RARE / precious illumination direction as its OWN group and keep it WHOLE (do
+     not subset it). If you fold a rare azimuth into a dense neighbor, image_subset's
+     coverage ranking will quietly DROP it - losing the very illumination diversity SfS needs.
+  3. Cut the DENSE lobes into fixed-angle slices (e.g. 45 deg). Each slice is one group and
+     gets thinned by image_subset; the densest slice simply gets sparsed the hardest. Do NOT
+     split a slice just to equalize counts.
+  4. RESPECT NATURAL BREAKS and do not subdivide dumbly: DROP an empty bin, and LUMP a lone
+     stray image into the adjacent slice (an image at az 45.5 joins the [0,45) slice).
+  5. SPLIT a slice further ONLY if it exceeds image_subset's size ceiling - and then split at
+     a natural break if there is one, else at the slice median.
+  Each resulting group yields a primary + extra subcover.
+
+Worked example A (BCU2314, 926 maps): a blind 4x90-deg split gave 420 / 1 / 41 / 464 - two
+groups far over image_subset's limit and one with a single image. Regrouped by angle with the
+rules above: the lone 90-180 image (az 90.8) lumped into the adjacent low-az slice; the big
+low-az range split at its median; the sparse [180,270) left whole; the big [270,360] range
+split at its median -> ~210 / 211 / 41 / 232 / 232.
+Worked example B (BCT0717-BCT2124, 1037 kept maps, bimodal polar): fixed 45-deg slices gave
+[0,45)=209, [45,90)=140, [90,135)=0, [135,180)=12, [180,225)=43, [225,270)=179, [270,315)=214,
+[315,360)=240. Kept the rare [135,180)=12 tail as its OWN whole group, DROPPED the empty
+[90,135), and handed each remaining slice to image_subset 2x - the dense 209/214/240 slices
+thinned hardest, the sparse [180,225)=43 kept nearly whole. Compute bin counts from the data
+(do not hardcode).
 
 ## Reusable tools (~/projects/sfs)
 
@@ -121,12 +144,15 @@ pass each quadrant's projwin to image_subset_2x as the 5th arg (`--t_projwin`).
 
 ## Pre-filter by native GSD (and sun elevation) - consider before selecting
 
-image_subset ranks by COVERAGE, not sharpness, so it will happily keep a soft, coarse-GSD
-image over a sharp one if it covers a few more pixels. Coarse-GSD / grazing images show up
-as soft or rippled patches in the max-lit mosaics ("aliasing" in the BCU2314 half2). So it is
-worth computing each image's native GSD and deciding whether to DROP the coarsest ones from
-the candidate pool BEFORE (or alongside) the coverage subset - a data-quality lever the
-coverage step itself does not provide.
+BE MINDFUL OF GSD. image_subset ranks by COVERAGE, not sharpness, and a coarse frame has a
+BIG footprint - ground area per pixel scales as GSD squared, so a 2 m/px frame covers ~4x the
+real estate of a 1 m/px one. That wide footprint is exactly what makes image_subset's greedy
+ranking PREFER the coarse frame, when for SfS we would rather take the finer image wherever a
+sharp one also covers that ground. Coarse / grazing frames then show up as soft or rippled
+patches in the max-lit mosaics ("aliasing" in the BCU2314 half2). So compute each image's
+native GSD and decide whether to DROP the coarsest ones from the candidate pool BEFORE (or
+alongside) the coverage subset - a data-quality lever the coverage step itself does not
+provide, and one that actively counters the greedy bias toward big coarse footprints.
 - Tool: `~/projects/sfs/query_gsd.sh <imageList> <cameraList> <dem> <outPrefix> <threshold>
   <currDir>`. It runs `mapproject --query-projection <dem> <img> <cam> <dummy.tif>` per
   image (fast, writes nothing) and parses the emitted `pixel_size,<gsd>` line - the exact
@@ -146,9 +172,12 @@ intermediate overlap and bridges illumination/temporal gaps. So dropping it for 
 subset does NOT mean dropping it from bundle_adjust - keep it in the solve, exclude it only
 from the SfS/max-lit cover. Decide the two sets separately. Detail + the measured metric
 behavior: [[sfs-post-bundle-eval]] section 2b.
-- Practical cutoff: flag GSD over ~1.75-2 m/px (well above the healthy ~1.3 m bulk) as an
-  SfS-subset caution, ideally ALONGSIDE a large bundle mapproj-dem offset. CAVEAT: GSD and
-  mapproj-offset are strongly correlated (~0.52), so mapproj-offset is partly a coarseness
+- Practical cutoff (SOFT, not a hard rule): GSD over ~1.75 m/px is SUSPECT, and over ~2.0
+  m/px should almost surely drop from the SfS subset (both well above the healthy ~1.3 m
+  bulk). The preference is always: take a FINER frame when one also covers that ground,
+  accept a coarse one only where it is the sole cover. Ideally weigh GSD ALONGSIDE a large
+  bundle mapproj-dem offset. CAVEAT: GSD and mapproj-offset are correlated (~0.52 at BCU2314,
+  ~0.31 at BCT), so mapproj-offset is partly a coarseness
   proxy - a high value on a coarse frame may just mean "coarse", not "misregistered". To
   tell a truly misposed frame from a merely-coarse one, use the resolution-agnostic SfS
   sim-align shift ([[sfs-run-align]]), which is independent of GSD.
