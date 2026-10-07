@@ -21,6 +21,21 @@ the whacky ones pruned (see [[sfs-post-bundle-eval]]). The selection runs on the
 mapprojected images made with the latest (pruned) bundle cameras; later they are mapped
 back to cub+cam lists for SfS.
 
+## Workflow at a glance (the rationale, in order)
+
+1. PRUNE the pool first (see [[sfs-post-bundle-eval]]): drop frames with a big bundle
+   mapproj-dem offset (we used 75th-percentile offset over ~2 m), too few matches, and
+   coarse GSD. This is the good/bad stratification that feeds selection.
+2. GSD caution: consider also dropping frames over ~1.75 m/px, or keep them only as a
+   measure of last resort (sole cover). Prefer finer frames (see the GSD section below).
+3. PLOT the azimuth distribution as a polar rose (`plot_sfs_azimuth.py`, reads the
+   sfs_query azimuth table) to judge density and representativeness before grouping.
+4. GROUP by azimuth ANGLE, not count: cut into fixed ~45-deg slices that respect the
+   natural gaps, keep a rare direction whole, drop empty slices (the "divide by angle"
+   rules below).
+5. image_subset per slice (primary + extra = 2x cover) over low-res sub images, then a
+   max-lit per group and a grand max-lit of the subsampled covers to validate coverage.
+
 ## The recipe (ASP image_subset, :numref:`image_subset`)
 
 image_subset picks, greedily, the image contributing the most pixels at/above a threshold,
@@ -98,10 +113,14 @@ thinned hardest, the sparse [180,225)=43 kept nearly whole. Compute bin counts f
 - `batch_image_overlap.sh` - the older thin single-pass image_subset wrapper.
 - `coverage_subset_tile.sh` / `run_coverage_tile.sh` - the mons_mouton precedent: per-tile,
   azimuth-binned, 2-pass (the azimuth + 2x logic these tools generalize).
+- `plot_sfs_azimuth.py <azimuth_table> [-o rose.png] [--table2 ...]` - polar rose plot of the
+  Sun azimuths (reads the sfs_query table, col3 = 0-360 az). Use it to judge illumination
+  density and representativeness before grouping, and to decide the angle slices.
 
 Full script paths: `~/projects/sfs/prepare_lowres.sh`, `~/projects/sfs/image_subset_2x.sh`,
-`~/projects/sfs/split_quadrants.py`. Project driver precedent (the settled full-site
-azimuth-only recipe): the BCU2314 `sfs_select_bcu2314.sh` in that project's dir.
+`~/projects/sfs/split_quadrants.py`. Project driver precedents in their project dirs:
+`sfs_select_bcu2314.sh` (median-split full-site) and `sfs_select_bct.sh` (the newer
+fixed-ANGLE 45-deg slices with a rare group kept whole - the current recipe).
 
 ## Usage - full-site azimuth-group recipe (the settled default)
 
@@ -195,6 +214,10 @@ behavior: [[sfs-post-bundle-eval]] section 2b.
   thin to ~100/group, raise to ~0.05-0.1, or cap at top-N per group. Tune by clicking pixel
   values in stereo_gui (the reflectance scale sets what "covered" means). It is fine to drop
   the last few images in each ranked list (marginal contribution).
+  RAISING THE THRESHOLD IS A USER DECISION. Start at 0.01. If it barely thins, ADVISE the
+  user that raising to ~0.05-0.1 is likely wise and why, but NEVER raise it on your own, and
+  worst of all NEVER do it quietly - always notify and get the user's go-ahead first. The
+  threshold changes which images SfS sees, so it is not a knob to turn silently.
 - image_subset needs ALL inputs in ONE projection (mapprojected on the same DEM/grid) -
   true here since they share the reference DEM.
 - Output lines are "image_path count"; take column 1 for the image list.
