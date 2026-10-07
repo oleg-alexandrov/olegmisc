@@ -41,6 +41,32 @@ is your cue to disarm, not to sleep again.
 
 ## Overnight / Autonomous Runs and Self-Wakeup
 
+## TOP POLICY - TOKEN FRUGALITY, CRONS ARE EXPENSIVE (set 2026-10-06, Oleg, OVERRIDES the
+## recurring-heartbeat defaults below)
+
+**EVERY cron firing - even an in-session CronCreate heartbeat - is a FULL billed model
+session. A recurring cron therefore drains tokens fast and silently (a 30-min heartbeat is
+~48 full sessions/day doing almost nothing). Oleg is cost-sensitive and was burned by this.
+So:**
+
+- **DEFAULT = NO CRON.** Do NOT reflexively arm a recurring heartbeat when a job is
+  submitted. For watching a single long job, the default is: rely on the task-completion
+  NOTIFICATION if the harness can give one, and otherwise schedule ONE one-shot wake
+  (`CronCreate recurring:false`) at a user-named time (e.g. "wake me at 2am") to check once.
+  One firing, then it auto-deletes. That is the whole watch.
+- **A RECURRING cron is created ONLY on a FULLY EXPLICIT user request for one** ("set up a
+  recurring check every N minutes"). Never infer it. When one IS requested, use the SPARSEST
+  interval that works (hours, not minutes), and tear it down the instant the work is done.
+- **If a one-shot wake fires and the work is not finished, decide and (if needed) set ONE
+  more one-shot** for a sensible later time - never escalate to a frequent recurring pulse.
+- This supersedes the lines below that say "the moment a qsub job is submitted, IMMEDIATELY
+  CronCreate the recurring monitor" and "arm the in-session heartbeat for any in-flight job".
+  Those were written to avoid falling asleep on a job, but the cost of a frequent pulse is
+  worse than the risk. Prefer one-shot wakes; accept that a missed notification just means
+  Oleg checks in himself. The anti-stall rules (DON'T STALL, keep going through logged steps)
+  still hold WHEN a session IS awake - they are about not idling within a live session, not a
+  license to arm a token-burning cron.
+
 **Overnight / autonomous + self-wakeup (full detail: `~/projects/claude_overnight_notes.sh`):**
 - DON'T STALL when told to run overnight and the parts are already logged. If the
   prior notes contain the recipe (exact scripts, invocations, params, source paths),
