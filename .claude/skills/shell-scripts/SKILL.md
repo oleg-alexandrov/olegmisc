@@ -67,6 +67,20 @@ ssh probe use `ssh -o ConnectTimeout=N`. To bound a remote job wrap the whole `s
 on the l1 side, never inside the Mac-run command. (Fuller detail in the Mac mini
 machine bullet below.)
 
+## Don't Let grep/test Exit Status Surface as a False Error (CRITICAL)
+
+A `grep` that finds nothing exits 1, and `grep -c` exits 1 when the count is 0 even
+though it printed the count. `[ ... ]`/`test` and a failing `[ -f x ]` also exit
+non-zero. When such a check is the LAST command in a Bash-tool call or an
+`ssh host 'cmd'`, its status becomes the whole call's status, so the harness shows a
+spurious "Exit code 1" on a run that actually succeeded. The classic case is
+verifying a file has ZERO semicolons with `grep -c ';' file`, where 0 matches is the
+DESIRED result. When a non-match is a normal outcome, do not let the probe end the
+chain: append `|| true`, or wrap it so it always exits 0
+(`echo "count: $(grep -c ';' file)"`), or finish with a trailing `echo done`. Only
+neutralize checks whose "not found" means success, so the real work's status stays
+honest.
+
 ## Nested ssh: No Unescaped Parens/Metachars in `bash -lc "..."` (CRITICAL)
 
 `ssh host bash -lc "... echo === X (Y) ==="` FAILS: the remote `bash -lc` parses
