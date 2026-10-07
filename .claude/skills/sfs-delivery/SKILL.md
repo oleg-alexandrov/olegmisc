@@ -51,7 +51,12 @@ Image lists: `bundle_adjust_image_ids.txt` (the full BA set) and `sfs_image_ids.
 (the SfS subset). The SfS set must be a subset of the BA set, and any dropped
 offender must be absent from the SfS list.
 
-Ortho directories (two, per inventory.yaml):
+Keep the results directory SELF-CONTAINED: cameras, both ortho sets, and the
+disparity illustration are SUBDIRECTORIES of it, not peer directories that refer
+back to the parent. The whole delivery then tars and ships as one unit with no
+broken relative paths, and inventory.yaml paths are all bare (no `../`).
+
+Ortho directories (two subdirectories, per inventory.yaml):
 - `map_images/` - every delivered SfS ortho at 1 m/pixel, flat `<id>.map.tif`.
   (Only a very large tiled site like Mons Mouton uses per-tile subdirs; single-site
   deliveries are flat.)
