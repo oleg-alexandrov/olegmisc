@@ -389,6 +389,15 @@ a filled inventory.yaml manifest and a readme. Codified in the SfsPipeline repo
 (WORKFLOW.md steps 10 and 12, inventory.yaml). Ship the in-production camera version,
 not an experimental peer run. Full detail: [[sfs-delivery]].
 
+## Verify the delivery before submission (SUMMARY -> [[sfs-results-verification]])
+
+The final gate after packaging. Confirm every product named in the readme and
+inventory.yaml exists with that exact name (counts match the id lists), remove stray
+files (sub-resolution pyramids, .aux.xml, run logs, temp previews), check all rasters
+share the delivery grid, verify the permission chain from / down is world-traversable
+and every file is readable, and eyeball the key products for artifacts. Full detail:
+[[sfs-results-verification]].
+
 ## Prior SfS matches/refinement projects (context, notes live in each dir)
 
 When you need more context on this pipeline, the prior runs kept full work notes in
