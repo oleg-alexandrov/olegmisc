@@ -36,6 +36,9 @@
 #                       <proj>_results, lunamaps_v2_20260618.
 #   --subdir <relpath>  archive only <project>/<relpath> (still with the <project>/
 #                       prefix). Omit to archive the whole project dir.
+#   --exclude <relpath> omit <project>/<relpath> from the tar (repeatable). Use it to
+#                       archive "the rest" of a project after some parts are already
+#                       on tape, e.g. --exclude lronac_all --exclude <results dir>.
 #   --force             allow overwriting an existing tarball on tape.
 #
 # Canonical copy: ~/bin/archive_to_lfe.sh (tracked in the home repo, on PATH).
@@ -49,12 +52,14 @@ umask 022
 
 force=0
 subdir=""
+excludes=()
 positional=()
 while [ "$#" -gt 0 ]; do
   case "$1" in
-    --force)  force=1; shift ;;
-    --subdir) subdir=${2:-}; shift 2 ;;
-    *)        positional+=("$1"); shift ;;
+    --force)   force=1; shift ;;
+    --subdir)  subdir=${2:-}; shift 2 ;;
+    --exclude) excludes+=("${2:-}"); shift 2 ;;
+    *)         positional+=("$1"); shift ;;
   esac
 done
 proj=${positional[0]:-}
@@ -88,10 +93,13 @@ if [ -e "$tarball" ] && [ "$force" != 1 ]; then
   exit 1
 fi
 
+excl_opts=()
+for e in ${excludes[@]+"${excludes[@]}"}; do excl_opts+=(--exclude="$proj/$e"); done
+
 cd "$root" || { echo "ERROR: cannot cd to $root"; exit 1; }
-echo "START $(date) -> $tarball  (target: $target)" > "$log"
+echo "START $(date) -> $tarball  (target: $target${excludes[@]+; excludes: ${excludes[*]}})" > "$log"
 du -sh "$target" >> "$log" 2>&1
-tar cf "$tarball" "$target" >> "$log" 2>&1
+tar cf "$tarball" ${excl_opts[@]+"${excl_opts[@]}"} "$target" >> "$log" 2>&1
 rc=$?
 ls -l "$tarball" >> "$log" 2>&1
 echo "END $(date) rc=$rc" >> "$log"
