@@ -209,15 +209,21 @@ behavior: [[sfs-post-bundle-eval]] section 2b.
 
 ## Gotchas and tuning
 
-- THRESHOLD: 0.01 is the ASP default but is often TOO PERMISSIVE - nearly every image adds
-  some unique pixel, so you get little reduction (mons_mouton: only ~21% off). To actually
-  thin to ~100/group, raise to ~0.05-0.1, or cap at top-N per group. Tune by clicking pixel
-  values in stereo_gui (the reflectance scale sets what "covered" means). It is fine to drop
-  the last few images in each ranked list (marginal contribution).
-  RAISING THE THRESHOLD IS A USER DECISION. Start at 0.01. If it barely thins, ADVISE the
-  user that raising to ~0.05-0.1 is likely wise and why, but NEVER raise it on your own, and
-  worst of all NEVER do it quietly - always notify and get the user's go-ahead first. The
-  threshold changes which images SfS sees, so it is not a knob to turn silently.
+- THRESHOLD: interpret it RELATIVE TO THE LIT/SHADOW CUTOFF, not as an absolute number. For
+  LRO NAC the shadow-vs-lit max cutoff is ~0.005 (the filter_by_max cull). So 0.01 is 2x the
+  shadow floor = weak-but-SOLIDLY lit, genuine illumination. image_subset at 0.01 therefore
+  counts real lit pixels (what it should), and the resulting cover is the honest minimal set
+  to cover all solidly-lit ground. It will NOT thin dramatically, and that is correct, not a
+  flaw: at a grazing polar site a lot of real terrain is only ever weakly lit, so it legitimately
+  takes many images (across azimuths) to cover it all. BCT Scheme A at 0.01: primary 430 of 1037.
+  DO NOT reflexively raise the threshold to "thin more". Raising to ~0.05-0.1 demands STRONGLY
+  lit coverage and will DROP genuinely-lit-but-weak terrain that SfS needs - a coverage loss,
+  not just trimming junk. Earlier guidance to "raise to 0.05-0.1 because 0.01 is too permissive"
+  was WRONG for a shadow-calibrated reflectance like this - corrected 2026-10-07 (Oleg). The
+  right lever for fewer images is the GROUPING (fewer, broader azimuth groups), not the threshold.
+  If you ever do consider changing the threshold, tune it by clicking pixel values in stereo_gui
+  to see where solidly-lit terrain actually sits, and it is a USER DECISION: never raise it on
+  your own, and never silently - notify and get the user's go-ahead first.
 - image_subset needs ALL inputs in ONE projection (mapprojected on the same DEM/grid) -
   true here since they share the reference DEM.
 - Output lines are "image_path count"; take column 1 for the image list.
