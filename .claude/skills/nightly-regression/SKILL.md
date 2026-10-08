@@ -17,7 +17,12 @@ emails Oleg a status line. Full detail: `~/projects/nightly_regression.sh`.
 **l1 cron** (`05 23 * * *` in l1's LOCAL time, which is **America/Los_Angeles** -
 so it fires **23:05 Pacific** = 06:05 UTC in PDT / 07:05 in PST, NOT 23:05 UTC;
 `crontab -l` has no `TZ=` override, so cron uses the system zone) runs the
-orchestrator: `~/projects/BinaryBuilder/auto_build/launch_master.sh`. It
+orchestrator. The cron line first refreshes BinaryBuilder from god, then
+launches, so the build never uses a stale local checkout: `cd
+~/projects/BinaryBuilder && git fetch god && git merge --ff-only god/master &&
+exec ./auto_build/launch_master.sh > output_master.txt 2>&1`. Push BinaryBuilder
+changes to BOTH god and origin. The orchestrator
+`~/projects/BinaryBuilder/auto_build/launch_master.sh`
 builds/tests all four platforms, polls their status files, then emails and (on
 success) uploads a GitHub release. The four children (the "machines"):
 
