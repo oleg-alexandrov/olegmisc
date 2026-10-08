@@ -14,6 +14,31 @@ optimizes them against tie points, a reference DEM (`--heights-from-dem`), ancho
 points, and optionally GCP. Use it to remove jitter, a low-order twist, or a
 residual bend AFTER the linescan is already well-initialized and aligned.
 
+## ALWAYS the FULL image set, never an SfS subset
+
+Run jitter_solve (and bundle_adjust before it) over EVERY image you can get for
+the site, not a downselected cover. The solve needs a dense tie-point network -
+the more overlapping frames, the more connections constrain each per-line pose,
+and wide/coarse footprints are tie-point assets here even when they are poor for
+SfS. The minimal-but-covering SUBSET is an SfS-only concept (the SfS photoclinometry
+cost scales with images-per-tile, so it is thinned). The camera refine is the
+opposite: feed it all. Example - at Mons Mouton we bundle+jitter the full ~1000-1200
+image set, then run SfS on only a ~300-450 image azimuth-selected cover. The jitter
+output cameras exist for all of them; SfS just indexes the subset it needs.
+
+## Runtime range (educated, for a full-set GCP re-registration)
+
+On ONE compute node (28-core bro_ele), a GCP-driven per-line re-registration of a
+lunar-polar NAC set scales with image count times residual-block count (tri + GCP +
+anchors). Measured/estimated reference points: ~1000 images at `MAX_NUM_TRI=80000`
+(so 160k GCP + 160k anchors at ratio 2.0) finished in about 3.5 h; ~1200 images at
+`MAX_NUM_TRI=120000` (240k/240k) is about 5 to 6 h. A few-hundred-image site is 2 to
+4 h. An 8 h wall covers all of these (and bro_ele caps at 8 h anyway); move to a
+larger-memory / more-core node rather than extending if it ever runs tight. ALWAYS
+record each solve's actual elapsed time and peak memory (from the worker's
+`/usr/bin/time` line or `qstat -x -f`) into the project notes - last time the overnight
+logs were wiped and the timing had to be reconstructed. See [[pfe-nas]].
+
 ## VALIDATE the linescan first (do not skip)
 
 Before jitter, run plain stereo with the linescan (no mapproject,
@@ -189,6 +214,15 @@ ANCHOR DEM grows. More anchors or tighter `--anchor-dem-uncertainty` INSIDE the 
 help this (the span has no in-domain anchors at any density/weight). Immediate mosaic fix if you
 cannot re-solve: drop the one frame and rebuild the max-lit (its real footprint is a sliver
 neighbors cover); the real fix is the padded anchor DEM.
+
+BUILD the padded anchor DEM on the HEAD NODE, not a qsub. It is just a single-thread cubicspline
+gdalwarp regrid of the source LOLA (e.g. `make_ref_dem.sh`, which pins `GDAL_NUM_THREADS=1`, no
+`-multi`), so it is head-node-compliant and finishes in ~1 to 2 MINUTES even for a ~25k x 18k
+output. A qsub for this trivial GDAL step is wasteful and risks landing on a wedged compute node:
+seen 2026-10-08, such a job sat "R" for 3 h with zero `resources_used.cput` and no output (even
+`qdel -W force` would not reap it), while the head-node rebuild took under 2 minutes. If you must
+qsub it, use the short `devel` queue. See [[pfe-nas]] (big single-thread GDAL on the head node is
+explicitly allowed).
 
 ## GCP: optional, and a double-edged lever
 

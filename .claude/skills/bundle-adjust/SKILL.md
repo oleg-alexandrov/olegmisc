@@ -10,6 +10,17 @@ description: >-
 
 # bundle_adjust match files (esp. --mapprojected-data)
 
+## ALWAYS the FULL image set, never an SfS subset
+
+Bundle-adjust (and the jitter refine after it) over EVERY image available for the
+site. More overlapping frames mean a denser tie-point network and more connections
+per camera, which is exactly what a strong registration needs - wide/coarse
+footprints that are liabilities for SfS are connection ASSETS here. The minimal
+covering SUBSET is an SfS-only concept (SfS cost scales with images-per-tile, so it
+is thinned by azimuth); the camera solve is the opposite and takes all of them. The
+adjusted cameras then exist for every image, and SfS later indexes just the cover it
+needs. See [[jitter-solve]].
+
 ## --mapprojected-data: match on the mapproj images, transfer to raw
 
 When the two images are very different in perspective/scale (historical KH-7/KH-9,
