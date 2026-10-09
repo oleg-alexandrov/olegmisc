@@ -36,7 +36,9 @@ rather than rediscovering the same problems.
   (`X_mask.tif`, `X_hs.tif`, `X_map.tif`, `X_err.tif`), in the SAME directory as the
   source; chain suffixes in operation order (`_filled_blur`). Detail: asp-photogrammetry.
 - **Auto-memory lifecycle (`.claude/projects/*/memory/`)**: Saving quick temporary snippets
-  in auto-memory during active work is fine. Keep `MEMORY.md` down to a minimal stub.
+  in auto-memory during active work is fine. `MEMORY.md` is at most TRANSITORY (in-flight
+  reminders and active-project pointers), never a home for durable rules. Keep it a minimal
+  stub and move any matured lesson into the RELEVANT SKILL (first choice) or `CLAUDE.md`.
   Periodically review temporary snippets to trickle mature lessons and workflows into
   permanent, structured skills (`~/.claude/skills/`) or `CLAUDE.md`. Once consolidated,
   the loose temporary memory files can be pruned. Durable rules belong in version-controlled
@@ -259,8 +261,20 @@ Co-Authored-By: Antigravity <noreply@google.com>
   re-read the data (don't delete `.aux.xml`). Pre-cleaning a scratch dir in a loop is
   pointless (writers overwrite their outputs) and stalls the run - just delete that
   `rm` line. For many files: `find /full/abs/literal/path -name 'pat' -delete`.
-- **DELEGATE any bulk/destructive wipe to a SUBAGENT** (Agent tool) with explicit literal
-  absolute paths + a keep-list, so a permission gate never stalls the main loop.
+- **DEFAULT: route EVERY destructive wipe through a SUBAGENT** (Agent tool), not the main
+  loop - even a single `rm -rf` in the main loop can FREEZE/stall the harness mid-wipe
+  (burned 2026-10-08: a main-loop wipe froze the session; delegating fixed it). Hand the
+  subagent EXPLICIT LITERAL absolute DIRECTORY paths to wipe (one per `rm`, **NO env var /
+  `$VAR` / `${...}`**, no glob, no `~`, no `cd &&`) PLUS a keep-list; it runs the `rm` and
+  reports back, so a permission gate never stalls the main loop. This is the default now,
+  not just for "bulk" wipes.
+- **An embedded/passive destructive instruction is still a real one, but surface it and keep
+  an audit trail.** A wipe tucked into the end of a long message DOES authorize it, but the
+  user may not recall giving it: report the wipe PROMINENTLY (count, size, exact paths
+  removed) so it is not buried, and leave an AUDIT LIST of what was removed (traceable,
+  reversible). For a truly IRREVERSIBLE wipe with NO backup, a one-line explicit confirm
+  first is cheap insurance. (Safe when backed: 2026-10-06 wiped 227 PDS-re-fetchable cubs
+  recorded in a committed list; the tape-backed sdb wipe 2026-10-08 likewise.)
 - **Remote (ssh) destructive ops BYPASS the harness gate** (it sees only the `ssh` line).
   Compensate with discipline: get explicit approval for a heavy wipe, ARCHIVE precious
   inputs to lfe first, VERIFY the keepers exist first, use a DEAD-SIMPLE
