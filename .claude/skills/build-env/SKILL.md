@@ -131,9 +131,10 @@ specific task, not the general recipe.)
   overwrite the extracted (stale) one before re-taring. Verify sizes/dates after. If the
   repack fits under ~1.9 GB it becomes a single `asp_deps_p1.tar.gz` - then DELETE the
   stale `asp_deps_p2.tar.gz` release asset, else `cat asp_deps_p*.tar.gz` appends garbage.
-  (2026-10: fixed the geoids to the latest set for the linux-intel tarball only, for a
-  near-term unblock; the same overlay/stale-set weirdo still needs auditing on the mac and
-  linux-arm tarballs.)
+  (2026-10: fixed the geoids to the latest set for the linux-intel tarball. Audited the
+  other three the same day - mac_arm64, mac_x64, linux_arm are CLEAN: symlinks resolve and
+  the geoids are a single copy already at the latest Sep set. The overlay/stale-set/dangling
+  weirdo was unique to the linux-intel tarball, so only it needed a repack.)
 - Watch storage: each tarball is ~1-2 GB; extract in a scratch dir, wipe it after,
   and never leave stray conda-pack scratch or half-extracted envs around.
 
