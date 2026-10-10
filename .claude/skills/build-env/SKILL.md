@@ -101,6 +101,39 @@ specific task, not the general recipe.)
   version bump. Download the release asset, extract, drop in the platform-built
   relocatable binary, ensure `plugins/` is a real dir, re-tar, and re-upload to
   the SAME tag with `gh release upload <tag> --clobber`.
+- **VERIFY the `lib/csmplugins` usgscsm symlinks resolve before publishing a deps
+  tarball, and ship NO `*.bak*` libs.** conda-pack snapshots symlinks verbatim, so a
+  usgscsm rebuild/respin that renames the real lib but does not regenerate the soname
+  links bakes DANGLING links into the release. The lib's DT_SONAME is
+  `libusgscsm.so.1` (Mac `libusgscsm.1.dylib`), so a broken `libusgscsm.so.1` link
+  makes the runtime loader fail to find usgscsm at all. Correct chain:
+  `libusgscsm.so -> libusgscsm.so.1 -> libusgscsm.so.2.1.0` (both links must resolve
+  to the real file). Check the PUBLISHED asset, not just the live env, with
+  `curl -sL <url> | tar tzv | grep csmplugins/libusgscsm`. Bit us 2026-07-16: the same
+  usgscsm respin that caused the editable-ale `.pth` (see below) left the linux-intel
+  tarball (`asp_deps_linux_v2`) with both links pointing at an absent `libusgscsm.so.2.0.1`
+  plus two stray `libusgscsm.so.2.1.0.bak_*` copies. The mac/linux-arm tarballs were
+  packed before the rename and stayed correct. Fix in place via the extract/re-tar/
+  `--clobber` mechanic above: recreate the two links, delete the `.bak_*` files, no
+  version bump.
+- **The linux-intel asp_deps tarball is a CONCATENATED OVERLAY: many paths appear
+  TWICE** (e.g. a 2026-06-09 base set and a later 2026-09-26 set of `share/geoids/*`,
+  `libmysqlclient*`, GL/X11 headers). `tar x` is last-wins, so extraction yields the
+  LAST copy (here the June set) and the earlier/newer listed copy is shadowed dead
+  weight. So a member-NAME diff of a repack vs the original shows thousands of bogus
+  "differences" (dup paths collapsed to one, plus explicit dir entries) - do NOT panic:
+  compare the EXTRACTED TREE, not tar member lists. Re-taring ONCE collapses each path
+  to one copy (leaner tarball) - GOOD, but **GOTCHA: a naive extract keeps the LAST copy,
+  which here is the OLDER June set, so the newer Sep geoids are SHADOWED and a naive
+  repack would re-ship the STALE data.** When patching a tarball, WATCH for such
+  duplicate/overlay sets and deliberately KEEP THE LATEST, WIPE THE STALE: the newer copy
+  is listed FIRST, so `tar --occurrence=1 -x share/geoids/<f>` pulls the latest and
+  overwrite the extracted (stale) one before re-taring. Verify sizes/dates after. If the
+  repack fits under ~1.9 GB it becomes a single `asp_deps_p1.tar.gz` - then DELETE the
+  stale `asp_deps_p2.tar.gz` release asset, else `cat asp_deps_p*.tar.gz` appends garbage.
+  (2026-10: fixed the geoids to the latest set for the linux-intel tarball only, for a
+  near-term unblock; the same overlay/stale-set weirdo still needs auditing on the mac and
+  linux-arm tarballs.)
 - Watch storage: each tarball is ~1-2 GB; extract in a scratch dir, wipe it after,
   and never leave stray conda-pack scratch or half-extracted envs around.
 
