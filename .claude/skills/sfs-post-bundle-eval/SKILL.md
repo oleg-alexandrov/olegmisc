@@ -23,6 +23,41 @@ Inputs it assumes exist (from the refine chain + a pre-SfS mapproject pass):
   honest DEM), each chunk's input list `map_htdem/map_list_<beg>_<end>.txt`, and the
   per-chunk max-lit partials `map_htdem/max_mosaic_<beg>_<end>.tif`.
 
+## 0. Two standing principles (learned the hard way, 2026-10-09 BCT0717)
+
+**(A) Build per-chunk PARTIAL mosaics FIRST, then combine. Divide and conquer.** NEVER build
+one monolithic max-lit over all N images. `batch_mapproject.sh` already produces a per-chunk
+`max_mosaic_<beg>_<end>.tif` for free when you leave `NO_MOSAIC` UNSET, so keep them. If you
+mapprojected with `NO_MOSAIC=1` (no partials), build the partials yourself as one small qsub
+PER chunk from `map_jitter/map_list_<beg>_<end>.txt` (index ranges over the azimuth-sorted
+list, same chunking as the mapproject). Then the final mosaic is a cheap "batch of the
+batches" (`dem_mosaic --max` over the partials). Why this is mandatory, not optional:
+  - INSPECTION is per-chunk: a smear contaminates exactly ONE chunk (each image sits in one
+    azimuth chunk), so you eyeball 9 small partials and the bad chunk jumps out, instead of
+    hunting a needle in one 17k x 10k whole mosaic.
+  - RE-PRUNE is a ONE-CHUNK rebuild: drop the offender from that chunk's list, re-max just
+    that partial, recombine (seconds), vs re-maxing all N full-extent maps (~37 min each
+    iteration). You WILL iterate, so pay the partition cost once.
+  - Many small jobs parallelize and survive a busy queue / overnight far better than one big
+    job. Start them as separate per-chunk qsubs.
+  - BURNED 2026-10-09: ran the jitter mapproject with `NO_MOSAIC=1`, so a whole 426-image
+    rebuild took ~37 min AND lost per-chunk inspectability; had to rebuild the partials after
+    the fact. Default to partials from the start.
+
+**(B) You ALWAYS have to LOOK. The stats miss real artifacts.** The per-camera
+mapproj-offset / reproj stats (section 2) catch pose-smears and dropouts, but they are NOT
+sufficient. A chunk can have EVERY image at a healthy offset (p95 ~2-3 m, reproj ~0.6 px,
+even better than the prior bundle) and STILL show obvious diagonal brush-stroke smears in its
+partial max-lit (seen 2026-10-09: chunk 250_300 and 350_400 flagged clean by the stats, visibly
+smeared to the eye). So the stats are a FIRST pass to build a suspect list, never the last
+word: crop EVERY chunk partial over the terrain and eyeball it. The eye is the real detector;
+the stats only triage. Report what you see, do not declare a set clean on stats alone.
+
+CROP GOTCHA (for the eyeballing): a one-step `gdal_translate -projwin ... -of PNG -ot Byte
+-scale ... -a_nodata 0` silently produces NOTHING (PNG driver + projwin + a_nodata combo).
+Crop to a GTiff first, THEN convert to PNG: `gdal_translate -projwin <ulx uly lrx lry> src.tif
+/tmp/crop.tif` then `gdal_translate -of PNG -ot Byte -scale 0 0.15 0 255 /tmp/crop.tif out.png`.
+
 ## 1. Pre-SfS max-lit alignment sanity check (the go/no-go gate)
 
 Mapproject all survivors with the NEWEST (final-stage) cameras onto the honest DEM (do NOT

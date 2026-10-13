@@ -5,7 +5,19 @@ description: Shape-from-Shading (SfS) and the canonical batch mapprojection fram
 
 # Shape-from-Shading (SfS) & Canonical Batch Mapprojection
 
-This skill documents the Ames Stereo Pipeline Shape-from-Shading (SfS) photoclinometry toolset and the canonical batch mapprojection framework maintained in `~/projects/sfs/`.
+This skill documents the Ames Stereo Pipeline Shape-from-Shading (SfS) photoclinometry toolset and the batch mapprojection framework.
+
+> **REFERENCE IMPLEMENTATION HAS MOVED (2026-10).** The canonical scripts now live in
+> `~/projects/SfsPipeline/bin/` (Andrew Annex's NeoGeographyToolkit/SfsPipeline repo), NOT
+> `~/projects/sfs/`. All NEW work goes into `SfsPipeline/bin`. The `SfsPipeline` versions are
+> portability refactors of the `~/projects/sfs` originals: they honor `${ASPROOT:-}`/`${ISISROOT:-}`/
+> `${ISISDATA:-}` overrides, take `groupName` for the PBS allocation, resolve sibling scripts by
+> their own dir, and forward the ASP/ISIS env through each per-chunk `qsub -v` (a qsub job starts
+> with a fresh env, so an un-forwarded `ISISROOT` falls back to a conda env that may not exist).
+> The `~/projects/sfs` copies still hold per-project history and a few not-yet-migrated helpers, but
+> `~/projects/sfs/batch_mapproject.sh` and `~/projects/sfs/mapproject_chunk.sh` are OBSOLETE (they
+> hardcode the retired `miniconda3/envs/asp_deps` with no override) and are marked so on top. The
+> paths in the examples below that read `~/projects/sfs/...` should be read as `~/projects/SfsPipeline/bin/...`.
 
 ## Do Not Reinvent the Wheel: Use the Standard Batch Mapproject Scripts
 
@@ -160,6 +172,15 @@ burned-in lookup FAILS LOUD instead of silently resolving to the wrong terrain. 
 project did exactly that: its maps carry `DEM_FILE=ref/lola_1mpp_extra.tif` from when that
 name held the blurred DEM, so the honest DEM is now `ref/lola_1mpp_extra_noblur.tif`, the
 blurred one is `ref/lola_1mpp_extra_blur.tif`, and bare `_extra.tif` is deliberately gone.)
+
+**ALWAYS init SfS from the same gridded LOLA DEM, every pass. NEVER refine the old SfS DEM.**
+When you re-run SfS after repairing the cameras (jitter re-solve, dem2gcp offset fix, re-registration),
+start the new SfS from the SAME reference LOLA DEM (the `_noblur` `--heights-from-dem` / init terrain)
+you used the first time, NOT from the previous SfS DEM. The whole reason you are re-running is that the
+old SfS is SHIFTED relative to LOLA (that shift is exactly what the camera repair removes). Feeding the
+shifted old SfS back in as the init terrain re-injects the very bias you are trying to remove and defeats
+the validation. The init terrain is always the fixed LOLA reference, the cameras are what change between
+passes, and the test is that the NEW SfS-to-LOLA dh/dv bias has gone to ~0.
 
 ```bash
 proj="+proj=stere +lat_0=-90 +lon_0=0 +k=1 +x_0=0 +y_0=0 +R=1737400 +units=m +no_defs"
