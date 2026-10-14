@@ -69,7 +69,8 @@ Control job dispatch and mapprojection settings via environment variables:
 | `TR` | *(unset)* | Fixed grid resolution in meters/pixel (e.g. `TR=0.5`) |
 | `TR_COL` | *(unset)* | Column in `imageList.txt` with per-image native GSD |
 | `PROJWIN` | *(unset)* | Target extent `"xmin ymin xmax ymax"` |
-| `CHUNK_SIZE` | `30` | Number of images per PBS worker job |
+| `CHUNK_SIZE` | `30` | Number of images per PBS worker job - THE FIXED STANDARD, do not override per-run |
+| `RERUNNABLE` | `y` | qsub `-r` flag; `y` auto-requeues a node-aborted chunk (idempotent, safe) |
 | `PROCESSES` | `10` | Worker processes per node inside `mapproject` |
 | `THREADS` | *(ASP default)* | Threads per process inside `mapproject` |
 | `TILE_SIZE` | `2048` | Tile dimension for parallel mapprojection |
@@ -80,6 +81,15 @@ Control job dispatch and mapprojection settings via environment variables:
 | `WALLTIME` | `6:00:00` | PBS walltime limit per job |
 | `IMG_DIR` | `img` | Directory prefix for relative image paths |
 | `IMG_EXT` | `.cal.echo.cub` | File extension for image paths |
+
+**Fixed chunk size.** Always use the default `CHUNK_SIZE=30` and do NOT override it per-run, so every site
+behaves the same. `batch_mapproject.sh` submits `-r y` by default, so a flaky-node abort auto-requeues the
+chunk instead of leaving a permanent mapproj gap. One failure mode `-r y` does NOT cover: a blown or
+degenerate camera can HANG `mapproject` and burn the whole chunk's walltime before PBS kills it, so that
+chunk's tail never maps. The small fixed chunk size limits how many images one hang costs; recover a gap by
+re-mapping ONLY the missing images at the standard chunk size, not one job per full node (dozens of
+single-node jobs will not schedule). The hanging camera is usually a wild one you would prune from the
+refined max-lit anyway. See [[pfe-nas]] for the `-r y` / node-abort detail.
 
 ### Example: Mapprojecting OHRC and LRO NAC on a 3 km Grid
 

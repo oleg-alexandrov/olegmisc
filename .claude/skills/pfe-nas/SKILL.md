@@ -89,9 +89,15 @@ Bare minimum to remember without reading:
   they die fast and so free up fast (self-perpetuating). THE FIX: submit `-r y` so a node init-abort
   AUTO-REQUEUES the job onto a fresh node instead of killing it (confirmed working 2026-10-08: a devel
   job showed a later "Job run at ..." restart time after an abort and then completed). `-r y` is safe for
-  idempotent map/mosaic work that just overwrites its outputs. Note `batch_mapproject.sh` hardcodes `-r n`,
-  so for a flaky-night resubmit qsub the worker (`mapproject_chunk.sh`) directly with `-r y`. Pair it with
-  the `devel` queue (healthier reserved pool) for small jobs. **CAP THE RETRIES - `-r y` is NOT
+  idempotent map/mosaic work that just overwrites its outputs. `SfsPipeline/bin/batch_mapproject.sh` now
+  submits `-r y` BY DEFAULT (fixed 2026-10-14 after an overnight where its old hardcoded `-r n` let `-4`
+  node aborts leave permanent mapproj gaps that cost the whole night; override with `RERUNNABLE=n` only if
+  you must). Pair it with the `devel` queue (healthier reserved pool) for small jobs. SEPARATE failure mode,
+  NOT fixed by `-r y`: a blown/degenerate camera can HANG `mapproject`, and the chunk then burns its full
+  walltime before PBS kills it (a walltime kill does NOT requeue), so that chunk's tail never maps. Mitigate
+  with a SHORT walltime and the fixed small CHUNK_SIZE so a hang costs few images, and recover the gap by
+  re-mapping ONLY the missing images (never 1-job-per-full-node: 60+ single-node jobs will not schedule -
+  burned 2026-10-14; use the standard CHUNK_SIZE, a handful of jobs). **CAP THE RETRIES - `-r y` is NOT
   set-and-forget.** PBS has no clean per-job max-rerun qsub flag, so the limit is operational: watch the
   requeue count (the `Job run at ...` time in `qstat -xf`/`comment` resets on each rerun) and after ~2-3
   requeues STOP and investigate rather than let it loop. A rerunnable job that keeps dying is only a

@@ -78,6 +78,16 @@ comments. That is internal monologue and does not belong in the file. This holds
 for internal pipelines such as CassisPipeline. (Commit-message attribution is a
 separate matter, governed by the repo's own rules.)
 
+## No incident lessons or dates in production scripts
+
+A general or production script's comments explain what an option does, not the
+war story behind it. Do not paste a past-incident lesson or a dated "burned on
+2026-..." note into the file, and do not timestamp a comment. A comment should
+read the same a year from now. Say what a default does ("default y: auto-requeue
+a node-aborted chunk"), not why it was changed or when. Hard-won lessons and
+their dates live in the project notes and the relevant skill, never in the
+shipped script.
+
 ## Scope
 
 Applies to scripts we own and edit: shell (.sh), Python, and the ASP python
