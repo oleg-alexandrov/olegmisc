@@ -117,6 +117,7 @@ un-pruned anchors fix the blow-ups it was meant to cage):
       --camera-list run-camera_list.txt                          \
       run.gcp                                                     \
       --clean-match-files-prefix ba/run                          \
+      --max-pairwise-matches 5000                                \
       --num-lines-per-position 15000                             \
       --num-lines-per-orientation 2000                           \
       --camera-position-uncertainty "20 20"                      \
@@ -218,8 +219,13 @@ grep max-gcp-to-tri`). Older builds LACK them; if absent, fall back to bounding 
 
 When running `jitter_solve` on massive datasets (e.g. 3,650 LRO NAC images at Mons Mouton,
 58k x 42k DEM at 1 m/pixel; `sfs_usage.rst` :numref:`sfs_jitter`):
-1. **Jacobian overflow protection**: Use `--max-pairwise-matches 75` to keep the Ceres
-   Jacobian memory within system limits.
+1. **Problem-size / memory control is the CONTROL-POINT TOTAL, not `--max-pairwise-matches`**:
+   now that `--max-num-tri-points` and the ratio caps bound the points that enter Ceres, leave
+   `--max-pairwise-matches` GENEROUS (5000) so tri supply is never starved, and manage the Ceres
+   Jacobian memory via the control-point total = `max-num-tri-points` x (1 + gcp-ratio + anchor-ratio).
+   For a very large site that total can hit the Ceres problem-size limit, so raise the counts enough
+   to constrain the knots but not so far it overflows. (The older "max-pairwise 75 for memory" advice
+   predates the `--max-num-tri-points` cap and is superseded.)
 2. **Padded anchor DEM**: Use an expanded `--anchor-dem` (padded 10 to 40 km beyond the target
    DEM) together with `--num-anchor-points-extra-lines 40000` to anchor the linescan trajectory
    well before and after data acquisition, preventing wild edge departures.
