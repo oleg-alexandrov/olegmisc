@@ -91,6 +91,23 @@ re-mapping ONLY the missing images at the standard chunk size, not one job per f
 single-node jobs will not schedule). The hanging camera is usually a wild one you would prune from the
 refined max-lit anyway. See [[pfe-nas]] for the `-r y` / node-abort detail.
 
+## Building max-lit mosaics (dem_mosaic --max)
+
+A max-lit is `dem_mosaic --max` over the mapprojected orthoimages (full = all images,
+refined/pruned = minus the wild cameras). Two rules, both learned the hard way:
+
+- **Build on a COMPUTE node, not the head node, when there is more than one.** A single
+  `dem_mosaic --threads 1` is head-node-legal, but a batch of max-lits (several full +
+  pruned) run concurrently on the head node gets reaped as a multi-process load. Use
+  `SfsPipeline/bin/batch_mosaic.sh <run> <workDir>` (qsub it to a compute node, multi-thread
+  there is fine) which builds the full and pruned max-lit for a run and verifies each. If you
+  must build on the head node, strictly one at a time, `--threads 1`. See [[pfe-nas]].
+- **ALWAYS verify VALID_PERCENT before using or copying a max-lit.** A `dem_mosaic` that reads
+  partial/empty inputs (e.g. chunk mosaics still mid-write) silently writes a 100%-nodata
+  raster of the right size, which then masquerades as done. After every max-lit run
+  `gdalinfo -stats` and confirm VALID_PERCENT > 0 (batch_mosaic.sh does this and fails loudly).
+  Never copy a max-lit off pfe or compare it until you have seen a non-zero valid percent.
+
 ### Example: Mapprojecting OHRC and LRO NAC on a 3 km Grid
 
 ```bash
@@ -409,6 +426,14 @@ jitter_solve) to pull the SfS result into the LOLA frame. Full detail + the prov
 the metric expertise (GSD/mapproj-offset/sim-shift), and the queue/build gotchas:
 [[sfs-run-align]], which in turn leans on [[sfs-post-bundle-eval]], [[jitter-solve]],
 [[bundle-adjust]], [[dem-comparison]], [[pc-align]].
+
+SAVE THE EXPOSURES once computed, and REUSE them. `sfs_exposures.sh` writes
+`run-exposures.txt` (one exposure per image). Exposures depend on the images and
+their radiometry, NOT on the fine camera poses, so they do NOT change under a later
+minor jitter solve or re-alignment. Copy the file into `lists/` (e.g.
+`lists/sfs_exposures.txt`) and pass it back with `--image-exposures-prefix` / the
+exposures-list arg on every subsequent SfS burn instead of re-solving them. This saves
+a full exposure pass (a non-trivial pfe job) on every re-run after a camera tweak.
 
 ## Package the delivery (SUMMARY -> [[sfs-delivery]])
 
