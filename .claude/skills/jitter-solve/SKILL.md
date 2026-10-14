@@ -107,10 +107,11 @@ Count NL from the camera json (`m_nLines`).
 
 ### RECOMMENDED recipe for an SfS->LOLA re-registration (polar NAC, validated on the BCT / Mons Mouton sites)
 
-Dense anchors + GCP (with a robust GCP threshold) + 2000-line orientation knots, and NO
-orientation-uncertainty guard. This reproduces the sharp-and-tame result with existing knobs
-only (a per-pose `--orientation-uncertainty` guard turned out to be an avoidable detour: dense
-un-pruned anchors fix the blow-ups it was meant to cage):
+Dense anchors + GCP (with a robust GCP threshold) + 2000-line orientation knots. This is the
+PRODUCTION recipe. It reaches the sharp-and-tame result with existing knobs only: the real
+lever that sharpened the DEM was the finer 2000-line (not 4000) orientation knots, and dense
+un-pruned anchors + a robust GCP threshold tame the blow-ups that finer knots can open. NO
+`--orientation-uncertainty` (see the note after the recipe):
 
     jitter_solve                                                 \
       --image-list run-image_list.txt                            \
@@ -139,6 +140,15 @@ un-pruned anchors fix the blow-ups it was meant to cage):
       --max-initial-reprojection-error 50                        \
       --num-iterations 50 --num-passes 1                         \
       -o out/run
+
+**Optional `--orientation-uncertainty` (tested, NOT at scale).** A per-pose constraint (1 sigma
+in meters, build 2026/10) that pins each variable orientation sample so its look rays do not
+move more than ~sigma on the mean-terrain sphere. It caged the blow-ups on the BCT site and is
+a cheap, off-by-default hedge. But within the shipped 430-image set the no-guard recipe above
+matched or beat it, so it is left OUT of production and is unproven at scale. Reach for it only
+if finer knots throw frames you cannot prune and dense anchors + gcp-robust do not hold them
+(use a value similar to `--anchor-dem-uncertainty`). It also writes a per-camera
+`-orientation_offsets.txt` (orientation change as ground meters) that is useful on any run.
 
 **SCALE the tri and anchor point counts with the site.** `--max-num-tri-points` and the
 anchor budget (`--num-anchor-points` times `--max-anchor-points-to-tri-points-ratio`) must GROW

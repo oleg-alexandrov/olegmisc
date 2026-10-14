@@ -141,6 +141,23 @@ Canonical detection tool:
 ~/projects/sfs/sfs_flag_bad_cameras.py ba_htdem/run -o lists/removed_ids.txt --report lists/flagged_report.txt
 ```
 
+## 2a. After a per-line JITTER solve: screen for blow-up cameras with cam_test
+
+A per-line jitter solve (esp. with a loose orientation guard, e.g. a modest
+`--orientation-uncertainty`, or finer orientation knots) can leave the BULK sharp while a
+FEW cameras blow up (the guard is too loose to cage those poses, but they still fit their
+own tie points, so reprojection and mapproj-offset stay flat and the bundle-stats detectors
+above are BLIND to them). Screen for them directly with `cam_test`: for each image compare
+the pre-jitter camera (e.g. `ba_htdem`) against the jitter camera and read the MAX pixel
+diff. Flag any image with max diff > ~250 px (catastrophic > ~1000 px), cross-reference that
+it is IN the SfS set, and drop it. These wild cameras smear only their OWN localized
+footprint in the max-lit, so pruning them (a handful of a few hundred) loses no coverage
+(redundant frames fill it). CONFIRM the prune: re-build the max-lit without them and diff vs
+the full one, the difference should be ~0.04% of pixels confined to those footprints with
+the scene-wide sharpness unchanged (burned-in lesson, BCT0717 2026-10-13: a loose-guard
+jitter left 2-3 cameras at 1000-1500 px that cam_test caught but every tie-point stat missed;
+pruning cleaned the mosaic without touching the sharp bulk).
+
 ## 2b. GSD vs mapproj-offset vs sim-shift: what each metric REALLY measures (and role matters)
 
 Measured on BCU2314 (978 LRO NAC cameras, 2026-10-01) by joining three per-image signals:

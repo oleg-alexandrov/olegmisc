@@ -39,6 +39,13 @@ Final results:
   Run it on the FINAL blended SfS DEM, not LOLA: tile the blend, `launch_sfs_tiles.sh
   ... 1`, then mosaic the per-tile `-height-error.tif`. So it waits for a settled blend.
 
+Deliver in STAGES when the blend is deferred. It is fine to package the accepted raw
+`sfs_dem.tif`, the max-lit mosaic, the orthos, cameras, and id lists first, and mark
+the polar products that still need to be built (`sfs_dem_blend.tif` and its
+companions, `average_mosaic.tif`, `height_uncertainty.tif`, `map_images_native_res/`)
+as PENDING in the readme and inventory.yaml with their paths reserved. Build and drop
+them in later. This gets the reviewed terrain packaged without waiting on the blend.
+
 Visualizable: `sfs_dem_blend_hill.tif` (hillshade of the blend;
 `gdaldem hillshade -multidirectional -compute_edges -alt 10`, which is crisper and
 keeps detail in the deep shadows better than ASP `hillshade -e 10`).
@@ -192,6 +199,14 @@ tracked description of the delivery.
 
 - Copy real files into the results dir under the clean delivery names (`sfs_dem.tif`,
   not the internal `sfs_dem_jitovr3clean.tif`); do not ship internal symlink names.
+- The cameras and orthos ship named by bare image id. Stacked jitter/bundle passes
+  leave a repeated prefix on each `adjusted_state.json` (e.g. five-deep
+  `run-run-run-run-run-<id>.cal.echo.adjusted_state.json`); STRIP it to
+  `<id>.cal.echo.adjusted_state.json` (or `<id>.json`) when gathering into `cameras/`,
+  and rename each ortho to a matching `<id>.map.tif`, so camera and ortho ids line up.
+- MOVE the 1 m/pixel orthos out of the experiment map dir into `map_images/` (they are
+  big and the source dir is wiped after delivery); COPY the cameras (tiny). Leave the
+  dropped offenders' orthos and the sub-resolution pyramids behind for the wipe.
 - Build pyramids (`stereo_gui --create-image-pyramids-only`) on hillshades and
   mosaics so the customer can view them fast.
 - Follow the project-workflow path and naming rules: state the one work dir once,

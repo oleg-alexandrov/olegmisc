@@ -21,8 +21,37 @@ a smooth transition at the lit/shadow boundary. SfS has no illumination signal
 in permanent shadow, so it fabricates garbage there (typically a spurious pit or
 a bright mound split by a hard line). The blend swaps that for LOLA.
 
-The default production wrapper is `~/projects/sfs/sfs_blend.sh` (and a per-site
-copy such as `~/projects/sfs_BCU2314-BDU1224-MM/run_sfs_blend.sh`). Terrain
+## New (2026-10): grow a floor instead of using LOLA
+
+The LOLA fill pops up where LOLA sits above the SfS floor. The better fix is
+`--shadow-fill-mode`, which grows a smooth floor from the surrounding SfS by
+solving Laplace's equation with a locally estimated curvature, then uses it as a
+CEILING. `lola-curved` fills with LOLA capped by that ceiling, so LOLA can no
+longer pop up (the production default). `sfs-curved` instead keeps the SfS and
+clips only where it pokes above the ceiling, preserving the finer SfS detail in
+the holes. `sfs-lola-curved` mins all three. The seam is softened by a feathered
+blur: blur the DEM and blend via a boundary weight that is itself Gaussian-
+smoothed (an unsmoothed weight bands into stripes). Blur sigma =
+`--weight-blur-sigma`. Production recipe:
+
+```
+sfs_blend ... --shadow-fill-mode lola-curved --shadow-fill-max-diameter 300 \
+  --lit-blend-length 20 --shadow-blend-length 20 --weight-blur-sigma 10
+```
+
+Key lesson (why a ceiling, not a replacement): the LOLA fill popped up because
+LOLA sits above the SfS floor. Capping it by a floor grown from the surrounding
+SfS fixes that. SfS in shadow is itself mostly fine (pinned near LOLA by the
+heights-from-dem prior), so `sfs-curved`/`sfs-lola-curved` keep it where wanted.
+Doc: sfs_usage.rst and the sfs_blend tool page (shadow fill modes). Full
+development story: `~/projects/sfs_BCU2314-BDU1224-MM/sfs_hole_fill_notes.sh`.
+
+The rest of this skill (the legacy LOLA fill, the band smear, and the per-crater
+babysitting below) is the fallback and the touch-up workflow.
+
+The default production wrapper is `~/projects/SfsPipeline/bin/sfs_blend.sh`
+(it exposes `SHADOW_FILL_MODE` to opt into the grown-floor modes; the older
+`~/projects/sfs/sfs_blend.sh` is obsolete). Terrain
 bounds requirement: both DEMs must be on the same half-integer 1 m grid (see the
 [[sfs]] skill, make_ref_dem, and the terrain-bounds section of sfs_usage.rst).
 
