@@ -14,8 +14,21 @@ balanced across all pairs at once (not one pair drained at a time).
 both modes; they differ only in fusion:
 - `dem_mosaic`: per-pair `point2dem` -> DEM mosaic. Optional `--errorimage` -> max
   triangulation-error mosaic (`dem_mosaic --max`); `--orthoimage` -> DRG mosaic
-  (`dem_mosaic --first`, per-pair `L.tif` auto-supplied). Works for raw OR mapprojected
+  (`dem_mosaic --first`, per-pair `L.tif` auto-supplied); `--propagate-errors` ->
+  `<prefix>-HorizontalStdDev.tif` + `<prefix>-VerticalStdDev.tif` uncertainty mosaics
+  (`dem_mosaic --max`, worst case over pairs). Works for raw OR mapprojected
   images (the latter with a seed `--dem`); `--dem` is optional.
+- **Error propagation (`--propagate-errors`, 2026-10-14):** put `--propagate-errors`
+  in BOTH `--stereo-options` (so each pair's PC carries the 6 bands) AND
+  `--point2dem-options` (so it is gridded and mosaicked). Supply input camera
+  uncertainty as usual, read from the cameras or `--horizontal-stddev L R` in
+  `--stereo-options`. Works with bathy too (bathy opts in `--stereo-options`; the
+  georeferenced `--ortho-bathy-mask` is the clean all-pairs form). The fuse step
+  (`dem_stage_fuse`) mosaics the two per-pair stddev rasters. Test:
+  `ss_multi_stereo_mapproj`. NOTE: `--propagate-errors` flips point rounding to 1e-8,
+  so the marginal cross-look pair in that test may flake in/out by one row between
+  independent runs -> `make_gold.sh`'s raw `cmp` can say "Bytes differ" while the
+  real gate (`validate.sh`, stats-based) still passes; the cloud dims are identical.
 - `mesh`: per-pair `pc_filter` -> fused `voxblox_mesh`. Rig cameras (`--rig_config`,
   `--camera_poses`), no datum.
 
