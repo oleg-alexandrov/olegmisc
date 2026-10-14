@@ -149,14 +149,20 @@ rather than rediscovering the same problems.
 - **Prefer rebase over a merge/branchy history**: on a rejected push, integrate with
   `git pull --rebase` (or fetch + `git rebase origin/master`). Rebasing local unpushed
   commits is fine and is NOT a force push. Detail: repo-sync.
-- **Always `cd /absolute/path &&` into the correct repo in the SAME command** as any git
-  op (shell state does not persist between tool calls; a bare git op runs in the home
-  dir). cwd NEVER carries over from a prior tool call, even one seconds ago. A
-  PreToolUse Bash hook (`~/.claude/hooks/git-cd-guard.sh`) now BLOCKS ANY git command -
-  reads too (status/log/fetch/tag), since a wrong-repo read returns a confident wrong
-  answer - unless it has a literal `cd /abs &&` or `git -C /abs` (only `git --version`,
-  `git help`, `git config --global/--system` are exempt). If denied, rewrite with the
-  explicit path, do not retry bare.
+- **DEFAULT to `git -C /absolute/path <cmd>` for EVERY git op** (reads and writes), one
+  `git -C` per invocation in a compound. It needs no `cd`, cannot be fumbled, and is the
+  single template to reach for - do not improvise `cd &&`. Reason: shell state does not
+  persist between tool calls, a bare git op runs in the home dir, and cwd NEVER carries
+  over from a prior tool call, even one seconds ago. A PreToolUse Bash hook
+  (`~/.claude/hooks/git-cd-guard.sh`) BLOCKS ANY git command - reads too
+  (status/log/fetch/tag), since a wrong-repo read returns a confident wrong answer -
+  unless it has a literal `cd /abs &&` or `git -C /abs` (only `git --version`, `git
+  help`, `git config --global/--system` are exempt). **A denial is a HARD STOP: the very
+  next command MUST differ by adding `git -C /abs` - NEVER resend the identical blocked
+  text** (resending the same bare command burned a long retry loop, 2026-10-14). The hook
+  matches the word "git" ANYWHERE in the command, including inside an argument, so a
+  non-git command like `grep "git -C" file` or a path containing "git" also trips it -
+  run such text searches through the Read/Grep tools, not bash.
 - **A git op that reports "Everything up-to-date" (or "nothing to commit") right after you
   committed is IMPOSSIBLE in the right repo - it means the command ran in the wrong dir.
   STOP and verify which repo it hit; never label it "harmless"/"no-op"/"should be fine"
