@@ -16,13 +16,14 @@ both modes; they differ only in fusion:
   triangulation-error mosaic (`dem_mosaic --max`); `--orthoimage` -> DRG mosaic
   (`dem_mosaic --first`, per-pair `L.tif` auto-supplied); `--propagate-errors` ->
   `<prefix>-HorizontalStdDev.tif` + `<prefix>-VerticalStdDev.tif` uncertainty mosaics
-  (`dem_mosaic --max`, worst case over pairs). Works for raw OR mapprojected
+  (plain `dem_mosaic` BLEND, like the DEM - an honest average, NOT `--max`; Oleg's
+  call 2026-10-14). Works for raw OR mapprojected
   images (the latter with a seed `--dem`); `--dem` is optional.
-- **Error propagation (`--propagate-errors`, 2026-10-14):** put `--propagate-errors`
-  in BOTH `--stereo-options` (so each pair's PC carries the 6 bands) AND
-  `--point2dem-options` (so it is gridded and mosaicked). Supply input camera
-  uncertainty as usual, read from the cameras or `--horizontal-stddev L R` in
-  `--stereo-options`. Works with bathy too (bathy opts in `--stereo-options`; the
+- **Error propagation (`--propagate-errors`, 2026-10-14):** set `--propagate-errors`
+  in `--stereo-options` (so each pair's PC carries the 6 bands). It is AUTOCOMPLETED
+  into `--point2dem-options` if missing there (run_dem_mosaic adds it), so the user
+  sets it once. Supply input camera uncertainty as usual, read from the cameras or
+  `--horizontal-stddev L R` in `--stereo-options`. Works with bathy too (bathy opts in `--stereo-options`; the
   georeferenced `--ortho-bathy-mask` is the clean all-pairs form). The fuse step
   (`dem_stage_fuse`) mosaics the two per-pair stddev rasters. Test:
   `ss_multi_stereo_mapproj`. NOTE: `--propagate-errors` flips point rounding to 1e-8,
