@@ -21,28 +21,29 @@ a smooth transition at the lit/shadow boundary. SfS has no illumination signal
 in permanent shadow, so it fabricates garbage there (typically a spurious pit or
 a bright mound split by a hard line). The blend swaps that for LOLA.
 
-## New (2026-10): grow a floor instead of using LOLA
+## New (2026-10): the lola-curved shadow fill
 
-The LOLA fill pops up where LOLA sits above the SfS floor. The better fix is
-`--shadow-fill-mode`, which grows a smooth floor from the surrounding SfS by
-solving Laplace's equation with a locally estimated curvature, then uses it as a
-CEILING. The default `lola-curved` keeps the SfS in the holes and takes the
-lower of the grown ceiling, the SfS, and LOLA, so LOLA can no longer pop up
-while the finer SfS detail is preserved. `sfs-curved` is the same without the
-LOLA cap, `curved` fills with the bare ceiling, `lola` is the legacy LOLA fill.
-The seam is softened by a feathered blur: blur the DEM and blend via a boundary
-weight that is itself Gaussian-smoothed (an unsmoothed weight bands into
-stripes). Blur sigma = `--weight-blur-sigma`. Production recipe:
+The plain LOLA fill pops up where LOLA sits above the SfS. The fix is
+`--shadow-fill-mode` with three modes: `lola` (the legacy LOLA fill), `curved`
+(fill with a surface grown from the surrounding SfS by solving Laplace's
+equation with a locally estimated curvature, so it curves gently downward and
+cannot rise above its surroundings), and the default `lola-curved` (the
+per-pixel minimum of the SfS, LOLA, and that curved surface). The minimum keeps
+the fill from rising above the surrounding terrain while still following the SfS
+and LOLA where they are lower. The seam is softened by a feathered blur: blur
+the DEM and blend via a boundary weight that is itself Gaussian-smoothed (an
+unsmoothed weight bands into stripes). Blur sigma = `--weight-blur-sigma`.
+Production recipe:
 
 ```
 sfs_blend ... --shadow-fill-mode lola-curved --shadow-fill-max-diameter 300 \
   --lit-blend-length 20 --shadow-blend-length 20 --weight-blur-sigma 10
 ```
 
-Key lesson (why a ceiling, not a replacement): the LOLA fill popped up because
-LOLA sits above the SfS floor. Capping it by a floor grown from the surrounding
-SfS fixes that. SfS in shadow is itself mostly fine (pinned near LOLA by the
-heights-from-dem prior), so `lola-curved`/`sfs-curved` keep it where wanted.
+Key lesson (why a minimum, not a replacement): the plain LOLA fill popped up
+because LOLA sits above the SfS. Taking the minimum with a surface grown from
+the surrounding SfS fixes that. SfS in shadow is itself mostly fine (pinned near
+LOLA by the heights-from-dem prior), so `lola-curved` keeps it where wanted.
 Doc: sfs_usage.rst and the sfs_blend tool page (shadow fill modes). Full
 development story: `~/projects/sfs_BCU2314-BDU1224-MM/sfs_hole_fill_notes.sh`.
 
@@ -50,7 +51,7 @@ The rest of this skill (the legacy LOLA fill, the band smear, and the per-crater
 babysitting below) is the fallback and the touch-up workflow.
 
 The default production wrapper is `~/projects/SfsPipeline/bin/sfs_blend.sh`
-(it exposes `SHADOW_FILL_MODE` to opt into the grown-floor modes; the older
+(it exposes `SHADOW_FILL_MODE` to select the fill mode; the older
 `~/projects/sfs/sfs_blend.sh` is obsolete). Terrain
 bounds requirement: both DEMs must be on the same half-integer 1 m grid (see the
 [[sfs]] skill, make_ref_dem, and the terrain-bounds section of sfs_usage.rst).
