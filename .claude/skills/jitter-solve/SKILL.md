@@ -105,6 +105,48 @@ Count NL from the camera json (`m_nLines`).
       --num-iterations 100 --num-passes 2              \
       -o out/run
 
+### RECOMMENDED recipe for an SfS->LOLA re-registration (polar NAC, validated on the BCT / Mons Mouton sites)
+
+Dense anchors + GCP (with a robust GCP threshold) + 2000-line orientation knots, and NO
+orientation-uncertainty guard. This reproduces the sharp-and-tame result with existing knobs
+only (a per-pose `--orientation-uncertainty` guard turned out to be an avoidable detour: dense
+un-pruned anchors fix the blow-ups it was meant to cage):
+
+    jitter_solve                                                 \
+      --image-list run-image_list.txt                            \
+      --camera-list run-camera_list.txt                          \
+      run.gcp                                                     \
+      --clean-match-files-prefix ba/run                          \
+      --num-lines-per-position 15000                             \
+      --num-lines-per-orientation 2000                           \
+      --camera-position-uncertainty "20 20"                      \
+      --heights-from-dem ref_dem.tif                             \
+      --heights-from-dem-uncertainty 20                          \
+      --anchor-dem ref_dem_padded.tif                            \
+      --anchor-dem-uncertainty 20                                \
+      --num-anchor-points 5000                                   \
+      --num-anchor-points-extra-lines 2000                       \
+      --mapproj-dem ref_dem.tif                                  \
+      --max-num-tri-points 300000                                \
+      --max-gcp-to-tri-points-ratio 2.0                          \
+      --max-anchor-points-to-tri-points-ratio 4.0                \
+      --gcp-robust-threshold 20                                  \
+      --max-gcp-reproj-err 50                                    \
+      --robust-threshold 2                                       \
+      --min-triangulation-angle 1e-10                            \
+      --forced-triangulation-distance 100000                     \
+      --max-initial-reprojection-error 50                        \
+      --num-iterations 50 --num-passes 1                         \
+      -o out/run
+
+**SCALE the tri and anchor point counts with the site.** `--max-num-tri-points` and the
+anchor budget (`--num-anchor-points` times `--max-anchor-points-to-tri-points-ratio`) must GROW
+with image count and site extent. Too few and specific orientation knots land in the solver's
+null space and blow up (a ~72 deg yaw swing throws the ground point tens of km), the solution is
+GOOD but POORLY CONSTRAINED, not wrong. On a ~15 by 15 km, ~1000-image polar site, 300k tri at
+anchor-ratio 4 (about 1.2M anchors) held it; a 120k-tri, ratio-2 setup left knots starved and
+blowing up. Larger site means raise both. The fix is dense anchors, not the orientation guard.
+
 ### Flag differences vs bundle_adjust
 - **NO `--datum`**: `jitter_solve` reads datum directly from CSM cameras.
 - **NO `--remove-outliers-params`**: The outlier lever in `jitter_solve` is
