@@ -89,7 +89,7 @@ Ortho directories (two subdirectories, per inventory.yaml):
   each at native GSD, no `--tr`, and writes `gsd.csv` from the actual output pixel
   sizes). The <1 m list comes from the per-image GSD query (`query_gsd.sh`).
 
-Cameras (when the customer asks, e.g. Ross): `cameras/` with the final jitter (or
+Cameras (when the customer asks): `cameras/` with the final jitter (or
 bundle-adjust) `adjusted_state.json` CSM model-state files, the linear-reduced set,
 one per image. This is the inventory.yaml `final_bundle_adjust_prefix`. Mons Mouton
 instead shipped `csm_init_cubes/` (cubes with the CSM baked in via csminit); bare
@@ -98,14 +98,12 @@ instead shipped `csm_init_cubes/` (cubes with the CSM baked in via csminit); bar
 SfS-to-LOLA disparity (`sfs_to_lola_corr/`): the AFTER (post-re-registration)
 horizontal dh/dv between the SfS DEM and LOLA, from `hillshade_correlator.sh`. Ship
 BOTH the numeric float bands AND the colorized pics. The numeric bands are the
-customer's actual product (Ross asked for them), the colorized ones are the quick
-look. Naming map, renamed on the way into the delivery:
+customer's actual product, the colorized ones are the quick look. Naming map,
+renamed on the way into the delivery:
 - `F-H.tif` = `run-F_b1_nodata.tif` = dh, horizontal, East-West.
 - `F-V.tif` = `run-F_b2_nodata.tif` = dv, vertical, North-South.
 - `dh_ew_color.tif` / `dv_ns_color.tif` = the colorized `colormap -5..5` views.
-Do NOT wipe the `hillshade_correlator.sh` run dir (`hcorr_*`) until the delivery is
-accepted: `run-F_b1/b2_nodata.tif` are a shipped product, not scratch. The
-before/after comparison stays in the notes.
+The before/after comparison stays in the notes.
 
 ## Ship only what was used; document the rest
 
