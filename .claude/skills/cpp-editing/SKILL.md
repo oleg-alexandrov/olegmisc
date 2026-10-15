@@ -96,11 +96,16 @@ functions; no space before `::` or initializer `:`; lines < 90 cols; `"\n"` not
 `std::endl`; continuation lines align with the opening paren. Full rules (sed
 recipes, option-help wrapping, for-loop form): `~/projects/cpp_style.sh`.
 
-**Keep code comments BRIEF.** A comment states the intent in a line or two, not a
-paragraph. Do not restate what the code plainly shows, do not re-explain the same
-idea several ways, and do not walk through every branch. A multi-line block where
-one sentence would do reads as clutter (reviewers call this out). Write the
-minimum that makes the intent clear, then stop.
+**Keep code comments BRIEF. State the point once, then STOP.** A comment gives the
+intent and the non-obvious why in a line or two, not a paragraph. The recurring
+failure (Oleg has cut this repeatedly) is dwelling: you make the point in the
+first sentence, then keep going with a failure-mode narrative ("without this, a
+blob would be filled in one tile and dropped in the neighbor..."), a restatement,
+or a worked example of what goes wrong. That trailing elaboration is the bloat,
+and it lives in the LOWER part of the comment. So when a comment runs past two
+lines, cut from the bottom first: the point is already made above. Do not restate
+what the code plainly shows or walk through every branch. Write the minimum that
+makes the intent clear, then stop.
 
 **Always qualified `std::abs`, never bare `abs`/`::abs`, never `fabs`.** Bare
 `abs` routes to C's integer-only `abs(int)` and silently truncates a double
