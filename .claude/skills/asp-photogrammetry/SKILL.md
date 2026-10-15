@@ -499,9 +499,9 @@ wasted compute. Claude HAS EYES (Read an image and see it) - so use them constan
 
 When mapprojecting a large corpus of imagery (from tens to 1300+ images on large grids, e.g. 20k x 20k):
 - NEVER write ad-hoc mapprojection loops or custom submission scripts from scratch.
-- ALWAYS use the canonical tools in `~/projects/sfs/`:
-  - `~/projects/sfs/batch_mapproject.sh`: Partitions image lists into chunked batches (default 30 images) and dispatches concurrent PBS jobs.
-  - `~/projects/sfs/mapproject_chunk.sh`: Per-chunk compute node worker with non-fatal error handling, out-of-bounds recovery, and tile cleanup.
+- ALWAYS use the canonical tools in `~/projects/SfsPipeline/bin/`:
+  - `~/projects/SfsPipeline/bin/batch_mapproject.sh`: Partitions image lists into chunked batches (default 30 images) and dispatches concurrent PBS jobs.
+  - `~/projects/SfsPipeline/bin/mapproject_chunk.sh`: Per-chunk compute node worker with non-fatal error handling, out-of-bounds recovery, and tile cleanup.
 - Features: Arbitrary sensors (LRO NAC, OHRC, CTX), paired camera list support (`cameraList.txt`), fixed resolution (`TR`), per-image GSD (`TR_COL`), target extent (`PROJWIN`), and core dump suppression (`ulimit -c 0`).
 - Full guide: **[[sfs]]**.
 

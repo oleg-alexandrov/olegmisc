@@ -17,9 +17,9 @@ The stage AFTER [[sfs-post-bundle-eval]] (refine chain + whacky prune) and
 [[sfs-image-selection]] (the SfS subset). Two phases: build ONE full-site SfS DEM, then
 measure and correct each image's registration to it. Distilled from the BCU2314-BDU1224
 lunar polar LRO NAC run (2026-10-01), which executed cleanly end to end. Work in ONE fixed
-pfe work dir, paths relative. Reusable scripts live in `~/projects/sfs/`. All ASP tools are
-`bin/` wrappers that self-wire the env, so the scripts' hardcoded dead `asp_deps` ISISROOT
-is inert on pfe (see the [[sfs]] "pfe env" note). pfe needs an explicit `-q` queue;
+pfe work dir, paths relative. Reusable scripts live in `~/projects/SfsPipeline/bin/`. All ASP
+tools are `bin/` wrappers that self-wire the env, and these scripts honor
+`${ASPROOT:-}`/`${ISISROOT:-}`/`${ISISDATA:-}` overrides (see the [[sfs]] "pfe env" note). pfe needs an explicit `-q` queue;
 `normal` caps at 8 h, `long` allows 120 h (e2305/s2764 are in its ACL). qsub over ssh is
 `/PBS/bin/qsub`.
 
@@ -31,7 +31,7 @@ runs `sfs --compute-exposures-only` (single process) and writes `<sfsDir>/run-ex
 ```bash
 /PBS/bin/qsub -q normal -m n -r n -N sfsexp -l walltime=4:00:00 -W group_list=e2305 \
   -j oe -S /bin/bash -o $W/ -l select=1:ncpus=28:model=bro_ele -- \
-  ~/projects/sfs/sfs_exposures.sh lists/secondary_images.txt ba_htdem/run \
+  ~/projects/SfsPipeline/bin/sfs_exposures.sh lists/secondary_images.txt ba_htdem/run \
     ref/lola_1mpp_extra_noblur.tif exposures_sec $W
 ```
 Gate: job F + `run-exposures.txt` has one nonzero value per image. ~335 images took ~15 min
@@ -53,7 +53,7 @@ parallel_sfs (a failed tile reruns alone; small jobs schedule faster).
 IMAGE_DIR=lronac_all IMAGE_SUFFIX=.cal.echo.cub NUM_CPU=4 NUM_NODES=2 \
 DEM_WEIGHT=0.0025 SHADOW_THRESH=0.005 WALLTIME=16:00:00 QUEUE=long \
 MODEL=bro_ele NCPUS=28 QSUB_BIN=/PBS/bin/qsub \
-~/projects/sfs/launch_sfs_tiles.sh tiles lists/secondary_images.txt ba_htdem/run \
+~/projects/SfsPipeline/bin/launch_sfs_tiles.sh tiles lists/secondary_images.txt ba_htdem/run \
   exposures_sec/run-exposures.txt sfs 0 $W
 ```
    It copies the exposures into each `sfs/clip<id>/` (so parallel_sfs REUSES them, no
@@ -64,8 +64,8 @@ MODEL=bro_ele NCPUS=28 QSUB_BIN=/PBS/bin/qsub \
    (parallel_sfs default is used); set it explicitly if low-light regions look wrong.
 3. **Assemble**: BLENDED `dem_mosaic` (NO `--max`, so tile seams smooth) of all
    `sfs/clip*/run-DEM-final.tif` -> one SfS DEM, via `dem_mosaic_list.sh` (qsub, THREADS=28).
-   dem_mosaic writes `<prefix>-tile-0.tif` for a single output tile - rename it to the
-   canonical `sfs_dem.tif`.
+   Output lands at exactly `sfs_dem.tif`: dem_mosaic writes the given name directly when
+   `-o` ends in `.tif` (the wrapper now does this), no tile suffix, no rename.
 4. **INSPECT** (mandatory, [[visual-inspection]]): `geodiff sfs_dem.tif <refDEM> --threads 1`
    -> dz stats (expect mean ~0, std sub-meter: SfS stays centered on the constraint while
    adding detail); hillshade + a scaled-dz quick-look -> look for TILE SEAMS (a 5x4 grid
@@ -87,7 +87,7 @@ Batcher `batch_sfs_sim.sh imageList beg end sfsDem imgDir baDir simDir currDir [
 ```bash
 IMAGE_DIR unused here; env: EXPOSURES_PREFIX (REQUIRED), SHADOW_THRESHOLD, ALIGN_THRESH.
 /PBS/bin/qsub -q normal ... -v ALIGN_THRESH=0,EXPOSURES_PREFIX=exposures_all/run,SHADOW_THRESHOLD=0.005 -- \
-  ~/projects/sfs/batch_sfs_sim.sh lists/filtered_images.txt <beg> <end> sfs_dem.tif \
+  ~/projects/SfsPipeline/bin/batch_sfs_sim.sh lists/filtered_images.txt <beg> <end> sfs_dem.tif \
     lronac_all ba_htdem sim_eval $W
 ```
 CRITICAL GOTCHAS:
@@ -126,7 +126,7 @@ both DEMs get the same treatment so the method cancels), runs
 horizontal SfS->ref shift. Heavy (asp_mgm over ~20k x 15k): qsub, 2 nodes, long queue, ~1 h.
 ```bash
 /PBS/bin/qsub -q long ... -l select=2:ncpus=28:model=bro_ele -- \
-  ~/projects/sfs/hillshade_correlator.sh sfs_dem.tif ref/lola_1mpp_extra_noblur.tif \
+  ~/projects/SfsPipeline/bin/hillshade_correlator.sh sfs_dem.tif ref/lola_1mpp_extra_noblur.tif \
     $W hcorr_sfs_lola 25
 ```
 Read-out: robust MEDIAN of run-F_b1/b2_nodata.tif (mask nodata; ~66% valid, shadows don't

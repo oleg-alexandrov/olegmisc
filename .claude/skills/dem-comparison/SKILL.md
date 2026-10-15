@@ -114,7 +114,7 @@ unsure which locks best - the field that is smooth + highest-coverage is the rea
 
 ### Canonical tools (do NOT hand-roll, and do NOT grab the wrong one)
 
-Three scripts in `~/projects/sfs/`. Pick by WHAT you feed and WHETHER you want alignment:
+Three scripts in `~/projects/SfsPipeline/bin/`. Pick by WHAT you feed and WHETHER you want alignment:
 - **`hillshade_corr.sh <leftDem> <rightDem> <stereoDir> <currDir> [maxSearch]`** - the
   STANDALONE DEM-to-DEM correlator and the DEFAULT for a dh/dv readout. gdaldem-hillshades
   both DEMs, runs `parallel_stereo --correlator-mode --stereo-algorithm asp_mgm --cost-mode 3`,

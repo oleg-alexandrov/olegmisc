@@ -1,31 +1,36 @@
 ---
 name: sfs
-description: Shape-from-Shading (SfS) and the canonical batch mapprojection framework in ~/projects/sfs/. Load before running batch mapprojection across multiple images, setting up SfS illumination modeling, running parallel_sfs, or preparing tiles and orthoimages for photoclinometry.
+description: Shape-from-Shading (SfS) and the canonical batch mapprojection framework in ~/projects/SfsPipeline/bin/. Load before running batch mapprojection across multiple images, setting up SfS illumination modeling, running parallel_sfs, or preparing tiles and orthoimages for photoclinometry.
 ---
 
 # Shape-from-Shading (SfS) & Canonical Batch Mapprojection
 
 This skill documents the Ames Stereo Pipeline Shape-from-Shading (SfS) photoclinometry toolset and the batch mapprojection framework.
 
-> **REFERENCE IMPLEMENTATION HAS MOVED (2026-10).** The canonical scripts now live in
-> `~/projects/SfsPipeline/bin/` (Andrew Annex's NeoGeographyToolkit/SfsPipeline repo), NOT
-> `~/projects/sfs/`. All NEW work goes into `SfsPipeline/bin`. The `SfsPipeline` versions are
-> portability refactors of the `~/projects/sfs` originals: they honor `${ASPROOT:-}`/`${ISISROOT:-}`/
-> `${ISISDATA:-}` overrides, take `groupName` for the PBS allocation, resolve sibling scripts by
-> their own dir, and forward the ASP/ISIS env through each per-chunk `qsub -v` (a qsub job starts
-> with a fresh env, so an un-forwarded `ISISROOT` falls back to a conda env that may not exist).
-> The `~/projects/sfs` copies still hold per-project history and a few not-yet-migrated helpers, but
-> `~/projects/sfs/batch_mapproject.sh` and `~/projects/sfs/mapproject_chunk.sh` are OBSOLETE (they
-> hardcode the retired `miniconda3/envs/asp_deps` with no override) and are marked so on top. The
-> paths in the examples below that read `~/projects/sfs/...` should be read as `~/projects/SfsPipeline/bin/...`.
+**REFERENCE IMPLEMENTATION HAS MOVED (2026-10).** The canonical scripts now live in
+`~/projects/SfsPipeline/bin/` (Andrew Annex's NeoGeographyToolkit/SfsPipeline repo), NOT
+`~/projects/sfs/`. All NEW work goes into `SfsPipeline/bin`, and every example below invokes
+the `SfsPipeline/bin/` copy. The `SfsPipeline` versions are portability refactors of the
+`~/projects/sfs` originals: they honor `${ASPROOT:-}`/`${ISISROOT:-}`/`${ISISDATA:-}` overrides,
+take `groupName` for the PBS allocation, resolve sibling scripts by their own dir, and forward
+the ASP/ISIS env through each per-chunk `qsub -v` (a qsub job starts with a fresh env, so an
+un-forwarded `ISISROOT` falls back to a conda env that may not exist). A full cross-check
+(2026-10-15) confirmed the `SfsPipeline/bin` copy of every migrated script is either identical
+to the `~/projects/sfs` original plus that portability shim, or strictly AHEAD of it (e.g.
+`bundle_adjust.sh` adds `--ip-detect-method 0`, `jitter_gcp.sh` adds `--gcp-robust-threshold` /
+`--orientation-uncertainty`). No `~/projects/sfs` copy carries a fix the repo lacks. So EVERY
+`~/projects/sfs` script that has a `SfsPipeline/bin` twin is now OBSOLETE and carries a header
+saying so. The `~/projects/sfs` dir is kept only for per-project history and a few deliberately
+not-migrated site/debug helpers (`stereo_map.sh`, `process_all.sh`, `coverage_subset_tile.sh`,
+`cam_test_ba_vs_jitter.sh`, etc.). Never call a `~/projects/sfs` copy.
 
 ## Do Not Reinvent the Wheel: Use the Standard Batch Mapproject Scripts
 
 When preparing mapprojected images for SfS, bundle adjustment, GCP generation, or mosaic building across many images (from 10 to 1300+ images on large grids like 20k x 20k pixels):
 - **NEVER** write ad-hoc mapprojection loops or custom submission scripts from scratch.
-- **ALWAYS** use the robust, tested scripts in `~/projects/sfs/`:
-  - `~/projects/sfs/batch_mapproject.sh`: Slices an image list into chunks (default 30 images per job) and submits concurrent PBS jobs to Pleiades/Athena.
-  - `~/projects/sfs/mapproject_chunk.sh`: Worker script executed on each compute node to mapproject its assigned slice of images.
+- **ALWAYS** use the robust, tested scripts in `~/projects/SfsPipeline/bin/`:
+  - `~/projects/SfsPipeline/bin/batch_mapproject.sh`: Slices an image list into chunks (default 30 images per job) and submits concurrent PBS jobs to Pleiades/Athena.
+  - `~/projects/SfsPipeline/bin/mapproject_chunk.sh`: Worker script executed on each compute node to mapproject its assigned slice of images.
 
 ### Features of the Canonical Scripts
 1. **Arbitrary Sensor Support**:
@@ -54,10 +59,10 @@ When preparing mapprojected images for SfS, bundle adjustment, GCP generation, o
 
 ```bash
 # Basic usage with baPrefix glob
-~/projects/sfs/batch_mapproject.sh dem.tif imageList.txt baPrefix mapDir currDir
+~/projects/SfsPipeline/bin/batch_mapproject.sh dem.tif imageList.txt baPrefix mapDir currDir
 
 # Paired list usage with explicit camera list
-~/projects/sfs/batch_mapproject.sh dem.tif imageList.txt ignored mapDir currDir cameraList.txt
+~/projects/SfsPipeline/bin/batch_mapproject.sh dem.tif imageList.txt ignored mapDir currDir cameraList.txt
 ```
 
 ### Environment Variables for `batch_mapproject.sh`
@@ -119,7 +124,7 @@ export NO_MOSAIC=1
 export CHUNK_SIZE=30
 export WALLTIME="04:00:00"
 
-~/projects/sfs/batch_mapproject.sh \
+~/projects/SfsPipeline/bin/batch_mapproject.sh \
   ref_dem.tif \
   lists/images.txt \
   ignored \
@@ -146,7 +151,7 @@ download URLs for batch downloading and clean product IDs:
 
 ```bash
 # Query ODE by lat/lon box, emitting download URLs and product IDs
-~/projects/sfs/query_lro.sh \
+~/projects/SfsPipeline/bin/query_lro.sh \
   --lat-lon -84.95 -84.45 20.7 27.0 \
   --min-incidence 70 --max-incidence 90 \
   --max-resolution 1.5 \
@@ -154,24 +159,24 @@ download URLs for batch downloading and clean product IDs:
   --output-products lists/products.txt
 
 # Or query directly using the reference DEM bounding box (plus 1 km margin)
-~/projects/sfs/query_lro.sh \
+~/projects/SfsPipeline/bin/query_lro.sh \
   --dem ref/lola_1mpp_extra.tif --margin-km 1.0 \
   --min-incidence 70 --max-incidence 90 \
   --output-urls lists/urls.txt \
   --output-products lists/products.txt
 
 # Download images in bulk (resumable with retries)
-~/projects/sfs/download_all.sh lists/urls.txt
+~/projects/SfsPipeline/bin/download_all.sh lists/urls.txt
 
 # Or run automated head-node friendly batch ingest (fetch + lronac2isis +
 # spiceinit + lronaccal + lronacecho + isd_generate linear reduction + cam_test):
-~/projects/sfs/batch_prepare_lro.sh lists/products.txt lronac_all --no-usgs-polar
+~/projects/SfsPipeline/bin/batch_prepare_lro.sh lists/products.txt lronac_all --no-usgs-polar
 
 # For USGS South Pole controlled anchor images (using custom polar SPICE kernels):
-~/projects/sfs/batch_prepare_lro.sh lists/usgs_products.txt usgs_south --usgs-polar
+~/projects/SfsPipeline/bin/batch_prepare_lro.sh lists/usgs_products.txt usgs_south --usgs-polar
 
 # Single product manual ingest:
-~/projects/sfs/prepare_lro_nac.py --outdir lronac_all M109041171LE
+~/projects/SfsPipeline/bin/prepare_lro_nac.py --outdir lronac_all M109041171LE
 ```
 
 **Step 1 - reference DEM (1 m/pixel, half-integer grid).** Regrid the LOLA source
@@ -261,7 +266,7 @@ export NO_MOSAIC=1
 export CHUNK_SIZE=121   # images per one-node job; sized to yield ~10 jobs
 export MODEL=bro_ele
 export WALLTIME=4:00:00
-~/projects/sfs/batch_mapproject.sh ref/lola_1mpp_extra_noblur.tif \
+~/projects/SfsPipeline/bin/batch_mapproject.sh ref/lola_1mpp_extra_noblur.tif \
   lists/azimuth_images.txt ignored maps $(pwd) lists/azimuth_cameras.txt
 ```
 
@@ -279,8 +284,8 @@ sed 's#lronac_all/\(M[0-9]*[LR]E\)\.cal\.echo\.cub#maps/\1.cal.echo.map.tr1.tif#
 # Submit as a quick 1-node PBS job with PROCS=28 (runs in ~4-5 minutes):
 # qsub -q normal -m n -r n -N filter_max -l walltime=00:30:00 -W group_list=e2305 \
 #   -j oe -S /bin/bash -l select=1:ncpus=28:model=bro_ele -v "PROCS=28" -- \
-#   ~/projects/sfs/filter_by_max.sh lists/azimuth_map.txt lists/filtered_map.txt $(pwd) 0.005
-~/projects/sfs/filter_by_max.sh lists/azimuth_map.txt lists/filtered_map.txt $(pwd) 0.005
+#   ~/projects/SfsPipeline/bin/filter_by_max.sh lists/azimuth_map.txt lists/filtered_map.txt $(pwd) 0.005
+~/projects/SfsPipeline/bin/filter_by_max.sh lists/azimuth_map.txt lists/filtered_map.txt $(pwd) 0.005
 ```
 
 `bundle_adjust.sh` rebuilds its image/camera/mapprojected lists from the ids on
@@ -305,7 +310,7 @@ queue specification) and `walltime=8:00:00` (`bro_ele` rejects >8h walltimes).
 qsub -q normal -m n -r n -N ba -l walltime=8:00:00 -W group_list=e2305 \
   -j oe -S /bin/bash -l select=10:ncpus=28:model=bro_ele \
   -v "IMG_DIR=lronac_all,OVERLAP_LIMIT=75,NUM_ITERATIONS=0,PROCESSES=10,THREADS=8" -- \
-  ~/projects/sfs/bundle_adjust.sh lists/filtered_map.txt ref/lola_1mpp_extra_noblur.tif maps ba/run $(pwd)
+  ~/projects/SfsPipeline/bin/bundle_adjust.sh lists/filtered_map.txt ref/lola_1mpp_extra_noblur.tif maps ba/run $(pwd)
 ```
 
 The `.match` files under `ba/` are the deliverable, reusable in a later controlled
@@ -314,7 +319,7 @@ BA (USGS-polar cameras held fixed, see coregister-linescan / image-gcp-gen).
 ## Controlled Refinement Family: bundle_adjust_refine.sh (fixed -> free -> dem)
 
 After the matches-only harvest (Step 5), the controlled solve is a three-stage
-chain, all done by ONE script `~/projects/sfs/bundle_adjust_refine.sh`, which
+chain, all done by ONE script `~/projects/SfsPipeline/bin/bundle_adjust_refine.sh`, which
 reuses the harvested matches and turns the two optional constraints on via env:
 `FIXED_LIST` (subset of images whose cameras are held fixed) and `REF_DEM`
 (adds `--heights-from-dem` + `--mapproj-dem`). This mirrors the documented
@@ -356,21 +361,21 @@ each. Run each on its own qsub; each waits for the previous:
 qsub -q normal -m n -r n -N ba_fix -l walltime=8:00:00 -W group_list=e2305 \
   -j oe -S /bin/bash -l select=1:ncpus=20:model=bro_ele \
   -v "FIXED_LIST=lists/usgs_fixed_images.txt" -- \
-  ~/projects/sfs/bundle_adjust_refine.sh \
+  ~/projects/SfsPipeline/bin/bundle_adjust_refine.sh \
   lists/filtered_images.txt lists/filtered_cameras_mixed.txt ba/run ba_fix $(pwd)
 
 # Stage 2: free - relax ALL cameras (reusing ba_fix clean matches)
 qsub -q normal -m n -r n -N ba_free -l walltime=8:00:00 -W group_list=e2305 \
   -j oe -S /bin/bash -l select=1:ncpus=20:model=bro_ele \
   -v "USE_CLEAN=1" -- \
-  ~/projects/sfs/bundle_adjust_refine.sh \
+  ~/projects/SfsPipeline/bin/bundle_adjust_refine.sh \
   ba_fix/run-image_list.txt ba_fix/run-camera_list.txt ba_fix/run ba_free $(pwd)
 
 # Stage 3: dem - final tighten to the terrain (reusing ba_fix clean matches)
 qsub -q normal -m n -r n -N ba_htdem -l walltime=8:00:00 -W group_list=e2305 \
   -j oe -S /bin/bash -l select=1:ncpus=20:model=bro_ele \
   -v "USE_CLEAN=1,REF_DEM=ref/lola_1mpp_extra_noblur.tif" -- \
-  ~/projects/sfs/bundle_adjust_refine.sh \
+  ~/projects/SfsPipeline/bin/bundle_adjust_refine.sh \
   ba_free/run-image_list.txt ba_free/run-camera_list.txt ba_fix/run ba_htdem $(pwd)
 ```
 
@@ -461,29 +466,29 @@ their own project dirs (read the `*_notes.sh` there):
 `~/projects/sfs_m2m_ca`, `~/projects/sfs_m2m_sp`, `~/projects/sfs_m2m_mp` (the
 mare/south-pole/cold-area m2m sites that first ran the harvest -> fixed -> dem chain),
 and the current `~/projects/sfs_BCU2314-BDU1224-MM` (matches_pipeline_notes.sh). The
-generic scripts in `~/projects/sfs/` are the reusable distillation; the per-site
+generic scripts in `~/projects/SfsPipeline/bin/` are the reusable distillation; the per-site
 notes carry the exact invocations, list-assembly, and what went wrong.
 
-## pfe env: the hardcoded `asp_deps` ISISROOT in these scripts is DEAD but INERT (TODO: clean up)
+## pfe env: ISISROOT is now override-friendly in the SfsPipeline copies (old TODO resolved)
 
-The generic scripts (`sfs_exposures.sh`, `parallel_sfs.sh`, `dem_mosaic_list.sh`,
-`bundle_adjust.sh`, `bundle_adjust_refine.sh`, `mapproject_chunk.sh`) all hardcode
-`export ISISROOT=$HOME/miniconda3/envs/asp_deps`. That env NO LONGER EXISTS on pfe (only
-`asp_deps_stale_nfs`; the live ISIS env is `isis10asp`). It does not matter in practice:
-every ASP tool is a `bin/` WRAPPER that UNSETS inherited `GDAL_DATA`/`PROJ_DATA`, re-points
-them at the bundle's `share/` (via `libexec/libexec-funcs.sh`), OVERRIDES
-`ISISROOT="$TOPLEVEL"` (the bundle), and sets `LD_LIBRARY_PATH` + `CSM_PLUGIN_PATH`. So for
-any wrapped tool the scripts' dead `asp_deps` ISISROOT/`$ISISROOT/bin`/`ALESPICEROOT` are
-discarded before the real binary runs (`ISISDATA` happens to still resolve, 179 GB kernels,
-unused by CSM). Verified live 2026-09-30: `bin/gdalinfo`/`bin/gdal_translate` on a polar
-DEM run clean, no proj.db warning. TWO caveats worth remembering: (1) this only holds for
-tools called THROUGH `$SP/bin/` wrappers, NOT bare `libexec/` ELF binaries nor non-ASP
-python `osgeo` calls, so `tile_dem.py` (bare `gdal_translate` + `from osgeo import gdal`)
-must be run under a real gdal env (`geo`) or with `$SP/bin` first on PATH; (2) the dead
-strings are a future landmine if anyone adds a non-wrapped call. TODO (dunno, low priority,
-cosmetic): make the env overridable in the shared scripts, e.g.
-`export ISISROOT=${ISISROOT:-$HOME/miniconda3/envs/asp_deps}`, so each machine/job sets the
-right one, rather than a hard flip to `isis10asp` (the Mac still has `asp_deps`).
+The `SfsPipeline/bin` scripts set `export ISISROOT=${ISISROOT:-$HOME/miniconda3/envs/asp_deps}`
+(and the same `${VAR:-}` idiom for `ASPROOT`/`ISISDATA`/`ALESPICEROOT`), so each machine or job
+can point them at the right env. This resolved the old TODO that the superseded `~/projects/sfs`
+copies hardcoded `export ISISROOT=$HOME/miniconda3/envs/asp_deps` with no override (that bare
+env no longer exists on pfe, only `asp_deps_stale_nfs`; the live ISIS env is `isis10asp`).
+
+Even with the default, it did not matter in practice for WRAPPED tools: every ASP tool is a
+`bin/` WRAPPER that UNSETS inherited `GDAL_DATA`/`PROJ_DATA`, re-points them at the bundle's
+`share/` (via `libexec/libexec-funcs.sh`), OVERRIDES `ISISROOT="$TOPLEVEL"` (the bundle), and
+sets `LD_LIBRARY_PATH` + `CSM_PLUGIN_PATH`. So for any wrapped tool the scripts' ISISROOT/
+`$ISISROOT/bin`/`ALESPICEROOT` are discarded before the real binary runs (`ISISDATA` happens to
+still resolve, 179 GB kernels, unused by CSM). Verified live 2026-09-30:
+`bin/gdalinfo`/`bin/gdal_translate` on a polar DEM run clean, no proj.db warning. TWO caveats
+still worth remembering: (1) this only holds for tools called THROUGH `$SP/bin/` wrappers, NOT
+bare `libexec/` ELF binaries nor non-ASP python `osgeo` calls, so `tile_dem.py` (bare
+`gdal_translate` + `from osgeo import gdal`) must be run under a real gdal env (`geo`) or with
+`$SP/bin` first on PATH; (2) set `ISISROOT`/`ASPROOT` explicitly (or source `init_asp.sh`) if
+you add a non-wrapped call, so it never falls back to a default env that may be absent.
 
 ## sfs_sim_align.sh: get a GCP for EVERY image, not just misaligned ones (ALIGN_THRESH)
 
@@ -583,9 +588,9 @@ Planning takeaways:
 
 ---
 
-## Canonical SfS Toolkit Reference (`~/projects/sfs/`)
+## Canonical SfS Toolkit Reference (`~/projects/SfsPipeline/bin/`)
 
-The `~/projects/sfs/` repository contains the core pipeline scripts developed for photoclinometry on Pleiades and Athena:
+The `~/projects/SfsPipeline/bin/` directory contains the core pipeline scripts developed for photoclinometry on Pleiades and Athena:
 
 * **`make_ref_dem.sh`**: Reproject and regrid a source DEM to a fixed half-integer target grid with ASP 256-block tiling, optional spike blur. Builds the SfS reference DEM.
 * **`batch_mapproject.sh`**: Chunked PBS job orchestrator for multi-node parallel mapprojection.
@@ -603,4 +608,5 @@ The `~/projects/sfs/` repository contains the core pipeline scripts developed fo
 * **`hillshade_corr.sh`**: Standalone DEM-to-DEM hillshade correlator using `parallel_stereo --correlator-mode` with `asp_mgm` (dh/dv shift measurement without modifying DEMs).
 * **`bundle_adjust_dem_gcp.sh`**: Bundle adjustment constrained by DEM surface and ground control points.
 
-Scripts are maintained in `~/projects/sfs/` and unified into the public repository `~/projects/SfsPipeline` (`bin/`).
+Scripts are maintained in the public repository `~/projects/SfsPipeline` (`bin/`). The old
+`~/projects/sfs/` copies are obsolete (see the banner at the top of this skill).

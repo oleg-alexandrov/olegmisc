@@ -72,22 +72,22 @@ cheap. Template: `sfs_m2m_ca` `sfs_ca_align_notes.sh` Step 6.
 # 1. batch mapproject; pass the final-stage adjusted camera list as the 6th arg.
 export CHUNK_SIZE=50          # ~20 chunks per ~1000 images
 export WALLTIME=6:00:00
-~/projects/sfs/batch_mapproject.sh ref/lola_1mpp_extra_noblur.tif \
+~/projects/SfsPipeline/bin/batch_mapproject.sh ref/lola_1mpp_extra_noblur.tif \
   lists/filtered_images.txt ba_htdem/run map_htdem $(pwd) ba_htdem/run-camera_list.txt
 # 2. split partials into two illumination halves by beg (imagecount/2), max-lit each.
 cd map_htdem; ls max_mosaic_*.tif | awk -F'[_.]' '$3<500'  > half1_list.txt
               ls max_mosaic_*.tif | awk -F'[_.]' '$3>=500' > half2_list.txt; cd -
-~/projects/sfs/batch_max_mosaic.sh map_htdem/half1_list.txt map_htdem/half1_max_mosaic.tif $(pwd)
-~/projects/sfs/batch_max_mosaic.sh map_htdem/half2_list.txt map_htdem/half2_max_mosaic.tif $(pwd)
+~/projects/SfsPipeline/bin/batch_max_mosaic.sh map_htdem/half1_list.txt map_htdem/half1_max_mosaic.tif $(pwd)
+~/projects/SfsPipeline/bin/batch_max_mosaic.sh map_htdem/half2_list.txt map_htdem/half2_max_mosaic.tif $(pwd)
 # 3. grand max-lit of the two halves.
 printf 'map_htdem/half1_max_mosaic.tif\nmap_htdem/half2_max_mosaic.tif\n' > map_htdem/halves_list.txt
-~/projects/sfs/batch_max_mosaic.sh map_htdem/halves_list.txt map_htdem/all_max_mosaic.tif $(pwd)
+~/projects/SfsPipeline/bin/batch_max_mosaic.sh map_htdem/halves_list.txt map_htdem/all_max_mosaic.tif $(pwd)
 ```
 `batch_max_mosaic.sh` runs `dem_mosaic --threads 20`: qsub it (devel), NEVER > 2 threads on
 a pfe login node. Inspect ([[visual-inspection]]): red/green overlay half1 vs half2 for
 ghosting, and eyeball `all_max_mosaic.tif` for self-consistency and a global shift vs a
-LOLA hillshade. NOTE: pass `-o` WITH the `.tif` extension or dem_mosaic writes
-`<prefix>-tile-0-max.tif`.
+LOLA hillshade. NOTE: pass `-o` WITH the `.tif` extension so dem_mosaic writes that exact
+name (a bare prefix would instead give the old `<prefix>-tile-0-max.tif`).
 
 Illumination difference vs misregistration: red/green ONLY on opposite crater walls =
 shadow-direction difference between the two azimuth groups (fine). A real shift offsets
@@ -138,7 +138,7 @@ dropouts).
 Canonical detection tool:
 ```bash
 # Automated suspect camera detection from bundle statistics:
-~/projects/sfs/sfs_flag_bad_cameras.py ba_htdem/run -o lists/removed_ids.txt --report lists/flagged_report.txt
+~/projects/SfsPipeline/bin/sfs_flag_bad_cameras.py ba_htdem/run -o lists/removed_ids.txt --report lists/flagged_report.txt
 ```
 
 ## 2a. After a per-line JITTER solve: screen for blow-up cameras with cam_test
@@ -218,7 +218,7 @@ re-mapproject. Two scopes:
   chunk's map list and rebuild all chunks -> both halves -> total using the canonical runner:
 ```bash
 # Rebuild all chunks, halves, and grand mosaic with removed_ids pruned:
-~/projects/sfs/sfs_prune_and_remosaic.sh map_htdem lists/removed_ids.txt $(pwd) 500 20
+~/projects/SfsPipeline/bin/sfs_prune_and_remosaic.sh map_htdem lists/removed_ids.txt $(pwd) 500 20
 ```
 Or manually in a loop:
 ```bash
@@ -257,7 +257,7 @@ provide adequate coverage, or if excluding degraded frames causes coverage loss 
 ### Metric Extraction & Stratification
 1. Query per-image native GSD using the latest `ba_htdem` cameras onto the honest reference DEM:
    ```bash
-   ~/projects/sfs/query_gsd.sh ref/lola_1mpp_extra_noblur.tif lists/filtered_images.txt \
+   ~/projects/SfsPipeline/bin/query_gsd.sh ref/lola_1mpp_extra_noblur.tif lists/filtered_images.txt \
      ba_htdem/run-camera_list.txt lists/image_gsd.txt
    ```
 2. Extract the 75th percentile mapprojection offset and match count from `ba_htdem/run-mapproj_match_offset_stats.txt`.

@@ -117,8 +117,8 @@ thinned hardest, the sparse [180,225)=43 kept nearly whole. Compute bin counts f
   Sun azimuths (reads the sfs_query table, col3 = 0-360 az). Use it to judge illumination
   density and representativeness before grouping, and to decide the angle slices.
 
-Full script paths: `~/projects/sfs/prepare_lowres.sh`, `~/projects/sfs/image_subset_2x.sh`,
-`~/projects/sfs/split_quadrants.py`. Project driver precedents in their project dirs:
+Full script paths: `~/projects/SfsPipeline/bin/prepare_lowres.sh`, `~/projects/SfsPipeline/bin/image_subset_2x.sh`,
+`~/projects/SfsPipeline/bin/split_quadrants.py`. Project driver precedents in their project dirs:
 `sfs_select_bcu2314.sh` (median-split full-site) and `sfs_select_bct.sh` (the newer
 fixed-ANGLE 45-deg slices with a rare group kept whole - the current recipe).
 
@@ -135,12 +135,12 @@ SEL=selection; mkdir -p $SEL
 # 1. pruned full-res maps (drop the stats-pruned suspects; see [[sfs-post-bundle-eval]])
 ls map_htdem/*.map.tr1.tif | grep -vF -f lists/removed_ids.txt > $SEL/pruned_map.txt
 # 2. low-res list (sub8>sub4>sub2 per map)
-~/projects/sfs/prepare_lowres.sh $SEL/pruned_map.txt $SEL/pruned_lowres.txt <workDir>
+~/projects/SfsPipeline/bin/prepare_lowres.sh $SEL/pruned_map.txt $SEL/pruned_lowres.txt <workDir>
 # 3. split the low-res list into 4 disjoint 90-deg azimuth groups (id -> az from lists/azimuth.txt col3)
 #    (awk bin = int(az/90), clamp 0..3; write $SEL/azi_q0..q3.txt)
 # 4. per group: primary + extra subcover, FULL SITE (no --t_projwin)
 for k in 0 1 2 3; do
-  ~/projects/sfs/image_subset_2x.sh $SEL/azi_q${k}.txt $SEL/sub_q${k} <workDir> 0.01
+  ~/projects/SfsPipeline/bin/image_subset_2x.sh $SEL/azi_q${k}.txt $SEL/sub_q${k} <workDir> 0.01
 done
 # 5. max-lit per group (map low-res paths back to full-res maps), + combined primaries/extras
 for k in 0 1 2 3; do for kind in primary extra; do
@@ -152,9 +152,9 @@ dem_mosaic --max --threads 20 --dem-list $SEL/ml_primary_all.txt -o $SEL/maxlit_
 printf '%s\n' $SEL/maxlit_q{0,1,2,3}_extra.tif   > $SEL/ml_extra_all.txt
 dem_mosaic --max --threads 20 --dem-list $SEL/ml_extra_all.txt   -o $SEL/maxlit_extra_all.tif
 ```
-The canonical driver `~/projects/sfs/sfs_select_full_site.sh` wraps exactly this (with env + counts):
+The canonical driver `~/projects/SfsPipeline/bin/sfs_select_full_site.sh` wraps exactly this (with env + counts):
 ```bash
-~/projects/sfs/sfs_select_full_site.sh <map_list.txt> <azimuth_table.txt> <out_dir> <curr_dir> [threshold]
+~/projects/SfsPipeline/bin/sfs_select_full_site.sh <map_list.txt> <azimuth_table.txt> <out_dir> <curr_dir> [threshold]
 ```
 Grand candidate count = unique images across all sub_q*_{primary,extra}.txt.
 
@@ -172,7 +172,7 @@ patches in the max-lit mosaics ("aliasing" in the BCU2314 half2). So compute eac
 native GSD and decide whether to DROP the coarsest ones from the candidate pool BEFORE (or
 alongside) the coverage subset - a data-quality lever the coverage step itself does not
 provide, and one that actively counters the greedy bias toward big coarse footprints.
-- Tool: `~/projects/sfs/query_gsd.sh <imageList> <cameraList> <dem> <outPrefix> <threshold>
+- Tool: `~/projects/SfsPipeline/bin/query_gsd.sh <imageList> <cameraList> <dem> <outPrefix> <threshold>
   <currDir>`. It runs `mapproject --query-projection <dem> <img> <cam> <dummy.tif>` per
   image (fast, writes nothing) and parses the emitted `pixel_size,<gsd>` line - the exact
   --tr mapproject would auto-pick. Writes `<outPrefix>_all.txt` (id gsd) and

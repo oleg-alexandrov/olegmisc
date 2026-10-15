@@ -59,7 +59,7 @@ babysitting below) is the fallback and the touch-up workflow.
 
 The default production wrapper is `~/projects/SfsPipeline/bin/sfs_blend.sh`
 (it exposes `SHADOW_FILL_MODE` to select the fill mode; the older
-`~/projects/sfs/sfs_blend.sh` is obsolete). Terrain
+`~/projects/SfsPipeline/bin/sfs_blend.sh` is obsolete). Terrain
 bounds requirement: both DEMs must be on the same half-integer 1 m grid (see the
 [[sfs]] skill, make_ref_dem, and the terrain-bounds section of sfs_usage.rst).
 

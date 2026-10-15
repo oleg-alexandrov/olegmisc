@@ -152,4 +152,4 @@ Re-run `image_align` against `ref_ortho.tif` or overlay in `stereo_gui` to confi
 - Do NOT solve jitter or camera intrinsics during this initial stage. Jitter correction should only be run after initial alignment is achieved.
 
 ### 6. Reference Script Implementation
-- Canonical reference implementation: `~/projects/sfs/sfs_sim_align.sh` (lines 184–243).
+- Canonical reference implementation: `~/projects/SfsPipeline/bin/sfs_sim_align.sh` (lines 184–243).

@@ -50,12 +50,12 @@ sfs --threads 1 --query \
 - When CSM initializes `USGS_ASTRO_LINE_SCANNER_SENSOR_MODEL`, constructing spline/Lagrange interpolators across 22,529 states takes **8 to 10 seconds of CPU time per camera**.
 - This overhead occurs once per camera during model instantiation. For hundreds or thousands of images, serial execution takes hours. Mitigation: parallelize across cores using chunked lists.
 
-## 4. The Canonical Batch Script: `~/projects/sfs/sfs_query.sh`
+## 4. The Canonical Batch Script: `~/projects/SfsPipeline/bin/sfs_query.sh`
 
-The reusable batch script `~/projects/sfs/sfs_query.sh` automates environment setup, memory protection, and optional multi-process execution:
+The reusable batch script `~/projects/SfsPipeline/bin/sfs_query.sh` automates environment setup, memory protection, and optional multi-process execution:
 ```bash
 # Usage:
-~/projects/sfs/sfs_query.sh <dem.tif> <image_list.txt> <camera_list.txt> <out_dir> [num_processes]
+~/projects/SfsPipeline/bin/sfs_query.sh <dem.tif> <image_list.txt> <camera_list.txt> <out_dir> [num_processes]
 ```
 
 ### Architecture of `sfs_query.sh`:
@@ -92,13 +92,13 @@ To visualize coverage across datasets (e.g. baseline catalog vs newly ingested a
 - **Concentric Radial Tiers**: Radius is an arbitrary visual separator, not physical data. Place baseline images on an inner circle ($r=1.0$) and additional images on an outer circle ($r=1.35$).
 - **Styling**: Solid colored balls with dark edge rings; dashed guideline circles; gray shading across the astronomically forbidden southern sector (300° to 60°).
 
-### Canonical Plotting Tool: `~/projects/sfs/plot_sfs_azimuth.py`
+### Canonical Plotting Tool: `~/projects/SfsPipeline/bin/plot_sfs_azimuth.py`
 ```bash
 # Generate polar rose plot from sfs_query.sh output:
-~/projects/sfs/plot_sfs_azimuth.py azimuth_table.txt -o solar_azimuth_polar.png
+~/projects/SfsPipeline/bin/plot_sfs_azimuth.py azimuth_table.txt -o solar_azimuth_polar.png
 
 # Compare two datasets on dual concentric rings:
-~/projects/sfs/plot_sfs_azimuth.py baseline_azimuth.txt --table2 additional_azimuth.txt \
+~/projects/SfsPipeline/bin/plot_sfs_azimuth.py baseline_azimuth.txt --table2 additional_azimuth.txt \
   --label1 "Baseline Catalog" --label2 "Additional Imagery" \
   -o solar_azimuth_comparison.png
 ```
