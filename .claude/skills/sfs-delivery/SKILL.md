@@ -95,8 +95,16 @@ one per image. This is the inventory.yaml `final_bundle_adjust_prefix`. Mons Mou
 instead shipped `csm_init_cubes/` (cubes with the CSM baked in via csminit); bare
 .json is cheaper and is what inventory.yaml expects.
 
-Disparity illustration (optional, `sfs_to_lola_corr/`): the SfS-to-LOLA horizontal
-disparity. Ship the AFTER (post-re-registration) dh/dv, colorized. The
+SfS-to-LOLA disparity (`sfs_to_lola_corr/`): the AFTER (post-re-registration)
+horizontal dh/dv between the SfS DEM and LOLA, from `hillshade_correlator.sh`. Ship
+BOTH the numeric float bands AND the colorized pics. The numeric bands are the
+customer's actual product (Ross asked for them), the colorized ones are the quick
+look. Naming map, renamed on the way into the delivery:
+- `F-H.tif` = `run-F_b1_nodata.tif` = dh, horizontal, East-West.
+- `F-V.tif` = `run-F_b2_nodata.tif` = dv, vertical, North-South.
+- `dh_ew_color.tif` / `dv_ns_color.tif` = the colorized `colormap -5..5` views.
+Do NOT wipe the `hillshade_correlator.sh` run dir (`hcorr_*`) until the delivery is
+accepted: `run-F_b1/b2_nodata.tif` are a shipped product, not scratch. The
 before/after comparison stays in the notes.
 
 ## Ship only what was used; document the rest
@@ -133,9 +141,11 @@ When shipping dh/dv (or any signed-difference) bands for viewing, colorize with 
 ASP `colormap` tool on a FIXED scale SYMMETRIC about zero
 (`colormap --min -5 --max 5 band.tif -o band_color.tif`), the SAME scale and colour
 polarity for every band and across the whole document, one subtraction order
-throughout, nodata transparent. Shipping only the colorized GeoTIFF (no raw float)
-is fine when the band is illustrative rather than quantitative. Any quantitative
-read (median, MAD, valid-percent) goes in the readme, never burned into the image.
+throughout, nodata transparent. For the SfS-to-LOLA dh/dv the customer wants the
+numbers, so ship the raw float bands (`F-H.tif` / `F-V.tif`) alongside the colorized
+GeoTIFFs. Shipping only the colorized GeoTIFF (no raw float) is fine only when the
+band is purely illustrative. Any quantitative read (median, MAD, valid-percent) goes
+in the readme, never burned into the image.
 A robust NMAD can understate a real problem concentrated at the edges - say so in the
 readme and let the colorized map show it. See [[visual-inspection]].
 
