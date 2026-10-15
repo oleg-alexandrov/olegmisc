@@ -21,6 +21,13 @@ a smooth transition at the lit/shadow boundary. SfS has no illumination signal
 in permanent shadow, so it fabricates garbage there (typically a spurious pit or
 a bright mound split by a hard line). The blend swaps that for LOLA.
 
+**The blend's hillshade and its LOLA diff are DELIVERY products, not scratch.**
+When the blend changes, rebuild both the delivery way, not an inspection
+hillshade: `gdaldem hillshade -multidirectional -compute_edges -alt 10` and
+`geodiff blend lola`, single-threaded on a pfe head node. Recipe and the
+ship-into-the-results-dir step: [[sfs-delivery]]. (Shipping a default-altitude
+hillshade is the exact slip that cost a redo.)
+
 ## New (2026-10): the lola-curved shadow fill
 
 The plain LOLA fill pops up where LOLA sits above the SfS. The fix is

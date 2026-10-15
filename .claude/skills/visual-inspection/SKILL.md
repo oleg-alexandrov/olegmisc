@@ -93,6 +93,9 @@ this repeatedly; suppress `ax.set_title`, keep colorbars, describe in the figcap
 - ALWAYS hillshade with `gdaldem hillshade -multidirectional -compute_edges`, NOT a homemade
   numpy-gradient shade - it looks right at edges and matches what the correlator sees. (More
   hillshade/align examples in `docs/tools/pc_align.rst` and the dem-comparison + pc-align skills.)
+  That default is for INSPECTION. A hillshade that will SHIP (e.g. the SfS delivery hillshade)
+  uses its own convention, add `-alt 10`: see [[sfs-delivery]]. If the DEM goes to a delivery
+  results dir, you are making a product, not a quick-look - load the delivery skill first.
 
 ## INSPECT CONSTANTLY - eyeballing IS the job (photogrammetry hat)
 

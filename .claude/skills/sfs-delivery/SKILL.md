@@ -54,6 +54,21 @@ Auxiliary: `sfs_dem.tif` (raw SfS, pre-blend), `lola_1mpp.tif` (the regridded LO
 domain DEM), `sfs_dem_weight.tif` (blend weight), `sfs_dem_blend_lola-diff.tif`
 (geodiff vs LOLA).
 
+### Regenerating the blend diff and hillshade (when the blend DEM changes)
+
+If the blend is replaced (e.g. a reblend from [[sfs-blend]]), rebuild its two
+derived products the DELIVERY way, not an inspection hillshade:
+
+```
+geodiff --threads 1 sfs_dem_blend.tif lola_1mpp.tif -o sfs_dem_blend_lola
+gdaldem hillshade -multidirectional -compute_edges -alt 10 sfs_dem_blend.tif sfs_dem_blend_hill.tif
+```
+
+On a pfe head node run both single-threaded (`geodiff --threads 1`, gdaldem is
+single-threaded): this one-diff-one-hillshade regen is light enough for the head
+node, no qsub needed. The `-alt 10` hillshade is the delivery convention above; a
+default-altitude inspection hillshade must never be shipped.
+
 Image lists: `bundle_adjust_image_ids.txt` (the full BA set) and `sfs_image_ids.txt`
 (the SfS subset). The SfS set must be a subset of the BA set, and any dropped
 offender must be absent from the SfS list.
