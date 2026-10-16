@@ -35,14 +35,11 @@ rather than rediscovering the same problems.
 - **Naming derived products: keep the source's FULL basename + an explicit suffix**
   (`X_mask.tif`, `X_hs.tif`, `X_map.tif`, `X_err.tif`), in the SAME directory as the
   source; chain suffixes in operation order (`_filled_blur`). Detail: asp-photogrammetry.
-- **Auto-memory lifecycle (`.claude/projects/*/memory/`)**: Saving quick temporary snippets
-  in auto-memory during active work is fine. `MEMORY.md` is at most TRANSITORY (in-flight
-  reminders and active-project pointers), never a home for durable rules. Keep it a minimal
-  stub and move any matured lesson into the RELEVANT SKILL (first choice) or `CLAUDE.md`.
-  Periodically review temporary snippets to trickle mature lessons and workflows into
-  permanent, structured skills (`~/.claude/skills/`) or `CLAUDE.md`. Once consolidated,
-  the loose temporary memory files can be pruned. Durable rules belong in version-controlled
-  skills or `CLAUDE.md`, not indefinite auto-memory sprawl.
+- **Auto-memory (`.claude/projects/*/memory/`)**: quick temporary snippets during active
+  work are fine, but `MEMORY.md` is TRANSITORY (a minimal stub of in-flight reminders and
+  active-project pointers), never a home for durable rules. Trickle matured lessons into
+  the RELEVANT SKILL (first choice) or `CLAUDE.md`, then prune the loose files. Durable
+  rules live in version-controlled skills or `CLAUDE.md`, not auto-memory sprawl.
 - **Convention: core reusable knowledge lives in a SKILL - invoke it, don't reach for a
   `.sh` note.** Skills are the first stop for cross-project how-to (build, photogrammetry,
   git, pfe, etc.). `.sh` notes in `~/projects/` are for PER-PROJECT work logs and paper
@@ -54,7 +51,6 @@ rather than rediscovering the same problems.
   patterns and preferences.
 - **Project data, scratch, and outputs go in that project's own `~/projects/<subdir>/`**,
   never loose in `~` or at the `projects/` root. Every project is a self-contained dir.
-  (`~/sli_fusion_report.html` is a tolerated home-dir exception.)
 - **Mac and pfe mirror a project at the SAME home-relative path** `~/projects/<proj>/...`
   (on pfe the bulky data dir is a symlink to `/nobackupp19/oalexan1/projects/<proj>`).
   Copy back/forth with the same relative path, never rename on the fly. Detail: pfe-nas.
@@ -105,14 +101,13 @@ rather than rediscovering the same problems.
 - **Flowing paragraphs in GitHub prose**: write paragraphs as continuous single lines
   without manual line breaks or hard wrapping. Let the markdown renderer wrap.
 - The em-dash ban, flowing-paragraph rule, and backtick ban are the always-on GitHub prose
-  rules; apply them reflexively before any `gh pr`/`gh issue`/`gh api` write. Writing GitHub
-  text is itself the trigger to load github-issues for the rest of its rules.
+  rules. Writing any GitHub text (before any `gh pr`/`gh issue`/`gh api` write) is itself
+  the trigger to load github-issues for the rest of its rules.
 - **`gh` CLI and GraphQL breakage**: `gh` lives in `~/anaconda3/envs/gh/bin/gh` (Mac) or
   `~/miniconda3/envs/gh/bin/gh` (l1), never bare `gh`. NEVER run `gh issue view`, `gh pr view`,
   or `gh pr edit` (they fail on a deprecated Projects-classic GraphQL query). ALWAYS use the
   REST API (`gh api repos/OWNER/REPO/issues/NUM`) to fetch, view, edit, comment, or close
   issues and PRs. Detail: github-issues and `~/projects/github_notes.sh`.
-
 
 ## Git and GitHub (CRITICAL)
 
@@ -123,7 +118,7 @@ rather than rediscovering the same problems.
 - **When fixing code, pause for review before pushing**: commit locally, report local
   test results, wait for "push" (a push can trigger reviewer-visible CI).
 - **Before every commit run `git status`** for new untracked files needing `git add`
-  (`git commit -a` only stages tracked files; new `.cc`/`.h` must be added explicitly).
+  (`git commit -a` only stages tracked files, so new `.cc`/`.h` must be added explicitly).
   Build dirs (`build/`, `build_linux/`, `build_isis/`) are NEVER added.
 - **In the home repo (`~`, olegmisc): add ONE NAMED path at a time - never `git add .`
   / `-A` / `-u` / a dir** (it leaks `.ssh/`, `.credentials.json`, `.bash_history`).
@@ -171,9 +166,11 @@ rather than rediscovering the same problems.
 - **`~/projects/` is tracked by `~/projects/.git`** - always `git -C ~/projects`. Subdirs
   with their OWN `.git` (StereoPipeline, visionworkbench, ISIS3, BinaryBuilder, ale,
   usgscsm, StereoPipelineTest) are NEVER added to the projects repo. "Commit what
-  changed" there means `.sh` notes, occasionally `.md`; ASK before a new `.txt`.
-- **When told to add/commit/push CLAUDE.md, do the same for MEMORY.md**
-  (`~/.claude/projects/-Users-oalexan1/memory/MEMORY.md`). They travel together.
+  changed" there means `.sh` notes, occasionally `.md`. ASK before a new `.txt`.
+- **When told to add/commit/push CLAUDE.md, do the same for the per-host MEMORY.md beside
+  it** (`~/.claude/projects/<host>/memory/MEMORY.md` - `-Users-oalexan1` on Mac,
+  `-home-oalexan1` on linux). They travel together. If that MEMORY.md does not exist on
+  this box, there is nothing to co-commit.
 - **Check the remote FIRST before local work**: `git fetch` and compare
   (`git log HEAD..origin/master`, `git show origin/master:path`); the remote may already
   have a better version. For work that will become a branch/PR, fetch the true UPSTREAM
@@ -182,7 +179,7 @@ rather than rediscovering the same problems.
 - **Push targets**: ISIS3 and usgscsm NEVER push to `origin` (that is DOI-USGS upstream)
   - always the `oleg` remote; changes reach USGS only via PRs they merge.
 - **`git rm --cached`, never bare `git rm`** to untrack a file (bare `git rm` deletes the
-  working file; once wiped `~/.ssh/config`). Never add `.ssh/` to git.
+  working file, which once wiped `~/.ssh/config`). Never add `.ssh/` to git.
 - **Commit real fixes before continuing debug cycles** (so "discard debug changes" is
   always safe). When told to discard, verify each change is actually debug before
   `git checkout --` a mixed file.
@@ -220,7 +217,6 @@ Co-Authored-By: Antigravity <noreply@google.com>
 - **AI disclaimer describes the BOT only, never the user** - no mention of the hour,
   schedule, being asleep/awake, or any personal context. Keep it minimal: "Done with
   Claude/AI assistance." One disclaimer per PR (in the body), not repeated per comment.
-- **usgscsm repo: do not touch existing spacing/whitespace** unless modifying that line.
 
 ## Engineering discipline (always-on)
 
@@ -330,8 +326,4 @@ Co-Authored-By: Antigravity <noreply@google.com>
 
 - **NEVER ask permission to edit CLAUDE.md, MEMORY.md, .bashrc, .zshrc, or config files**
   - just make the edit and show the diff.
-- Do NOT nag: no "anything else?", no "ready to implement?", no "what's next?". **NEVER
-  bring up work unprompted** - Oleg drives; be reactive. If he wants to chat, chat.
 - Prefer plain inline prose questions over the AskUserQuestion picker.
-- **Be entertaining when chatting**: match casual energy, make jokes, be good company.
-  Balance work mode (concise) with chat mode (human).
