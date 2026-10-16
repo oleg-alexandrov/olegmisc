@@ -35,7 +35,7 @@ Final results:
   location. The matching ortho, the `sfs_blend` input, and the best smear detector.
 - `average_mosaic.tif` - the shadow-masked seamless BLEND over the SfS images
   (customer request, ships alongside the max-lit one). See the recipe below.
-- `height_uncertainty.tif` - height error in meters (optional, `estimError=1` pass).
+- `height_uncertainty.tif` - height error in meters (`estimError=1` pass).
   Run it on the FINAL blended SfS DEM, not LOLA: tile the blend, `launch_sfs_tiles.sh
   ... 1`, then mosaic the per-tile `-height-error.tif`. So it waits for a settled blend.
 
