@@ -194,11 +194,17 @@ When refining a multi-camera linescan network (such as OHRC co-registering to LR
 
 ## Anchor points vs triangulated points balance
 
-- **Set anchor STRENGTH via `--anchor-dem-uncertainty` (meters), NOT `--anchor-weight`**:
-  the weight form is DEPRECATED (weight `w` == uncertainty `1/w`); the docs/`--help` both
-  steer to the uncertainty. LARGER uncertainty = LOOSER = lighter anchors. To deploy MANY
-  anchors that stabilize pose WITHOUT freezing the solve to the DEM, use a large uncertainty
-  (~50-150 m), not a tight one.
+- **Set anchor STRENGTH via `--anchor-dem-uncertainty` (meters on the ground), NOT
+  `--anchor-weight`**: the weight form is DEPRECATED and slated for removal (raw pixel
+  weight, not GSD-adjusted); the docs/`--help` both steer to the uncertainty. As of build
+  2026/10 the uncertainty is genuinely in ground meters: jitter_solve converts it to a
+  per-image pixel sigma by dividing by the median GSD at the anchor points on the anchor
+  DEM. Before that fix the meters value was applied directly as a pixel weight, so on a
+  6 m/pixel CTX image a 10 m
+  uncertainty was really ~10 px, not ~1.7 px (a ~6x error). The `w == 1/w` equivalence no
+  longer holds. LARGER uncertainty = LOOSER = lighter anchors. To deploy MANY anchors that
+  stabilize pose WITHOUT freezing the solve to the DEM, use a large uncertainty (~50-150 m),
+  not a tight one.
 - **`--num-anchor-points` is PER IMAGE** (not a global total): e.g. `--num-anchor-points 5000`
   makes ~5000 per image, distributed; `--num-anchor-points-per-tile` and
   `--num-anchor-points-extra-lines` are the other count levers. Over-provision and let
@@ -239,8 +245,9 @@ When running `jitter_solve` on massive datasets (e.g. 3,650 LRO NAC images at Mo
 2. **Padded anchor DEM**: Use an expanded `--anchor-dem` (padded 10 to 40 km beyond the target
    DEM) together with `--num-anchor-points-extra-lines 40000` to anchor the linescan trajectory
    well before and after data acquisition, preventing wild edge departures.
-3. **Anchor points per tile**: `--num-anchor-points-per-tile 1` to `4` with light `--anchor-weight 0.05`
-   keeps poses stable across dark/unmatched polar terrain.
+3. **Anchor points per tile**: `--num-anchor-points-per-tile 1` to `4` with a loose
+   `--anchor-dem-uncertainty` (~50-150 m) keeps poses stable across dark/unmatched polar
+   terrain. (Old notes used `--anchor-weight 0.05`, now deprecated.)
 4. **Mega-GCP harvesting**: When consolidating converged geometry across multiple runs, run
    `jitter_solve --save-cnet-as-gcp` to dump triangulated tie points as a unified mega GCP file,
    then optimize with `--camera-position-uncertainty` and zero matches (`--clean-match-files-prefix empty/`).
