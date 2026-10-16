@@ -213,7 +213,10 @@ Co-Authored-By: Antigravity <noreply@google.com>
 - **All DOI-USGS repos (ISIS3, USGSCSM, ALE, SpiceQL): AI attribution is WELCOME.** Keep
   the trailer AND state Claude/AI assistance in public text; they also want a changelog
   entry in their format. Mechanics: `~/projects/usgs_contrib_notes.sh` (ISIS: isis-commit
-  skill). Elsewhere, keep the trailer but do not advertise AI in public text.
+  skill). Elsewhere, keep the trailer but do not advertise AI in public text, with ONE
+  exception: when Claude actually did the work AND Oleg explicitly tells Claude to close
+  an issue (any repo), close it with an honest one-line AI disclaimer at the end of the
+  closing comment.
 - **AI disclaimer describes the BOT only, never the user** - no mention of the hour,
   schedule, being asleep/awake, or any personal context. Keep it minimal: "Done with
   Claude/AI assistance." One disclaimer per PR (in the body), not repeated per comment.
