@@ -8,7 +8,7 @@ export PATH="$PATH:/opt/TurboVNC/bin"
 export COPILOT_CUSTOM_INSTRUCTIONS_DIRS="$HOME/.gemini:$HOME/.copilot"
 export PROJ_DATA=$ISISROOT/share/proj
 export PERL5LIB=$PERL5LIB:$HOME/bin
-export VISUAL=~/bin/custom_vim.sh
+export VISUAL=vim
 export LANG=C
 
 export L1='oalexan1@lunokhod1'
