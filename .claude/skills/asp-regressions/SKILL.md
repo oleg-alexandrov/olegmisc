@@ -73,7 +73,13 @@ later sync cannot re-clobber it. (See machines-tools for the ssh/rsync mechanics
   (`FAILED test_run.py::test_run[<name>] ...`).
 - The REAL per-test output is `ss<name>/run/` vs `ss<name>/gold/`. **TRAP:
   `ss*/validate_out.txt` is STALE manual scratch (check mtime) - ignore it; the honest
-  diff is re-running `validate.sh` on `run/`.**
+  diff is re-running `validate.sh` on `run/`. This file does not just look old, it can
+  show a SMALLER or ENTIRELY DIFFERENT diff than the real one, so reading it will make
+  you MISJUDGE THE MAGNITUDE (e.g. call a several-km camera shift a "sub-mm benign
+  nudge"). NEVER characterize a failure's size or kind from validate_out.txt - re-run
+  validate.sh first, then judge only the fresh diff. Burned 2026-10-17 on
+  ss_bundle_adjust_brownconrady: a Jun validate_out.txt showed a 0.2 m `.tsai` diff
+  while the fresh diff was ~6 km.**
 - Cloud (Mac/LinuxArm) run a SMALL bundled subset (`CLOUD-MAC TEST` marker,
   StereoPipelineTest.tar); their golds are in that tarball, compared TOLERANTLY
   (`max_err.pl`), unlike localLinux's exact diff.
