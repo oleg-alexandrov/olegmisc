@@ -79,6 +79,14 @@ sfs_blend --lola-dem ref/lola_1mpp_extra_noblur.tif \
   shadow and exposes more fabricated SfS, raising it grows the shadow onto the
   good lit walls. Leave it at 0.005 and fix the seam with the blend width.
 - `--min-blend-size 25`: shadow holes smaller than this keep SfS (not blended).
+  By default "smaller" means the bounding box fits 25x25. Add
+  `--min-blend-size-by-area` (2026-10, issue 458) to instead keep a hole when
+  its pixel AREA is <= 25^2 = 625, so long/narrow/sparse small shadows also keep
+  SfS rather than being blended and eroding the surrounding terrain. It is a
+  strict superset of the default (can only reduce blending), bit-identical when
+  off, and consistent with the curved fill (which already sizes by area). Effect
+  is modest and subtle with lola-curved (which already blends gently); measured
+  on BCU/BCT it changes ~2-3% of terrain by ~0.1 m. Off by default.
 
 ## The mechanism (from sfs_blend.cc, do not guess it)
 

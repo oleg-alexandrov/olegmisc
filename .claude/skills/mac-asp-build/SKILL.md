@@ -46,6 +46,10 @@ Confirm you are running the fresh one:
 
 ## Check VW FIRST
 
+For what the VW repo contains (its libraries, its command-line tools, and the
+features that live in VW rather than ASP, such as lens distortion models and
+convert_pinhole_model), see the [[visionworkbench]] skill.
+
 VW is a dependency of ASP; ASP links against VW's INSTALLED libs. Before building
 ASP, check VW for local changes:
 

@@ -314,6 +314,25 @@ Bare minimum to remember without reading:
 
 Working ASP on pfe: `pfx:~/projects/BinaryBuilder/StereoPipeline/` - a packaged
 release (wrappers in `bin/`, ELF in `libexec/`, libs in `lib/`). Patch it from
-l1: rebuild changed libs/tools, then rsync dev `install/lib/` -> `lib/`,
-`install/bin/` -> `libexec/`, `*.py` -> `bin/`. Full recipe + NFS gotcha + scp
-fix: `~/projects/pleiades_notes.sh` section "Syncing dev build to pfe".
+l1: build the FULL current source on l1 (`make -C ~/projects/StereoPipeline/build
+-j16 && make install`; rsync the Mac working-tree changes to l1 first so l1 = the
+code under test - a changed header like BaBaseOptions.h triggers a wide recompile,
+give it time), then overlay the dev build onto the pfe package:
+`install/lib/` -> `lib/`, `install/bin/` -> `libexec/`, `install/bin/*.py` -> `bin/`.
+- **PREFER `scp` over `rsync` for this overlay (NFS gotcha).** rsync l1->pfe can
+  SILENTLY fail `mkstemp ... Permission denied` on the package `lib/` and `libexec/`
+  NFS dirs (documented in pleiades_notes.sh); scp does not use mkstemp and always
+  works. rsync MAY succeed (it did 2026-10-17, landing fresh libs+binary), so if you
+  do use rsync, you MUST verify (below) - do not trust its exit code alone.
+- **VERIFY the patched tool through the `bin/` WRAPPER, never a bare `libexec/` call.**
+  `bin/<tool>` sets LD_LIBRARY_PATH/CSM_PLUGIN_PATH then execs `libexec/<tool>`; calling
+  `libexec/<tool>` directly finds no libs and errors (looks like "flag missing / tool
+  broken"). Confirm with a behavior check, e.g. `bin/jitter_solve --help | grep <new-flag>`.
+- **`--version` build DATE is STALE after an incremental make** - the version string is
+  generated at cmake-configure time, not per compile, so a freshly rebuilt binary can
+  still print an older "Build date". Confirm freshness by the binary's MTIME or a
+  new-flag/behavior check, NOT the `--version` date.
+- `libusgscsm` lives in `lib/csmplugins/`; sync it only if usgscsm changed (the dev
+  `install/` may not even have a `lib/csmplugins/` - a harmless rsync/scp miss otherwise).
+Full recipe + the NFS gotcha detail: `~/projects/pleiades_notes.sh` section
+"Syncing dev build to pfe".
