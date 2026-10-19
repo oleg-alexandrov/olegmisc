@@ -75,8 +75,24 @@ anchor is `.. _bathy_intro:` (section "Shallow-water bathymetry"), NOT `bathymet
 **Style:** Be concise - users are expert researchers. Give hints and pointers, not tutorials.
 
 **Formatting rules:**
-- Section underlines must be exactly the same length as heading text
-  - **CRITICAL: Always count characters carefully - prone to off-by-one errors**
+- Section underlines must be exactly the same length as heading text.
+  - **CRITICAL: Sphinx only warns when an underline is too SHORT, never too
+    LONG, so a clean doc build does NOT prove the underlines are right. A
+    one-too-long underline sails through the build. ALWAYS measure, do not
+    eyeball (off-by-one is the classic bug, Oleg caught this 2026-10-19).**
+  - After adding or editing any RST heading, verify every heading's underline
+    equals its heading length with a tool. One way:
+    ```
+    python3 - FILE.rst <<'PY'
+    import sys
+    L=open(sys.argv[1]).read().split('\n')
+    for i,h in enumerate(L[:-1]):
+        u=L[i+1]
+        if h and u and set(u)<=set("=-~^\"'`#*+.") and len(set(u))==1:
+            print(("OK " if len(u)==len(h) else "BAD "), len(h), len(u), repr(h))
+    PY
+    ```
+    Fix every BAD line so the underline length matches the heading.
 - Heading levels: `=` top, `-` subsection, `~` sub-sub, `^` sub-sub-sub
 - **Literal/code blocks (after `::`) must be SHORT - keep each line to about 66
   chars INCLUDING indent** (Oleg 2026-09-04). The ASP HTML renders literal blocks
