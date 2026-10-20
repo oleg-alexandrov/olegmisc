@@ -23,7 +23,6 @@ and CLAUDE.md per the auto-memory lifecycle policy.
   identical stats baseline-vs-fix; bundle_adjust path untouched. Remaining idea (bundle_adjust,
   which needs the IP scale to write clean matches): save the scale on first read in
   build_control_network so files are not read twice. Follow-up in `~/projects/todo.sh`.
-- Standing: remind Oleg to go on with the rescale logic plan for vw (rescale for int images).
 - SfsPipeline integration (Andrew Annex repo): DONE and PUSHED across all three repos
   (verified 2026-10-20) - SfsPipeline main clean and pushed, the ~/projects OBSOLETE markers
   pushed, the olegmisc skill repoint pushed as 7d1d1fd. Repo is self-contained, scripts
