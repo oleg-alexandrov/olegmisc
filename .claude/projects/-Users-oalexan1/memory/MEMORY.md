@@ -17,6 +17,12 @@ and CLAUDE.md per the auto-memory lifecycle policy.
   VW-bound (build-control-network match load+triangulate ~23m, reporting ~12m, serial anchor
   ~11m) blocked by the VW block-cache exploding under concurrent DEM reads. See
   `~/projects/sfs_BCU2314-BDU1224-MM/jitter_analytic_eval_notes.sh`.
+- jitter_solve reporting re-read: fixed, COMMITTED LOCALLY (ASP 0614a722e, NOT pushed).
+  matchFilesProcessing now skips re-reading match files when no clean matches are written
+  (jitter_solve), rebuilding per-pair pixels from the control network. Verified byte-
+  identical stats baseline-vs-fix; bundle_adjust path untouched. Remaining idea (bundle_adjust,
+  which needs the IP scale to write clean matches): save the scale on first read in
+  build_control_network so files are not read twice. Follow-up in `~/projects/todo.sh`.
 - Standing: remind Oleg to go on with the rescale logic plan for vw (rescale for int images).
 - SfsPipeline integration (Andrew Annex repo): DONE and PUSHED across all three repos
   (verified 2026-10-20) - SfsPipeline main clean and pushed, the ~/projects OBSOLETE markers
