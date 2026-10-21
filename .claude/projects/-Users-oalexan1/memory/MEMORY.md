@@ -50,3 +50,5 @@ and CLAUDE.md per the auto-memory lifecycle policy.
   (dh -0.043 / MAD 0.918, dv -0.034 / MAD 0.948, well registered), results + pfe synced.
   Keep hcorr_redo/ until accepted.
 - `~/projects/sdb/`: SDB (shallow depth bathymetry), FY26 USGS task.
+- [ostfl](ostfl.md): OSTFL24, the grant to maintain and expand ASP (FY27 funded). Live
+  notes `~/projects/ostfl_2026_notes.sh`. Full FY27 project list is in CLAUDE.md.
