@@ -69,6 +69,32 @@ harmless (asp_deps dylibs target a newer SDK than the link deployment target) an
 is NOT a build failure. A build that ends with `[100%] Built target ...` and a
 clean `make install` succeeded.
 
+## Running the raw dev binary: set PROJ_DATA/GDAL_DATA first (planetary datum trap)
+
+The dev tools in `install/bin` have NO wrapper. The packaged/release build runs
+through a `bin/` wrapper that exports PROJ_DATA, GDAL_DATA, PROJ_LIB BEFORE the
+binary starts, so PROJ caches the right `proj.db` from the start. The raw dev
+binary skips that wrapper and inherits the shell env. ASP's own
+`set_asp_env_vars()` (called via `check_command_line`) sets these too, but it runs
+during arg-parse, AFTER PROJ may have already cached a bad path, so it is NOT a
+reliable fix for a wrong shell value.
+
+Symptom when the shell PROJ_DATA is wrong/stale (e.g. a leftover
+`~/miniconda3/.../share/proj` on a box that uses anaconda3): a tool creating a
+PLANETARY datum CRS (Mars `+proj=longlat +R=3396190 +no_defs`, the Moon, etc.)
+fails late with `PROJ: proj_create: Cannot find proj.db` surfacing as
+`Failed to parse: +proj=longlat ...` (e.g. jitter_solve `--save-cnet-as-gcp`).
+Earth `+datum=WGS84` or explicit `+a/+b` do NOT hit the db, so they mask it.
+
+So when running a raw dev binary (and in any dev test-run helper), export the
+correct paths up front:
+```
+AE=~/anaconda3/envs/asp_deps
+export PROJ_DATA=$AE/share/proj GDAL_DATA=$AE/share/gdal PROJ_LIB=$AE/share/proj
+```
+Confirm `$PROJ_DATA/proj.db` exists. This is a dev-run setup issue, not a product
+bug: released/packaged ASP is fine via its wrapper.
+
 ## Heavy compute vs compiling
 
 Compiling on the Mac is fine (it is a build box). The CLAUDE.md ban is on heavy
