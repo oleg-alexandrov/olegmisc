@@ -120,3 +120,18 @@ match an existing tool's env (e.g. gdal/numpy/scipy/matplotlib is the `bathy`
 env), reuse it. The `bathy` env is about 750 MB. Document the one-liner
 `conda create -n <env> -c conda-forge <packages>` in the tool's doc, and give the
 run example as `<env>/bin/python $(which <tool>)`.
+
+## Mac code signing: ad-hoc only (the "malware" complaint)
+
+Our Mac signing is not good enough: every `codesign` in the build is ad-hoc
+(`--sign -`), which only makes a Mach-O loadable (newer macOS, especially Apple
+Silicon, kills an unsigned one). It gives Gatekeeper no trust, so a browser-
+downloaded tarball trips the "cannot be verified / may be malware" block. That is
+expected, not a build bug. We cannot do better without an Apple Developer ID
+certificate (Apple Developer Program) plus notarization.
+
+The conda install has no such problem: conda (like `wget`/`curl`) does not attach
+the `com.apple.quarantine` xattr, so Gatekeeper never runs its notarization check
+and the ad-hoc signature is enough. Only a browser download gets quarantined. So
+the fix for a tarball user is to strip quarantine (or fetch it with `wget`):
+`xattr -dr com.apple.quarantine StereoPipeline-*`.
