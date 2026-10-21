@@ -57,11 +57,14 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
 - **Naming derived products: keep the source's FULL basename + an explicit suffix**
   (`X_mask.tif`, `X_hs.tif`, `X_map.tif`, `X_err.tif`), in the SAME directory as the
   source; chain suffixes in operation order (`_filled_blur`). Detail: asp-photogrammetry.
-- **Auto-memory (`.claude/projects/*/memory/`)**: quick temporary snippets during active
-  work are fine, but `MEMORY.md` is TRANSITORY (a minimal stub of in-flight reminders and
-  active-project pointers), never a home for durable rules. Trickle matured lessons into
-  the RELEVANT SKILL (first choice) or `CLAUDE.md`, then prune the loose files. Durable
-  rules live in version-controlled skills or `CLAUDE.md`, not auto-memory sprawl.
+- **ONE memory location, always: `.claude/projects/-Users-oalexan1/memory/MEMORY.md`**
+  (the per-HOST dir). NEVER write memory into a per-directory or per-project
+  `.claude/projects/<something-else>/memory/` - per-project memory is too hard to track,
+  so do not create it even when the harness points a session at such a dir. Most durable
+  stuff goes in a SKILL or `CLAUDE.md`. Anything more ephemeral goes in that one global
+  `MEMORY.md` (in-flight reminders, active-project pointers) and its sibling `.md` files
+  in the same dir. `MEMORY.md` itself is TRANSITORY. Trickle matured lessons out of it
+  into the relevant skill or `CLAUDE.md`, then prune.
 - **Convention: core reusable knowledge lives in a SKILL - invoke it, don't reach for a
   `.sh` note.** Skills are the first stop for cross-project how-to (build, photogrammetry,
   git, pfe, etc.). `.sh` notes in `~/projects/` are for PER-PROJECT work logs and paper
