@@ -21,6 +21,28 @@ rather than rediscovering the same problems.
   ~/projects log` and check which files changed most recently** to infer what is meant;
   a `git -C ~/projects diff` on the relevant recent file is often enough focused context.
 
+## Oleg's current projects (FY27)
+
+Funded efforts Oleg splits his time across this fiscal year, per the FY27 mapmakers
+plan on Google Drive. Names are what Oleg calls them in conversation.
+
+- **OSTFL24** (Oleg says "OSTFL"): the grant to expand and maintain the Ames Stereo
+  Pipeline. Proposal submitted 2024, funded work began FY26. Current work plan and
+  TODO: `~/projects/ostfl_2026_notes.sh`. Proposal: `~/projects/ostfl_asp_2024.pdf`.
+  Prior cycle (reference): `~/projects/ostfl_notes_old.sh`.
+- **DSI (Shean)**: DSI work with David Shean. Last worked on KH9 declass imagery.
+  Latest notes: `~/projects/kh9_fixes/kh9_fixes_notes.sh`.
+- **DSI (Palaseanu)** (aka DSI SDB): shallow-water bathymetry with Monica Palaseanu.
+  TODO notes: `~/projects/sdb_todo.sh`.
+- **CSM (USGS ASC)**: CSM camera and related work with USGS Astrogeology. TODO
+  notes: `~/projects/csm_todo.sh`.
+- **M2M SfS**: Moon-to-Mars Shape-from-Shading support. Two sites done so far, latest
+  notes: `~/projects/sfs_BCT0717-BCT2124-MM/sfs_bct0717_bct2124_mm_notes.sh` and
+  `~/projects/sfs_BCU2314-BDU1224-MM/sfs_bcu2314_bdu1224_mm_notes.sh`.
+- **SLI-FUSION**: work with Shashank. Notes: `~/projects/sli_fusion_todo.sh`.
+- **SUMMIT**.
+- **Blue Origin Collab**: nothing started yet.
+
 ## Files, notes, and project layout
 
 - Always end files with a newline (POSIX).
