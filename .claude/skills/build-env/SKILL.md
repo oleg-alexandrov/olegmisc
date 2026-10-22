@@ -116,6 +116,46 @@ specific task, not the general recipe.)
   packed before the rename and stayed correct. Fix in place via the extract/re-tar/
   `--clobber` mechanic above: recreate the two links, delete the `.bak_*` files, no
   version bump.
+- **A deps tarball can crash downstream even when the csmplugins symlinks DO resolve:
+  a bin<->lib ABI/symbol SKEW.** This is DISTINCT from the dangling-link case above.
+  When ale/usgscsm are dev-built and make-installed into asp_deps (the respin that
+  leaves `*.bak_pre_respin`), the shared libs get the new ABI but the env's usgscsm
+  command-line tools (`usgscsm_cam_test`, `csminit`) can stay stale, built against the
+  OLD headers. conda-pack then ships a stale bin against a new lib. Downstream users
+  get, from `usgscsm_cam_test`, `symbol lookup error: ... undefined symbol:
+  getUsgsCsmModelFromJson...`, and ASP `cam_test` on a CSM camera SIGSEGVs inside
+  `ale::Orientations::~Orientations` during `constructStateFromIsd` (the ale #726
+  Orientations ABI change). Bit Scott 2026-10 on the published `asp_deps_linux_v2`.
+  DIAGNOSE by symbol, never guess: the bin must not need a symbol the lib lacks.
+    nm -D -u <env>/bin/usgscsm_cam_test | grep getUsgsCsm            # undefined (needs)
+    nm -D    <env>/lib/csmplugins/libusgscsm.so.2.1.0 | grep getUsgsCsm  # exported (has)
+  Any "needs" not in "has" is the skew. Check the PUBLISHED asset, not just the live
+  env: the live env often got the bin rebuilt later while the shipped tarball stayed
+  stale. Repro fixture on l1: `~/projects/ls_csm_bug/` (LRO NAC cub+json), loaded with
+  LD_LIBRARY_PATH pointed at the libs under test. FIX A (quick): the live env is
+  usually consistent now, so strip the `.bak*` and re-pack it, do NOT force-reinstall
+  the old conda ale/usgscsm pkgs (that reverts the dev-build fix). FIX B (proper):
+  re-spin the conda ale/usgscsm packages from current DOI-USGS main and relink isis,
+  then rebuild the env cleanly. The channel pkgs (ale asp_7, usgscsm asp_6) still lag
+  the dev builds. History: `~/projects/env_update_06_2026_linux_intel.sh`.
+- **Re-publish SAFELY: pack and TEST first, then `gh release upload --clobber`. Do NOT
+  delete-then-create.** The canonical `save_*_deps.sh` does `gh release delete` then
+  `gh release create ... <files>`. If the pack failed or a file is missing, the delete
+  still runs and the create fails, leaving the release DELETED and users with nothing
+  (burned 2026-10-22). So: (1) back up the current published assets first with
+  `curl -sL <url> -o <name>.OLD`. (2) conda-pack and TEST the fresh tarball (the
+  symbol-skew check above plus a real model load) in a scratch dir. (3) only then
+  publish, `gh release upload <tag> -R NeoGeographyToolkit/BinaryBuilder --clobber
+  asp_deps_p1.tar.gz python_isis10.tar.gz` (recreate the whole release only if it does
+  not exist). Check whether a release exists from ANY box, no l1 needed, with
+  `curl -s https://api.github.com/repos/NeoGeographyToolkit/BinaryBuilder/releases/tags/<tag>`.
+- **conda-pack non-interactively: use `-p <PREFIX>`, not `-n <name>`.** A non-login
+  shell has no `conda` on PATH, so `conda pack -n asp_deps` fails with "Failed to
+  determine path to environment". Use `~/miniconda3/bin/conda-pack -p
+  ~/miniconda3/envs/asp_deps -o asp_deps.tar.gz ...` (or `source
+  ~/miniconda3/etc/profile.d/conda.sh` first). Always run the packer under
+  `set -euo pipefail` with the upload GATED on the pack and tests succeeding, so a
+  pack failure can never fall through to the publish step.
 - **The linux-intel asp_deps tarball is a CONCATENATED OVERLAY: many paths appear
   TWICE** (e.g. a 2026-06-09 base set and a later 2026-09-26 set of `share/geoids/*`,
   `libmysqlclient*`, GL/X11 headers). `tar x` is last-wins, so extraction yields the

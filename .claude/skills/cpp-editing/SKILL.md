@@ -49,6 +49,35 @@ Why: Reconstruction loses comments, formatting, and subtle details. "Move" means
 Remove braces from single-statement control flow blocks (if, else, for, while, do-while).
 Keep braces for scope blocks (not attached to control flow) and when needed for clarity with nested conditions.
 
+## Increment style: prefer `i++` over `++i` (Oleg is strict on this)
+
+Always write post-increment `i++` (and `i--`), never the pre-increment `++i`.
+This holds for loop counters AND iterators (`it++`, `++it` -> `it++`). Kill `++i`
+on sight whenever you touch nearby code. The ONLY exception is the rare case where
+the pre/post distinction actually changes behavior (the value of the increment
+expression is used in the same statement), which is unusual and a code smell anyway.
+There is no performance reason to prefer `++i` here: for the iterator types we use
+the compiler elides the copy, and Oleg wants the uniform `i++` spelling.
+
+## Prefer `auto` for iterator declarations (Oleg is strict on this)
+
+Long explicit iterator types are horror shows. Declare iterators with `auto`:
+`for (auto it = c.begin(); it != c.end(); it++)`, never
+`for (SomeNamespace::SomeLongList::iterator it = c.begin(); ...)`. The same goes
+for any declaration whose type is a mouthful and obvious from the initializer.
+Keep the explicit type only where it genuinely aids readability or forces a
+conversion.
+
+Safe erase-while-iterating idiom (uses both rules above): advance only when a
+point is kept, never decrement after erase (the old `it = erase(it); it--;` is
+undefined behavior when the first element is erased, since `--begin()` is invalid):
+```cpp
+for (auto it = c.begin(); it != c.end(); ) {
+  if (drop) it = c.erase(it);  // erase returns the next element; do not decrement
+  else      it++;
+}
+```
+
 ## Statement Layout - No Busy Lines (Oleg is strict on this)
 
 Give each statement its own line. Do NOT pack several with semicolons
