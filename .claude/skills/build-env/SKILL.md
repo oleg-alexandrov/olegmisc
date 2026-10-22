@@ -116,46 +116,87 @@ specific task, not the general recipe.)
   packed before the rename and stayed correct. Fix in place via the extract/re-tar/
   `--clobber` mechanic above: recreate the two links, delete the `.bak_*` files, no
   version bump.
-- **A deps tarball can crash downstream even when the csmplugins symlinks DO resolve:
-  a bin<->lib ABI/symbol SKEW.** This is DISTINCT from the dangling-link case above.
-  When ale/usgscsm are dev-built and make-installed into asp_deps (the respin that
-  leaves `*.bak_pre_respin`), the shared libs get the new ABI but the env's usgscsm
-  command-line tools (`usgscsm_cam_test`, `csminit`) can stay stale, built against the
-  OLD headers. conda-pack then ships a stale bin against a new lib. Downstream users
-  get, from `usgscsm_cam_test`, `symbol lookup error: ... undefined symbol:
-  getUsgsCsmModelFromJson...`, and ASP `cam_test` on a CSM camera SIGSEGVs inside
-  `ale::Orientations::~Orientations` during `constructStateFromIsd` (the ale #726
-  Orientations ABI change). Bit Scott 2026-10 on the published `asp_deps_linux_v2`.
-  DIAGNOSE by symbol, never guess: the bin must not need a symbol the lib lacks.
-    nm -D -u <env>/bin/usgscsm_cam_test | grep getUsgsCsm            # undefined (needs)
-    nm -D    <env>/lib/csmplugins/libusgscsm.so.2.1.0 | grep getUsgsCsm  # exported (has)
-  Any "needs" not in "has" is the skew. Check the PUBLISHED asset, not just the live
-  env: the live env often got the bin rebuilt later while the shipped tarball stayed
-  stale. Repro fixture on l1: `~/projects/ls_csm_bug/` (LRO NAC cub+json), loaded with
-  LD_LIBRARY_PATH pointed at the libs under test. FIX A (quick): the live env is
-  usually consistent now, so strip the `.bak*` and re-pack it, do NOT force-reinstall
-  the old conda ale/usgscsm pkgs (that reverts the dev-build fix). FIX B (proper):
-  re-spin the conda ale/usgscsm packages from current DOI-USGS main and relink isis,
-  then rebuild the env cleanly. The channel pkgs (ale asp_7, usgscsm asp_6) still lag
-  the dev builds. History: `~/projects/env_update_06_2026_linux_intel.sh`.
-- **Re-publish SAFELY: pack and TEST first, then `gh release upload --clobber`. Do NOT
-  delete-then-create.** The canonical `save_*_deps.sh` does `gh release delete` then
-  `gh release create ... <files>`. If the pack failed or a file is missing, the delete
-  still runs and the create fails, leaving the release DELETED and users with nothing
-  (burned 2026-10-22). So: (1) back up the current published assets first with
-  `curl -sL <url> -o <name>.OLD`. (2) conda-pack and TEST the fresh tarball (the
-  symbol-skew check above plus a real model load) in a scratch dir. (3) only then
-  publish, `gh release upload <tag> -R NeoGeographyToolkit/BinaryBuilder --clobber
-  asp_deps_p1.tar.gz python_isis10.tar.gz` (recreate the whole release only if it does
-  not exist). Check whether a release exists from ANY box, no l1 needed, with
-  `curl -s https://api.github.com/repos/NeoGeographyToolkit/BinaryBuilder/releases/tags/<tag>`.
+- **`conda-pack` ships the conda-meta-RECORDED package files, NOT dev-overlay files
+  make-installed over the prefix.** This is the #1 deps-tarball trap and it bit us hard
+  2026-10-22. If you `make install` a dev-built ale/usgscsm/geoid OVER the conda package
+  without updating conda-meta, the live env's bin+lib are the new consistent dev set, but
+  conda-meta still records the OLD package. conda-pack follows conda-meta (it must, to
+  rewrite baked prefixes for relocation), so it pulls the OLD cached binary and pairs it
+  with your respun lib -> a bin<->lib SYMBOL SKEW in the tarball that the live env never
+  shows. Scott's crash: shipped `usgscsm_cam_test` needed `getUsgsCsmModelFromJson` but the
+  shipped `libusgscsm.so` only exported `getUsgsCsmModelFromJsonState` -> "undefined symbol"
+  + a SIGSEGV in `ale::Orientations` during `constructStateFromIsd`. DIAGNOSE with
+  `nm -D -u bin/usgscsm_cam_test | grep getUsgsCsm` vs `nm -D lib/csmplugins/libusgscsm.so.*
+  | grep ' T '` - any undefined-in-bin symbol absent from the lib's exports is the skew.
+  The CSM json is NOT the problem.
+- **FIX a skew by making conda-meta + cache + prefix agree, then conda-pack.** Reinstall a
+  real matched conda package (e.g. `usgscsm 2.1.0 cassis_0` + `ale 1.2.0 cassis_0`, which
+  are built together and self-consistent). If the package exists only as an EXTRACTED pkgs
+  cache dir with no archive, rebuild an installable `.tar.bz2` straight from it:
+  `tar cjf name-version-buildstring.tar.bz2 -C ~/miniconda3/pkgs/<extracted-dir> .` then
+  `conda install -p <env> --freeze-installed ./a.tar.bz2 ./b.tar.bz2` (explicit local files
+  need no channel/index; `--freeze-installed` guarantees only those packages change - verify
+  with a conda-meta file-list diff before/after).
+- **Do it in a CLONE, never the live nightly env.** `conda create --clone asp_deps -n
+  asp_deps_ship`, reinstall the matched packages there, conda-pack the clone. The result is
+  the IDENTICAL tarball to packing the live env (conda-pack follows conda-meta either way),
+  but the nightly env is never mutated and there is no restore step. Bonus: a clone can only
+  contain conda-meta-tracked files, so it is inherently free of manual `.bak_*` overlay
+  cruft. ALWAYS back up the full live env first anyway (`tar cf env.tar asp_deps`, ~6.5 GB).
+- **`libarcher.so.bak` is a REAL `llvm-openmp` package file, not a stale backup** - it is
+  recorded in conda-meta. A blanket `find -name '*.bak*' -delete` over-strips it and leaves
+  the live env missing a package file. Only reject `.bak` files that are NOT in any
+  conda-meta `files` list (those are the manual `.bak_pre_respin`/`.bak_preGeoT` overlays).
+- **PUBLISH by `--clobber`, NEVER delete-then-create.** `gh release upload <tag> -R <repo>
+  --clobber asp_deps_p1.tar.gz [asp_deps_p2.tar.gz] python_isis10.tar.gz` (gh =
+  `~/*conda3/envs/gh/bin/gh`). A `gh release delete` + `gh release create` that fails between
+  the two steps leaves the release GONE (burned 2026-10-22: a no-`set -e` script fell through
+  a failed conda-pack into the delete and wiped the published release; recovered from a
+  backup). WARNING: the production `save_linux_deps.sh`/`save_linux_arm_deps.sh`/
+  `save_mac_deps.sh` still use delete-then-create - convert them to `--clobber` (create once
+  if the tag is absent). Back up the CURRENT published assets before any clobber. If a repack
+  changes the part count, fix the asset set: a new 2-part split must ADD `asp_deps_p2.tar.gz`;
+  a shrink back to one part must DELETE a stale `asp_deps_p2.tar.gz` (else `cat
+  asp_deps_p*.tar.gz` appends garbage). Consumer side: `build_test.sh` fetches p1 (required)
+  + p2 (optional) then `cat asp_deps_p*.tar.gz | tar xzf -`.
+- **VERIFY by fetch-back, not just the local pack.** Download the PUBLISHED assets fresh,
+  `cat asp_deps_p*.tar.gz | tar xzf -`, run `conda-unpack`, re-check the symbol skew, and
+  load a real model (`usgscsm_cam_test --model <json>` under `LD_LIBRARY_PATH=ext/lib:
+  ext/lib/csmplugins`; exit 0, no "symbol lookup error", no segfault). The matched Jul-13
+  cassis_0 build loads fine but logs a benign `constructModelFromISD ... key 'geotransform'
+  not found` ERROR before loading the model-state (exit still 0) - cosmetic, does NOT appear
+  on ASP's normal model-state load path. Repro fixture: `~/projects/ls_csm_bug/`.
 - **conda-pack non-interactively: use `-p <PREFIX>`, not `-n <name>`.** A non-login
   shell has no `conda` on PATH, so `conda pack -n asp_deps` fails with "Failed to
   determine path to environment". Use `~/miniconda3/bin/conda-pack -p
-  ~/miniconda3/envs/asp_deps -o asp_deps.tar.gz ...` (or `source
-  ~/miniconda3/etc/profile.d/conda.sh` first). Always run the packer under
-  `set -euo pipefail` with the upload GATED on the pack and tests succeeding, so a
-  pack failure can never fall through to the publish step.
+  ~/miniconda3/envs/asp_deps -o asp_deps.tar.gz ...`. Always run the packer under
+  `set -euo pipefail` with the upload GATED on the pack and tests passing, so a pack
+  failure can never fall through to the publish step.
+- **PRE-PACK GATE: run the overlay auditor so a dev overlay never ships silently.**
+  `StereoPipeline/.github/workflows/audit_env_overlays.py <env-prefix>` compares every
+  tracked file's on-disk size to conda-meta's `size_in_bytes` (relocation null-pads
+  binaries, so a size mismatch = a real content overlay conda-pack will mis-ship). It
+  is multi-claimant aware (a path owned by two pkgs passes if it matches EITHER), skips
+  `*.pyc`/`__pycache__` and `etc/conda/test-files`, exits 0 on a clean env and 1 with a
+  list on an overlaid one. Wired into `save_linux_deps.sh` before conda-pack. Do NOT
+  compare to the package cache file (it is the pre-relocation placeholder copy, differs
+  by size on every relocated binary = thousands of false positives). The 2026-10 live
+  linux-intel env had FOUR overlay families it flagged: a non-conda ISIS build (514
+  binaries, from `~/projects/ISIS3`, over conda `isis-asp_4` - violates the isis_2026
+  "NEVER install ISIS into asp_deps" rule), the dev ale + usgscsm (cassis), and a
+  dev `libegm2008.so` (geoid). An overlay in a clean clone is a package-metadata quirk
+  (e.g. mysql-connector-c records sizes that mismatch even a fresh install), not ours -
+  diff live-minus-clone to separate the two.
+- **The honest fix for any such overlay: make it a real conda package (its own build
+  string), install via conda, re-audit.** Do NOT keep the make-install overlay and
+  "patch the tarball after conda-pack" - that is the per-env hack that silently rots.
+  For CaSSIS, our custom builds are the `=cassis_N` build-string series on
+  nasa-ames-stereo-pipeline (ale/usgscsm/isis), never touching the stable `=asp`
+  packages. Pin the exact closure: the cassis build string carries a platform suffix
+  (`cassis_0_linux_64`), so a spec is `ale=1.2.0=cassis_0*`. BEWARE closure skew: the
+  newer `usgscsm cassis_2` needs `libsqlite >=3.53.3` and will NOT install into an env
+  pinned to 3.53.2 - pick the cassis build that matches your env's closure (cassis_0
+  did on linux-intel) or rebuild the whole deps env for the newer one.
 - **The linux-intel asp_deps tarball is a CONCATENATED OVERLAY: many paths appear
   TWICE** (e.g. a 2026-06-09 base set and a later 2026-09-26 set of `share/geoids/*`,
   `libmysqlclient*`, GL/X11 headers). `tar x` is last-wins, so extraction yields the
@@ -177,6 +218,26 @@ specific task, not the general recipe.)
   weirdo was unique to the linux-intel tarball, so only it needed a repack.)
 - Watch storage: each tarball is ~1-2 GB; extract in a scratch dir, wipe it after,
   and never leave stray conda-pack scratch or half-extracted envs around.
+
+## Linux tarball glibc floor (do not let it creep)
+
+The x86_64-Linux tarball's glibc floor is the MAX `GLIBC_x.y` symbol over ALL bundled
+ELFs. 3.6.0 was 2.17 (ran everywhere), 3.7.0/3.8.0 regressed to 2.34 and users on
+old-glibc HPCs got `/lib64/libm.so.6: version GLIBC_2.29 not found` (Maud, Ben).
+- Culprits are conda-forge deps (glib) and OUR own package builds (spiceql, isis, ale,
+  usgscsm) compiled on a newer toolchain. ASP's own code is 2.17 (built against the
+  conda sysroot 2.17). As of 2026-10, spiceql asp_4 and the cassis ale/usgscsm are all
+  GLIBC_2.14 (fine); the live regression was a DEAD duplicate glib 2.72 FILE shipped
+  beside the good 2.88 (the active soname is 2.88 = 2.17, so the loaded lib was fine).
+- FIX: solve the packaging env with `CONDA_OVERRIDE_GLIBC=2.17` so conda-forge deps come
+  2.17-floor and no 2.34 glib file is present. Build OUR conda packages against
+  `sysroot_linux-64=2.17`, else they silently raise the floor AND may not declare it
+  (conda then installs them on a 2.17 host and they crash at runtime = Maud's libm error).
+- objdump max-GLIBC-symbol OVER-ESTIMATES the floor (a dead 2.34 file reads as a 2.34
+  floor though nothing loads it; pfe shows 2.34 yet runs on glibc 2.28). The ONLY honest
+  acceptance test is RUNNING the tarball in a real glibc-2.17 (centos7) container. Add
+  that as a CI gate so the floor cannot creep silently again.
+Detail: `~/projects/asp_glibc_floor_notes.sh`.
 
 ## ASP Release Packaging
 

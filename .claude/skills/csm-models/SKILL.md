@@ -7,14 +7,15 @@ description: >-
   adjusted_state.json camera.
 ---
 
-## A CSM load that SIGSEGVs or hits "undefined symbol" is usually a deps skew
+## A CSM load that SIGSEGVs or hits "undefined symbol" is almost never the json
 
-If loading a CSM camera crashes inside `ale::Orientations` (a `cam_test` SIGSEGV
-during `constructStateFromIsd`) or `usgscsm_cam_test` fails with `symbol lookup
-error: ... getUsgsCsmModelFromJson`, the CSM json is almost certainly fine. The
-cause is a usgscsm/ale bin-vs-lib ABI/symbol skew in the asp_deps env or published
-deps tarball. Diagnose and fix per the deps-tarball section of [[build-env]]
-(`nm -D` the bin vs `lib/csmplugins/libusgscsm.so`).
+If loading a CSM camera crashes inside `ale::Orientations` / `constructStateFromIsd`,
+or `usgscsm_cam_test` dies with `symbol lookup error: ... undefined symbol:
+getUsgsCsmModelFromJson*`, the json is FINE - it is a usgscsm/ale deps SKEW: the
+`usgscsm_cam_test` binary and `libusgscsm.so` in the environment (or shipped deps
+tarball) were built against different APIs. Diagnose and fix per the deps-tarball
+section of the [[build-env]] skill (`nm -D -u` the bin vs `nm -D` the lib; reinstall a
+matched conda build). Do not go hunting in the camera file.
 
 ## The format that keeps surprising us: model-state ".json" is NOT pure JSON
 
