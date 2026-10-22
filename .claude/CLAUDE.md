@@ -323,6 +323,15 @@ Co-Authored-By: Antigravity <noreply@google.com>
 
 ## Compute placement (CRITICAL)
 
+- **Before the FIRST `ssh` to pfe/pfx/any `pfeNN`/athena/lfe OR any `qsub` in a session,
+  LOAD the [[pfe-nas]] skill - even for a "quick" ldd/ls/find/objdump probe.** Touching pfe
+  at ALL is pfe work, there is no trivial exception. The skill hands you what you would
+  otherwise rediscover by hand: the working ASP build is `~/projects/BinaryBuilder/
+  StereoPipeline/` (real tools in `libexec/`, reached through a SYMLINK that a bare `find`
+  will not descend, so a blind `find` for `parallel_stereo` MISSES it), the runtime env
+  (ISISROOT, the `$ISISROOT/lib` LD_LIBRARY_PATH piece), and that there is no live
+  `asp_deps` env (only `asp_deps_stale_nfs`; ISIS is `isis10asp`). Skipping this wasted a
+  long blind hunt on 2026-10-22.
 - **NEVER run heavy compute on the Mac mini** - it OOMs and wedges the session. Any
   non-trivial `parallel_stereo`/`stereo`/`bundle_adjust` goes to pfe (qsub) or l1.
   Detail: machines-tools.

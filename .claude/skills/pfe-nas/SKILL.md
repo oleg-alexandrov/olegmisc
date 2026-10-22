@@ -1,6 +1,6 @@
 ---
 name: pfe-nas
-description: NASA Pleiades (pfe) and Athena supercomputer work - qsub/PBS job submission, head-node compute limits, node models, monitoring and watching jobs to completion, job effectiveness, lfe tape archive, and the ASP dev build on pfe. Load before running any command on pfe/Athena, submitting a qsub job, or setting up a watcher for a PBS job.
+description: NASA Pleiades (pfe) and Athena supercomputer work - qsub/PBS job submission, head-node compute limits, node models, monitoring and watching jobs to completion, job effectiveness, lfe tape archive, and the ASP dev build on pfe. Load before ANY pfe/Athena/lfe work, NO trivial exception - including a single ssh probe (ldd/ls/find/objdump/which), locating or inspecting the ASP build on pfe, checking glibc or an env on pfe, submitting a qsub job, or setting up a PBS watcher. Touching pfe at all is pfe work. The working ASP build is at ~/projects/BinaryBuilder/StereoPipeline (tools in libexec/, reached via a symlink a bare find will not descend).
 ---
 
 ## #1 RULE - HEAD NODE = 1 THREAD / 1 PROCESS, ALWAYS (read this first)
