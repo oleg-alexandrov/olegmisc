@@ -97,6 +97,8 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
   editing ANY prose, scan it for semicolons and dash-connectors and remove them before
   finishing.
 - Say **"fails"**, never "chokes" (or "errors out", "rejects", "throws").
+- Avoid **"gate"/"gated"**: say a mode **"selects"** (e.g. "selects pixels by support"),
+  or use "uses"/"depends on"/"keys on".
 - **"triangulation error"**, not "ray intersection error" (the point2dem `--errorimage`
   band). Fine to write both once, then use "triangulation error" throughout.
 - Write **"after jitter correction"**, not bare "after jitter"; name the operation.
