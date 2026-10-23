@@ -242,3 +242,8 @@ and errors. Use plain separators with no `?` and no leading `=` (e.g.
   regold, and relaunch: **asp-regressions** skill. Build mechanics: **build-env**.
 - A break on ONE arch while the others pass is almost always a per-arch
   deps/packaging issue, not a source regression.
+- GLIBC FLOOR: the x86_64-Linux tarball must stay at a ~2.17 glibc floor or
+  old-glibc HPC users crash with `version GLIBC_2.x not found`. objdump OVER-counts
+  (a dead bundled lib reads as the floor); the honest test is running in a centos7
+  (glibc 2.17) container. Full detail + the make-dist system-lib-stray fix: build-env
+  (glibc-floor section). Bit us 2026-10 (stray /usr glib 2.72 + spiceql rebuild).
