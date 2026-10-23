@@ -138,7 +138,9 @@ Verify by building the docs: a missing entry warns "citation not found".
 
 ## NEWS.rst Conventions
 
-**Release notes live in `NEWS.rst` at the repo root** (included by `docs/news.rst`).
+**Release notes live in `docs/news.rst`** (the real file, ~170 KB, with the
+`.. _news:` label and "Changes since last release" at the top). As of 2026-10-22
+the root `NEWS.rst` is just a tiny stub - do NOT edit it; edit `docs/news.rst`.
 
 - New items go in the **first section** ("Changes since last release"), never
   in older release sections below it.
