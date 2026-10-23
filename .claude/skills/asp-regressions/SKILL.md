@@ -45,6 +45,35 @@ stale code and disagrees with the nightly. So before concluding anything:
   behind -> tests wrongly "passed". Burned 2026-08-23: local ASP stuck at an old
   HEAD while god had 15 newer local_epi commits.)
 
+## STEP 0b - dev-testing a change on the MAC: BASELINE-REGOLD FIRST (do this, always)
+
+The Mac mini is NOT the nightly machine. Its StereoPipelineTest `gold/` is almost
+always STALE - the nightly runs and regolds on l1, so Mac golds lag far behind the
+current code and FAIL as-is for reasons that have NOTHING to do with your change.
+Skipping this and jumping straight to "run my change -> it failed -> is it me or
+pre-existing?" has burned us THREE times (2026-10-22 the worst): you waste a long
+time isolating a failure that was stale gold all along.
+
+So when you pick some tests to validate a Mac code change, the ONLY correct order is:
+  1. BUILD CURRENT code (clean, no change yet) OR just use the installed tools as they
+     are if you have not touched them. Run the chosen tests AS-IS.
+  2. Expect a chunk to FAIL against the stale Mac gold. Do a SHALLOW sanity check on
+     each failure (did the tool run and converge? is the diff a benign stat/regrid
+     nudge, not a crash or a missing DEM chunk?) - see "Judging a failure" below. You
+     are NOT fixing these, just confirming they are stale-gold noise, not a live bug.
+  3. REGOLD those tests now (`runs_to_golds.py <names>`), establishing a FRESH baseline
+     gold that matches CURRENT code. This is the reference your change will be judged
+     against - NOT the shipped stale gold.
+  4. NOW make your code change, rebuild+install, and run the SAME tests again.
+  5. Against the fresh baseline gold, your change must now AGREE (byte-identical for a
+     refactor that should preserve behavior). A failure here is REAL and yours - the
+     stale-gold confound has been removed up front.
+
+Litmus: if a test fails and its `gold/` mtime predates recent god commits, that is
+stale-Mac-gold, not your bug. Check `stat -f '%Sm %N' gold/<file>` (BSD/Mac stat).
+A gold dated months ago while the code path changed since = regold-lag, judge+regold.
+Only after the baseline regold does "my change makes it fail" mean anything.
+
 ## A single-test "regression" with NO matching code change = suspect the DATA
 
 When exactly one test flips to Fail and no god/master commit touched its code path

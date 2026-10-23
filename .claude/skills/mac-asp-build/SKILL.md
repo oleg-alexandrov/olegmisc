@@ -101,3 +101,11 @@ Compiling on the Mac is fine (it is a build box). The CLAUDE.md ban is on heavy
 STEREO/bundle_adjust COMPUTE, not on `make`. Running a tool on tiny test data
 (e.g. the sub16 regression inputs) is also light and fine. Send real stereo/jitter
 runs to l1 or pfe. See [[machines-tools]].
+
+## Validating a Mac change against StereoPipelineTest: baseline-regold FIRST
+
+The Mac is not the nightly machine, so its StereoPipelineTest `gold/` is usually
+STALE and fails as-is for reasons unrelated to your change. Before judging whether
+your change broke a test, run the chosen tests on CURRENT code, shallow-check the
+expected stale-gold failures, and REGOLD to a fresh baseline - THEN make your change
+and compare against that. Full recipe (STEP 0b): the [[asp-regressions]] skill.
