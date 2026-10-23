@@ -159,13 +159,23 @@ specific task, not the general recipe.)
   a shrink back to one part must DELETE a stale `asp_deps_p2.tar.gz` (else `cat
   asp_deps_p*.tar.gz` appends garbage). Consumer side: `build_test.sh` fetches p1 (required)
   + p2 (optional) then `cat asp_deps_p*.tar.gz | tar xzf -`.
-- **VERIFY by fetch-back, not just the local pack.** Download the PUBLISHED assets fresh,
-  `cat asp_deps_p*.tar.gz | tar xzf -`, run `conda-unpack`, re-check the symbol skew, and
-  load a real model (`usgscsm_cam_test --model <json>` under `LD_LIBRARY_PATH=ext/lib:
-  ext/lib/csmplugins`; exit 0, no "symbol lookup error", no segfault). The matched Jul-13
-  cassis_0 build loads fine but logs a benign `constructModelFromISD ... key 'geotransform'
-  not found` ERROR before loading the model-state (exit still 0) - cosmetic, does NOT appear
-  on ASP's normal model-state load path. Repro fixture: `~/projects/ls_csm_bug/`.
+- **VERIFY by fetch-back with the UPSTREAM tools, not just the local pack.** Download the
+  PUBLISHED assets fresh, `cat asp_deps_p*.tar.gz | tar xzf -`, run `conda-unpack`, re-check
+  the symbol skew, and then run the two UPSTREAM tools from the extracted tarball - a
+  consumer's tools, NOT ASP's cam_test, since the whole point is proving the shipped deps
+  stand alone:
+  - `usgscsm_cam_test --model <CSM isd json>` (USGS CSM) under `LD_LIBRARY_PATH=ext/lib:
+    ext/lib/csmplugins`; exit 0, no "symbol lookup error", no segfault.
+  - `spiceinit from=<a COPY of an ISIS cub> web=false` (ISIS) with `ISISROOT=<extracted
+    tarball>` and `ISISDATA=~/projects/isis3data`; exit 0, Source=ale, kernels resolve.
+  Both exit 0 = the shipped deps are self-consistent for an external builder. A symbol
+  lookup error or segfault = the tarball is messed up, do NOT ship. This is cheap insurance
+  and MANDATORY after every deps re-pack/publish: conda-pack ships the conda-meta view, so a
+  dev-overlay or stale cached `.conda` can skew the published tarball even when the live env
+  is fine (Scott McMichael's crash). The matched Jul-13 cassis_0 build loads fine but logs a
+  benign `constructModelFromISD ... key 'geotransform' not found` ERROR before loading the
+  model-state (exit still 0) - cosmetic, does NOT appear on ASP's normal model-state load
+  path. Repro fixture: `~/projects/ls_csm_bug/`.
 - **conda-pack non-interactively: use `-p <PREFIX>`, not `-n <name>`.** A non-login
   shell has no `conda` on PATH, so `conda pack -n asp_deps` fails with "Failed to
   determine path to environment". Use `~/miniconda3/bin/conda-pack -p
