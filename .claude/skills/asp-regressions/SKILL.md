@@ -97,6 +97,32 @@ the initial vs final reprojection errors, residual stats, and camera offsets: wh
 residuals improve or remain stable and camera positions agree closely, the test is
 healthy and safe to regold. Judge the underlying geometry and residuals, not the diff.
 
+## A reordered report file: `diff` MASSIVELY overstates the change - sort and compare sets
+
+A plain `diff` of a text report (mapproj_match_offsets.txt, a match/csv dump, any
+line-per-record file) aligns by longest-common-subsequence, so a pure REORDER of the
+same rows prints as a huge `17,23c17,1101`-style hunk that LOOKS like "23 rows now vs
+1101 before" - a catastrophic collapse. It is usually nothing of the sort. Before
+judging magnitude, strip the header and compare the two as SETS:
+`tail -n +3 run/X | sort > a; tail -n +3 gold/X | sort > b; diff a b; wc -l a b`. Often
+the sets are identical (or differ by a handful), and the only real change is row ORDER.
+Confirmed 2026-10-22 on ss_bundle_adjust_heights_from_dem: the raw diff screamed
+23-vs-1101, but sorted the files were 3006 vs 3008 - a position-sorted reorder plus 2
+exact-duplicate rows the control-network path deduped (each "missing" row appeared twice
+in gold). Benign: cameras byte-identical, regold. Cause was the intended
+`bundle_adjust: rebuild clean matches from the control network, not a re-read` commit
+(clean matches now come out position-sorted and position-keyed deduped, immaterial for a
+match file). When a report reorders, prove the SET first, then judge.
+
+## Regold ONLY from a god/master run, never from a debug/experiment build
+
+runs_to_golds.py does `cp -r run gold` on whatever `run/` is currently on disk. If you
+overwrote `run/` while diagnosing (reverting a commit, building an older file to bisect),
+that `run/` is from the WRONG binary. After the diagnosis, rebuild clean at god/master,
+re-run the test, confirm the expected new behavior, THEN regold. Burned-adjacent
+2026-10-22: a bisect left a pre-change (old-gold-matching) run/ in the dir; regolding then
+would have silently re-frozen the stale gold.
+
 ## point2las benign LAS drift - regold
 
 point2las on the PROJECTED path (georeferenced cloud, no `--ecef`/`--dem`) derives the
@@ -109,6 +135,32 @@ bound are identical: the coordinates are unchanged, only the quantization header
 - Cloud stays green: the `ss_point2las_*` tests are not in the cloud subset; the one
   point2las-touching cloud test (`ss_pc_align_utm`) regenerates its own gold and compares
   tolerantly. No cloud regold.
+
+## Thread-count default change -> pc_align Nuth drifts, benign regold
+
+When VW's default thread resolution changes (the `default_num_threads = 0` means
+all-cores default, the absurd-value clamp, or tools being made to HONOR `--threads`
+where they used to ignore it), the one numerically sensitive regression is
+`ss_pc_align_nuth`. Nuth alignment runs OpenMP reductions whose FP summation order
+depends on the thread count, so a changed count nudges the recovered transform. On l1
+the Nuth path went from raw `std::thread::hardware_concurrency()` (16) to
+`vw_settings().default_num_threads()`, which honors the test's `--threads 1`, so Nuth
+now runs at 1 thread. The transform shifts ~1 mm (rel err ~6e-5), past the test's 2e-5
+`max_err.pl` tolerance -> FAIL. BENIGN: the Nuth code is unchanged, and the new
+1-thread result is deterministic (two runs byte-identical) and thus MORE reproducible
+than the old 16-thread gold. Regold it.
+- Other pc_align methods (point_to_plane, similarity, fgr, lola, utm, large_shift) are
+  thread-insensitive: they pass no `--threads`, run at the `.vwrc` default (8 on l1,
+  unchanged old-vs-new), and validate byte/tolerance-clean. Only Nuth drifts.
+- The general per-tool default on l1 stays 8 (from `~/.vwrc default_num_threads = 8`),
+  not 16 - confirm with the tool's `--> Setting number of processing threads to: N`
+  line before assuming the whole suite shifted.
+- The VW `build_control_network` parallel match-file read (chunked, then serial
+  assembly, subset RNG kept in the serial pass) is designed byte-identical to a serial
+  read, and is: every exact-diff bundle_adjust/jitter_solve test (incl. multi-image
+  per_sensor, parallel_bundle_adjust_isis, spot5/6, skysat, rig_calib) stays bit-exact.
+  So a ba/jitter `.adjust`/`.tsai` drift after this change is NOT the parallel read -
+  look elsewhere.
 
 ## Nightly topology & trigger -> nightly-regression
 

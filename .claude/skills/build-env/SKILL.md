@@ -237,6 +237,17 @@ old-glibc HPCs got `/lib64/libm.so.6: version GLIBC_2.29 not found` (Maud, Ben).
   floor though nothing loads it; pfe shows 2.34 yet runs on glibc 2.28). The ONLY honest
   acceptance test is RUNNING the tarball in a real glibc-2.17 (centos7) container. Add
   that as a CI gate so the floor cannot creep silently again.
+- **The classic stray: make-dist bundling a SYSTEM lib beside our conda one.** Symptom:
+  the tarball has BOTH `libglib-2.0.so.0.8800.1` (conda 2.88, the soname target, used)
+  AND a dead `libglib-2.0.so.0.7200.4` (the Ubuntu build host's /usr/lib glib 2.72,
+  floor 2.34, nothing links it). Root cause (fixed 2026-10-23, BinaryBuilder make-dist.py
+  commit 55bd7bd0): the `LIB_SHIP_PREFIX` force-ship step added each soname from its
+  ldd-RESOLVED path, and ldd resolves the glib family to /usr/lib on the build host. Fix:
+  force-ship from the first `SEARCHPATH` hit (the conda env precedes the system dirs),
+  not the ldd path. To confirm a stray is dead before stripping: `readelf -d` every
+  shipped ELF for a NEEDED on the exact versioned name (0 = nothing links it), then hide
+  it and run real tools (cam_test, stereo_gui) - they should still run. Pin WHERE a stray
+  came from with `find / -name '<lib>.so.<ver>'` (the hit under /usr is the culprit).
 Detail: `~/projects/asp_glibc_floor_notes.sh`.
 
 ## ASP Release Packaging
