@@ -79,7 +79,7 @@ Control job dispatch and mapprojection settings via environment variables:
 | `PROCESSES` | `10` | Worker processes per node inside `mapproject` |
 | `THREADS` | *(ASP default)* | Threads per process inside `mapproject` |
 | `TILE_SIZE` | `2048` | Tile dimension for parallel mapprojection |
-| `NO_MOSAIC` | *(unset)* | Set to 1 to skip the per-chunk `dem_mosaic --max` |
+| `NO_MOSAIC` | `0` (build) | 0/1 flag: `0` or unset builds the per-chunk `dem_mosaic --max` max-lit, `1` skips it. For `CHUNK_SIZE` <= 50 use `NO_MOSAIC=0` so each chunk emits an inspectable max-lit |
 | `EXTRA_OPTS`| *(unset)* | Additional flags passed directly to `mapproject` |
 | `MODEL` | `bro_ele` | PBS node architecture (`bro_ele`, `tur_ath`, etc.) |
 | `NCPUS` | `28` | Number of CPUs requested per PBS node |
@@ -95,6 +95,15 @@ chunk's tail never maps. The small fixed chunk size limits how many images one h
 re-mapping ONLY the missing images at the standard chunk size, not one job per full node (dozens of
 single-node jobs will not schedule). The hanging camera is usually a wild one you would prune from the
 refined max-lit anyway. See [[pfe-nas]] for the `-r y` / node-abort detail.
+
+**Per-chunk max-lit for small chunks.** `NO_MOSAIC` is a 0/1 flag in `mapproject_chunk.sh`: `0` or unset
+builds the per-chunk `dem_mosaic --max` max-lit, `1` skips it. When `CHUNK_SIZE` is no more than 50, invoke
+with `NO_MOSAIC=0` so every chunk job emits its own max-lit, which is cheap at that size and gives an
+immediate per-chunk coverage quicklook with nothing to rebuild afterward. Reserve `NO_MOSAIC=1` for the
+matches-harvest pipeline (below) and native-resolution runs, where the per-chunk mosaic is not wanted.
+(Historical caveat: older `mapproject_chunk.sh` tested `NO_MOSAIC` with `-n`, so ANY non-empty value,
+including `0`, skipped the mosaic. There you had to leave `NO_MOSAIC` UNSET to build. The current 0/1-flag
+version makes `NO_MOSAIC=0` the explicit build form.)
 
 ## Building max-lit mosaics (dem_mosaic --max)
 
