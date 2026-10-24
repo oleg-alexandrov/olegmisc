@@ -147,6 +147,11 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
 - **Before every commit run `git status`** for new untracked files needing `git add`
   (`git commit -a` only stages tracked files, so new `.cc`/`.h` must be added explicitly).
   Build dirs (`build/`, `build_linux/`, `build_isis/`) are NEVER added.
+- **NEVER `git add` recursively in ANY repo, and NEVER git-add a `.tif` or any other
+  binary/data file.** No `git add .` / `-A` / `-u` / a directory argument, ever - add ONE
+  NAMED file path at a time and inspect the staged set before committing. Rasters, DEMs,
+  imagery, and data (`.tif`, `.cub`, `.img`, `.json` data, etc.) are never committed. Commits
+  carry SOURCE and DOCS only (the sole binary exception is doc figures, with explicit OK).
 - **In the home repo (`~`, olegmisc): add ONE NAMED path at a time - never `git add .`
   / `-A` / `-u` / a dir** (it leaks `.ssh/`, `.credentials.json`, `.bash_history`).
   Inspect the staged set before every commit. Sync with `git pull --rebase --autostash`.
