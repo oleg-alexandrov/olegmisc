@@ -59,6 +59,13 @@ Key facts that trip people up:
 Status file protocol: `NoTarballYet now_building` -> `<tar> build_done Success`
 (or `Fail build_failed`) -> `<tar> now_testing` -> `<tar> test_done Success|Fail`.
 
+**`status_master.txt`, `status_<platform>.txt`, `output_master.txt` are LOGS, never
+committed.** They are run-state scratch the orchestrator rewrites every nightly (and
+that you hand-edit when republishing a benign-fail build). They are untracked in the
+BinaryBuilder repo (not in `.gitignore` either, just never added). NEVER `git add`
+them - when pushing a real BinaryBuilder change, add only the named source/script
+paths and leave these out of the staged set.
+
 ## localLinux build cache (done.txt) - why a rebuild can look "suspiciously fast"
 
 localLinux builds into a PERSISTENT tree `build_asp/` (reused across runs), NOT a

@@ -87,6 +87,11 @@ you're told to reset to the remote:
 
 - `git status` before EVERY commit - `git commit -a` misses NEW untracked files
   (`.cc`/`.h` must be `git add`ed explicitly). In the home repo, add named paths only.
+- NEVER commit run-state LOG files, even when pushing a real change in the same repo.
+  In BinaryBuilder: `status_master.txt`, `status_<platform>.txt`, `output_master.txt`
+  are nightly run logs (untracked, not even gitignored) - the orchestrator and a
+  republish both rewrite them. Add only the named source/script paths and leave these
+  out of the staged set. (Same spirit as the StereoPipelineTest `gold/`/`run/` ban.)
 - Commit with a HEREDOC so the trailer is never dropped:
   `git commit -F - <<'EOF' ... Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com> ... EOF`
 - Push to the RIGHT remote (see git-repos table): `god` = upstream org, `origin` =
