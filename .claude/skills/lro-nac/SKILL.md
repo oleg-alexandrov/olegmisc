@@ -55,6 +55,48 @@ NOT `isis10asp`: isis10asp is ASP-linkage-only and **lacks libLinearMath**, so
 `ISISDATA`. (For ASP tools - mapproject/bundle_adjust/stereo - keep using the ASP
 build + isis10asp libs; only the ISIS ingest apps need isis10.)
 
+## SfsPipeline batch fetch/prep scripts: EXPORT the env explicitly (burned 2026-10-23)
+
+`SfsPipeline/bin/prepare_lro_nac.py` (and `batch_prepare_lro.sh` that drives it)
+DEFAULT `ISISROOT` to `~/miniconda3/envs/asp_deps`, which does not exist on pfe, and
+`conda activate isis10` alone does NOT set `ISISROOT` - so the scripts build tool
+paths against the wrong/absent env and `lronac2isis` dies (rc 127 / missing
+libLinearMath). EXPORT the full env before calling them on pfe:
+    source /swbuild/oalexan1/miniconda3/etc/profile.d/conda.sh && conda activate isis10
+    export ISISROOT=/swbuild/oalexan1/miniconda3/envs/isis10
+    export ISISDATA=$HOME/projects/isis3data
+    export LD_LIBRARY_PATH=$ISISROOT/lib:$LD_LIBRARY_PATH
+    export PATH=$HOME/projects/BinaryBuilder/StereoPipeline/bin:$PATH   # isd_generate, cam_test
+The end-to-end fetch flow for a multi-site SfS job (see [[sfs]] for context,
+[[pfe-nas]] for head-node/detached rules): query each site box with
+`query_lro.py --lat-lon <minlat maxlat westlon eastlon> --output-products lists/siteN.txt`
+(no incidence/resolution filters = maximum cubes), `sort -u` the per-site lists into a
+union (one cube can cover several sites, so prep each once), then run
+`batch_prepare_lro.sh lists/all.txt img --no-usgs-polar` DETACHED on the head node
+(serial, resumable, and the download + spiceinit both need head-node internet).
+
+BULK-FETCH ETIQUETTE (burned 2026-10-23): split across AT MOST TWO front-end nodes,
+ONE fetcher each, on DISJOINT sublists all writing the same `img/` (batch_prepare skips
+finished ids, so disjoint lists never collide). Do NOT run more than two - more fetchers
+anger BOTH the pfe admins (head-node load) and the remote PDS/NAC download server. There
+is no hurry; two gentle serial streams is the norm. (Split: `awk 'NR%2' ...` into two
+sublists, `ssh pfeNN "nohup bash prep_cubes.sh sublist img &"` on each of two UP nodes.)
+
+C-PREFIX -> M RECOVERY (burned 2026-10-23): `query_lro.py` (pt=EDRNAC4) occasionally
+emits a few CDR ids with a leading "C" (e.g. C109733986LE) instead of the EDR "M" id.
+Real NAC EDRs are ALWAYS M<digits>LE/RE. A C-id is the SAME observation as its M EDR, so
+REWRITE C->M (`sed 's/^C/M/'` then `sort -u`), do NOT drop it - dropping loses a real
+observation (here the C-ids had no M twin in the list). The C-id also fails spiceinit
+("Can not find [BODY_CODE]"); the rewritten M EDR ingests fine. Worth a pipeline fix:
+filter/normalize query_lro.py output to `^M[0-9]+(LE|RE)$`.
+
+SPICEINIT "Can not find [BODY_CODE] in text kernels" (burned 2026-10-23): even with
+every listed kernel present on disk, spiceinit can fail camera init this way when
+ISISDATA is incompletely populated. Fix by populating base + lro:
+`downloadIsisData base $ISISDATA` then `downloadIsisData lro $ISISDATA` (detached on the
+head node; lro ck/spk are large but needed so every observation date resolves). web=true
+is NOT a reliable fallback (the ISIS spice server returned errors).
+
 ## ISISDATA on pfe is often NOT populated
 
 `/nobackupp19/oalexan1/isis3data` (= pfe `$HOME/projects/isis3data`) has been found

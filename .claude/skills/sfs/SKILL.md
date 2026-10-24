@@ -143,6 +143,14 @@ step is spelled out so it is not rediscovered. All lists stay in one solar-azimu
 order, one line per image, with image/camera/mapprojected lists in exact
 correspondence. Work in ONE fixed work dir on pfe, paths relative.
 
+**BEFORE any LRO NAC fetch/ingest here, LOAD the [[lro-nac]] skill.** It owns the
+hard-won NAC ingest details this section depends on: the ODE codes that work
+(`pt=EDRNAC4`), the `isis10`-vs-`isis10asp` env gotcha (`isis10asp` lacks
+libLinearMath, so `lronac2isis` dies), the fact that `prepare_lro_nac.py` /
+`batch_prepare_lro.sh` DEFAULT `ISISROOT` to a nonexistent `asp_deps` so you must
+EXPORT `ISISROOT=.../isis10` + `ISISDATA` + `LD_LIBRARY_PATH` explicitly, and the
+"ISISDATA often not populated -> spiceinit fails" trap. Do not rediscover these.
+
 **Step 0 - query and download candidate LRO NAC images.** Query the PDS ODE REST
 API for all NAC images intersecting the site using `query_lro.py` (or `query_lro.sh`).
 Pass either the bounding box coordinates or the site DEM directly, with optional
@@ -592,14 +600,14 @@ Planning takeaways:
 
 The `~/projects/SfsPipeline/bin/` directory contains the core pipeline scripts developed for photoclinometry on Pleiades and Athena:
 
-* **`make_ref_dem.sh`**: Reproject and regrid a source DEM to a fixed half-integer target grid with ASP 256-block tiling, optional spike blur. Builds the SfS reference DEM.
+* **`make_ref_dem.sh`**: Reproject and regrid a source DEM to a fixed half-integer target grid with ASP 256-block tiling, optional spike blur. Builds the SfS reference DEM. **For LOLA DEM selection, Barker coverage (10 mpp vs 5 mpp), and grid alignment details, load [[sfs-lola-prep]].**
 * **`batch_mapproject.sh`**: Chunked PBS job orchestrator for multi-node parallel mapprojection.
 * **`mapproject_chunk.sh`**: Robust per-node worker script with error recovery and tile cleanup.
 * **`filter_by_max.sh`**: Order-preserving cull of mapprojected images by their `gdalinfo` maximum (drops shadowed and non-intersecting frames), keeping azimuth order.
 * **`bundle_adjust.sh`**: `parallel_bundle_adjust` wrapper. Env tunables `IMG_DIR`, `OVERLAP_LIMIT`, `NUM_ITERATIONS` (0 for matches-only), `PROCESSES`, `THREADS`. Submit via qsub across N nodes.
 * **`parallel_sfs.sh`**: Distributed Shape-from-Shading runner across multiple tiles and nodes.
 * **`sfs_sim_align.sh`**: Measures pointing errors against simulated illumination and runs single-camera bundle adjustment before SfS.
-* **`query_lro.py` / `query_lro.sh`**: Query PDS ODE REST API for LRO NAC images by lat/lon box or DEM extent, emitting product IDs and direct `.IMG` download URLs.
+* **`query_lro.py` / `query_lro.sh`**: Query PDS ODE REST API for LRO NAC images by lat/lon box or DEM extent, emitting product IDs and direct `.IMG` download URLs. **For any NAC fetch/ingest load [[lro-nac]] first** (isis10 env, `downloadIsisData` kernels, C->M id recovery, 2-node fetch etiquette).
 * **`download_all.sh`**: Resumable multi-file URL downloader with retries (feeds directly from `query_lro.py --output-urls`).
 * **`query_azimuth.sh`**: Fast extraction of camera solar azimuth and elevation via `sfs --query`.
 * **`query_gsd.sh`**: Automatic querying of native ground sampling distance via `mapproject --query-projection`.

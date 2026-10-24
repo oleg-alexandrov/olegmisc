@@ -57,6 +57,17 @@ So:**
 - **A RECURRING cron is created ONLY on a FULLY EXPLICIT user request for one** ("set up a
   recurring check every N minutes"). Never infer it. When one IS requested, use the SPARSEST
   interval that works (hours, not minutes), and tear it down the instant the work is done.
+- **`ScheduleWakeup` CLAMPS to 1 hour max (`[60, 3600]` s). So when the user asks for a check
+  interval LONGER than 1 h (e.g. "check every 3 hours"), do NOT use ScheduleWakeup - it will
+  silently fire hourly instead and burn 3x the sessions (burned 2026-10-24: a "every 3 hours"
+  request ran hourly because ScheduleWakeup clamped). Use the IN-SESSION cron `CronCreate` (the
+  session cron, NOT an external OS crontab) with the user's chosen interval (`"13 */3 * * *"` for
+  every 3 h, off-minute), and `ScheduleWakeup { stop: true }` to kill any pending clamped wakeup.
+  ScheduleWakeup is only appropriate for sub-hour self-pacing; for any multi-hour cadence the
+  user named, honor THAT via the in-session cron. This session cron is in-memory only: it dies
+  when the Claude session exits and auto-expires after 7 days - the detached job keeps running
+  regardless, only the automatic checking stops. (Distinct from the external crontab-based OS
+  watchdog described elsewhere in this skill.)
 - **If a one-shot wake fires and the work is not finished, decide and (if needed) set ONE
   more one-shot** for a sensible later time - never escalate to a frequent recurring pulse.
 - This supersedes the lines below that say "the moment a qsub job is submitted, IMMEDIATELY
