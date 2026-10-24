@@ -50,6 +50,7 @@ cat << 'EOF' > "${GEMINI_CONFIG}/GEMINI.md"
   - Term: "triangulation error", not "ray intersection error".
   - Docs phrasing: "after jitter correction", not bare "after jitter".
   - GitHub prose: NO inline backticks, use *italics*.
+  - Plain text paths (NO clickable links): NEVER format file paths or symbols as clickable markdown links (`[text](file://...)`). Output all paths, filenames, and symbols as plain, unlinked text so they can be copied and pasted in the terminal without being truncated or hidden.
 - **Shell commands**: NEVER comment to the right of a continuation line (`\`).
 - **Notes discipline**:
   - Project work notes go in `~/projects/` as `.sh` comment-only files (e.g. `~/projects/*.sh`), NOT loose in home dir or scattered.
