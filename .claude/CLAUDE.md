@@ -102,10 +102,11 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
 - **"triangulation error"**, not "ray intersection error" (the point2dem `--errorimage`
   band). Fine to write both once, then use "triangulation error" throughout.
 - Write **"after jitter correction"**, not bare "after jitter"; name the operation.
-- **Plain text paths (NEVER use clickable markdown links)**: NEVER format file
-  paths or code symbols as clickable markdown links (do NOT write `[name](file://...)`).
-  Output all paths and symbols as plain, unlinked text so they can be copied and
-  pasted in the terminal without being truncated, hidden, or collapsed to basenames.
+- **Plain text paths (NEVER use clickable markdown links)**: NEVER return
+  clickable paths or markdown links (`[text](file://...)`). Always return
+  explicit file paths (full or relative as requested) in plain text so they can
+  be copied and pasted in the terminal without being truncated, hidden, or
+  collapsed to basenames.
 - Do NOT ALL-CAPS words for emphasis (real identifiers like PATH are fine).
 - **Shell command blocks: NEVER put a comment to the right of a `\` continuation line**
   - the trailing backslash stops escaping the newline and the command silently breaks.

@@ -16,6 +16,7 @@
 # Specific subdirectories we care for
 !/bin/
 !/.claude/
+!/.gemini/
 !/.config/
 !/.vim/
 !/.vscode/
@@ -24,6 +25,12 @@
 !/.xemacs/
 !/.Isis/
 !/Library/
+
+# Inside .gemini, track only global GEMINI.md
+/.gemini/*
+!/.gemini/config/
+/.gemini/config/*
+!/.gemini/config/GEMINI.md
 
 # In .config, ignore untracked tool configs/keys
 /.config/*
