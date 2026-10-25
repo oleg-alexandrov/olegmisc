@@ -196,6 +196,18 @@ download URLs for batch downloading and clean product IDs:
 ~/projects/SfsPipeline/bin/prepare_lro_nac.py --outdir lronac_all M109041171LE
 ```
 
+**USGS South Pole REGISTERED (controlled) cameras (SUMMARY -> [[sfs-usgs-registered]]).**
+At a south-polar site a subset of covering NAC images have USGS-provided registered
+geometry (Ross Beyer's control network + custom polar SPICE kernels), used as FIXED
+anchors in the refine below. To find them, intersect the site's ODE candidate list with
+Ross's master list `updated_SPole_2023_ImageGCPAdd_root.lis` (18323 ids, a USGS
+deliverable, git-tracked under each south-polar project's `lists/`; external users must
+request it from USGS). Build the registered cameras with `--usgs-polar` (fresh) or, for
+cubes already prepared with vanilla kernels, re-spiceinit a COPY with the polar kernels via
+`~/projects/SfsPipeline/bin/redo_spiceinit_usgs.sh` (web=false, so qsub it, do not re-fetch).
+Full detail - the master list, the `usgs_polar_*.mk` kernels, identify/build/anchor steps:
+[[sfs-usgs-registered]].
+
 **Step 1 - reference DEM (1 m/pixel, half-integer grid).** Regrid the LOLA source
 (for lunar 83-90 South use Barker LDEM_83S_10MPP_ADJ.TIF at 10 m/pixel; the 5 m
 product only reaches 87-90 South) to 1 m/pixel with cubic spline, ASP 256-block
