@@ -124,6 +124,10 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
   Print stats to stdout for the caption; never `set_title` them. Detail: visual-inspection.
 - **Colorized signed-difference maps: keep ONE subtraction order and ONE colour polarity
   per document, never flip mid-way.** Detail: visual-inspection.
+- **Do NOT generate PNG previews/quicklooks of rasters unless asked. Deliver the full
+  GeoTIFF (or .cub) and its path.** Oleg's GUI (stereo_gui) opens GeoTIFF and .cub
+  directly, so a downscaled PNG is wasted work. Make a PNG only on explicit request (or
+  when embedding into an HTML/artifact report Oleg asked for).
 
 ## GitHub prose (always-on, with or without github-issues loaded)
 

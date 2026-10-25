@@ -303,6 +303,101 @@ Compare `good_max_mosaic.tif` against `all_max_mosaic.tif`:
 - If `missing_in_good == 0`, the degraded set can be completely and safely discarded for SfS and final mosaics.
 - If holes or gaps appear in `good_max_mosaic.tif` that are filled in `all_max_mosaic.tif`, identify the specific missing geometries and selectively retain only the minimally necessary frames from the degraded set.
 
+## Count-guarded, error-ranked, BATCHED max-lit (Oleg, 2026-10-25)
+
+After the final mapproject with the refined cameras, rank the images by their
+per-image mapproj offset to build a "best-registered subset" max-lit.
+
+**Sort by RELIABILITY here, NOT by Sun azimuth.** The azimuth sort is only for
+bundle-adjustment matching (it puts matched-shadow pairs within the overlap window).
+For the max-lit the ordering that matters is registration reliability (75th-pct offset
+and match count) - a completely different ordering for a different purpose. Do not carry
+the azimuth order into the max-lit stage.
+
+Two hard-won rules make this trustworthy and cheap to iterate:
+
+**1. THROW OUT ON BOTH METRICS, FROM THEIR DISTRIBUTIONS - not one fixed cutoff.**
+`run-mapproj_match_offset_stats.txt` columns are `image 25% 50% 75% 85% 95% count`. Two
+independent quality signals live here and you must screen on BOTH:
+  - **match count (field 7)** - how well an image is tied into the network. The 75th-pct
+    offset is a LIE for low-count images: an image with ZERO matches reads
+    `-1 -1 -1 -1 -1 0`, and a naive `sort -g` on the 75th-pct (field 4) ranks `-1` as the
+    BEST image, so a totally unregistered frame lands at the top of the "best" half and
+    drapes a streak into the max-lit; a handful of matches (e.g. 13) gives an artificially
+    LOW 75th-pct the same way.
+  - **75th-pct mapproj offset (field 4)** - the actual registration error, trustworthy
+    ONLY once the count is high enough.
+  - **native GSD (a THIRD, independent screen) - STANDARD RULE: for the higher-quality
+    mosaic, ALWAYS filter out any frame with native GSD > 1.75 m.** A frame whose native
+    ground sample distance is coarser than the product resolution (1 m/px here) contributes
+    only upsampled BLUR, so it is dropped. `batch_maxlit.sh` enforces this by default
+    (`MAXGSD=1.75`). Get GSD per frame from the ODE query table (`lists/siteN_table.txt`
+    field 6 `resolution_m`, verified ~= the authoritative `mapproject --query-projection` /
+    `query_gsd.sh` value). >1.5 m is an optional sharper (more aggressive) cut when
+    resolution matters more than coverage. In practice the coarse frames are often already
+    gone - they tend to be grazing/all-shadow and get dropped by `filter_by_max` or the
+    count/offset screens upstream (on these south-polar sites the good-max-lit set already
+    topped out at ~1.73 m, so the 1.75 m filter removed nothing and >1.5 trimmed ~20%).
+    `batch_maxlit.sh` applies all three screens (MINCOUNT, MAX75, MAXGSD).
+  FIRST CHARACTERIZE EACH DISTRIBUTION, THEN SET HEURISTIC THRESHOLDS FROM IT - do not
+  hardcode a single number blindly. Print the spread of the count column and of the
+  75th-pct column (min, a few percentiles, median, max) and look for the natural break
+  between the well-connected bulk and the stragglers. Then DROP an image if it fails
+  EITHER test: count below a low floor / the bottom of the bulk (unreliable), OR 75th-pct
+  above a high-error cutoff / the top tail (genuine misregistration). The two catch
+  different failure modes - low count = untrustworthy metric (streak risk), high 75th-pct
+  = real smear - so apply both. Real case: of site1's 295 images the count column split
+  cleanly as 3 at 0, 4 at 1-99, 288 at >=500, so a count floor of ~100 was the obvious
+  break; `p75lo`'s streaks were exactly the two low-count frames that leaked into the best
+  half (`M1219619311RE` count 0, `M1417661629RE` count 13). Pick the floor from where the
+  gap actually is, which differs per site.
+
+**2. BUILD IN BATCHES OF ~50, THEN A MAX-LIT-OF-MAX-LITS - so a defect is cheap to
+remove.** Sort the count-guarded survivors by 75th-pct offset, split into batches of 50,
+`dem_mosaic --max` each batch to a per-batch max-lit, then `dem_mosaic --max` over the
+batch max-lits for the full ("all") and the first-K-batches ("lo", best up to a cutoff)
+result. When a batch max-lit shows a streak: find the one bad image, drop it from THAT
+batch's list, `rm` only that batch max-lit, and re-run - only that batch + the
+max-lit-of-max-lits rebuild (the other ~5 batch max-lits are untouched), which is far
+cheaper than re-mosaicking all ~300 frames. The batch max-lits also localize a streak to
+a 50-image group immediately.
+
+Scripts (per-site, take N; currently in `~/projects/sfs_south/`, generalizable to
+SfsPipeline/bin): `batch_maxlit.sh <workDir> <N> [BATCHSIZE=50] [NUMLO=3] [MINCOUNT=100]`
+does all of the above (qsub it, dem_mosaic is multi-thread; writes `maxlit_siteN/
+max_siteN_batch_<k>.tif`, `max_siteN_molm_all.tif`, `max_siteN_molm_lo.tif`, and the
+dropped ids to `lists/siteN_excluded_lowcount.txt`). `find_streak.sh <mapprojList> <x> <y>
+...` samples each image's value at a streak point (the max-lit took the max, so the
+culprit has the anomalously high value there) to identify which frame drapes a given
+streak. Always VERIFY `VALID_PERCENT>0` on every mosaic ([[pfe-nas]]).
+
+**3. NOT EVERY STREAK IS A REGISTRATION ERROR - radiometric/detector defects evade ALL
+the stats.** A max-lit streak that is a set of FINE PARALLEL DIAGONAL LINES (after
+mapprojection) is a single frame's DETECTOR/readout stripe (or a saturation band), i.e. a
+RADIOMETRIC defect. That frame is perfectly well REGISTERED - good match count, good 75th-pct
+offset - so BOTH screens above pass it and it lands in the "best" max-lit. The count/offset
+screens catch GEOMETRIC failures only; radiometric defects need the EYE. Finding the frame
+(real case: site2 molm_lo, batch 3):
+  - The per-batch max-lits localize it to one batch (inspect each / sample where the streak is).
+  - WITHIN the batch, the usual tricks FAIL: point-value sampling (`find_streak.sh`) misses it
+    because a faint stripe produces no anomalous MAX at any pixel; an FFT "stripiness" score
+    (`stripe_score.py`) is confounded because the DIAGONAL FOOTPRINT EDGES of partial-coverage
+    frames give the same off-axis peak as diagonal stripes (masking the FFT central cross kills
+    axis-aligned edges but NOT diagonal ones) - so FFT scoring needs the crop to be footprint-
+    INTERIOR only, or it just keeps flagging edges.
+  - The method that cannot be fooled is DIVIDE-AND-CONQUER on the MAX-LIT itself
+    (`bisect_maxlit.sh`): split the batch into G groups, `dem_mosaic --max` each, eyeball which
+    GROUP max-lit still carries the stripe, recurse on that group's list down to the one frame.
+    Then drop it from its batch list, rebuild that one batch max-lit, re-combine - cheap.
+  Contact-sheet helper for the eyeball step: `inspect_region_montage.py` (one subplot per frame,
+  cropped to the defect region). All three tools are in `~/projects/sfs_south/`.
+  **A detector-stripe frame must ALSO be dropped from the SfS SOLVE, not just the max-lit.**
+  SfS models image intensity as a function of topography and illumination, so a frame whose
+  radiometry is corrupted by detector stripes (or saturation) injects false intensities and
+  biases the terrain. Once you identify such a frame, remove it from the SfS image/camera lists
+  (the max-lit removal only cleans the inspection product). It can stay in the bundle (geometry
+  is fine), but keep it out of photoclinometry.
+
 ## Related
 [[sfs]] (the parent pipeline; this is its pre-SfS gate), [[bundle-adjust]] (the stats files
 and the solve), [[jitter-solve]], [[visual-inspection]] (overlay/hillshade/colorbar),
