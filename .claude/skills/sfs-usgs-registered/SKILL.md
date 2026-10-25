@@ -1,15 +1,15 @@
 ---
 name: sfs-usgs-registered
 description: >-
-  USGS South Pole controlled (registered) LRO NAC cameras for Shape-from-Shading - what Ross Beyer's master controlled-image list is and where it lives, the USGS custom polar SPICE kernels (usgs_polar_spk.mk / usgs_polar_ck.mk, valid 2009-2013), how to identify which images over a site are registered (intersect the ODE candidate list with the master list), how to build the registered CSM cameras from fresh or already-prepared cubs (batch_prepare_lro.sh --usgs-polar, or redo_spiceinit_usgs.sh on existing .cal.echo.cub), and how the registered cameras are used as fixed bundle-adjustment anchors. Load whenever working with USGS-registered / controlled / polar-registered LRO NAC images, a usgs_south dir, Ross's list, the usgs_polar meta-kernels, or deciding which NAC images anchor a south-polar SfS solve. The reference implementation is ~/projects/SfsPipeline/bin.
+  USGS South Pole controlled (registered) LRO NAC cameras for Shape-from-Shading - the USGS master controlled-image list and where it lives, the USGS custom polar SPICE kernels (usgs_polar_spk.mk / usgs_polar_ck.mk, valid 2009-2013), how to identify which images over a site are registered (intersect the ODE candidate list with the master list), how to build the registered CSM cameras from fresh or already-prepared cubs (batch_prepare_lro.sh --usgs-polar, or redo_spiceinit_usgs.sh on existing .cal.echo.cub), and how the registered cameras are used as fixed bundle-adjustment anchors. Load whenever working with USGS-registered / controlled / polar-registered LRO NAC images, a usgs_south dir, the controlled-image list, the usgs_polar meta-kernels, or deciding which NAC images anchor a south-polar SfS solve. The reference implementation is ~/projects/SfsPipeline/bin.
 ---
 
 # USGS South Pole Registered (Controlled) LRO NAC Cameras
 
 For a lunar south-polar Shape-from-Shading (SfS) site, a subset of the covering LRO
 NAC images have **USGS-provided registered (controlled) camera geometry**: USGS
-Astrogeology (Ross Beyer and colleagues) ran a South Pole control network and ships
-custom polar SPICE kernels that place those observations in a single consistent
+Astrogeology ran a South Pole control network (bundle-adjusted and controlled to LOLA)
+and ships custom polar SPICE kernels that place those observations in a single consistent
 registered frame. Those registered cameras are used as **fixed anchors** in bundle
 adjustment: holding them fixed pulls every free (vanilla-spiceinit) camera into the
 registered frame, which is what gives the whole site its absolute localization.
@@ -18,26 +18,27 @@ The reference implementation for every script named here is `~/projects/SfsPipel
 (see [[sfs]]). The per-site work notes live in each project dir (e.g.
 `~/projects/sfs_south/`).
 
-## Ross's master controlled-image list (the thing we keep needing)
+## The USGS master controlled-image list (the thing we keep needing)
 
 **File: `updated_SPole_2023_ImageGCPAdd_root.lis`** - the authoritative list of LRO NAC
-product ids in the USGS South Pole control network. 18323 root product ids, one per line
-(e.g. `M103039846LE`), both 9- and 10-digit numeric ids, LE and RE. This is a USGS
-deliverable from Ross Beyer, NOT something we derive - an external pipeline follower
-cannot regenerate it and must obtain it from USGS.
+product ids that have USGS-provided registered geometry for the South Pole. 18323 root
+product ids, one per line (e.g. `M103039846LE`), both 9- and 10-digit numeric ids, LE and
+RE. These are the south-polar NAC images (July 2009 to August 2013) that USGS Astrogeology
+bundle-adjusted and controlled to LOLA (~0.48 px RMS). It is a USGS product, NOT something
+we derive.
 
-- **Where it lives (tracked + pushed in the `~/projects` repo):** copies are committed
-  under `PNCB/lists/`, `sfs_dgkm/lists/`, `sfs_m2m_mp/lists/`, `sfs_m2m_sp/lists/`, and
-  `sfs_south/lists/`. It is tiny (~240 KB text), so each south-polar project carries its
-  own copy for self-containment. The original source was `PNCB/lists/`.
-- **Provenance to record in every project's notes:** "USGS South Pole controlled-image
-  list from Ross Beyer (updated_SPole_2023_ImageGCPAdd), 18323 NAC ids." Do not paraphrase
-  it as something computed.
-- **External users** of the public SfsPipeline workflow: the list is a USGS product, so
-  the honest workflow note is that a user reproducing this must request the current South
-  Pole controlled-image list (and the matching usgs_polar SPICE kernels) from USGS
-  Astrogeology. It is not in the public SfsPipeline repo by default (USGS owns it). If it
-  is ever to be redistributed, that is a USGS decision, not ours.
+- **Canonical copy ships in the public reference impl:** `~/projects/SfsPipeline/data/`
+  (committed, with `data/README.md` carrying the citation). Also mirrored in the
+  `~/projects` repo under each south-polar project's `lists/` (`PNCB`, `sfs_dgkm`,
+  `sfs_m2m_mp`, `sfs_m2m_sp`, `sfs_south`) for self-containment (~240 KB text).
+- **Citation / where external users get it + the kernels:** USGS data release Weller,
+  L.A., et al., 2025, "Improved camera pointing and spacecraft ephemeris data for LROC NAC
+  images of the lunar poles," USGS data release, https://doi.org/10.5066/P1OASYRV. The
+  south-pole SPICE kernels (CK `.bc` + SPK `.bsp`) download from the ScienceBase south-pole
+  item https://www.sciencebase.gov/catalog/item/688a51d7d4be02367c9c1271 . ASP docs:
+  https://stereopipeline.readthedocs.io/en/latest/sfs_usage.html#usgs-reg . Describe the
+  source as "USGS-provided list of registered south-polar images"; cite the data release,
+  not an individual.
 
 ## The USGS custom polar SPICE kernels
 
@@ -49,7 +50,10 @@ On pfe they live in `$ISISDATA/lro_south/`:
 
 They are **valid only for the 2009-2013 controlled observations**. An image outside that
 coverage will fail `spiceinit` with the polar kernels. `$ISISDATA` on pfe is
-`$HOME/projects/isis3data` (do not delete - see CLAUDE.md).
+`$HOME/projects/isis3data` (do not delete - see CLAUDE.md). If a box lacks them, the CK
+`.bc` + SPK `.bsp` download from the USGS data release south-pole item
+(https://www.sciencebase.gov/catalog/item/688a51d7d4be02367c9c1271), organized by camera
+LE/RE and acquisition year.
 
 Augmenting the meta-kernels (rarely needed): if newly controlled images reference kernels
 not yet in the .mk, append those `lro/kernel...` lines, `sort -u`, keep the header lines
