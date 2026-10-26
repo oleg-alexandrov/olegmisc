@@ -142,7 +142,23 @@ re-register. Negligible -> skip. Significant -> `trans_gcp.sh` feeds the per-ima
 through `dem2gcp --input-gcp-list ... --max-pairwise-matches 0` to move their ground coords
 from the SfS frame into the LOLA frame -> one merged GCP for a final bundle_adjust (doc
 `sfs_gcp`). Do this ONLY after the shift eval, and typically on the user's call - it is not
-automatic.
+automatic. (The other route to the GCP, without the per-image sim step, is DEM-to-DEM:
+`dem2gcp.sh` straight off the hillshade-correlator `run-F.tif` disparity, Phase 2b. Same GCP,
+same re-solve choice below.)
+
+**The re-solve: bundle for a uniform shift, jitter for a structured one.** The merged GCP goes
+to either a rigid bundle (`bundle_adjust_dem_gcp.sh`, doc `sfs_gcp`) or the per-line
+`jitter_gcp.sh` (doc `sfs_jitter`). Bundle adjustment fixes any systematic offset in the
+disparity by correcting a single shift in each of horizontal and vertical, usually enough for
+sites ~5-10 km on a side. It is the simpler, cheaper path, right when the shift is close to
+UNIFORM (MAD small next to median). Jitter gives a finer PER-LINE correction, more technically
+involved, for a SPATIALLY STRUCTURED shift (MAD comparable to or larger than the median), which
+a rigid bundle cannot fit because the dense match net pins relative geometry. MEASURED at BCT
+(dem2gcp -> both arms, OLD-vs-NEW max-lit vs the SfS->LOLA target): the bundle under-corrected a
+structured ~2 m field (moved ~0.8 m, MAD 0.11) while jitter replicated it (dv 1.23 vs target
+1.19). Validate either way by correlating OLD vs NEW max-lit (`SKIP_HILLSHADE=1`) and matching
+its dh/dv to the SfS->LOLA dh/dv. If the bundle under-moves a uniform shift, iterate it (dem2gcp
+then bundle again on the new cameras - the residual shrinks each pass).
 
 Two things that raise GCP yield through the transfer:
 - **A more-filled disparity transfers more GCP** (dem2gcp maps each GCP through the
