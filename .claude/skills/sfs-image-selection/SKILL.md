@@ -48,9 +48,14 @@ then the next-most-additional, etc., writing a ranked list "image_path count". I
 2. Sun AZIMUTH groups - within a quadrant, split by azimuth ANGLE into slices
    ([[sun-illumination]] / [[sfs-azimuth]]), per the "DIVIDE THE AZIMUTHS BY ANGLE" rules
    below. This yields a subset with diverse illumination and bounds the per-call count.
-3. LOW-RES sub images - feed image_subset low-res mapprojected `sub` images (from
-   stereo_gui pyramids), not full-res. Prefer sub8, else sub4, sub2, full; never coarser
-   than sub8 (sub16/sub32 lose too much for reliable coverage).
+3. LOW-RES sub8 images - feed image_subset low-res mapprojected images, not full-res.
+   stereo_gui NO LONGER writes `_subN.tif` pyramids (it uses on-the-fly overlay now), so
+   the old prepare_lowres.sh pyramid path is RETIRED. Build the low-res copies directly
+   with gdal per the ASP image_subset docs (:numref:`image_subset`): `gdal_translate
+   -outsize 12.5% 12.5% -r average in.tif out.tif` = sub8. `-r average` avoids aliasing and
+   preserves the data type + georeferencing so the reduced images stay registered to each
+   other. Use sub8 (12.5%); never coarser (the ASP doc's 6.25%/sub16 example loses too much
+   for reliable coverage). The tool is `make_sub8.sh` (below).
 4. 2x COVERAGE - image_subset has no --exclude, so for a second, redundant cover run it
    once (primary), remove those images, run again on the remainder (extra). The primary is
    a minimal cover; the extra is an independent backup cover (redundancy + more
@@ -68,6 +73,17 @@ image counts. Bin by angle, then let image_subset THIN each bin: a bin with a ga
 near-identical-azimuth frames must be sparsed out (it only needs to fill the same ground), a
 bin with few frames is kept nearly whole. Count-balancing matters ONLY as image_subset's
 practical ceiling (~200-250 small images per call), not as a goal.
+
+VISUALIZE FIRST, THEN DIVIDE ONLY WHAT EXISTS. Plot the azimuth rose before grouping. At a
+polar site MOST of the compass is astronomically forbidden/empty (the Sun stays near one
+cardinal direction, so images cluster into a morning lobe and an evening lobe with a wide
+empty gap). Do NOT carve the full 360 into equal-width quadrants - that wastes groups on empty
+sky and splits a lobe at an arbitrary angle. Instead roughly divide the POPULATED arcs into a
+few representative groups by angle (the fixed cuts can be hand-chosen from the rose - e.g. a
+site's evening lobe split 240-300 / 300-360, its morning lobe 0-45 / 45-90), keep a sparse /
+under-represented direction WHOLE as its own group, and then select a covering subset WITHIN
+each group with image_subset. The grouping just has to be representative in direction, not
+equal-area or equal-count.
 
 The method:
   1. INSPECT the distribution first (count per candidate angle bin, min/median/max azimuth).
@@ -99,9 +115,12 @@ thinned hardest, the sparse [180,225)=43 kept nearly whole. Compute bin counts f
 
 ## Reusable tools (~/projects/sfs)
 
-- `prepare_lowres.sh <mapList> <lowresListOut> <currDir>` - ensure each map's stereo_gui
-  pyramid exists, emit the best sub level per map (sub8>sub4>sub2>full) as a list. No
-  symlinks; image_subset --image-list reads the chosen paths.
+- `make_sub8.sh <mapList> <sub8Dir> <sub8ListOut> <currDir> [percent=12.5]` - the CURRENT
+  low-res tool: gdal_translate -outsize percent% -r average each map into sub8Dir, emit the
+  sub8 list (same order). Idempotent (reuses an existing sub8 copy). Replaces the retired
+  stereo_gui-pyramid path. Default 12.5% = sub8.
+- `prepare_lowres.sh` - RETIRED (built stereo_gui pyramids, which stereo_gui no longer
+  writes). Use make_sub8.sh instead.
 - `split_quadrants.py --map-list L --out-dir D (--dem dem.tif | --extent "xmin ymin xmax
   ymax") [--overlap-m 1000] [--lowres-list LR]` - assign each map to the quadrant(s) its
   footprint intersects; writes quad_{ll,lr,ul,ur}.txt (low-res paths if --lowres-list) and
@@ -117,10 +136,12 @@ thinned hardest, the sparse [180,225)=43 kept nearly whole. Compute bin counts f
   Sun azimuths (reads the sfs_query table, col3 = 0-360 az). Use it to judge illumination
   density and representativeness before grouping, and to decide the angle slices.
 
-Full script paths: `~/projects/SfsPipeline/bin/prepare_lowres.sh`, `~/projects/SfsPipeline/bin/image_subset_2x.sh`,
+Full script paths: `~/projects/SfsPipeline/bin/make_sub8.sh`, `~/projects/SfsPipeline/bin/image_subset_2x.sh`,
 `~/projects/SfsPipeline/bin/split_quadrants.py`. Project driver precedents in their project dirs:
-`sfs_select_bcu2314.sh` (median-split full-site) and `sfs_select_bct.sh` (the newer
-fixed-ANGLE 45-deg slices with a rare group kept whole - the current recipe).
+`sfs_select_bcu2314.sh` (median-split full-site), `sfs_select_bct.sh` (fixed-ANGLE 45-deg
+slices with a rare group kept whole), and `sfs_south/sfs_subcover_worker.sh` (the current
+end-to-end driver: pre-split group lists -> make_sub8 -> image_subset 2x per non-whole group,
+whole group kept as is -> union -> dem_mosaic --max "after" max-lit, both sites in one qsub).
 
 ## Usage - full-site azimuth-group recipe (the settled default)
 
@@ -232,6 +253,16 @@ behavior: [[sfs-post-bundle-eval]] section 2b.
 - VALIDATE: `dem_mosaic --max` the selected subset and compare to the full-set max-lit
   mosaic ([[sfs-post-bundle-eval]]); coverage should be nearly the same. Overlay the ranked
   list in stereo_gui to confirm it fills the area.
+- CRATER-RIM ILLUMINATION CHECK (representativeness, not just coverage). Compare the BEFORE
+  (full-inlier) and AFTER (subset) max-lits side by side and look at CRATER RIMS. A max-lit
+  takes the brightest value per pixel over all images, so a rim lit around MOST of its
+  circumference means the subset still spans many Sun azimuths (good illumination diversity -
+  what SfS needs). If a rim that was bright most of the way around in the BEFORE max-lit goes
+  DARK over most of its circumference in the AFTER max-lit, the subset lost illumination
+  DIRECTIONS (not area) - you thinned too hard or dropped a needed azimuth group. This catches
+  representativeness loss that a plain coverage (valid-pixel) comparison misses: ground can
+  still be "covered" while only ever lit from one side. If rims darken, widen or re-balance the
+  azimuth groups (or keep a sparse group whole), do not just chase valid-pixel coverage.
 
 ## Related
 [[sfs-post-bundle-eval]] (prune whacky cameras FIRST, and the max-lit coverage check),
