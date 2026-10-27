@@ -99,6 +99,9 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
 - Say **"fails"**, never "chokes" (or "errors out", "rejects", "throws").
 - Avoid **"gate"/"gated"**: say a mode **"selects"** (e.g. "selects pixels by support"),
   or use "uses"/"depends on"/"keys on".
+- Avoid informal jargon: **"reaped"/"reap"**, **"culled"/"cull"**, **"wedged"**. Use
+  plain formal words: a process is **"terminated"** (or "killed by the node limits"),
+  images/frames are **"removed"/"filtered out"**, a stuck node/job is **"stuck"**.
 - **"triangulation error"**, not "ray intersection error" (the point2dem `--errorimage`
   band). Fine to write both once, then use "triangulation error" throughout.
 - Write **"after jitter correction"**, not bare "after jitter"; name the operation.
