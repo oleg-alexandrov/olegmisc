@@ -73,7 +73,23 @@ stale. Recipe:
         print("="*70, m["date"], m["sender"], "\n", "\n".join(cut).strip()[:1500])
     PY
 
+## Accessing Gmail from Antigravity (Gemini)
+
+Antigravity sessions do not have the native `mcp__claude_ai_Gmail__*` tools injected
+into their context. When running inside Antigravity and needing to inspect live Gmail:
+
+Invoke headless Claude Code CLI directly via shell execution:
+
+```bash
+/Users/oalexan1/.local/bin/claude --dangerously-skip-permissions -p "Search Gmail via the Gmail MCP tool for <criteria>. Follow the instructions in ~/.claude/skills/gmail/SKILL.md."
+```
+
+This runs Claude with the Gmail MCP attached, queries the mailbox, and returns the
+plain-text message content directly. Do not spend time searching local disk caches
+or trying non-existent local tokens.
+
 ## Sending mail to Oleg
 
 For SENDING (not reading), the msmtp path is in the machines-tools skill; this skill is
 only about reading via the MCP.
+

@@ -19,22 +19,25 @@ Stage scripts in `bin/` (driven by `cassis_process.sh`, the top-level driver):
 - `cassis_stereo.sh` - the frame-DEM step: mapproject the framelets onto the blurred
   CTX at native GSD (~4.59 m), build a cross-look overlap list, run per-pair stereo +
   point2dem + DEM mosaic, then put the frame DEM on the CTX grid (+ hillshade, dz
-  geodiff). Historically calls `ms_cassis.py` (see below) at the stereo+dem+mosaic step.
+  geodiff). Driven by ASP's shipped `multi_stereo` tool (formerly `ms_cassis.py`).
 - `cassis_corr.sh` - correlation-only pass (`parallel_stereo --correlator-mode`).
 - `cassis_ctx_stereo.sh`, `cassis_ctx_align.sh` - build/align the CTX reference DEM.
 - `cassis_linescan_dem.sh` - linescan CTX DEM helper.
 - `gen_gcp.sh`, `refit_transverse.sh`, `cassis_metrics_run.sh`, `cassis_pass.sh`.
 
-**`ms_cassis.py`** (`CassisPipeline/bin/ms_cassis.py`, ~220 lines) is the CaSSIS
-per-pair stereo ENGINE: overlap-list -> per-pair `parallel_stereo` (mapprojected) ->
-`point2dem` on a fixed grid -> `dem_mosaic`, with a CTX-relative blunder filter that
-drops a per-pair DEM whose mean departs from the reference. It was the prototype for
-the shipped ASP `multi_stereo` dem_mosaic mode. Its options: `--overlap-list --dem
---ref-dem --out-dir --mode dem_mosaic --num-parallel --blunder-tol --stereo-options
---point2dem-options`. SWAP to the shipped tool: replace the `ms_cassis.py` call in
-`cassis_stereo.sh` with `multi_stereo` (see [[multi-stereo]]), mapping `--out-dir` ->
-`--out-prefix` (dir->prefix, so also fix the downstream mosaic paths in that script),
-`--num-parallel` -> `--processes`, `--stereo-options` -> `--stereo_options`.
+**`multi_stereo` in `cassis_stereo.sh`**:
+`multi_stereo` (dem_mosaic mode) is the shipped ASP per-pair stereo engine.
+It replaces the older prototype `ms_cassis.py` (now deleted). It takes
+`--overlap-list`, `--dem`, `--output-prefix`, `--processes`, `--blunder-tol`,
+`--stereo-options`, and `--point2dem-options`.
+
+**Framelet pairing (`pairs_lr.txt`)**:
+In dense mode (`cassis_stereo.sh` stage 6), cross-look pairs are computed from mapprojected
+footprints (`out/maps/*.tif`) sorted along-track by footprint centroid Y. For each left look
+framelet L, it selects the top overlapping right look framelets R (top 6 by overlap fraction
+where overlap > 4%, plus top 3 regardless for thin-overlap survival). Same-look pairs are
+adjacent along-strip framelets. If an observation's track does not align well with the
+projected Y axis or has missing framelets, pair generation must be checked carefully.
 
 **pfe**: replicas live under `~/projects/cassis_dist_no_tilt` and `/nobackupp19/oalexan1`;
 production is a qsub job (heavy 143-pair runs belong on pfe/l1, never the Mac). To

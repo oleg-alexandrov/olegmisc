@@ -217,6 +217,17 @@ In a project work dir, all paths (in scripts and when presenting to the user)
 must be RELATIVE to that work dir. Use absolute paths only for external files
 outside it.
 
+## No Stray Files Outside Project Work Directory (CRITICAL)
+
+NEVER leave stray log files, scratch scripts, temporary images, or test outputs
+outside the project work dir (such as loose in `~`, `/tmp`, or scattered in `~/projects/`).
+Every log, script, intermediate raster, and output product MUST live strictly inside
+`~/projects/<subdir>/` (or its designated subdirectories like `run/`, `data/`).
+The only permitted file outside the subdirectory is the canonical notes file
+`~/projects/<notes>.sh`. Any temporary launcher or monitor script must also reside
+inside the work directory, never in `~` or `/tmp`.
+
+
 **ALWAYS operate FROM the work dir and keep everything relative to it (CRITICAL,
 recurring).** Pick one work dir, stay in it, and write every path in scripts,
 commands, and chat RELATIVE to it (`data/cub/x.cub`, `quartet_v1/ba`), never
