@@ -97,6 +97,7 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
   editing ANY prose, scan it for semicolons and dash-connectors and remove them before
   finishing.
 - Say **"fails"**, never "chokes" (or "errors out", "rejects", "throws").
+- Never say **"beware"** (too alarmist): say **"note"**, or just state the caveat plainly.
 - Avoid **"gate"/"gated"**: say a mode **"selects"** (e.g. "selects pixels by support"),
   or use "uses"/"depends on"/"keys on".
 - Avoid informal jargon: **"reaped"/"reap"**, **"culled"/"cull"**, **"wedged"**. Use

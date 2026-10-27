@@ -5,6 +5,16 @@ Durable engineering rules and workflows belong in skills (~/.claude/skills/)
 and CLAUDE.md per the auto-memory lifecycle policy.
 
 ## Immediate Reminders
+- sfs_south RE-REGISTRATION + TILED SfS LIVE (2026-10-27). Pushed SfsPipeline fixes to
+  origin/main (790b39f): launch_sfs_tiles.sh silent-submit fix (unset IMAGE_DIR/IMAGE_SUFFIX
+  in a qsub -v list -> PBS rejects job silently; now defaulted + exit-status check),
+  GCP_ROBUST_THRESHOLD knob in bundle_adjust_dem_gcp.sh, WORKFLOW.md tiling (5km domain tiles
+  at ~2500 px, exposures reused across a re-run). **NOT YET SYNCED TO PFE** (stale copy there).
+  **REMIND OLEG: next time we do SfS work, rsync ~/projects/SfsPipeline/bin/ to pfe BEFORE
+  using launch_sfs_tiles there.** Live jobs on pfe: site3 stronger-GCP bundle 25314941
+  (gcp-sigma 0.25 + robust 40) + 12 tiled SfS jobs (sites 1/2/4, 4 tiles each). 3-hour
+  CronCreate monitor armed (tag sfssouth). Live notes + NEXT steps:
+  ~/projects/sfs_south/overnight_plan.sh (re-read it top-to-bottom on resume).
 - jitter pixel-reprojection speedup: DONE and PUSHED (god + origin, 2026-10-20). The
   analytic-Jacobian path (97c3d7f58) was ABANDONED and collapsed out of history. The
   winner is the trimmed local linescan model (commit 2c805a87e, with e428d5aba find-match
