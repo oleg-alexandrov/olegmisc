@@ -376,10 +376,11 @@ Co-Authored-By: Antigravity <noreply@google.com>
 
 ## Skill and memory maintenance
 
-- **Skills (`~/.claude/skills/*/SKILL.md`) are living memory. When a skill is stale,
-  wrong, or missing a hard-won lesson, REFRESH IT UNPROMPTED** as part of the work (keep
-  it concise), then suggest Oleg review/commit. The edit is standing-authorized like
-  CLAUDE.md/MEMORY.md; do not push without his go-ahead.
+- **Skills (`~/.claude/skills/*/SKILL.md`) are living memory. You are ENCOURAGED to edit a
+  skill whenever it appears incomplete, out of date, stale, wrong, or missing a hard-won
+  lesson - REFRESH IT UNPROMPTED** as part of the work (keep it concise), then OFFER LATER
+  to git add and push it. The edit is standing-authorized like CLAUDE.md/MEMORY.md; make the
+  edit freely, but do not push without his go-ahead.
 - **Propose NEW skills, don't create them unprompted** (the set grows slowly): when a
   topic keeps recurring or a body of knowledge has no home, suggest one and let him
   decide. Likewise FLAG structural maintenance (merge/split/rename/retire).
