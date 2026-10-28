@@ -51,6 +51,10 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
   column-aligned hanging indents.
 - **NEVER create a file whose name starts with an underscore (`_`)** - ever. Use a
   plain descriptive name (`step0_contact.png`, `mp_on_hs_tmp.tif`).
+- **NEVER name a FUNCTION with a leading underscore** (shell, Python, C++, any language):
+  no `_helper()`, `def _parse()`, etc. Use a plain name, and if a sourced shell helper
+  needs a namespace guard, prefix it with the tool/module name instead (`sfs_require`, not
+  `_sfs_require`). Language dunders like Python `__init__` are exempt.
 - **Report every path RELATIVE to the one work dir** (`masks/x_map.tif`), not sprawling
   absolute/`/home6`/`/nobackupp19` paths. State the work dir once, hold that anchor
   fixed for the whole session. Detail: project-workflow.
