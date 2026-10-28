@@ -61,6 +61,12 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
 - **Naming derived products: keep the source's FULL basename + an explicit suffix**
   (`X_mask.tif`, `X_hs.tif`, `X_map.tif`, `X_err.tif`), in the SAME directory as the
   source; chain suffixes in operation order (`_filled_blur`). Detail: asp-photogrammetry.
+- **Name a product for WHAT WENT INTO IT, not for when or why you made it.** A name must
+  tie the product to its distinguishing inputs/stage, never to its novelty or history.
+  So `sfs_bundle_gcp` (the input cameras were the bundle-adjusted, GCP-constrained set),
+  NOT `sfs_new`, `sfs_redone`, `sfs_v2`, `sfs_final`, or `sfs_fixed`. "new"/"redone"/
+  "final" are meaningless the moment a second variant exists and tell a reader nothing
+  about which inputs produced it.
 - **ONE memory location, always: `.claude/projects/-Users-oalexan1/memory/MEMORY.md`**
   (the per-HOST dir). NEVER write memory into a per-directory or per-project
   `.claude/projects/<something-else>/memory/` - per-project memory is too hard to track,
