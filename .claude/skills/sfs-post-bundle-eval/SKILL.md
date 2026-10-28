@@ -397,6 +397,21 @@ screens catch GEOMETRIC failures only; radiometric defects need the EYE. Finding
   biases the terrain. Once you identify such a frame, remove it from the SfS image/camera lists
   (the max-lit removal only cleans the inspection product). It can stay in the bundle (geometry
   is fine), but keep it out of photoclinometry.
+  **Make the exclusion STICK with one authoritative list + a pre-launch check (the exact trap
+  that bit site2, 2026-10-27).** The lesson above was already written here, yet a known detector-
+  stripe frame (M128439353RE) got dropped from the max-lit but NOT from the SfS solve: the removal
+  was deferred ("exclude from SfS later"), forgotten, and the frame rode into the SfS re-run and
+  re-striped the DEM. Prevent it mechanically:
+  - Keep ONE authoritative per-site exclusion list, `lists/siteN_excluded.txt`, holding EVERY
+    dropped id with its reason (geometric: low count / high 75th-pct offset / coarse GSD, AND
+    radiometric: detector stripe / saturation). One list, both defect classes.
+  - BEFORE every SfS launch OR re-launch, ASSERT the SfS image list shares nothing with it:
+    `grep -Ff lists/siteN_excluded.txt lists/siteN_sfs_images.txt` must print NOTHING. Make this
+    a gate, not a memory.
+  - A stripe found AFTER the SfS image list was built is a RE-RUN trigger, not a note-for-later:
+    drop the id, rebuild the SfS list, and REDO the affected SfS tiles. Because `parallel_sfs
+    --resume` keeps already-written per-tile DEMs, you MUST remove the contaminated tile outputs
+    first (or run into a fresh output dir), or it silently keeps the striped result.
 
 ## Related
 [[sfs]] (the parent pipeline; this is its pre-SfS gate), [[bundle-adjust]] (the stats files
