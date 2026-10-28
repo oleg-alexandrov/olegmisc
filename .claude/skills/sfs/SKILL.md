@@ -156,8 +156,8 @@ correspondence. Work in ONE fixed work dir on pfe, paths relative.
 hard-won NAC ingest details this section depends on: the ODE codes that work
 (`pt=EDRNAC4`), the `isis10`-vs-`isis10asp` env gotcha (`isis10asp` lacks
 libLinearMath, so `lronac2isis` dies), the fact that `prepare_lro_nac.py` /
-`batch_prepare_lro.sh` DEFAULT `ISISROOT` to a nonexistent `asp_deps` so you must
-EXPORT `ISISROOT=.../isis10` + `ISISDATA` + `LD_LIBRARY_PATH` explicitly, and the
+`batch_prepare_lro.sh` DEFAULT `ISISROOT` to an `isis` env that does not exist on pfe or
+the Mac, so you must EXPORT `ISISROOT=.../isis10` + `ISISDATA` + `LD_LIBRARY_PATH` explicitly, and the
 "ISISDATA often not populated -> spiceinit fails" trap. Do not rediscover these.
 
 **Step 0 - query and download candidate LRO NAC images.** Query the PDS ODE REST
@@ -500,11 +500,16 @@ notes carry the exact invocations, list-assembly, and what went wrong.
 
 ## pfe env: ISISROOT is now override-friendly in the SfsPipeline copies (old TODO resolved)
 
-The `SfsPipeline/bin` scripts set `export ISISROOT=${ISISROOT:-$HOME/miniconda3/envs/asp_deps}`
+The `SfsPipeline/bin` scripts set `export ISISROOT=${ISISROOT:-${CONDA_PREFIX:-$HOME/miniconda3/envs/isis}}`
 (and the same `${VAR:-}` idiom for `ASPROOT`/`ISISDATA`/`ALESPICEROOT`), so each machine or job
-can point them at the right env. This resolved the old TODO that the superseded `~/projects/sfs`
-copies hardcoded `export ISISROOT=$HOME/miniconda3/envs/asp_deps` with no override (that bare
-env no longer exists on pfe, only `asp_deps_stale_nfs`; the live ISIS env is `isis10asp`).
+can point them at the right env. The hardcoded fallback was changed from `asp_deps` to `isis`
+(2026-10-28) to match the public README, which tells a user to create an ISIS conda env named
+`isis`. That fallback fires ONLY when both `ISISROOT` and `CONDA_PREFIX` are unset, so it never
+affects Oleg's runs: on pfe `ISISROOT` is exported to `isis10asp` and forwarded with `-V`
+(the live ISIS env there, since `asp_deps` no longer exists, only `asp_deps_stale_nfs`); on the
+Mac `asp_deps` is active and doubles as the ISIS runtime (there is NO `isis` env on the Mac).
+This resolved the old TODO that the superseded `~/projects/sfs` copies hardcoded
+`export ISISROOT=$HOME/miniconda3/envs/asp_deps` with no override.
 
 Even with the default, it did not matter in practice for WRAPPED tools: every ASP tool is a
 `bin/` WRAPPER that UNSETS inherited `GDAL_DATA`/`PROJ_DATA`, re-points them at the bundle's
