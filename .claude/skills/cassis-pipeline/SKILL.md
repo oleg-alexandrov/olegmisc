@@ -38,11 +38,31 @@ framelet L, it selects the top overlapping right look framelets R (top 6 by over
 where overlap > 4%, plus top 3 regardless for thin-overlap survival). Same-look pairs are
 adjacent along-strip framelets. If an observation's track does not align well with the
 projected Y axis or has missing framelets, pair generation must be checked carefully.
+Pairing is by FOOTPRINT OVERLAP, never by framelet index, so the along-orbit offset
+between looks (the two looks are seconds apart with the telescope rotated 180 deg, so
+left framelet i overlaps right framelet i+4 or i+5) is handled automatically.
+
+**Dropout framelets**: the PSA/PDS archive can deliver framelets that are instrument
+dropout frames with ZERO valid pixels. A 100% nodata framelet makes the 0-iteration
+bundle_adjust in `linescan2framelets.sh` fail when computing image statistics, which
+aborts the whole frame-camera stage (the script runs `set -e`). The script now prunes
+zero-valid-pixel framelets first (keep a cube only if `np.any(a > -1e30)`), commit
+ffadea7. These framelets show as gaps in the stitched strips. Note this is a CRASH, not
+a coverage truncation (the two look different).
 
 **pfe**: replicas live under `~/projects/cassis_dist_no_tilt` and `/nobackupp19/oalexan1`;
 production is a qsub job (heavy 143-pair runs belong on pfe/l1, never the Mac). To
 validate a new stereo engine, reuse an existing replica, move its old mosaicked DEM and
 max-tri-err aside, inject only the new stereo step, and expect the same DEM.
+
+**CTX reference coverage**: the reference is a mosaic of USGS controlled CTX DTMs (STAC
+collection `mro_ctx_controlled_usgs_dtms`). The controlled inventory is sparse in places,
+and a generous snapped bounding box does NOT imply good coverage. Check the CTX valid-pixel
+fraction INSIDE the CaSSIS footprint (crop the CTX to the footprint grid first, not the
+padded canvas). Gaps there mean no vertical or horizontal control for that part of the
+strip, so the pc_align fit and the dz / dh-dv stats are driven only by where CTX exists.
+Fill options when short: build a CTX DTM from a stereo pair over the gap (ctx-processing),
+use HRSC for continuous coverage, or MOLA as a coarse last resort.
 
 **Distortion**: ALE emits the CaSSIS distortion (USGSCSM DistortionType CASSIS=9). A
 residual cross-track BOWL is a two-look BA near-degeneracy, not a distortion bug; real

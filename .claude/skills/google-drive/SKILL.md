@@ -55,6 +55,26 @@ token is transplanted to the headless host (pfe). rclone is a single static bina
   `rclone size gdrive:`. Then copy: `rclone copy gdrive: /nobackup/.../dest/
   --transfers 4 --multi-thread-streams 4 --stats 15s --log-file <log>`.
 
+## Uploading / delivering a doc TO Drive (write path)
+- The `gdrive:` remote is `scope = drive.readonly`, so any WRITE fails with
+  `ACCESS_TOKEN_SCOPE_INSUFFICIENT` / "Insufficient Permission". To push, the remote
+  must be re-authorized with a writable scope (`drive.file`), a browser step. Leave the
+  read-only default unless a write is actually needed.
+- The Drive MCP `create_file` CAN write (native Docs/folders, or upload+convert content),
+  and the MCP acts as the user's own account, so it reaches their shared folders. But a
+  binary upload means passing the file as a base64 param, which for a multi-MB file is
+  impractical to hand-author into the tool call. Use the MCP for small text or to create
+  an empty native Doc, not for a 2 MB binary.
+- **To deliver a native Google Doc WITH figures**: do NOT convert a figures-heavy HTML to
+  a Doc. Google's HTML-to-Docs import DROPS base64 data-URI images, so the Doc arrives
+  with text but no figures. Instead build a `.docx` with the images EMBEDDED
+  (python-docx: `add_picture`, side-by-side via a 1x2 table), verify with
+  `unzip -l x.docx | grep word/media`, then either (a) have the user drag the docx into
+  the Drive folder (Drive converts it to a Doc, embedded images survive), or (b) push it
+  via rclone with a writable scope and `--drive-import-formats docx` to convert on upload.
+  Confirm folder write access first: MCP `get_file_metadata <folderId>` returns
+  `canAddChildren` and `readOnly`.
+
 ## Caveats
 - rclone's DEFAULT shared client_id is being retired during 2026 (a NOTICE prints, but
   it still works for now). For durable use, make a personal client_id (rclone drive
