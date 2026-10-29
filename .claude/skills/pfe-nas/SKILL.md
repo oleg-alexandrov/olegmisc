@@ -77,6 +77,22 @@ Bare minimum to remember without reading:
   means exactly this. Same for CLAUDE.md.
 - **One FIXED work dir per pfe run; `cd "$W"` ONCE, keep every path relative to it (or absolute), NEVER a nested `cd` into a subdir** (it re-bases the earlier relative paths and breaks the inputs mid-job). Write products as `sub/out.tif`, don't `cd sub`. Detail in the shell-scripts skill.
 - **No heavy/parallel compute on the pfe head node** - `parallel_stereo`, anything multi-process/multi-thread or big-RAM goes to qsub (small/fast -> `devel`). Light single-thread `gdalinfo`/`gdal_translate`/`gdalwarp`/`ls`/`qstat` on the head node is fine (don't qsub a one-off gdalinfo - use common sense). **HEAD-NODE RULE nuance (confirmed by a policy-violation warning 2026-08-07): the trigger is >1 process/thread, NOT file size - so big SINGLE-THREAD `gdal_translate`/`gdalwarp`/`geodiff --threads 1` on multi-GB rasters are FINE (these GDAL CLI tools truly honor one thread). **CONCURRENCY CAVEAT (burned 2026-10-14, repeated NAS complaints): the trigger is CONCURRENT processes, not a single `--threads 1`. A SINGLE `dem_mosaic --threads 1` (or `colormap --threads 1`) is head-node-legal and uses ~1 core, but SEVERAL ASP tools running AT ONCE add up to a multi-process load and get reaped - the complaints came from several `dem_mosaic --max --threads 1` max-lits built concurrently, compounded by TWO assistants sharing the user id on the same front-end (one's colormap colliding with the other's mosaics). Watch out: an ASP tool shows a high thread COUNT at `--threads 1` (NLWP ~33 = idle TBB/GDAL pool sized to ncpus), but that idle pool is NOT the trigger - concurrent ACTIVE processes are. Fix: run head-node ASP tools STRICTLY one at a time, and for a batch of max-lits use `SfsPipeline/bin/batch_mosaic.sh` (qsub, compute node). See the ONE-AT-A-TIME rule at the top.** The rest of the head-node rule (only 1 thread/1 process; do not retry a killed command, qsub it) is the #1 RULE at the top.** **To run any gdal/ASP tool on pfe FIRST set the env** (non-interactive ssh has nothing on PATH, PROJ unset): for GDAL use the `geo` env (`source $HOME/miniconda3/etc/profile.d/conda.sh && conda activate geo`, PROJ wired, no proj.db warning - see the dedicated GDAL note below); for ASP tools `export PATH=$HOME/projects/BinaryBuilder/StereoPipeline/bin:$PATH` (the packaged build has ALL tools) and set `GDAL_DATA`/`PROJ_DATA` to its `share/` so `-t_srs` works. There is NO `asp_deps` env on pfe (it is `asp_deps_stale_nfs`); `conda activate asp_deps` silently fails. Detail in `~/projects/pleiades_notes.sh`. **NEVER run heavy compute - `stereo_corr`/`parallel_stereo`/correlation (the eval dd) - on the Mac OR the pfe head node; it goes to a qsub compute node.** The eval (`cassis_eval_stage.sh`) is the last step inside each stage's qsub job, so its dd runs on the compute node - do not run it by hand on the Mac. 4-sec dry-run before qsub. budget `e2305`. **Models & node choice:** `cas_ait` (40c, Aitken), `rom_ait`/`mil_ait` (128c, Aitken), `bro_ele` (28c, Electra), `sky_ele` (40c, Electra). Broadwell is decommissioned ONLY on Pleiades - `bro_ele` (Electra) and `sky_ele` are FINE to use. **Our code is model-agnostic - it must run on ANY of them** (match `ncpus` to that model's cores). **Before launching, study load on ALL systems** (`/u/scicon/tools/bin/node_stats.sh` -> Free vs "Queued jobs want N nodes" per model) and pick the LEAST-CONTENDED (e.g. bro_ele was Free 292 / 12 queued while cas_ait was 379 queued). **For small single-node jobs Athena (Turin) nodes are also fine - but Athena Turin is only visible/submittable from the ATHENA front-end** (ssh to athena), NOT from pfe. **If a job sits queued too long, qdel it and resubmit on a less-contended system.** In a non-interactive ssh, qsub is not on PATH - use `/PBS/bin/qsub`. `devel` allows only 1 job/user (pack multiple sites into ONE serial job). POLICY: NO separate PBS launcher script (cannot afford one per stage). The PLAN/NOTES file holds the COMPLETE, LITERAL, copy-pasteable qsub command line (the full `qsub <all pbs args> -- $dir/script.sh <all script args, workDir LAST>` as ONE reproducible string - NOT just the args/params/job-id logged piecemeal), WITH its rationale + named params, logged BEFORE the launch. Then launch the worker DIRECTLY via that qsub `--` form. The worker self-handles umask/cd/tailable-log and cds into the passed workDir; it holds only tool commands, never qsub args. This is GENERAL, INDEPENDENT of allocation (e2305/s3319/any) - it is about code structure. Only a LARGE fan-out (hundreds of jobs, rare) justifies a generic launcher; most work needs one qsub or a handful, so inline-in-notes is the default. Detail: `~/projects/qsub_rules.sh`, `qsub_convention.sh`.
+- **A pfe PROJECT/WORK DIR IS ALWAYS A SYMLINK** (`/home6/oalexan1/projects/<proj>`,
+  and the data subdir, point to `/nobackupp19/oalexan1/...`). **CHECK IT WITH `ls -ld
+  <path>` BEFORE DOING ANYTHING on pfe**, and remember the consequences (all burned
+  2026-10-29): (1) `find /abs/path -maxdepth 1 ...` does NOT descend into a symlinked
+  dir - it silently matches NOTHING and returns 0, so a find-based count or wipe becomes
+  a confusing no-op (two dead stray-file wipes in a row looked like "0 files" when 448
+  were sitting there). Fix: add a TRAILING SLASH (`find /abs/path/ -maxdepth 1`), or `cd`
+  in first, or point find at the resolved `/nobackupp19/...` target. (2) `rm -rf
+  /abs/path/<child>` DOES work (the path resolves THROUGH the symlink to the real child),
+  so destructive ops by absolute child path are fine - but resolve the link first
+  (`ls -ld`/`readlink -f`) and prefer operating on the real `/nobackupp19/...` path.
+- **To EXPLORE a pfe work dir, `ls` the BASE dir FIRST, then `ls` the specific SUBDIRS of
+  interest - do NOT reach for a recursive `find`/`du` walk** (Lustre dislikes the stat
+  storm). `ls -la <dir>/` to see the base, classify by name, then `ls <dir>/<subdir>/`
+  only where needed. Use `find` sparingly and only shallow (maxdepth 1, with the trailing
+  slash above); never a blind recursive sweep.
 - **`du` on NAS/Lustre is GRIEF - be VERY mindful, use it SPARINGLY and TARGETED,
   and KILL it if it lingers.** `du` stats every file, and Lustre makes that brutal. A
   recursive `du -sh */` over a big work dir (millions of files across map/jitter/corr/
@@ -264,7 +280,20 @@ Bare minimum to remember without reading:
   allocation headers, and job abort diagnostics. FIX: ALWAYS `cd "$W"` before submitting AND
   pass `-o "$W/" -j oe` in the `qsub` command (or `#PBS -o <workdir>/` and `#PBS -j oe`). When a
   directory ending in `/` is passed to `-o`, PBS names the file `<jobid>.OU` inside `$W/`, keeping
-  `/home6/oalexan1` completely clean.
+  `/home6/oalexan1` completely clean. **THE RECURRING OFFENDER IS THE AD-HOC INLINE qsub typed
+  over ssh, NOT the framework scripts** (`launch_sfs_tiles.sh`, `batch_mapproject.sh`,
+  `batch_mosaic.sh` already pass `-o $currDir/`). A quick one-off `ssh pfx "qsub ... -N jit4 -- ..."`
+  that carries `-N` but forgets `-o "$W/" -j oe` drops its spool straight into the home dir.
+  `-o "$W/"` is NON-NEGOTIABLE on EVERY qsub, including a throwaway one-off - there is no "it's
+  just a quick job" exception. The worker doing its OWN `exec > $W/log.txt` does NOT exempt it:
+  PBS still writes a separate accounting spool, so the home dir still gets littered (burned
+  2026-10-29: eight `jit4.o* .. mos_jit7.o*` BCT-SfS spools sat in `/home6/oalexan1` from an
+  overnight batch of inline jitter/mosaic qsubs that each set `-N` but no `-o`). The spool's only
+  content is the PBS resource-usage epilogue (walltime/mem/Exit), which the notes-discipline rule
+  already captures into the project `.sh`, so a stray spool is pure litter once that line is
+  written. CLEANUP HABIT: after any batch of ad-hoc qsubs, `ls /home6/oalexan1/*.o* 2>/dev/null`
+  and, once each job's resources are recorded in the notes, wipe them with explicit literal names
+  (never a `rm *.o*` glob in home).
 - **PBS system aborts vs application errors (`Exit_status = -4`, MOM heartbeat loss).**
   Negative exit codes in PBS (such as `Exit_status = -4` or `-11`) are issued by the PBS
   daemon/server, NOT by the user application or bash script. Specifically, `Exit_status = -4`
