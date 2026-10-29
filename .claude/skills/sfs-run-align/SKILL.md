@@ -160,6 +160,19 @@ structured ~2 m field (moved ~0.8 m, MAD 0.11) while jitter replicated it (dv 1.
 its dh/dv to the SfS->LOLA dh/dv. If the bundle under-moves a uniform shift, iterate it (dem2gcp
 then bundle again on the new cameras - the residual shrinks each pass).
 
+**Name the camera dirs by bundle-adjust STAGE, and mirror the stage onto the orthos.**
+Use `ba_<site>_<stage>` for each pass and `map_<site>_<stage>` for that pass's mapprojected
+orthos, so a camera dir and its ortho dir always line up. The stages, in order: the
+matches-only harvest `ba_<site>`, then `_fix` (fixed-camera stage, the well-registered
+cameras held), then `_free` (free refine), then `_htdem` (heights-from-dem BA, the input to
+re-registration), then `_gcp` (the `dem2gcp` + `bundle_adjust_dem_gcp.sh` re-registration -
+the SHIPPED cameras). So `ba_site1_gcp` is the
+delivered camera set and `map_site1_gcp` its orthos draped on the LOLA DEM, and the per-site
+GCP control lives in `gcp/run_<site>.gcp`. For a jitter re-solve the final stage is a
+`_jit*` dir in place of `_gcp`. Keep only the stages still needed once a site is delivered -
+typically `_htdem` (holds the tie matches and the input cameras) and `_gcp` (the shipped
+cameras); the earlier `_free`/`_fix` passes can be dropped.
+
 Two things that raise GCP yield through the transfer:
 - **A more-filled disparity transfers more GCP** (dem2gcp maps each GCP through the
   SfS->ref disparity; holes -> GCP lost at `--search-len 0`). But MEASURED on BCU2314

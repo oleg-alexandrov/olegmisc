@@ -313,7 +313,16 @@ Co-Authored-By: Antigravity <noreply@google.com>
 ## Deletion and remote-op safety (CRITICAL)
 
 - **NEVER put a `$VAR`, `${...}`, glob (`*`), `~`, or `cd &&` in an `rm`/destructive
-  path. Write ONE literal absolute path per `rm -rf`, one per line.** This holds for
+  path. Write ONE literal absolute path per `rm -rf`, one per line.** This BANS even a
+  path with a LITERAL PREFIX plus a variable - `rm -rf /full/path/to/$b` and
+  `rm -rf $B/sub` are BOTH forbidden, not just a bare `rm -rf $VAR`. Reason: if the
+  variable is empty or wrong the command deletes the prefix (or `/`), AND a human
+  reviewer cannot verify at a glance what it hits - a `$B` anywhere in an `rm` makes the
+  command unreviewable and makes Oleg (and anyone) nervous (flagged 2026-10-29 after a
+  wipe script used `rm -rf $B/<dir>`; it was caught and rewritten to full literal paths
+  before running, but it should never have been written that way). This applies in
+  GENERATED SCRIPTS too: write the FULL literal absolute path on every `rm` line, never
+  `rm -rf $VAR/...` even when a variable would be tidier. This holds for
   EVERY `rm` ANYWHERE with NO exception: interactive commands, generated scripts, loops,
   and ESPECIALLY throwaway/ad-hoc test scaffolding - the recurring trap (hit repeatedly,
   2026-10-22, to Oleg's audible frustration) is pre-cleaning an output dir with

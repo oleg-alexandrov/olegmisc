@@ -24,6 +24,18 @@ saying so. The `~/projects/sfs` dir is kept only for per-project history and a f
 not-migrated site/debug helpers (`stereo_map.sh`, `process_all.sh`, `coverage_subset_tile.sh`,
 `cam_test_ba_vs_jitter.sh`, etc.). Never call a `~/projects/sfs` copy.
 
+**The pfe copy of `SfsPipeline/bin` DRIFTS STALE vs the Mac repo - rsync before running on pfe.**
+pfe has its own `~/projects/SfsPipeline/bin` clone that is NOT auto-updated when you edit/commit
+the Mac repo, so a pfe run can silently use an OLD version and fail in a confusing way. Burned
+twice on 2026-10-28: `launch_sfs_tiles.sh` on pfe lacked the IMAGE_DIR/IMAGE_SUFFIX fix (silent
+qsub submit failure), and `sfs_blend.sh` on pfe was missing `--shadow-fill-max-diameter` (the
+newer ASP lola-curved mode requires it, so every blend died "must be positive" even though the
+Mac script was correct). Before running ANY SfsPipeline script on pfe after a repo edit, rsync the
+current copy (`rsync -a ~/projects/SfsPipeline/bin/<script> pfe:projects/SfsPipeline/bin/` then
+`chmod +x` on pfe) or verify it matches (`grep` for the expected new flag). Diagnose a pfe script
+failure by `bash -x`-tracing the ACTUAL command it builds, then checking the pfe binary accepts
+those flags (`<tool> --help`) - the Mac script being correct does NOT mean pfe is.
+
 ## Do Not Reinvent the Wheel: Use the Standard Batch Mapproject Scripts
 
 When preparing mapprojected images for SfS, bundle adjustment, GCP generation, or mosaic building across many images (from 10 to 1300+ images on large grids like 20k x 20k pixels):
