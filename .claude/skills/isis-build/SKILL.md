@@ -35,6 +35,11 @@ Always also set `ISISDATA=$HOME/projects/isis3data`,
 delete isis3data (~110-179 GB kernels) or isis_test_data (~19 GB) - both are used by every
 ctest run and take a very long time to re-fetch.
 
+**`conda activate` does NOT set `ISISROOT`/`ISISDATA` for you - you MUST `export` them manually
+every ISIS session (in a non-interactive shell they come back EMPTY). This is a recurring
+rediscovery - set both explicitly before running any ISIS tool.** On pfe the env is `isis10`/
+`isis10asp` and the data tree is `/nobackupnfs1/oalexan1/projects/isis3data` (see isis-data / pfe-nas).
+
 ## Build + install (Ninja, not make)
 
 Source root is `ISIS3/isis`, generator Ninja; `make install` errors. Init the gtest submodule

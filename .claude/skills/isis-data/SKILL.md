@@ -25,6 +25,8 @@ export ISISDATA=/nobackupnfs1/oalexan1/projects/isis3data
 export ALESPICEROOT=$ISISDATA
 export PATH=$ISISROOT/bin:$PATH
 ```
+**`conda activate isis10`/`isis10asp` does NOT set `ISISROOT`/`ISISDATA` in a non-interactive ssh - they come back EMPTY. You MUST `export` them manually (as above) every session. This keeps getting rediscovered (2026-10-29).** TGO/CaSSIS SPICE kernels ARE present on pfe at `$ISISDATA/tgo/kernels/{ck,fk,ik,lsk,mk,pck,sclk,spk}` - do NOT look under `/nobackupp19` or `/swbuild` (the tree is only on `/nobackupnfs1`). ALE auto-discovers the ESA `em16_cassis.tm` metakernel from `ALESPICEROOT`, so no hand-built per-orbit metakernel is needed.
+
 The USGS rclone configuration is at `$ISISROOT/etc/isis/rclone.conf` (with remotes `lro:`, `mro:`, `base:`, etc.).
 
 ### Targeted Kernel Fetch Recipe

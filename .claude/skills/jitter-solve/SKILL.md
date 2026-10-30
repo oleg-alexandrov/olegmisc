@@ -158,6 +158,40 @@ GOOD but POORLY CONSTRAINED, not wrong. On a ~15 by 15 km, ~1000-image polar sit
 anchor-ratio 4 (about 1.2M anchors) held it; a 120k-tri, ratio-2 setup left knots starved and
 blowing up. Larger site means raise both. The fix is dense anchors, not the orientation guard.
 
+**A SMALL, image-poor site needs the tri cap HELD HIGH, not cut.** The instinct to shrink
+`--max-num-tri-points` for a small site is backwards: a 5 km, ~280-image polar site has a
+SPARSE tie network already, so cutting the cap (e.g. 300000 -> 150000, done at sfs_south
+2026-10) starves it further and a few orientation knots blow up (anchor residuals to 1e36 px).
+Hold `--max-num-tri-points` at the 300000 default (or higher) regardless of how small the
+site is. But note the deeper lesson: on such a site the SfS->LOLA error is usually a near-
+UNIFORM few-meter shift that a rigid GCP `bundle_adjust` corrects exactly, with no structured
+per-line field for jitter to recover. There, jitter has no upside and only the blow-up
+downside, so a rigid bundle is the right tool and dropping jitter costs nothing. Jitter earns
+its keep only on a DENSE-network site (~1000+ images) that ALSO carries a structured per-line
+residual (e.g. the BCT/BCU ~2 m N-S gradient jitter beat the bundle on).
+
+**DEGENERATE / unreasonably-moving poses = the signal to RAISE tri, gcp, AND anchor counts.**
+If after a solve some cameras are degenerate (0 valid ground matches) or move unreasonably
+(camera-center offsets or per-camera reprojection error far above the bulk), that is not a
+reason to clamp harder, it is the symptom of a POORLY CONSTRAINED problem: too few control
+points per pose. First lever is to raise `--max-num-tri-points` (and with it, via the ratios,
+gcp and anchors), NOT to add the orientation guard. Confirmed at sfs_south 2026-10: re-running
+the four sites at 300000 tri (up from the 150000 that blew to 1e36) with dense anchors + gcp and
+NO `--orientation-uncertainty` TAMED it completely. The worst camera-center move was ~720 m
+VERTICAL (the degenerate, ground-negligible line-of-sight direction); horizontal moves stayed
+55-231 m, and the registered frames reached ~0.9-1.1 px median ground offset. So the earlier
+catastrophe was tri-point STARVATION, period, not a missing guard.
+
+**A handful of frames can stay degenerate even at high tri: the UNDER-ANCHORED far frame.** When
+the solve is fed the FULL image set, some frames only clip the domain and image terrain tens of
+km away, so (a) they carry few tie points and (b) their anchor rays all miss the padded anchor DEM
+and they get ZERO anchors (confirmed: `Num anchor points per image: 0` for those frames). With
+neither ties nor anchors, that pose is a near-free body and stays degenerate (though bounded, not
+exploding, once tri is high). These frames are EXPECTED and harmless to the deliverable if they are
+outside the SfS subset, but to fix them: grow the `--anchor-dem` well beyond +4 km (10-40 km, a
+regional LOLA covering the actual union of footprints) so they get anchored, OR drop them from the
+set. A per-image anchor count of 0 in the log is the direct tell.
+
 ### Flag differences vs bundle_adjust
 - **NO `--datum`**: `jitter_solve` reads datum directly from CSM cameras.
 - **NO `--remove-outliers-params`**: The outlier lever in `jitter_solve` is
