@@ -83,8 +83,17 @@ rest), smooth (one full-res feather), and framelet-safe (regenerate the blur5):
      smooth; NOT --median at full res). Crop to the box -te at 18 m -> <tag>_ctx_18m.tif.
   6. REGENERATE the mapprojDem: dem_mosaic --dem-blur-sigma 5 of <tag>_ctx_18m.tif -> <tag>_ctx_18m_blur5.tif.
      MANDATORY every time the CTX changes (a stale blur5 caps framelet coverage - see the blur5 bullet).
-  CANONICAL IMPLEMENTATION: cassis_hunt2's ctx_search_and_download.py (head node, steps 1-2) +
-  ctx_sub8_blend_node.sh (compute node, steps 3-6). This is what to fold into cassis_ctx_build.sh / fast_ctx.
+  CANONICAL IMPLEMENTATION = two repo tools, split FETCH vs PROCESS (think of all CTX work this way):
+  `cassis_ctx_fetch.sh <ctxDir> <footprintDEM> <clat> <clon>` runs on the HEAD/front-end node (needs net):
+  steps 1-2, compute the box + STAC download the DTMs -> dl/*_dem.tif + box_te.txt. Then
+  `cassis_ctx_blend.sh <ctxDir> <tag> <clat> <clon>` runs on a COMPUTE node (qsub): steps 3-6, warp + crop +
+  cull + feather + blur5. The warps cache as dl/*_gw.tif, so re-running the blend to try a combination costs
+  minutes. (cassis_ctx_build.sh is the older all-in-one, same blend as CTX_STACK=sub8; the prototype was
+  cassis_hunt2's ctx_search_and_download.py + ctx_sub8_blend_node.sh.) VERIFIED 2026-10-31: produced a
+  seamless 002340 reference (99.96% clean by a 7x7-median local-outlier check, ~0.02% spike pixels, 100%
+  footprint coverage).
+  SEPARATE caveat: a de-seamed reference can shift the CaSSIS-to-CTX pc_align solution (002340's align
+  jumped to ~20 km and broke the framelet cameras) - that is a coarse-align fragility, NOT a CTX defect.
 
 **CTX reference: prefer a plain gdalbuildvrt STACK over curate+blend (vendor-free pair-hunt
 campaign, 2026-10-30).** Hard-won. The controlled-CTX reference is best built as a plain
@@ -162,6 +171,23 @@ CTX-coverage problem):
   1-7 gave -0.13 m / NMAD 2.2 m). A full 1-7 rebuilds the cameras from scratch so the framelets stay one
   connected block at one datum. cassis_e2e_node.sh FROM<=1 wipes frame/ + cams_aligned and force-realigns
   for exactly this.
+- **KEEP vs WIPE on a CTX-reference rebuild (so a redo never re-investigates the dependency split).** When
+  the CTX reference DEM changes, redo FRESH with NO cache reuse (cassis_process.sh skips a stage whose
+  output exists, so the stale outputs must be gone first). Do NOT redo in place. KEEP the CTX-INDEPENDENT
+  inputs and the expensive linescan products: the `.cub` and ISD/`.json` (ingested inputs, never wiped);
+  the linescan strips (`*_strip.tif`) + linescan jsons; the linescan STEREO DEM with its BA states
+  (`linescan/linescan_dem/ba`) and stereo point cloud (`linescan/linescan_dem/stereo`) - the linescan DEM
+  is built from the two linescan cubes with NO CTX, so it is CTX-independent; and the cached per-DTM CTX
+  warps (`ref/site<S>_ctx/dl/*_gw.tif`, box-independent, reusable across CTX rebuilds). WIPE everything that
+  derives from the CTX: the CTX reference products themselves (`site<S>_ctx_18m.tif`, `_blur5`, `_hillshade`
+  - rebuild them); the linescan-to-CTX alignment (`linescan/linescan_dem/align/aligned_oncoarse.tif` +
+  `run-transform.txt`); the CTX-aligned cameras (`linescan/linescan_dem/cams_aligned/`); and the WHOLE
+  `frame/` tree (stages 3-7: aligned_framelets, distortion_corrected_cassis_cams, registered_cassis_cams,
+  dense, pass1, pass1_tic, pass1_stereo) - all of it hangs off the CTX-aligned cameras and the mapproject
+  onto the CTX. Then regenerate blur5 from the new ctx_18m and reprocess 1-7. Do the file removals in python
+  (shutil.rmtree / os.remove), NOT a shell `rm` with a path variable. cassis_e2e_node.sh FROM<=1 already
+  does this exact split; a CTX-only fix is: rebuild the reference (cassis_ctx_blend.sh / the repo's
+  cassis_ctx_build.sh CTX_STACK=sub8) then run cassis_e2e_node.sh <site> 1 7.
 - **Head node = downloads only.** STAC query + DTM download is head-node-legal (network, single process);
   the warp/mosaic MUST be qsub (a head-node gdalwarp batch trips the NAS front-end policy gate and emails
   a "process killed" notice - the compute jobs are fine, it is the login-node steps that get killed).
@@ -180,6 +206,16 @@ CTX-coverage problem):
   (|mean| large) OR carry a stripe/noise artifact (std large) -> re-mosaic, with a floor on how many to keep.
   Two rounds (gross vs median, then mild vs mean) removes the junk tiles (e.g. a diagonal-dune controlled DTM)
   without gutting coverage, because the box is big and coverage is already solid.
+- **The FINAL full-res blend must FEATHER, never `dem_mosaic --median`.** A per-pixel median gives full
+  coverage and rejects outlier VALUES, but it does NOT feather across tile boundaries, so where the set of
+  contributing DTMs changes you get HARD TILE SEAMS (straight rectangular lines in the hillshade), and those
+  seams then show up as artifacts in the dz difference. fast_ctx `BLEND=1` used `--median` and left exactly
+  these seams (002340, confirmed from the build log `--threads 24 --median` and the output
+  `_blend-tile-0-median.tif`, versus the seamless feather sites whose output is `_blend-tile-0.tif`). Use
+  median ONLY for the sub-8 (144 m) consensus that drives the outlier cull, then do ONE full-resolution
+  FEATHERED blend (plain `dem_mosaic`, no `--median`) of the surviving tiles. This is the robust recipe in
+  cassis_ctx_blend.sh and the repo's cassis_ctx_build.sh CTX_STACK=sub8. To tell which blend a built CTX
+  used, look at the tile name: a `-median` suffix means seams, plain `_blend-tile-0.tif` means feathered.
 The campaign builder that encodes all of this: `fast_ctx.sh` (env `BOXF`/`MAXN`/`MAXDL`/`STAC_LIMIT`/
 `EXPAND`/`DL_ONLY`/`WARP_JOBS`; head node runs `DL_ONLY=1` downloads, a qsub compute node does the
 warp+crop). It lives in the campaign dir, not yet in CassisPipeline - see the migration plan next.
@@ -200,6 +236,67 @@ box) still runs and its D8 coverage gate is useful - so migrate by ADDITION, not
    (`gdal_create`), so the gate still reads correctly.
 Each item is a mode addition or a bounded fix, independently testable against the existing output - low
 risk. Campaign log + full result: `~/projects/cassis_jay/cassis_hunt_log.sh`.
+
+**The linescan is an APPROXIMATION - the pushframe cannot be a linescan beyond a point.**
+The pipeline stacks the framelets into a synthetic linescan ONLY to get a smooth
+trajectory and a rigid pc_align to CTX (stages 1-2). `pushframe2linescan.py` relabels the
+assembled strip as a linescan ISD: the pose tables are copied verbatim and Lagrange-
+interpolated continuously, and the two models agree EXACTLY only at framelet CENTERS and
+diverge (smoothly) toward framelet edges. So the linescan removes the per-framelet pose-
+STEP seam but is not geometrically faithful off-center. The HONEST final DEM MUST use the
+per-framelet FRAME ("baby frame") cameras (stages 3-7) - that is the truth model. Do not
+expect the linescan DEM to be the deliverable, and do not push the linescan approximation
+past the trajectory+alignment role.
+
+**DIAGNOSING ROUGH SITES (seams, "wild" patches, missing bands) - the funnel-first method,
+and what the problem usually is NOT (full worked diagnosis: cassis_seam_coverage_diag_notes.sh,
+2026-10-31, on 005571 + 004038).** Before blaming coverage or matches, walk the funnel - it is
+usually HEALTHY and the rough look is a QUALITY problem in the covered area:
+- Count framelets at each stage: `aligned_framelets/<sid>/aligned-*.json`, `registered_cassis_cams`,
+  `distortion_corrected_cassis_cams`, and `frame/dense/matches/run-disp-*.match`. A dropped framelet
+  shows as a count shortfall; usually none drop.
+- Match density: `ls -la run-disp-*.match` sizes (~50 bytes/IP). Dense pairs are ~1-4 MB (tens of
+  thousands of IP). A thin-overlap pair can be ~70 KB, but the strip is normally densely matched.
+- BA health: in `frame/pass1_tic|pass1/run-log-bundle_adjust-*.txt` read the percentile outlier
+  bounds (sub-pixel ~ +-0.4 px = healthy) and the "Removed N outliers out of M" (<1% = healthy).
+  No cameras dropped = the fixed-GCP tic did NOT wreck the solution.
+- Coverage: compare final `cassis_dem_on_ctx.tif` valid pixels to the aligned linescan
+  `aligned_oncoarse.tif` IN THE VALID BBOX (both are ~50% for a diagonal strip - equal means full).
+  A whole-padded-canvas percentage is MEANINGLESS (the footprint is ~1% of a 6x CTX box).
+- The usual culprit is the per-framelet-pair HEIGHT SEAM: the final per-pair stereo DEMs disagree
+  slightly where they overlap and dem_mosaic blends a STEP. Tell it from a stereo blunder by tri-error:
+  render `max_tri_err.tif` next to `cassis_dem_ctxdiff-diff.tif` (dz). LOW tri-err (median ~1-3 m, at
+  the 8 m blunder-tol cap) + a razor-straight dz step = a COHERENT geometric seam (survives blunder
+  removal), NOT a blunder. It is worst on high-relief, low-texture terrain (a crater floor), where a
+  tiny pointing/geometry difference or a small horizontal shift over a steep wall makes a big +-dz
+  dipole. Levers: toc `htUncTight` (5-10 is the seam-free regime, 1 over-tight - test 20 per site),
+  the `--ip-match-radius` reroute that killed coherent false locks once, or inject the final distortion
+  earlier. This is NOT fixed by "more matches" - the matches are already dense.
+- One GENUINE coverage gap is real and unfixable by matching: the strip ENDS are single-look. The two
+  looks are offset along-track (telescope rotated 180 deg, L framelet i overlaps R framelet ~i+4/5),
+  so the last few framelets of a look have no cross-look partner -> no stereo -> an end gap. Expect it.
+
+**THE SEAM ROOT CAUSE is a BROKEN SAME-LOOK ADJACENCY TIE (confirmed on 005571, 2026-10-31).** Two
+overlaps matter and are DIFFERENT: cross-look (L vs R) gives the stereo baseline; same-look (L framelet
+i vs i+1) gives the along-track TIE that keeps the trajectory continuous. The frame-camera BA ties
+consecutive same-look framelets ONLY through local image matches, and when a tie fails that framelet is
+held only by cross-look stereo + the CTX height pin + the loose 500 m pose leash, so it FLOATS into a
+height STEP = the seam. The decisive test and fix:
+- The stitched LINESCAN STRIP IS CONTINUOUS, which PROVES the same-look framelets physically overlap
+  EVERYWHERE (the data is there). Framelet sub-latitudes are evenly spaced (no jump). So a "missing"
+  same-look tie is NEVER a real gap - it is a MATCH failure on present data, and is recoverable.
+- Count it: the dense log prints `pairs: LR N  same-look M`; compare M to the same-look `.match` files
+  produced. The shortfall = the number of broken ties = the number of seams. On 005571, 9 of 58 failed,
+  at the low-texture crater floor (BOTH looks fail at the SAME ground - an independent-look coincidence
+  that can only be terrain) and the faint strip start. Rich-texture framelets tie fine, so "works some,
+  fails others" is TEXTURE, not overlap - the overlap is identical for every pair.
+- Code cause: cassis_stereo_pair.sh mode `same` (raw `--alignment-method affineepipolar --corr-seed-mode 1`,
+  no fallback) ABORTS ("SAME FAIL") when IP detection starves on low texture, and affineepipolar+pyramid
+  seed are overkill at ~0 convergence (disparity is ~pure translation). The cross-look `lr` mode already
+  retries corr-seed-mode 1 then 0; `same` never got that fallback. FIX (primary): give `same` the lr-style
+  retry and/or `--alignment-method none` and more/robust IPs. Safety net: tighten camera-position-uncertainty
+  below 500 so an untied framelet cannot drift from its linescan-seeded pose. htUncTight (vertical) and
+  fix-gcp (horizontal) are SECONDARY - they act on framelets that are already untied; fix the TIE first.
 
 **Distortion**: ALE emits the CaSSIS distortion (USGSCSM DistortionType CASSIS=9). A
 residual cross-track BOWL is a two-look BA near-degeneracy, not a distortion bug; real
