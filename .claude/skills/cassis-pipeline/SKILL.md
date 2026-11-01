@@ -8,6 +8,83 @@ metadata:
 CaSSIS (TGO) acquires PAN pushframe framelets that ASP treats as many small FRAMING
 cameras. The pipeline builds a frame DEM per observation, tied to a CTX reference DEM.
 
+## READ THE REPO README FIRST - IT IS THE SOURCE OF TRUTH, NOT THIS SKILL
+
+**The authoritative instructions are the CassisPipeline README (`~/projects/CassisPipeline/README.md`).
+Read it FIRST, every time, and drive the pipeline AS AN EXTERNAL USER would by following it. This skill
+is only HINTS; the README and the repo scripts are reality. If the README and this skill ever disagree,
+the README wins and this skill is stale - fix it.**
+
+**PRIMARY GOAL whenever doing CaSSIS work: IMPROVE THE REPO (the `bin/` scripts and the README).** The
+pipeline is where external folk will use this, so that is where every lesson must land. When you drive a
+site and something breaks or is unclear, that is a REPO BUG: trace it, FIX the repo script AND the README,
+do NOT paper over it with a workaround or a one-off scratch script. AVOID writing custom scratch scripts -
+edit the repo scripts instead (the only non-repo file that is acceptable is thin pfe qsub glue that sets up
+the environment and calls repo tools, with zero pipeline logic of its own).
+
+**Knowledge-flow direction for everything you learn or that fails: FAIL -> project NOTES -> this SKILL ->
+the README.** The README is the final destination of every hard-won lesson.
+
+**Workflow: the MAC is authoritative.** Edit the repo (`~/projects/CassisPipeline`) and the project notes
+on the Mac, test/`bash -n` there, then RSYNC to pfe to launch (head node = fetch/network only; everything
+else = qsub compute). The rsync (chmod +x FIRST at the source, and again on pfe - rsync can carry it but
+verify, a missing x-bit makes PBS/nohup fail):
+```
+chmod +x ~/projects/CassisPipeline/bin/*.sh
+rsync -a --exclude '.git' --exclude '__pycache__' ~/projects/CassisPipeline/bin/ pfx:/home6/oalexan1/projects/CassisPipeline/bin/
+rsync -a ~/projects/CassisPipeline/README.md ~/projects/CassisPipeline/config/ pfx:/home6/oalexan1/projects/CassisPipeline/
+```
+
+## VENDOR-FREE NEW SITE (no prior CaSSIS DEM) - the README "Processing a new site from scratch"
+
+The repo can process a brand-new stereo pair with NO vendor DEM. The pieces (all repo):
+- `cassis_find_looks.sh <orbit>` - discover the two stereo looks (the consecutive acq-id pair in the PSA
+  orbit listing). Fills the old manual "looks come from the PSA" gap.
+- `cassis_ctx_fetch.sh` accepts the footprint as `bbox:minLon,minLat,maxLon,maxLat` (east lon) when there
+  is no DEM yet - it synthesizes a constant stand-in raster over the bbox. This breaks the chicken-and-egg
+  (the linescan DEM needs the CTX grid, so the CTX must be built first, from the observation footprint, not
+  from a DEM you do not have). The bbox + clat/clon come from ODE / the pair inventory
+  (`~/projects/cassis_asp/cassis_stereo_pairs_band.json`, with `nctx` = controlled-CTX intersect count = a
+  quick "is there CTX here" estimate).
+- `cassis_fetch.sh <site.conf> <workdir>` - the one FETCH command (head node): look-discovery + framelets
+  (`cassis_fetch_pair.sh`) + CTX DTMs (`cassis_ctx_fetch.sh`). The site config carries `orbit`, `clat`,
+  `clon`, `footprintBbox` so it is self-contained for a vendor-free site.
+Then the COMPUTE tier (qsub, NO network): ingest (isis10 env - the ONLY env with a WORKING `tgocassis2isis`;
+it is absent in usgscsm_cassis and broken in isis10asp) -> cameras + `cassis_ctx_blend.sh` + stages
+(usgscsm_cassis env + ASP bin + ISISROOT=isis10asp). On a cluster, one qsub worker activates each env in
+turn and calls the repo tools - that worker is pure glue, no logic.
+
+## CTX FETCH ROBUSTNESS (fixes made 2026-10-31, in `cassis_ctx_fetch.sh`)
+
+The controlled-CTX STAC fetch had three real failure modes, all fixed - watch for regressions:
+- DENSE regions (e.g. Coprates ~2176 DTMs over a 3x box): a single `limit:1000` bbox query 502s
+  consistently (gateway times out gathering it). FIX = PAGINATE with `STAC_PAGE` (default 250) following the
+  pgstac `next` link token, up to `STAC_MAXPAGES`. Small pages always return fast.
+- TRANSIENT 502/503/timeout: retry the STAC query with backoff (6 attempts); `curl --retry` on downloads.
+- pfe's SYSTEM curl is OLD: it does NOT know `--retry-all-errors` (curl 7.71+). Use only `--retry`/
+  `--retry-delay`. And a bare `curl` under `set -e` aborts the whole download loop on one blip - use
+  `curl ... || true` and let the gdalinfo result-check decide per DTM.
+
+## SITE YIELD AND DROP PATTERNS (vendor-free campaigns, hunt3 2026-11-01: 15 attempted -> 10 good)
+
+Expect ~2/3 yield, so OVER-FETCH candidates (fetch ~15 to ship 10). Rank the pool by `nctx` (the
+controlled-CTX intersect count in `cassis_stereo_pairs_band.json`) - it predicts CTX COVERAGE but NOT
+texture, so a high-nctx site can still fail on low texture. The drops are almost all LOW-TEXTURE plains
+(equatorial 151/167E, VM-outflow 267-268E), failing at one of three places:
+- strip assembly: `stack_strip_gen.py` measures along-track advance ~0 -> clear "too low-texture" error.
+- linescan stereo: RANSAC "not enough matches / failed epipolar rectification".
+- framelet stereo (stages 6-7): the FINAL DEM comes out FRAGMENTED into disconnected patches at partial
+  coverage, even when the linescan DEM + align were fine (3459: dz 187 m AND 43% coverage; 3920: no DEM).
+**The EVAL COVERAGE-CHECK is the arbiter, not the dz/dd medians.** Row 1 of `cassis_eval_plots.py`
+(CTX | aligned linescan | final) + a valid-pixel ratio (final vs aligned linescan) catches a fragmented or
+under-covered final DEM that the dz/dd stats HIDE. Always compare the final framelet DEM's coverage to the
+aligned linescan before calling a site good. A healthy site: final coverage ~= linescan, dz NMAD ~2-10 m,
+dd sub-pixel. The campaign driver/eval flow (per site): head `cassis_fetch.sh` -> qsub compute (ingest
+isis10 -> cameras+ctx_blend usgscsm_cassis -> `cassis_process.sh` 1 2) -> inspect align residual -> qsub
+`cassis_process.sh` 3 7 for keepers -> `cassis_eval_plots.py` + `cassis_gallery.py`. A ~17 km sparse-IP
+wrong-lock is the tell that the NCC primary did not run (see the CTX-ALIGN note) - a good NCC align is a few
+km, vertical-dominated, dd sub-pixel.
+
 **Repo: `~/projects/CassisPipeline`** (`NeoGeographyToolkit/CassisPipeline`, pushable;
 also cloned on pfe at `~/projects/CassisPipeline` and on l1). All logic is shell +
 Python in `bin/`. This is the real pipeline - use it from there, do not hand-roll.
@@ -307,23 +384,13 @@ height STEP = the seam. The decisive test and fix:
   at the low-texture crater floor (BOTH looks fail at the SAME ground - an independent-look coincidence
   that can only be terrain) and the faint strip start. Rich-texture framelets tie fine, so "works some,
   fails others" is TEXTURE, not overlap - the overlap is identical for every pair.
-- Code cause: full-frame `--alignment-method affineepipolar` ABORTS ("IPs left after filtering is 17 < 20
-  required") when IP MATCHING (not detection - detection finds thousands) starves on the low-texture crater,
-  because it needs >=20 matched IPs to estimate the search range over the ~220-line raw disparity.
-- THE SHIPPED FIX (CassisPipeline main a12b622, cassis_stereo_pair.sh mode `same`): affineepipolar FIRST
-  (keeps every textured pair it matches = the baseline set), and ONLY on abort/no-match FALL BACK to a
-  CROP-WINDOW matcher that restricts the correlator to the ~57-row overlap band
-  (`--left/right-image-crop-win`, `--alignment-method none`, small `--corr-search -24 -55 24 55`,
-  `--num-matches-from-disparity`). Inside the band the overlap is ~full and the disparity is a few pixels, so
-  it locks densely with NO interest points, and ASP emits matches in FULL-FRAME coords (no crop undo). The
-  OVERLAP END is deterministic from each look's `framelet_order_reversed` (recorded by the stitch, now passed
-  via the pair env): reversed=1 -> lower-index framelet overlaps at its TOP (higher at BOTTOM), reversed=0 ->
-  opposite. VERIFIED on both looks (they are the 180-deg pair, always opposite). DO NOT use crop-win wholesale:
-  tested 2026-10-31, uniform crop-win REGRESSED (same-look 49->28) because at the ~0.16-deg same-look
-  convergence the num-matches-from-disparity TRIANGULATION fails "Empty bounding box" on the lowest-convergence
-  pairs that affineepipolar's full-frame geometry handles fine. With the fallback, 005571 went 49->55 ties
-  (affine 49 + crop-win rescued 6), only 3 deepest-convergence pairs (618 crater, ~0.16 deg) still unmatched -
-  those need a NON-triangulating tie path (ipmatch gave ~16 ties on that terrain) as a future third tier.
+- FIX (a local hack in cassis_stereo_pair.sh mode `same`, CassisPipeline main): affineepipolar FIRST (keeps the
+  textured pairs it already matches), then on abort fall back to a CROP-WINDOW matcher restricted to the ~57-row
+  overlap band, whose end is chosen deterministically from each look's framelet_order_reversed, with a disparity
+  outlier-filter-kernel retry (default, then a smaller rm-half-kernel) for the thinnest low-contrast pairs. The
+  FULL why (the two filter stages, why the default rm kernel over-scrubs the thin band's D_sub, the fwd/aft
+  overlap-end rule, the uniform-crop-win regression) lives in the CODE COMMENTS - do not re-explain it here.
+  Deep paper trail: ~/projects/cassis_asp/cassis_seam_coverage_diag_notes.sh.
 - The tie recovery reconnects the broken-tie segments (coverage/continuity), but the crater DZ DIPOLE is a
   SEPARATE problem: a +/- split across a steep crater wall is a horizontal misregistration (dem2gcp/BA-
   horizontal or crater-floor CTX error), NOT a tie issue, and ties do not fix it. htUncTight (vertical, tested
