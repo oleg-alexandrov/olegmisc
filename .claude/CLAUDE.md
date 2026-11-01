@@ -94,6 +94,16 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
   last rsync (rsync strips it), and `ls -la` to confirm - else PBS exits ~254 in seconds.
   Detail: pfe-nas.
 - "Project dir" / "projects dir" means `~/projects`.
+- **THREE separate git repos, know which is which** (so "X was updated / work got done"
+  always points at a repo): SKILLS live in the BASE HOME repo (`~/.claude/skills/`, tracked
+  by `~`/olegmisc) alongside CLAUDE.md + the per-host MEMORY.md; NOTES live in the PROJECTS
+  repo (`~/projects`, tracked by `~/projects/.git`); and a tool with its own upstream has its
+  OWN repo (e.g. CaSSIS: `~/projects/CassisPipeline`, `NeoGeographyToolkit/CassisPipeline` -
+  NOT part of the projects repo). **Any time you are told something was updated, changed, or
+  worked on (by Oleg or another bot), the FIRST move is `git -C <repo> log --oneline -15`
+  (and `git -C <repo> status`, and `git show <sha>` / a diff) on the relevant repo - it tells
+  you the deal fast.** Pick the repo from the topic: skills/CLAUDE.md -> home; notes -> projects;
+  the pipeline itself -> its own repo.
 
 ## Writing style (always-on, all output)
 
