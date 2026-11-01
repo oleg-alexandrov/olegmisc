@@ -290,13 +290,28 @@ height STEP = the seam. The decisive test and fix:
   at the low-texture crater floor (BOTH looks fail at the SAME ground - an independent-look coincidence
   that can only be terrain) and the faint strip start. Rich-texture framelets tie fine, so "works some,
   fails others" is TEXTURE, not overlap - the overlap is identical for every pair.
-- Code cause: cassis_stereo_pair.sh mode `same` (raw `--alignment-method affineepipolar --corr-seed-mode 1`,
-  no fallback) ABORTS ("SAME FAIL") when IP detection starves on low texture, and affineepipolar+pyramid
-  seed are overkill at ~0 convergence (disparity is ~pure translation). The cross-look `lr` mode already
-  retries corr-seed-mode 1 then 0; `same` never got that fallback. FIX (primary): give `same` the lr-style
-  retry and/or `--alignment-method none` and more/robust IPs. Safety net: tighten camera-position-uncertainty
-  below 500 so an untied framelet cannot drift from its linescan-seeded pose. htUncTight (vertical) and
-  fix-gcp (horizontal) are SECONDARY - they act on framelets that are already untied; fix the TIE first.
+- Code cause: full-frame `--alignment-method affineepipolar` ABORTS ("IPs left after filtering is 17 < 20
+  required") when IP MATCHING (not detection - detection finds thousands) starves on the low-texture crater,
+  because it needs >=20 matched IPs to estimate the search range over the ~220-line raw disparity.
+- THE SHIPPED FIX (CassisPipeline main a12b622, cassis_stereo_pair.sh mode `same`): affineepipolar FIRST
+  (keeps every textured pair it matches = the baseline set), and ONLY on abort/no-match FALL BACK to a
+  CROP-WINDOW matcher that restricts the correlator to the ~57-row overlap band
+  (`--left/right-image-crop-win`, `--alignment-method none`, small `--corr-search -24 -55 24 55`,
+  `--num-matches-from-disparity`). Inside the band the overlap is ~full and the disparity is a few pixels, so
+  it locks densely with NO interest points, and ASP emits matches in FULL-FRAME coords (no crop undo). The
+  OVERLAP END is deterministic from each look's `framelet_order_reversed` (recorded by the stitch, now passed
+  via the pair env): reversed=1 -> lower-index framelet overlaps at its TOP (higher at BOTTOM), reversed=0 ->
+  opposite. VERIFIED on both looks (they are the 180-deg pair, always opposite). DO NOT use crop-win wholesale:
+  tested 2026-10-31, uniform crop-win REGRESSED (same-look 49->28) because at the ~0.16-deg same-look
+  convergence the num-matches-from-disparity TRIANGULATION fails "Empty bounding box" on the lowest-convergence
+  pairs that affineepipolar's full-frame geometry handles fine. With the fallback, 005571 went 49->55 ties
+  (affine 49 + crop-win rescued 6), only 3 deepest-convergence pairs (618 crater, ~0.16 deg) still unmatched -
+  those need a NON-triangulating tie path (ipmatch gave ~16 ties on that terrain) as a future third tier.
+- The tie recovery reconnects the broken-tie segments (coverage/continuity), but the crater DZ DIPOLE is a
+  SEPARATE problem: a +/- split across a steep crater wall is a horizontal misregistration (dem2gcp/BA-
+  horizontal or crater-floor CTX error), NOT a tie issue, and ties do not fix it. htUncTight (vertical, tested
+  worse at 20) and fix-gcp are also SECONDARY - fix the TIE first, then the horizontal/CTX separately.
+  Full arc (alignment-none misstep, root cause, fallback): ~/projects/cassis_asp/cassis_seam_coverage_diag_notes.sh.
 
 **Distortion**: ALE emits the CaSSIS distortion (USGSCSM DistortionType CASSIS=9). A
 residual cross-track BOWL is a two-look BA near-degeneracy, not a distortion bug; real
