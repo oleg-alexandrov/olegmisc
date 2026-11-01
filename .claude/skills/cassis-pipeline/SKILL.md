@@ -92,8 +92,25 @@ rest), smooth (one full-res feather), and framelet-safe (regenerate the blur5):
   cassis_hunt2's ctx_search_and_download.py + ctx_sub8_blend_node.sh.) VERIFIED 2026-10-31: produced a
   seamless 002340 reference (99.96% clean by a 7x7-median local-outlier check, ~0.02% spike pixels, 100%
   footprint coverage).
-  SEPARATE caveat: a de-seamed reference can shift the CaSSIS-to-CTX pc_align solution (002340's align
-  jumped to ~20 km and broke the framelet cameras) - that is a coarse-align fragility, NOT a CTX defect.
+
+**CaSSIS-to-CTX ALIGNMENT is the most fragile step - NCC global correlation is the robust primary (method
+0), pc_align ICP is the fallback.** The stage-1 align (cassis_linescan_dem.sh, applied to the cameras in
+stage 2 cassis_align_cams.sh) registers the linescan DEM to the CTX reference. The old sparse-IP pc_align
+(ICP from scratch) can lock onto a WRONG correspondence and return it confidently: on 002340 it jumped ~20
+km onto the high massif (~4400 m off vertically) and broke every framelet camera (all mapproject-fail,
+stage-6 dense=0). The fix (wired 2026-10-31): the registration is a known RIGID SHIFT and the raw strip
+already sits inside the 3x CTX box, so a GLOBAL exhaustive hillshade cross-correlation cannot get lost.
+`cassis_ctx_ncc_align.py <ctx> <cassis_dem> <res> <outdir>` (numpy hillshade + scipy FFT NCC, no matplotlib,
+runs in the pipeline env) emits a local NED shift; `pc_align --num-iterations 0 --initial-ned-translation
+"<N E D>"` turns it into the honest ECEF cassis->ctx transform (same step as the asp_bm fallback). It is
+method 0 in cassis_linescan_dem.sh; methods 1 (sparse-IP) and 2 (asp_bm dense) remain as fall-through if the
+dd eval does not pass. VALIDATED across all 10 recent sites: NCC gives a sensible 0.58-4.83 km shift with dd
+MEDIAN 0 everywhere (no wrong locks), vs pc_align's 20 km garbage (dd NMAD 19 px) on 002340. The ARBITER is
+the dh/dv hillshade disparity (median + NMAD + validity): a good align is small median, NMAD within a few px,
+~50% validity; a large residual or tiny validity is junk. Cost ~1 min, one process. NCC gives a pixel/NED
+shift in the LOCAL stereographic frame - the cameras need the ECEF (around-planet-center) transform, which
+is exactly what the pc_align --initial-ned-translation step produces, so do NOT hand-apply the local shift to
+cameras.
 
 **CTX reference: prefer a plain gdalbuildvrt STACK over curate+blend (vendor-free pair-hunt
 campaign, 2026-10-30).** Hard-won. The controlled-CTX reference is best built as a plain
