@@ -216,6 +216,21 @@ Bare minimum to remember without reading:
   irreplaceable original archive. Never delete, clobber, or overwrite any dataset on lfe.
   lfe access from l1 or Mac: `ssh pfx` then `ssh lfe`.
 
+- **`.cub` AND camera `.json` FILES ARE NEVER REGENERABLE BULK - across ANY mission,
+  always KEEP + ARCHIVE them, never wipe them as "re-fetchable".** This is the standing
+  default for every cleanup/archive pass, for any instrument (LRO NAC, OHRC, CTX, CaSSIS,
+  HiRISE, any ISIS cube), not a per-project judgement call. A `.cub` is the product of real
+  ingest work (download + `spiceinit` + calibration) and a camera `.json` (CSM model-state /
+  ISD / `adjusted_state.json`) is the product of a bundle/jitter solve - both are small
+  relative to run output and precious, so even when the raw source is technically
+  re-orderable from a public archive, the cubes and cameras go INTO the tape tar and are the
+  LAST things to wipe, never folded into the regenerable-intermediate pile. Burned 2026-11-01:
+  an ohrc_lronac_align archive first EXCLUDED the 61 GB `lro_nac/` cubs as "re-fetchable NAC"
+  while keeping the OHRC cubs - Oleg caught it ("but lro nac is also cub", then "going forward
+  keep whatever cub files and json files by whatever mission"). Rule: if it ends in `.cub` or
+  is a camera `.json`, it is kept and archived, full stop. Match files, `run-*.tif` stereo
+  intermediates, mapproj eval tiles, and figures ARE regenerable and wipe freely - cubes and
+  cameras are not.
 - **Archive/wipe hygiene (paper trail; see `~/projects/lfe_archive.sh`):** LOG EVERY
   archive AND every wipe in that project's own notes (what, when, and where it is
   recoverable - lfe tar path, or public source + re-fetch recipe). Per-project
