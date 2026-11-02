@@ -215,6 +215,14 @@ Bare minimum to remember without reading:
 - **NEVER wipe or overwrite anything on lfe (CRITICAL).** Tape is the ultimate,
   irreplaceable original archive. Never delete, clobber, or overwrite any dataset on lfe.
   lfe access from l1 or Mac: `ssh pfx` then `ssh lfe`.
+- **ONE TAR AT A TIME - NEVER run concurrent `archive_to_lfe.sh` writes to lfe (CRITICAL).**
+  lfe is ACTUAL magnetic tape: a robotic library mounts a physical cartridge and streams the
+  tar to it. Concurrent tar writes make the robot thrash between cartridges and strain the
+  hardware. Launch ONE archive, poll its log for `END ... rc=0`, and only THEN launch the
+  next - QUEUE multiple projects/parts sequentially, never fan them out. (Burned 2026-11-01:
+  launched 4 tars at once - Oleg: "don't want to strain that poor thing, it does actual tape.")
+  Verifying a FINISHED tar (`tar tf`) reads the still-resident on-disk copy and is fine; only
+  the concurrent WRITES must be avoided. Detail: `~/projects/lfe_archive.sh`.
 - **ANYTHING TAPE-RELATED = UTMOST SERIOUSNESS, and do NOT depend on the lfe DOUBLE-HOP to decide a wipe
   (Oleg, 2026-11-01).** The Mac->pfx->lfe double hop is flaky and can SILENTLY RETURN EMPTY (seen this
   session - two `ssh pfx "ssh lfe '...'"` archive checks came back blank). An empty result from a flaky
