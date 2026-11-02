@@ -89,6 +89,13 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
 - **Mac and pfe mirror a project at the SAME home-relative path** `~/projects/<proj>/...`
   (on pfe the bulky data dir is a symlink to `/nobackupp19/oalexan1/projects/<proj>`).
   Copy back/forth with the same relative path, never rename on the fly. Detail: pfe-nas.
+- **STARTING a project - the ONE canonical layout** (no alternatives): the real dir on the Mac is
+  `~/projects/<proj>` (under `projects/`, git-tracked). On pfe the data lives at
+  `/nobackupp19/oalexan1/projects/<proj>` (ALWAYS under `projects/`), with a home symlink
+  `/home6/oalexan1/projects/<proj>` -> that nobackup path. **NEVER create a stray top-level
+  `/nobackupp19/oalexan1/<proj>`** (missing the `projects/` component). If you find one mislocated,
+  `mv` it under `projects/` and re-point the symlink with `ln -sfn`. Burned 2026-11-01 (sfs_south).
+  Detail + exact setup/fix commands: pfe-nas.
 - **All runnable scripts must be `chmod +x`; comment-only notes `.sh` stay
   non-executable.** For qsub: chmod +x at the SOURCE, then AGAIN on the remote after the
   last rsync (rsync strips it), and `ls -la` to confirm - else PBS exits ~254 in seconds.

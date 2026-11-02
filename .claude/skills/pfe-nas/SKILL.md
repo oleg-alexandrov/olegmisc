@@ -244,12 +244,19 @@ Bare minimum to remember without reading:
 - **Double-hop ssh quoting (Mac -> pfx -> lfe/athfe01): use OUTER double quotes, INNER single quotes, and ONE trivial pipeline** - `ssh pfx "ssh lfe 'tar tzf f | head'"`. This keeps recurring: `ssh pfx 'ssh lfe "..."'` with `===` markers, `$VAR`, `awk` using `$N`, or multiple `;`-separated echoes INSIDE gets eaten by the outer Mac shell and the command breaks ("=== not found"). So on a double hop: no `===`, no `$`, no `awk $N`, no `;`-chains inside; just a single simple command. For anything with quotes/vars/multiple statements, write a small script and run it by ABSOLUTE path (`/home6` is shared across pfe + Athena, so a script there runs on athfe01 too; for lfe, `scp` the script to lfe first). Keep the inner command dumb. (Fixed 2026-08-20 after breaking it twice in one session.)
 - **`/home6` data MUST live on `/nobackup*` with a `/home6` SYMLINK pointing to it (Oleg's
   long-standing convention).** `/home6/oalexan1` is small + backed-up; real project data goes
-  on `/nobackupp19/oalexan1`. So a project dir is created ON nobackup and symlinked from home:
-  `/home6/oalexan1/projects/<mydir>` is a symlink -> `/nobackupp19/oalexan1/projects/<mydir>`
-  (or `/nobackupp19/oalexan1/<mydir>`). Set it up as: `mkdir -p /nobackupp19/oalexan1/<mydir>;
-  mkdir -p ~/projects; ln -s /nobackupp19/oalexan1/<mydir> ~/projects/<mydir>` (only if the
-  home symlink is wanted). The DATA is on nobackup; `/home6` only ever holds the symlink, never
-  the bytes. Symlink-wipe procedure in `pleiades_notes.sh`.
+  on `/nobackupp19/oalexan1`. So a project dir is created ON nobackup, ALWAYS under `projects/`,
+  and symlinked from home at the matching `projects/` path. The ONE canonical layout (no
+  alternatives): `/home6/oalexan1/projects/<proj>` is a symlink -> `/nobackupp19/oalexan1/projects/<proj>`.
+  Set it up EXACTLY as: `mkdir -p /nobackupp19/oalexan1/projects/<proj>; mkdir -p /home6/oalexan1/projects;
+  ln -s /nobackupp19/oalexan1/projects/<proj> /home6/oalexan1/projects/<proj>`. The DATA is on
+  nobackup; `/home6` only ever holds the symlink, never the bytes. **NEVER create a project at the
+  stray top level `/nobackupp19/oalexan1/<proj>` (missing the `projects/` component) - it is NOT a
+  valid alternative.** (Burned 2026-11-01: sfs_south had been created at `/nobackupp19/oalexan1/sfs_south`
+  and had to be `mv`'d under `projects/` with the home symlink re-pointed via `ln -sfn`; the old
+  wording here, which offered the top-level form as an option, is what allowed it.) To FIX a
+  mislocated project: `mv /nobackupp19/oalexan1/<proj> /nobackupp19/oalexan1/projects/<proj>` (instant
+  same-filesystem rename) then `ln -sfn /nobackupp19/oalexan1/projects/<proj> /home6/oalexan1/projects/<proj>`.
+  Symlink-wipe procedure in `pleiades_notes.sh`.
 - **Lustre quota (`nb`/`nbquota`) vs `du` discrepancy on `/nobackupp19` (~200-250 GB gap).**
   `nb` reports actual allocated blocks across Lustre OSTs, while `du -sh` sums apparent file
   sizes. Because photogrammetry projects store thousands of large rasters (ISIS cubes, GeoTIFFs,
