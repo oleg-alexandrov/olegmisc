@@ -35,6 +35,14 @@ rsync -a --exclude '.git' --exclude '__pycache__' ~/projects/CassisPipeline/bin/
 rsync -a ~/projects/CassisPipeline/README.md ~/projects/CassisPipeline/config/ pfx:/home6/oalexan1/projects/CassisPipeline/
 ```
 
+**THE REPO LIVES IN ONE PLACE PER MACHINE, ALWAYS KEPT MIRRORED - no second pfe copy.** Canonical:
+Mac `/Users/oalexan1/projects/CassisPipeline` (git, authoritative) <-> pfe `/home6/oalexan1/projects/CassisPipeline`
+(a real independent clone in the HOME dir - it is small, so it stays in home6, NOT on /nobackupp19). ALWAYS
+keep the two mirrored (edit on the Mac, rsync to pfe home6 before every launch). There must be NO
+`/nobackupp19/oalexan1/projects/CassisPipeline*` copy - a second pfe mirror (e.g. the old
+`CassisPipeline_main` on nobackup) is pure confusion about which is current and was removed 2026-11-02. If
+one reappears, wipe it and use the home6 clone. (l1 may also hold a clone; same rule - one per machine.)
+
 ## VENDOR-FREE NEW SITE (no prior CaSSIS DEM) - the README "Processing a new site from scratch"
 
 The repo can process a brand-new stereo pair with NO vendor DEM. The pieces (all repo):
