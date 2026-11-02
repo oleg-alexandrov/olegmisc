@@ -215,6 +215,19 @@ Bare minimum to remember without reading:
 - **NEVER wipe or overwrite anything on lfe (CRITICAL).** Tape is the ultimate,
   irreplaceable original archive. Never delete, clobber, or overwrite any dataset on lfe.
   lfe access from l1 or Mac: `ssh pfx` then `ssh lfe`.
+- **ANYTHING TAPE-RELATED = UTMOST SERIOUSNESS, and do NOT depend on the lfe DOUBLE-HOP to decide a wipe
+  (Oleg, 2026-11-01).** The Mac->pfx->lfe double hop is flaky and can SILENTLY RETURN EMPTY (seen this
+  session - two `ssh pfx "ssh lfe '...'"` archive checks came back blank). An empty result from a flaky
+  query is NOT evidence of "not archived" OR "archived" - it is NO information, and must NEVER greenlight a
+  deletion (an empty listing could wrongly look like "safe to wipe" and destroy UNARCHIVED data). **The
+  SOURCE OF TRUTH for what is on tape is the project's own tape-archive LOG**, which policy keeps precisely
+  so we never depend on a live lfe query: the per-project archive-notes `.sh` (e.g. CaSSIS:
+  `~/projects/cassis_asp/cassis_cleanup_plan.sh`) and the general `~/projects/lfe_archive.sh`. **RULE for an
+  archive-gated wipe: only wipe a dir as "already archived" when the LOG positively records its `.tar` on
+  lfe (named tarball + size/date). If the log is silent or ambiguous, do NOT wipe** - leave the dir, or only
+  trim regenerable intermediates in place; archiving-then-wiping an unlogged dir needs an explicit, verified
+  tape write first (and that is a deliberate, careful operation, never a side effect of a cleanup). When you
+  do wipe an archived dir, record the recovery tar path in the wipe audit line.
 
 - **`.cub` AND camera `.json` FILES ARE NEVER REGENERABLE BULK - across ANY mission,
   always KEEP + ARCHIVE them, never wipe them as "re-fetchable".** This is the standing

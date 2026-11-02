@@ -85,6 +85,44 @@ isis10 -> cameras+ctx_blend usgscsm_cassis -> `cassis_process.sh` 1 2) -> inspec
 wrong-lock is the tell that the NCC primary did not run (see the CTX-ALIGN note) - a good NCC align is a few
 km, vertical-dominated, dd sub-pixel.
 
+## RE-RUNNING WHEN A PARAMETER CHANGES BUT THE INPUT DOES NOT (be smart, don't recompute)
+
+The numbered stages depend on different inputs, so know which stage a knob touches and re-run only that,
+into a FRESH outDir (never clobber the old result - you want to compare), reusing the unchanged earlier
+stages. The STAGE-7 knobs - `gcpSigma`, `htUncLoose`, `htUncTight`, `robust`, `maxDisp`, `maxGcp` (and
+`--fix-gcp-xyz`) - affect ONLY stage 7 (pass1 = `cassis_pass.sh`: the linescan->CTX bootstrap GCP, the tic/toc
+bundle_adjust, the per-pair stereo). Stages 1 (linescan+align), 2 (align-cams), 3-5 (framelet cams), 6 (dense
+matches) are INDEPENDENT of those knobs and deterministic, so they do NOT need recomputing when you sweep a
+stage-7 value. Two ways to re-run:
+- EFFICIENT (big sweeps): build stages 1-6 ONCE in a base outDir, then for each value re-run stage 7 only.
+  cassis_process.sh skips a stage whose output exists, so the clobber-free trick is: in the SAME outDir, MOVE
+  the existing `frame/pass1`, `frame/pass1_tic`, `frame/pass1_stereo` ASIDE (rename, e.g. `pass1_gs1`), then
+  `cassis_process.sh <conf> 7 7 <same outDir> <B>` rebuilds pass1 fresh while reusing stages 1-6 in place; the
+  old result is preserved under the renamed dir for comparison. (Rename, do NOT symlink/copy stage dirs.)
+- SIMPLE but WASTEFUL (what hunt3 gcpSigma sweep used): a full `0 1 7` in a SEPARATE outDir per value - clean
+  and independent, but recomputes the ~10 min dense stage each time. Fine when compute nodes are free; prefer
+  the efficient path for a large sweep. Pass the knob via a per-run CONFIG variant (copy the site conf, append
+  e.g. `gcpSigma=5`; the site conf is sourced AFTER cassis_common.conf so it overrides). Keep the shared CTX +
+  cubes + cameras (data/, ref/) - do NOT refetch or rebuild the CTX; only the stage-7 outputs change.
+
+## CONTINUITY / SEAM FAILURE = A HARD GCP BUILT FROM A SOFT REGISTRATION (hunt3 5681 diagnosis, 2026-11-01)
+
+When a site's framelet DEM has SEAMS / a fragmented strip but the dense matches are complete (same-look ties
+fine), the cause is usually NOT matches or a broken camera - it is the stage-7 GCP. `cassis_pass.sh` builds
+GCP0 from the aligned-linescan -> CTX dh/dv disparity, then the TIC bundle_adjust uses `--fix-gcp-xyz` + a
+TIGHT `gcpSigma` (1) = HARD control. If the linescan registers to CTX only loosely (high-relief terrain,
+noisy hillshade disparity, a residual vertical bias from the align), GCP0 is noisy/biased and the fix-gcp
+solver fights its own good match-ties against inconsistent control (TIC per-camera reprojection residuals of
+4-7 px instead of ~1 px), scattering individual framelets -> per-pair DEMs disagree -> seams. DIAGNOSE by:
+(a) the boot dh/dv NMAD (`frame/pass1/boot/run-F-H.tif`,`run-F-V.tif`) - a bad site is NMAD ~5-8 px and a dv
+median of several px vs a good site's ~1.5-2 px near zero; (b) the TIC per-camera mean reprojection error
+(`frame/pass1_tic/run-final_residuals_stats.txt` col 2) - 4-7 px = infeasible control. FIX = make the GCP a
+SOFT anchor so it still MOVES the cameras toward CTX but does not override continuity: sweep `gcpSigma`
+(1 -> 3 -> 5 -> 10) on fresh runs and pick the softest that KEEPS registration (dz/dd stay small). Too soft
+and the cameras do not register to CTX at all (the opposite failure Oleg has hit). If gcpSigma does not bite
+under `--fix-gcp-xyz`, relax fix-gcp (float GCP with a sigma) and/or the TOC `htUncTight`. Full worked
+diagnosis + plots: `~/projects/cassis_hunt/hunt3/diag5681/cassis_5681_diagnosis.html`.
+
 **Repo: `~/projects/CassisPipeline`** (`NeoGeographyToolkit/CassisPipeline`, pushable;
 also cloned on pfe at `~/projects/CassisPipeline` and on l1). All logic is shell +
 Python in `bin/`. This is the real pipeline - use it from there, do not hand-roll.
