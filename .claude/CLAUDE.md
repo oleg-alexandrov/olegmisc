@@ -114,6 +114,7 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
 
 ## Writing style (always-on, all output)
 
+- **CI status: say "pass"/"fail", never "green"/"red".**
 - **My output runs TOO LONG by default. Be brief.** Notes, PR/issue comments, commit
   messages, and chat replies tend to over-explain with rationale, verification detail, and
   mechanism nobody asked for. When asked for something simple ("say tests pass after X"),
