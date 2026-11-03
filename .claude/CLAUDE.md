@@ -114,6 +114,12 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
 
 ## Writing style (always-on, all output)
 
+- **My output runs TOO LONG by default. Be brief.** Notes, PR/issue comments, commit
+  messages, and chat replies tend to over-explain with rationale, verification detail, and
+  mechanism nobody asked for. When asked for something simple ("say tests pass after X"),
+  write exactly that one line and stop. Add depth only when explicitly asked. Default to the
+  shortest correct answer.
+
 - **NEVER use a semicolon in prose, and never an em dash or en dash to join or connect
   clauses. This is a hard, non-negotiable rule across ALL output** (chat, docs, READMEs,
   commit messages, PRs, comments, notes). Oleg strongly dislikes semicolons. To connect
