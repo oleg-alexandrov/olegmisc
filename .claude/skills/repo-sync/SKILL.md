@@ -105,6 +105,14 @@ you're told to reset to the remote:
 - ale remote naming (differs from ISIS3/usgscsm): `origin` = oleg-alexandrov/ale (fork,
   push here), `usgs` = DOI-USGS/ale (upstream, PR-only). ISIS3/usgscsm use `oleg` for the fork.
 
+## Repository history manipulation is STRICTLY FORBIDDEN
+
+NEVER rewrite, filter, or manipulate Git repository history on any repository:
+- Strictly forbidden commands: `git filter-repo`, `git filter-branch`, BFG Repo-Cleaner, or interactive rebasing / squashing / amending already-pushed commits.
+- Fine to keep past files in history: If obsolete, large, or unwanted files were committed in the past, leave past history intact. Do NOT attempt to purge or rewrite historical commits to scrub them.
+- Standard forward commits only: Always handle removals or reverts via standard forward commits (`git rm --cached <path>` followed by `rm <path>`, regular commit, and push).
+- NEVER force-push (`--force`, `-f`, `--force-with-lease`).
+
 ## Opening a DOI-USGS PR: PLAIN link + copy-paste body (Oleg opens it himself)
 
 Oleg opens/reviews the PR himself. After pushing the branch to the fork:

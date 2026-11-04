@@ -226,6 +226,7 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
   notes/lists in the same session. (Doc figures shipped as part of the docs are the separate
   exception, per the rule above.)
 - **NEVER modify any `.gitignore` without explicit permission.**
+- **Repository history manipulation is STRICTLY FORBIDDEN.** NEVER rewrite or manipulate Git history on any repository (no `git filter-repo`, `git filter-branch`, BFG, interactive rebase of pushed commits, squashing or amending pushed commits). Fine to keep past files in history. Removals or fixes must always be normal forward commits.
 - **NEVER force push** (`--force`/`-f`/`--force-with-lease`) unless explicitly asked, and
   **never amend an already-pushed commit** (forces a force push) - make a new commit.
 - **Prefer rebase over a merge/branchy history**: on a rejected push, integrate with

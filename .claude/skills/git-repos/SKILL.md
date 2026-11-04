@@ -87,3 +87,8 @@ Do NOT open the PR (public-facing) unless told. Recipe + generator:
 
 When a `git push` shows Dependabot or security vulnerability warnings, proactively
 flag it and offer to investigate/fix.
+
+## History Manipulation Strictly Forbidden
+
+Never rewrite or manipulate repository history (no `git filter-repo`, `git filter-branch`, BFG, amending pushed commits, or force-pushes). Removals and reverts must always be standard forward commits.
+
