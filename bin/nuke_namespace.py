@@ -50,39 +50,28 @@ def remove_namespace_blocks(text, ns_name):
       i += 1
   lines = norm_lines
 
+  def clean_ns_comment(s, ns):
+    s = re.sub(r'::' + re.escape(ns) + r'\b', '', s)
+    s = re.sub(r'\b' + re.escape(ns) + r'::', '', s)
+    s = re.sub(r'\b' + re.escape(ns) + r'\b', '', s)
+    # Clean up empty comments like "// namespace " or "// "
+    s = re.sub(r'//\s*namespace\s*$', '', s)
+    s = re.sub(r'//\s*$', '', s)
+    return s.rstrip()
+
   while True:
     open_pos = None
 
     for l_idx, line in enumerate(lines):
-      # Match various styles:
-      # namespace cartography {
-      m_standalone = re.search(r'^\s*namespace\s+' + re.escape(ns_name) + r'\s*\{', line)
-      # namespace vw { namespace cartography {
-      m_outer = re.search(r'^\s*namespace\s+(\w+)\s*\{\s*namespace\s+' + re.escape(ns_name) + r'\s*\{', line)
-      # namespace cartography { namespace vw {
-      m_inner = re.search(r'^\s*namespace\s+' + re.escape(ns_name) + r'\s*\{\s*namespace\s+(\w+)\s*\{', line)
-
-      if m_outer:
-        open_pos = (l_idx, m_outer.start(), 'outer', m_outer.group(1))
-        break
-      elif m_inner:
-        open_pos = (l_idx, m_inner.start(), 'inner', m_inner.group(1))
-        break
-      elif m_standalone:
-        open_pos = (l_idx, m_standalone.start(), 'standalone', None)
+      m = re.search(r'\bnamespace\s+' + re.escape(ns_name) + r'\s*\{', line)
+      if m:
+        open_pos = (l_idx, line.find('{', m.start()))
         break
 
     if not open_pos:
       break
 
-    start_line, start_col, kind, other_ns = open_pos
-    line = lines[start_line]
-
-    if kind == 'outer':
-      idx1 = line.find('{', start_col)
-      open_brace_idx = line.find('{', idx1 + 1)
-    else:
-      open_brace_idx = line.find('{', start_col)
+    start_line, open_brace_idx = open_pos
 
     depth = 1
     found_close = False
@@ -140,35 +129,17 @@ def remove_namespace_blocks(text, ns_name):
       break
 
     # Modify closing line
-    cl = lines[close_line]
-    if re.search(r'\}\s*\}\s*(//.*)?$', cl):
-      # Two braces. Replace with one brace
-      comment_match = re.search(r'//.*$', cl)
-      comment = comment_match.group(0) if comment_match else ""
-      if other_ns:
-        new_comment = f" // namespace {other_ns}"
-      elif "vw" in comment:
-        new_comment = " // namespace vw"
-      else:
-        new_comment = ""
-      lead = cl[:len(cl) - len(cl.lstrip(' '))]
-      lines[close_line] = lead + "}" + new_comment
-    elif re.search(r'^\s*\}\s*(//.*' + re.escape(ns_name) + r'.*)?$', cl):
-      lines[close_line] = None
-    elif re.search(r'^\s*\}\s*$', cl) and (close_line != start_line):
-      lines[close_line] = None
+    cl = lines[close_line][:close_col] + lines[close_line][close_col+1:]
+    if re.sub(r'//.*$', '', cl).strip():
+      lines[close_line] = clean_ns_comment(cl, ns_name)
     else:
-      lines[close_line] = cl[:close_col] + cl[close_col+1:]
+      lines[close_line] = None
 
     # Modify starting line
-    sl = lines[start_line]
-    if kind == 'outer':
-      lead = sl[:len(sl) - len(sl.lstrip(' '))]
-      lines[start_line] = lead + f"namespace {other_ns} {{"
-    elif kind == 'inner':
-      lead = sl[:len(sl) - len(sl.lstrip(' '))]
-      lines[start_line] = lead + f"namespace {other_ns} {{"
-    elif kind == 'standalone':
+    sl = re.sub(r'\s*namespace\s+' + re.escape(ns_name) + r'\s*\{', '', lines[start_line], count=1)
+    if re.sub(r'//.*$', '', sl).strip():
+      lines[start_line] = sl
+    else:
       lines[start_line] = None
 
     lines = [l for l in lines if l is not None]
@@ -185,8 +156,19 @@ def remove_namespace_blocks(text, ns_name):
 def replace_qualifiers(text, ns_name):
   # Replace vw::<ns>:: with vw::
   text = re.sub(r'\bvw::' + re.escape(ns_name) + r'::', 'vw::', text)
-  # Replace standalone <ns>:: with vw::
-  text = re.sub(r'(?<!::)\b' + re.escape(ns_name) + r'::', 'vw::', text)
+  if ns_name == 'ba':
+    # Standalone ba:: might be an alias for boost::algorithm or boost::accumulators.
+    # Only replace known vw::ba symbols if standalone.
+    ba_symbols = [
+      'ControlNetwork', 'ControlPoint', 'ControlMeasure', 'add_ground_control_points',
+      'build_control_network', 'triangulate_control_point', 'triangulate_control_network',
+      'subsample_gcp_by_tri_ratio', 'subsample_control_network', 'JFeature', 'CameraRelationNetwork'
+    ]
+    for sym in ba_symbols:
+      text = re.sub(r'(?<!::)\bba::' + sym + r'\b', f'vw::{sym}', text)
+  else:
+    # Replace standalone <ns>:: with vw::
+    text = re.sub(r'(?<!::)\b' + re.escape(ns_name) + r'::', 'vw::', text)
   # Clean any accidental vw::vw::
   text = re.sub(r'\bvw::vw::', 'vw::', text)
   return text
