@@ -142,7 +142,9 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
   or use "uses"/"depends on"/"keys on".
 - Avoid informal jargon: **"reaped"/"reap"**, **"culled"/"cull"**, **"wedged"**. Use
   plain formal words: a process is **"terminated"** (or "killed by the node limits"),
-  images/frames are **"removed"/"filtered out"**, a stuck node/job is **"stuck"**.
+  images/frames are **"removed"/"filtered out"**, a stuck node/job is **"stuck"**. This
+  ban holds in CODE too, not only prose: script echo/log messages, comments, and variable
+  and directory names. Use "remove"/"removed"/"outlier removal" (not "cull") in pipelines.
 - **"triangulation error"**, not "ray intersection error" (the point2dem `--errorimage`
   band). Fine to write both once, then use "triangulation error" throughout.
 - Write **"after jitter correction"**, not bare "after jitter"; name the operation.
