@@ -115,11 +115,17 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
 ## Writing style (always-on, all output)
 
 - **CI status: say "pass"/"fail", never "green"/"red".**
-- **My output runs TOO LONG by default. Be brief.** Notes, PR/issue comments, commit
-  messages, and chat replies tend to over-explain with rationale, verification detail, and
-  mechanism nobody asked for. When asked for something simple ("say tests pass after X"),
-  write exactly that one line and stop. Add depth only when explicitly asked. Default to the
-  shortest correct answer.
+- **My output runs TOO LONG by default. Be brief - but know WHICH mode you are in.**
+  Two different things:
+  - **After-the-fact SUMMARY to an external audience** (PR/issue comments, commit messages,
+    deliverable write-ups, a status line to a sponsor): be TERSE. When asked for something
+    simple ("say tests pass after X"), write exactly that one line and stop - no rationale,
+    verification detail, or mechanism nobody asked for.
+  - **DETAIL in the midst of working WITH Oleg**: when I uncover an issue, a risk, a bug, or
+    a decision that needs his attention, give the full detail. That is NOT the verbosity to
+    cut - surfacing what I found mid-work is the job. Cutting here would hide things he needs.
+  Default to the shortest correct answer for summaries. Do not strip substance from
+  in-the-loop findings.
 
 - **NEVER use a semicolon in prose, and never an em dash or en dash to join or connect
   clauses. This is a hard, non-negotiable rule across ALL output** (chat, docs, READMEs,
