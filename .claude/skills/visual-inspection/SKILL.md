@@ -72,6 +72,17 @@ deps env for GDAL/osgeo/PIL. General rule: whenever a step needs a tool/module,
 note in the project `.sh` notes WHICH env provides it, so a cold restart activates
 it instead of hitting `command not found` / `No module named`.
 
+**Rendering figures / HTML galleries on pfe is HEAD-NODE-LEGAL - don't wait on a slow queue.**
+Panel rendering (matplotlib Agg) and HTML/gallery assembly (gdal-python read + base64 embed) is
+a SINGLE-PROCESS, SINGLE-THREAD job with NO ASP multi-thread tool inside, so run it directly on
+the pfe head node (set `GDAL_NUM_THREADS=1 OMP_NUM_THREADS=1`, process the sites SEQUENTIALLY one
+python invocation at a time). The head-node ban is about multi-process/multi-thread ASP compute
+(parallel_stereo, bundle_adjust, dem_mosaic, pc_align), NOT about single-process python drawing.
+This is the fast path when the supercomputer queue is congested (CaSSIS stage7/stage8 gallery,
+2026-11-03): qdel the stuck devel job and just `ssh pfeNN 'bash render.sh'`. (The eval/dz/dd
+numeric work that FEEDS the panels - geodiff, the hillshade correlation - is the heavy part and
+still belongs in qsub; only the final drawing/assembly from existing products is head-node work.)
+
 ## Artifact and Preview Image Sizing
 
 For HTML artifacts and uploaded previews, downsample DRASTICALLY: <=1000 px long side,

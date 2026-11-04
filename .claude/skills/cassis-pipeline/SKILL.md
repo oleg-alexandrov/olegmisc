@@ -443,6 +443,78 @@ height STEP = the seam. The decisive test and fix:
   worse at 20) and fix-gcp are also SECONDARY - fix the TIE first, then the horizontal/CTX separately.
   Full arc (alignment-none misstep, root cause, fallback): ~/projects/cassis_asp/cassis_seam_coverage_diag_notes.sh.
 
+**A dz TILT in a stage-7 DEM = the MISSING SECOND PASS, not a bad CTX (cassis_jay tilt work, 2026-11-02).**
+A stage-7-only CaSSIS DEM can show a smooth cross-track (or along-track) RAMP in dz vs CTX. Root cause: the
+stage-1 CTX alignment (cassis_linescan_dem.sh) is TRANSLATION-ONLY (NCC NED shift -> pc_align
+--num-iterations 0 --initial-ned-translation), so it CANNOT remove a residual ROTATION between the CaSSIS
+DEM and CTX - that rotation survives as the tilt. The fix is a low-frequency re-pin to CTX, and there are
+TWO equivalent ways:
+  - STAGE 8 (pass2, the 2nd tic-toc dem2gcp pass) removes it natively. PROVEN on hunt3 4864: stage-7 tilt
+    gradient 3.83 m/km / ramp 30.8 m -> stage-8 0.385 m/km / 3.6 m (10x), dz NMAD 9.75 -> 5.30. So a
+    stage-7-only site is tilted PRECISELY BECAUSE it never got stage 8.
+  - pc_align point-to-plane (rigid, solves rotation) of the final DEM to CTX is a CUBE-FREE EQUIVALENT -
+    use it when the cubs are gone (e.g. a consolidated/distilled deliverable). pc_align CTX(ref,FIRST)
+    finalDEM(src,SECOND) --save-transformed-source-points -> point2dem -> re-eval. On 002257 it gave the
+    same flattening (grad 2.90 -> 0.38 m/km, ramp 33.7 -> 7.5 m, dd stayed sub-pixel). Worker +
+    plane-fit metric: ~/projects/cassis_asp/cassis_tilt_pcalign.sh + cassis_plane_fit.py.
+Judge a tilt QUANTITATIVELY by plane-fitting the dz (gradient m/km + end-to-end ramp + de-tilted NMAD): a
+real tilt has a large raw NMAD but a SMALL de-tilted NMAD (the scatter IS the ramp); after the fix the ramp
+collapses and raw NMAD ~= de-tilted NMAD (only terrain scatter left). What pc_align/stage-8 do NOT fix: a
+cross-track BOWL (the two-look BA near-degeneracy, non-rigid - 5150) or framelet SEAMS (broken same-look
+ties) - those are separate, harder.
+  - **point2dem --t_srs needs a PROJ4 string, NEVER a WKT carrying the D_MARS datum name** (it fails
+    "D_MOON and D_MARS are not official projection strings"). Use `gdalsrsinfo -o proj4` (as the repo does
+    in cassis_linescan_dem.sh / cassis_stereo.sh). gdalwarp -t_srs accepts the WKT fine - only point2dem checks.
+
+**DO NOT BLANKET-REPROCESS consolidated sites to "fix" them - a fresh run is FRAGILE and often WORSE (verified
+2026-11-02).** Tempting logic: "the current pipeline fixed 002257's tilt on a fresh reprocess, so reprocess the
+other problem sites too." It BACKFIRED - of 4 reprocessed (full stages 1-8, reusing each site's CTX), only
+002257 improved (its tilt was a genuine stale-processing artifact: grad 2.90 -> 0.16 m/km). 002440/005571/002456
+came out WORSE than their shipped deliverables - high DE-TILTED NMAD (10-30 m) = broken DEMs, and rp2440's
+hillshade showed a hard mid-strip DATUM SPLIT (the tic-toc BA solved two disconnected framelet blocks at
+different heights) plus WILD END FRAMELETS. A fresh run is fragile: the NCC align can lock suboptimally, the
+BA can split the datum, bad end framelets go wild. So: reprocess ONLY when the original is a KNOWN bad-align
+artifact AND VERIFY the fresh result (plane-fit + eyeball the hillshade for datum steps / wild framelets)
+before adopting. For a plain TILT, prefer pc_align - it only rigidly rotates the shipped DEM, so it CANNOT
+introduce a datum split or wild framelets, whereas a reprocess can. Gate box_te.txt first: the no-cull_diff
+sites (gdalbuildvrt CTX) lack it, and ctx_blend fails without it - synthesize it from the _18m extent
+(ULx LRy LRx ULy) or skip ctx_blend and reuse the existing _18m/_blur5.
+
+**IS THE CTX REFERENCE ITSELF BAD? - the MOLA tilt check (decisive, cheap).** When a site shows a tilt or
+seams, the dilemma is "bad CTX vs CaSSIS-side (fixable by align/stage-8)". The controlled CTX is MOLA-tied,
+so a GOOD CTX is FLAT vs MOLA. Geodiff CTX_18m against global MOLA (isis3data/base/dems/
+molaMarsPlanetaryRadius0005.cub, warped to the CTX grid) and plane-fit the result - read ONLY the GRADIENT
+(MOLA is a planetary RADIUS, so the ~3.4e6 m median is just the sphere offset, and the big NMAD is only the
+463m-vs-18m resolution gap). Worker: ~/projects/cassis_asp/cassis_ctx_mola_check.sh. VERIFIED 2026-11-02:
+all 5 problem sites read sub-1 m/km vs MOLA (CTX GOOD everywhere), so the tilts/seams are CaSSIS-side and NO
+CTX rebuild was warranted. A site whose CTX-vs-MOLA gradient rivals its CaSSIS-vs-CTX tilt would be the one
+to rebuild. Full worked analysis: ~/projects/cassis_asp/cassis_tilt_notes.sh.
+
+**A SEAM / defect / datum-split is almost NEVER "not enough same-look matches" - VERIFY the ties are
+complete FIRST, then look at the GCP CONTROL (traced on the cassis_jay reprocs, 2026-11-03).** The intuitive
+theory "continuity breaks because consecutive framelets don't match" is appealing and usually WRONG. On four
+reprocessed sites (one clean, three broken: a datum split, seams, a stage-7 break) EVERY same-look adjacency
+tie was present and DENSE - 29/29 per look, zero missing, 1-2 MB each (tens of thousands of IPs) - on the
+broken sites too. So before blaming matches, DISPROVE it cheaply: classify the dense .match files into
+same-look (both cubs share the PAN-<acqid>, adjacency ties) vs cross-look (L vs R stereo), and check the
+per-look chain i,i+1 is COMPLETE with no gaps and the tie sizes are large (the cassis_jay reproc classifier:
+~/projects/cassis_asp/cassis_match_classify.py). If the ties are complete+dense, the matches are NOT the
+cause. The REAL cause of the seam/split is the HARD fix-gcp control built from a LOOSE linescan->CTX
+registration (the "hard GCP from soft registration" item above), confirmed by two numbers: the BOOT dh/dv
+(frame/pass1/boot/run-F-{H,V}.tif stddev) - clean site ~3 / ~0.9 px, bad site ~7 / ~3 px; and the TIC
+per-camera reprojection residual (frame/pass1_tic/run-final_residuals_stats.txt col 2, avg) - clean ~2 px,
+INFEASIBLE control ~4-7 px (the solver cannot satisfy the hard GCP without distorting, so it scatters
+framelets / splits the datum). The TRUE root is UPSTREAM: a bad GCP0 from a POOR boot registration, and NO
+gcp weighting fixes a bad GCP0 cleanly - HARD transmits it (seam/split), SOFT discards it (the cameras stop
+registering to CTX, the opposite failure Oleg has hit, the DEM drifts off the reference). So softening the
+GCP (gcpSigma 1->3->5->10 / relax fix-gcp / relax htUncTight) is a NARROW-SWEET-SPOT band-aid worth ONE try
+per site, NOT a reliable fix. The principled fix is a BETTER linescan->CTX boot registration (NCC align /
+linescan DEM quality); on low-texture high-relief sites (5571 boot dh ~7 px) the hillshade correlation that
+drives both the align and GCP0 is inherently noisy, so a clean tie may be at the DATA's texture limit. Stage
+8 sometimes rescues a site by rebuilding control (002456), not reliably. And it is NOT more matches.
+(Strip-END framelets are a separate, real floater: single-look ends have no cross-look partner, so the
+first/last framelets of a look can go wild regardless - that is geometry, not matches or GCP.)
+
 **Distortion**: ALE emits the CaSSIS distortion (USGSCSM DistortionType CASSIS=9). A
 residual cross-track BOWL is a two-look BA near-degeneracy, not a distortion bug; real
 fix needs external low-freq control (LOLA/CTX). Alloc e2305.

@@ -24,6 +24,32 @@ def remove_namespace_blocks(text, ns_name):
   """
   lines = text.split('\n')
 
+  # Handle single-line namespace declarations, e.g.:
+  # namespace ip { struct InterestPoint; } -> struct InterestPoint;
+  for idx, l in enumerate(lines):
+    if re.search(r'\bnamespace\s+' + re.escape(ns_name) + r'\s*\{[^}]*\}', l):
+      m = re.search(r'^(\s*)namespace\s+' + re.escape(ns_name) + r'\s*\{\s*(.*?)\s*\}\s*$', l)
+      if m:
+        indent = m.group(1)
+        inner = m.group(2)
+        lines[idx] = (indent + inner) if inner else None
+      else:
+        lines[idx] = re.sub(r'\bnamespace\s+' + re.escape(ns_name) + r'\s*\{\s*(.*?)\s*\}', r'\1', l)
+  lines = [l for l in lines if l is not None]
+
+  # Normalize "namespace <ns>\n{" to "namespace <ns> {"
+  norm_lines = []
+  i = 0
+  while i < len(lines):
+    if (re.search(r'^\s*namespace\s+' + re.escape(ns_name) + r'\s*$', lines[i]) and
+        i + 1 < len(lines) and lines[i+1].strip() == '{'):
+      norm_lines.append(lines[i] + ' {')
+      i += 2
+    else:
+      norm_lines.append(lines[i])
+      i += 1
+  lines = norm_lines
+
   while True:
     open_pos = None
 
