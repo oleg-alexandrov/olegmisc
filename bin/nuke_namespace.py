@@ -144,10 +144,12 @@ def remove_namespace_blocks(text, ns_name):
 
     lines = [l for l in lines if l is not None]
 
-  # Remove using namespace lines
+  # Remove using namespace lines and using <ns>::<Symbol> lines
   cleaned_lines = []
   for l in lines:
     if re.search(r'^\s*using\s+namespace\s+(vw::)?' + re.escape(ns_name) + r'\s*;', l):
+      continue
+    if re.search(r'^\s*using\s+(vw::)?' + re.escape(ns_name) + r'::[a-zA-Z0-9_]+\s*;', l):
       continue
     cleaned_lines.append(l)
 
