@@ -107,6 +107,26 @@ everywhere. Neither the lens (refit/reorder) nor a GCP-noise filter fixes wild E
 under-constrained single-look geometry (trim the ends, or lean on stage 8 / pc_align), distinct from the
 mid-strip seams that a softer GCP (float + robust threshold) can heal.
 
+**HUNT FOR DISCONTINUITIES RELENTLESSLY - MEDIANS LIE, LOOK AT THE IMAGE AND THE RESIDUAL MAP (reinforced
+2026-11-05, Oleg caught this repeatedly in one session).** A seamless strip is the ENTIRE deliverable, so
+hunting framelet-boundary discontinuities is not optional QC, it is the job. EVERY median I reported hid a
+real break Oleg could see by eye - dz NMAD, top/bottom "step", AND even a row-to-row median jump (0.3 m
+median) all smoothed over ~30 framelet-boundary rows out of ~1600. The disciplines that actually catch it:
+(1) HILLSHADE the final DEM and look - a hillshade AMPLIFIES a sharp step (a 15 m one-pixel seam becomes a
+stark black line), so the eye beats any median. (2) Plot the TIC reprojection residual MAP (lon/lat scatter
+colored by run-final_residuals_pointmap.csv mean_residual, or the pointmap directly) - framelet-boundary
+STRESS shows as periodic bright stripes at the framelet pitch even when the dz looks fine. (3) Measure the
+per-boundary step DIRECTLY (max/99th row-to-row jump, not the median) and its spacing (should match
+rows/framelet). (4) Check for NODATA GAP BANDS at the strip ends (~30-row empty bands = single-look/dropout
+coverage, they render as thick black bands and are missing INPUT, not a solver fault - no GCP/lens tuning
+fixes them, only trimming or better coverage). KEY LESSON: COMPLETE, STRONG match ties (verify them: each
+left framelet to its left neighbors, each right to its right, plus left-right over the overlap, thousands of
+matches each) do NOT guarantee no seam - the solution can still leave high boundary RESIDUAL STRESS where the
+noisy boot GCP or heights-from-dem pull adjacent framelets apart. So check BOTH: the ties (coverage) AND the
+residual field (stress). A smooth residual field + complete ties = rubber-band stretch (deformable but not
+torn). Periodic residual stripes at the framelet pitch = per-framelet-pose boundary stress = the real seam
+signal. Never again report "smooth / no tear" from a median without looking at the hillshade and the residual map.
+
 ## RE-RUNNING WHEN A PARAMETER CHANGES BUT THE INPUT DOES NOT (be smart, don't recompute)
 
 The numbered stages depend on different inputs, so know which stage a knob touches and re-run only that,
