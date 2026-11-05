@@ -192,9 +192,12 @@ point to it, matching how other options are already documented.
 
 Group all outputs after inputs. Put a single `// Outputs` comment on its own line before them.
 
-## Copyright Year Updates
+## Copyright Year Updates (MANDATORY)
 
-Format: `Copyright (c) 2006-YYYY, United States Government...` - update end year to current year when editing files.
+Whenever any file in VisionWorkbench (VW) or Ames Stereo Pipeline (ASP) is created or modified, you MUST bump the copyright end year to the current year (e.g. 2026).
+- VisionWorkbench format: `Copyright (c) 2006-2026, United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All rights reserved.`
+- StereoPipeline format: `Copyright (c) 2009-2026, United States Government as represented by the Administrator of the National Aeronautics and Space Administration. All rights reserved.`
+Always verify and bump the copyright year in every modified source or header file before committing.
 
 ## Style Cleaning Tool
 
