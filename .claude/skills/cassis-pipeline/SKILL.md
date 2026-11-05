@@ -93,6 +93,20 @@ isis10 -> cameras+ctx_blend usgscsm_cassis -> `cassis_process.sh` 1 2) -> inspec
 wrong-lock is the tell that the NCC primary did not run (see the CTX-ALIGN note) - a good NCC align is a few
 km, vertical-dominated, dd sub-pixel.
 
+**ALWAYS HILLSHADE THE FINAL FRAMELET DEM AND WATCH FOR DISJOINT FRAMELETS AND SEAMS - THE MEDIAN STATS HIDE
+THEM (burned 2026-11-05).** The whole point of CaSSIS QC is a seamless strip, so disjoint/wild framelets and
+framelet-to-framelet seams are THE failure to catch. Two signatures: (1) WILD END FRAMELETS - saturated
+black/white bands at the strip ends, the single-look ends that have no cross-look stereo partner so they float
+on a weak pose leash (geometry, not GCP or lens). (2) SEAMS - height steps between adjacent framelets mid-strip,
+from inconsistent per-framelet GCP control. CRITICAL: dz NMAD and a top/bottom-half dz "step" are MEDIAN-based
+and SHRUG OFF these - a top where 30-50% of pixels are >50 m off CTX can still report a ~6 m NMAD and a ~1 m
+step. So NEVER call a result good on the NMAD/step alone. HILLSHADE the final DEM and LOOK, and quantify the
+wild fraction directly: the percent of pixels with |dz to CTX| > 50 m, computed PER REGION (top third vs
+middle vs bottom), not a whole-strip median. A healthy strip is seamless with a near-zero wild fraction
+everywhere. Neither the lens (refit/reorder) nor a GCP-noise filter fixes wild END framelets - that is
+under-constrained single-look geometry (trim the ends, or lean on stage 8 / pc_align), distinct from the
+mid-strip seams that a softer GCP (float + robust threshold) can heal.
+
 ## RE-RUNNING WHEN A PARAMETER CHANGES BUT THE INPUT DOES NOT (be smart, don't recompute)
 
 The numbered stages depend on different inputs, so know which stage a knob touches and re-run only that,
