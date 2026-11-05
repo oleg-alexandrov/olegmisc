@@ -3,8 +3,11 @@ name: asp-regressions
 description: >-
   Hub for ASP regression-test work and judging a FAILED ASP nightly: acceptable-vs-real,
   reset-to-god, run-vs-gold coverage, the zero-tolerance stat-diff trap,
-  build-break-vs-drift, regold, relaunch. Load when an ASP nightly fails, or to find, run,
-  or judge a StereoPipelineTest regression.
+  build-break-vs-drift, regold, relaunch. ALSO the mandatory always-read before running ANY
+  StereoPipelineTest regression ON THE MAC: l1 is the reference nightly machine, Mac gold is
+  almost always stale, so freshen a baseline gold from current code FIRST, then make the change,
+  then validate. Load when an ASP nightly fails, before touching a regression on the Mac, or to
+  find, run, or judge a StereoPipelineTest regression.
 ---
 
 # Evaluating a failed ASP nightly / regression
@@ -12,6 +15,15 @@ description: >-
 These skills are general-purpose: how to inspect builds and runs and judge
 acceptable-vs-real. They are NOT a log of past regolds or drift. Do not add
 per-incident history.
+
+## ON THE MAC, READ THIS FIRST (before running any regression here)
+
+l1 is the reference nightly machine. It runs and regolds every night, so the Mac mini's
+StereoPipelineTest `gold/` is almost always STALE and will FAIL as-is for reasons that have
+NOTHING to do with your change. Never validate a Mac code change against the shipped Mac gold.
+The ONLY correct order on the Mac is: freshen a baseline gold from CURRENT code FIRST, then make
+your change, then validate against that fresh baseline. Full step-by-step is STEP 0b below -
+go read it before you run a single test here. Skipping this has burned us repeatedly.
 
 ## Where regression knowledge lives (routing)
 
