@@ -15,6 +15,29 @@ Read it FIRST, every time, and drive the pipeline AS AN EXTERNAL USER would by f
 is only HINTS; the README and the repo scripts are reality. If the README and this skill ever disagree,
 the README wins and this skill is stale - fix it.**
 
+**ALWAYS run the DOCUMENTED repo procedure, NEVER a workaround. The external user must run the steps
+AS-IS from the README with the repo's included tools.** Every pipeline step has a repo `bin/` script named
+in the README - e.g. ingest = `cassis_ingest_cubes.sh`, CAMERAS = `cassis_make_cameras.sh` (isd_generate,
+ESA metakernel auto-discovered from ALESPICEROOT - NO per-orbit metakernel build), stages = `cassis_process.sh`.
+Before reaching for ANY loose/Mac-side/scratch tool (e.g. `isd_gen.py`, `build_metakernel.sh` in `cassis_asp/`),
+STOP: the documented repo script almost certainly already exists - `ls CassisPipeline/bin/` and use THAT.
+Substituting a loose tool is a WORKAROUND that the user following the doc cannot reproduce, and it can
+produce subtly different outputs. Burned 2026-11-06: skipped `cassis_make_cameras.sh` and hand-ran
+`isd_gen.py` + `build_metakernel.sh`, so stage 1 failed (assemble_pushframe found no per-framelet ISDs) -
+the fix was to run the DOCUMENTED camera step, not to patch anything. If a documented step genuinely has no
+repo script or the README is incomplete, that is a REAL GAP: add the repo script and/or ADAPT the README so
+the user can run it as-is. Do not paper over a doc/repo gap with a skill-level hack.
+
+**DOWNLOAD jobs (head node) vs PROCESS jobs (compute node, qsub) - a hard division.** The pipeline
+splits cleanly and each repo script's header states its run location (and the README "Which script runs
+where" section lists it): FETCH/DOWNLOAD on the head/front-end node (network only) = `cassis_find_looks.sh`,
+`cassis_fetch_pair.sh`, `cassis_ctx_fetch.sh` (all via `cassis_fetch.sh`). Everything else is COMPUTE and
+goes to a COMPUTE NODE via qsub = `cassis_ingest_cubes.sh`, `cassis_make_cameras.sh` (isd_generate reloads
+SPICE per cube - a sustained loop), `cassis_ctx_blend.sh` (ref CTX DEM), `cassis_process.sh` (the stages).
+NEVER run ingest/cameras/ctx-blend/stages on the head node - they are sustained per-framelet / heavy-stereo
+loops and get terminated by the head-node policy gate (burned 2026-11-06: ran cassis_make_cameras.sh on the
+head node). On a cluster, bundle the compute steps into ONE qsub worker that activates each env in turn.
+
 **PRIMARY GOAL whenever doing CaSSIS work: IMPROVE THE REPO (the `bin/` scripts and the README).** The
 pipeline is where external folk will use this, so that is where every lesson must land. When you drive a
 site and something breaks or is unclear, that is a REPO BUG: trace it, FIX the repo script AND the README,
