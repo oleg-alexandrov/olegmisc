@@ -254,3 +254,35 @@ and errors. Use plain separators with no `?` and no leading `=` (e.g.
   (a dead bundled lib reads as the floor); the honest test is running in a centos7
   (glibc 2.17) container. Full detail + the make-dist system-lib-stray fix: build-env
   (glibc-floor section). Bit us 2026-10 (stray /usr glib 2.72 + spiceql rebuild).
+
+## C++ unit tests (gtest_all) in the nightly
+
+Separate from the StereoPipelineTest REGRESSION suite (which asp-regressions owns),
+both VW and ASP carry gtest C++ unit tests under `src/.../tests/Test*.cxx`. The nightly
+DOES build and run them: `BinaryBuilder/Packages.py` runs `('make','gtest_all')` in
+`build_binarybuilder` for both `visionworkbench.compile` and `stereopipeline.compile`,
+UNLESS `self.fast` or env `SKIP_TESTS==1`. `build.py --skip-tests` sets that env and
+DEFAULTS TO FALSE, and `launch_master.sh` honors a `skip_tests` arg. So unit tests are
+on by default per platform. To turn them on for a platform just means: make `gtest_all`
+pass clean there, then do not pass `skip_tests`.
+
+- `gtest_all` BUILDS then RUNS every test exe. It FAILS the build if ANY test fails to
+  compile OR fails at runtime, so every single test must build and pass or the whole
+  platform reddens. One broken test blocks the suite.
+- Wiring: each repo's `cmake/Utilities.cmake` has the `add_library_wrapper(lib, SRC,
+  TEST_FILES, DEPS)` function. Per-module CMakeLists call it. It builds each test as
+  `${lib}_${TestName}` (EXCLUDE_FROM_ALL, so a plain `make` skips them), links gtest,
+  sets TEST_SRCDIR, and registers `add_test` + `add_to_custom_test_target`. Run one with
+  `make <lib>_<TestName>_runtest`, all with `make gtest_all`.
+- `enable_testing()`: ASP has it (src/CMakeLists.txt), VW did NOT until 2026-11 (so ctest
+  found zero VW tests). The gtest_all path never needed it. ctest only matters if you want
+  `ctest --timeout` timing.
+- Running on the Mac: test exes miss libomp on their rpath, so set
+  `DYLD_FALLBACK_LIBRARY_PATH=$asp_deps/lib` (plus PROJ_DATA/GDAL_DATA/PROJ_LIB). ASP ISIS
+  tests also need ISISROOT=$asp_deps and ISISDATA.
+- Judging unit-test failures: these are shallow sanity checks. Brittle exact-string or
+  exact-float compares that broke on a newer PROJ or platform are NOT real regressions,
+  fix them with tolerance or a semantic compare. A test needing absent data or a hardcoded
+  foreign path (e.g. a dev home dir) should point at shipped data or become a small token
+  test with tolerance that passes on mac arm, intel mac, and linux arm. Full campaign log:
+  `~/projects/code_refactoring_notes.sh`.
