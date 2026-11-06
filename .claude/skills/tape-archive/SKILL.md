@@ -95,13 +95,16 @@ to the lfe-visible `/nobackupp19/oalexan1/projects/` before running).
   no stray top-level `/nobackupp19/oalexan1/<proj>` dirs. Logs are transient: after the
   archive/wipe verifies and the notes line is written, wipe the `*.log` (one literal
   path per rm) - the durable record is the notes line, not the log.
-- **CLEAN UP YOUR OWN `.log` FILES WHEN DONE - do NOT leave transient logs scattered on lfe or
-  pfe (Oleg, 2026-11-06: "you tend to leave .log all over").** Any `tar_*.log` / `dmget_*.log` /
-  poll log a tar/stage/archive step writes is SCRATCH, not a deliverable. The moment that step
-  has verified and its one-line outcome is recorded in the project notes, REMOVE the log
-  (one literal absolute path per `rm`, no glob/`$VAR`). This is a mandatory finishing step of
-  EVERY archive/tar/stage cycle, not an afterthought - treat a leftover `.log` the same as a
-  leftover scratch file. At the end of a batch, also sweep for strays
+- **ANALYZE each `.log` when the step finishes, THEN wipe it - do NOT leave transient logs
+  scattered on lfe or pfe (Oleg, 2026-11-06: "you tend to leave .log all over").** Any
+  `tar_*.log` / `dmget_*.log` / poll log a tar/stage/archive step writes is SCRATCH that exists
+  for ONE purpose: to be READ when the step completes so you can confirm it ran clean (no tar
+  errors, no partial-read warning, expected byte count). The order is: step finishes -> READ and
+  analyze the log -> confirm everything looks good -> record the one-line outcome in the project
+  notes -> ONLY THEN wipe the log (one literal absolute path per `rm`, no glob/`$VAR`). Never
+  wipe a log you have not yet read (you would discard the only evidence the step succeeded), and
+  never leave one lying around after you have read it. This read-then-wipe is a mandatory
+  finishing step of EVERY archive/tar/stage cycle. At the end of a batch, also sweep for strays
   (`ls /u/oalexan1/*.log /u/oalexan1/projects/*.log 2>/dev/null`) and clean any you created.
 - **PARENT-DIR-PREFIX packing policy (every tape tarball):** ALWAYS create the tar
   from the `projects` root with the PROJECT DIR as the leading path component, so
