@@ -252,6 +252,22 @@ Bare minimum to remember without reading:
   is a camera `.json`, it is kept and archived, full stop. Match files, `run-*.tif` stereo
   intermediates, mapproj eval tiles, and figures ARE regenerable and wipe freely - cubes and
   cameras are not.
+- **The ban covers CONSOLIDATION / "distilling" a project down to its derived products, not
+  just explicit `rm` passes.** A project is NEVER "fully kept" when its `.cub` / camera `.json`
+  / input data are gone and only the DERIVED products (DEMs, aligned linescan, CTX ref,
+  hillshades, eval tiles) remain. Derived products do NOT let you re-run the earlier stages:
+  without the cubs you cannot rebuild the dense matches (stage 6), so you cannot re-run the
+  stereo/bundle with a new recipe - you are forced into a full PSA re-fetch + re-ingest first.
+  So when consolidating many sites into one deliverable tree, the cubs and camera `.json` go
+  IN (or to tape), they are not "distilled away". NEVER write "nothing was lost" after a
+  consolidation that dropped the inputs - inputs gone = the ability to reprocess is lost, which
+  is a real loss even when every output is on disk. Burned 2026-11-02 -> bit 2026-11-05: the
+  CaSSIS hunt sites were consolidated into `cassis_jay/<orbit>/` keeping cams+ctx+linescan+DEMs
+  but the cubs were "distilled away" as re-fetchable, and the notes asserted "NOTHING was lost
+  in the grand wipe". Days later a sweet-spot-recipe regression on those good sites needed a
+  stage-6 dense rebuild, which needs the cubs, which were gone - forcing a from-scratch PSA
+  re-fetch per site. Rule: keep `.cub` + camera `.json` + raw input data through EVERY
+  consolidation and cleanup, on disk or on tape, full stop.
 - **Archive/wipe hygiene (paper trail; see `~/projects/lfe_archive.sh`):** LOG EVERY
   archive AND every wipe in that project's own notes (what, when, and where it is
   recoverable - lfe tar path, or public source + re-fetch recipe). Per-project
