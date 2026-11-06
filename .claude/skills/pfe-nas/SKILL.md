@@ -1,6 +1,6 @@
 ---
 name: pfe-nas
-description: NASA Pleiades (pfe) and Athena supercomputer work - qsub/PBS job submission, head-node compute limits, node models, monitoring and watching jobs to completion, job effectiveness, lfe tape archive, and the ASP dev build on pfe. Load before ANY pfe/Athena/lfe work, NO trivial exception - including a single ssh probe (ldd/ls/find/objdump/which), locating or inspecting the ASP build on pfe, checking glibc or an env on pfe, submitting a qsub job, or setting up a PBS watcher. Touching pfe at all is pfe work. The working ASP build is at ~/projects/BinaryBuilder/StereoPipeline (tools in libexec/, reached via a symlink a bare find will not descend).
+description: NASA Pleiades (pfe) and Athena supercomputer work - qsub/PBS job submission, head-node compute limits, node models, monitoring and watching jobs to completion, job effectiveness, lfe access and safety, the ssh/pfx tunnel and double-hop quoting, deletion safety, and the ASP dev build on pfe. Load before ANY pfe/Athena/lfe work, NO trivial exception - including a single ssh probe (ldd/ls/find/objdump/which), locating or inspecting the ASP build on pfe, checking glibc or an env on pfe, submitting a qsub job, or setting up a PBS watcher. Touching pfe at all is pfe work. For WRITING a project to lfe tape load the tape-archive skill, for RESTORING from tape load tape-extract. The working ASP build is at ~/projects/BinaryBuilder/StereoPipeline (tools in libexec/, reached via a symlink a bare find will not descend).
 ---
 
 ## #1 RULE - HEAD NODE = 1 THREAD / 1 PROCESS, ALWAYS (read this first)
@@ -212,87 +212,15 @@ Bare minimum to remember without reading:
   the same thing on both machines. `rsync -R` (relative) or `scp` into a pre-`mkdir -p`'d
   matching subdir. Same for l1/any remote. (Flattening breaks the work-dir-relative-path
   convention and makes provenance unclear; corrected 2026-09-02.)
-- **NEVER wipe or overwrite anything on lfe (CRITICAL).** Tape is the ultimate,
-  irreplaceable original archive. Never delete, clobber, or overwrite any dataset on lfe.
-  lfe access from l1 or Mac: `ssh pfx` then `ssh lfe`.
-- **ONE TAR AT A TIME - NEVER run concurrent `archive_to_lfe.sh` writes to lfe (CRITICAL).**
-  lfe is ACTUAL magnetic tape: a robotic library mounts a physical cartridge and streams the
-  tar to it. Concurrent tar writes make the robot thrash between cartridges and strain the
-  hardware. Launch ONE archive, poll its log for `END ... rc=0`, and only THEN launch the
-  next - QUEUE multiple projects/parts sequentially, never fan them out. (Burned 2026-11-01:
-  launched 4 tars at once - Oleg: "don't want to strain that poor thing, it does actual tape.")
-  Verifying a FINISHED tar (`tar tf`) reads the still-resident on-disk copy and is fine; only
-  the concurrent WRITES must be avoided. Detail: `~/projects/lfe_archive.sh`.
-- **ANYTHING TAPE-RELATED = UTMOST SERIOUSNESS, and do NOT depend on the lfe DOUBLE-HOP to decide a wipe
-  (Oleg, 2026-11-01).** The Mac->pfx->lfe double hop is flaky and can SILENTLY RETURN EMPTY (seen this
-  session - two `ssh pfx "ssh lfe '...'"` archive checks came back blank). An empty result from a flaky
-  query is NOT evidence of "not archived" OR "archived" - it is NO information, and must NEVER greenlight a
-  deletion (an empty listing could wrongly look like "safe to wipe" and destroy UNARCHIVED data). **The
-  SOURCE OF TRUTH for what is on tape is the project's own tape-archive LOG**, which policy keeps precisely
-  so we never depend on a live lfe query: the per-project archive-notes `.sh` (e.g. CaSSIS:
-  `~/projects/cassis_asp/cassis_cleanup_plan.sh`) and the general `~/projects/lfe_archive.sh`. **RULE for an
-  archive-gated wipe: only wipe a dir as "already archived" when the LOG positively records its `.tar` on
-  lfe (named tarball + size/date). If the log is silent or ambiguous, do NOT wipe** - leave the dir, or only
-  trim regenerable intermediates in place; archiving-then-wiping an unlogged dir needs an explicit, verified
-  tape write first (and that is a deliberate, careful operation, never a side effect of a cleanup). When you
-  do wipe an archived dir, record the recovery tar path in the wipe audit line.
-
-- **`.cub` AND camera `.json` FILES ARE NEVER REGENERABLE BULK - across ANY mission,
-  always KEEP + ARCHIVE them, never wipe them as "re-fetchable".** This is the standing
-  default for every cleanup/archive pass, for any instrument (LRO NAC, OHRC, CTX, CaSSIS,
-  HiRISE, any ISIS cube), not a per-project judgement call. A `.cub` is the product of real
-  ingest work (download + `spiceinit` + calibration) and a camera `.json` (CSM model-state /
-  ISD / `adjusted_state.json`) is the product of a bundle/jitter solve - both are small
-  relative to run output and precious, so even when the raw source is technically
-  re-orderable from a public archive, the cubes and cameras go INTO the tape tar and are the
-  LAST things to wipe, never folded into the regenerable-intermediate pile. Burned 2026-11-01:
-  an ohrc_lronac_align archive first EXCLUDED the 61 GB `lro_nac/` cubs as "re-fetchable NAC"
-  while keeping the OHRC cubs - Oleg caught it ("but lro nac is also cub", then "going forward
-  keep whatever cub files and json files by whatever mission"). Rule: if it ends in `.cub` or
-  is a camera `.json`, it is kept and archived, full stop. Match files, `run-*.tif` stereo
-  intermediates, mapproj eval tiles, and figures ARE regenerable and wipe freely - cubes and
-  cameras are not.
-- **The ban covers CONSOLIDATION / "distilling" a project down to its derived products, not
-  just explicit `rm` passes.** A project is NEVER "fully kept" when its `.cub` / camera `.json`
-  / input data are gone and only the DERIVED products (DEMs, aligned linescan, CTX ref,
-  hillshades, eval tiles) remain. Derived products do NOT let you re-run the earlier stages:
-  without the cubs you cannot rebuild the dense matches (stage 6), so you cannot re-run the
-  stereo/bundle with a new recipe - you are forced into a full PSA re-fetch + re-ingest first.
-  So when consolidating many sites into one deliverable tree, the cubs and camera `.json` go
-  IN (or to tape), they are not "distilled away". NEVER write "nothing was lost" after a
-  consolidation that dropped the inputs - inputs gone = the ability to reprocess is lost, which
-  is a real loss even when every output is on disk. Burned 2026-11-02 -> bit 2026-11-05: the
-  CaSSIS hunt sites were consolidated into `cassis_jay/<orbit>/` keeping cams+ctx+linescan+DEMs
-  but the cubs were "distilled away" as re-fetchable, and the notes asserted "NOTHING was lost
-  in the grand wipe". Days later a sweet-spot-recipe regression on those good sites needed a
-  stage-6 dense rebuild, which needs the cubs, which were gone - forcing a from-scratch PSA
-  re-fetch per site. Rule: keep `.cub` + camera `.json` + raw input data through EVERY
-  consolidation and cleanup, on disk or on tape, full stop.
-- **Archive/wipe hygiene (paper trail; see `~/projects/lfe_archive.sh`):** LOG EVERY
-  archive AND every wipe in that project's own notes (what, when, and where it is
-  recoverable - lfe tar path, or public source + re-fetch recipe). Per-project
-  archive/cleanup scripts live IN the project dir (git-added+pushed), never loose at
-  the nobackup `projects/` root; only the generic `archive_to_lfe.sh` tool sits at the
-  root. Every project's data+scripts+logs live inside its own `projects/<proj>` dir -
-  no stray top-level `/nobackupp19/oalexan1/<proj>` dirs. Logs are transient: after the
-  archive/wipe verifies and the notes line is written, wipe the `*.log` (one literal
-  path per rm) - the durable record is the notes line, not the log.
-- **PARENT-DIR-PREFIX packing policy (every tape tarball):** ALWAYS create the tar
-  from the `projects` root with the PROJECT DIR as the leading path component, so
-  `tar xf` recreates `<proj>/...`. Archive different PARTS of one project as SEPARATE
-  tarballs (`<proj>_cubs.tar`, `<proj>_results.tar`, `<proj>_cameras.tar`), each named
-  for its part but all containing the `<proj>/` prefix, so unpacking any or all of them
-  in one local dir reassembles a single `<proj>/` tree with each part at its correct
-  relative place. NEVER tar from inside a subdir (that drops the `<proj>/` prefix and
-  the parts no longer reassemble). `archive_to_lfe.sh <proj> <proj>_<part> --subdir <rel>`
-  does this; see [[sfs-results-verification]] / lfe_archive.sh.
-- **Per-project ARCHIVE LOG (a dedicated, cross-linked notes file):** keep a timestamped
-  running inventory of every tape archive in a project archive-notes file (e.g.
-  `<proj>_archive_notes.sh`) cross-linked to the main project notes, with one row per
-  tarball: tape path, contents, extract root, size, launch time, and a DONE+VERIFIED
-  status. Verify each archive (`tar tf <tarball> | wc -l` / spot-list) and record it
-  BEFORE wiping the on-disk copy. This is the trace you need when a later wipe goes wrong.
-- **Staging a file off tape (`dmget`): launch it DETACHED, decoupled from the poll - burned TWICE (2026-08-20).** A large file (tens of GB) can take many minutes to stage. If `dmget` runs foreground inside a backgrounded Bash task or a poll/Monitor loop, and that task is later killed (session lifecycle, TaskStop, context compaction, a killed monitor), the `dmget` process dies with it and the file stalls half-staged at `(UNM)` - you then have to re-issue and wait all over again from scratch. RULE: on lfe, FIRST launch `dmget` as a detached `nohup ... &` writing to a log (so it survives everything), THEN poll `dmls -l` for `(DUL)`/`(REG)` in a SEPARATE task; killing the poller never touches the stage. E.g. `ssh pfx "ssh lfe 'cd /u/oalexan1 && nohup dmget projects/foo.tgz > dmget_foo.log 2>&1 & echo pid \$!'"`, then in its own loop poll `dmls -l projects/foo.tgz` until it shows `(DUL)`/`(REG)`. If a poll finds it still `(UNM)` with no `dmget` running (`ps -u oalexan1 | grep -c dmget` == 0), the stage was orphaned - relaunch the detached `dmget`. (States: `OFL`/`DUL` = on tape, `UNM` = unmigrating/mid-stage, `REG`/`MIG` = on lfe disk / migrating.) READ-TRIGGERS-STAGE shortcut (often simplest): any READ of an `(OFL)` file auto-triggers DMF staging - so `scp lfe:/u/.../file.zip .` (pfx pulling to /nobackup) or starting the `unzip`/`tar xf` of the archive will itself block-then-stage, no explicit `dmget` needed. Do that pull/untar INSIDE a backgrounded Bash task (or nohup on lfe); if it dies mid-stage nothing is orphaned - just re-run the read and DMF resumes. For MANY/large files still prefer the explicit detached `dmget` above so the stage survives independently of the copy. Do NOT unzip in place on lfe (writes to tape space) - `scp` the archive to `/nobackupp19` first, then unzip there. Burned before by running `dmget` foreground in a killable task (2026-08-22): background it.
+- **lfe TAPE ARCHIVE moved to its own skill - load [[tape-archive]] to WRITE a project to tape
+  (archive_to_lfe.sh, parent-dir-prefix packing, the per-project archive log, pre-archive
+  Mac-vs-pfe cross-check/rsync, the cub/json keep rules, sensitive-project read-lock) and
+  [[tape-extract]] to RESTORE from tape.** The non-negotiable safety that stays here: NEVER
+  wipe/clobber/overwrite anything on lfe (it is irreplaceable tape); run ONE tar at a time
+  (never concurrent `archive_to_lfe.sh` writes - it is a real robotic tape library); and the
+  SOURCE OF TRUTH for what is on tape is the project's own archive-notes log, NEVER a flaky
+  live lfe query (an empty double-hop result is NO information and must never greenlight a
+  wipe). lfe access: direct `ssh lfe` works from the Mac (and from pfe). Deep ref: `~/projects/lfe_archive.sh`.
 - **Double-hop ssh quoting (Mac -> pfx -> lfe/athfe01): use OUTER double quotes, INNER single quotes, and ONE trivial pipeline** - `ssh pfx "ssh lfe 'tar tzf f | head'"`. This keeps recurring: `ssh pfx 'ssh lfe "..."'` with `===` markers, `$VAR`, `awk` using `$N`, or multiple `;`-separated echoes INSIDE gets eaten by the outer Mac shell and the command breaks ("=== not found"). So on a double hop: no `===`, no `$`, no `awk $N`, no `;`-chains inside; just a single simple command. For anything with quotes/vars/multiple statements, write a small script and run it by ABSOLUTE path (`/home6` is shared across pfe + Athena, so a script there runs on athfe01 too; for lfe, `scp` the script to lfe first). Keep the inner command dumb. (Fixed 2026-08-20 after breaking it twice in one session.)
 - **`/home6` data MUST live on `/nobackup*` with a `/home6` SYMLINK pointing to it (Oleg's
   long-standing convention).** `/home6/oalexan1` is small + backed-up; real project data goes
