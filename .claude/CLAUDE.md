@@ -75,12 +75,19 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
   `MEMORY.md` (in-flight reminders, active-project pointers) and its sibling `.md` files
   in the same dir. `MEMORY.md` itself is TRANSITORY. Trickle matured lessons out of it
   into the relevant skill or `CLAUDE.md`, then prune.
-- **Convention: core reusable knowledge lives in a SKILL - invoke it, don't reach for a
-  `.sh` note.** Skills are the first stop for cross-project how-to (build, photogrammetry,
-  git, pfe, etc.). `.sh` notes in `~/projects/` are for PER-PROJECT work logs and paper
-  trails, plus DEEP/exhaustive reference a skill points to. When a `.sh` holds core
-  knowledge with no skill home, that is a signal to propose a skill (or fold it into an
-  existing one), not to keep growing the `.sh`.
+- **Convention: knowledge, record, and tool are three distinct things with three homes.**
+  (1) REUSABLE KNOW-HOW (rules, recipes, scars, how to do X anywhere) lives in a SKILL, and
+  ONLY in a skill - if it is big, split into a HIERARCHY of skills (hub + specialists),
+  cross-linked with `[[name]]`. (2) PER-PROJECT records / paper trails (what was archived for
+  project P, when, the wipe log) live in that project's own `~/projects/<proj>/*.sh`. (3) A
+  concrete TOOL/SCRIPT to invoke (`~/bin/archive_to_lfe.sh`) is named by the skill with how to
+  run it. **A skill points OUTWARD only to another SKILL or to a TOOL to invoke - NEVER "see
+  this `.sh` note for the how-to".** A `.sh` note the skill points to for knowledge is a second
+  home for that knowledge and is the anti-pattern: fold it into the skill hierarchy and retire
+  the note (to a redirect stub if other notes link to it). The only `.sh` a skill may cite is a
+  per-project log, and only as a clearly-labeled EXAMPLE, or a reference-DATA file (host maps,
+  tables) that is data, not prose how-to. When a `.sh` holds core knowledge with no skill home,
+  that is the signal to propose a skill (or fold it into an existing one), not to grow the `.sh`.
 - **Project work notes go in `~/projects/` as comment-only `.sh` files** (tracked by the
   projects repo), NOT in `.claude/` memory. `.claude/` memory is only for cross-project
   patterns and preferences.

@@ -15,9 +15,11 @@ description: >-
 
 Writing project data to lfe (Lou) tape. This is the archive (write) side. For
 RESTORE (pulling data back off tape) see [[tape-extract]]. For pfe/Athena compute,
-ssh/double-hop mechanics, and deletion safety see [[pfe-nas]]. Deep reference:
-`~/projects/lfe_archive.sh`. The generic tool is `~/bin/archive_to_lfe.sh` (deploy
-to the lfe-visible `/nobackupp19/oalexan1/projects/` before running).
+ssh/double-hop mechanics, and deletion safety see [[pfe-nas]]. The generic tool is
+`~/bin/archive_to_lfe.sh` (deploy to the lfe-visible `/nobackupp19/oalexan1/projects/`
+before running) - it bakes in the detach/log/no-clobber gotchas for the common
+single-tar case. (`~/projects/lfe_archive.sh` is now only a legacy redirect stub
+that older per-project archive logs link to - all the how-to lives in this skill.)
 
 - **NEVER wipe or overwrite anything on lfe (CRITICAL).** Tape is the ultimate,
   irreplaceable original archive. Never delete, clobber, or overwrite any dataset on lfe.
@@ -39,7 +41,7 @@ to the lfe-visible `/nobackupp19/oalexan1/projects/` before running).
   next - QUEUE multiple projects/parts sequentially, never fan them out. (Burned 2026-11-01:
   launched 4 tars at once - Oleg: "don't want to strain that poor thing, it does actual tape.")
   Verifying a FINISHED tar (`tar tf`) reads the still-resident on-disk copy and is fine; only
-  the concurrent WRITES must be avoided. Detail: `~/projects/lfe_archive.sh`.
+  the concurrent WRITES must be avoided.
 - **ANYTHING TAPE-RELATED = UTMOST SERIOUSNESS, and do NOT depend on a live lfe QUERY to decide a wipe
   (Oleg, 2026-11-01).** A live lfe listing can SILENTLY RETURN EMPTY (seen 2026-11-01 - two archive
   checks came back blank; the old Mac->pfx->lfe double hop was especially prone to this, which is one
@@ -47,8 +49,8 @@ to the lfe-visible `/nobackupp19/oalexan1/projects/` before running).
   query is NOT evidence of "not archived" OR "archived" - it is NO information, and must NEVER greenlight a
   deletion (an empty listing could wrongly look like "safe to wipe" and destroy UNARCHIVED data). **The
   SOURCE OF TRUTH for what is on tape is the project's own tape-archive LOG**, which policy keeps precisely
-  so we never depend on a live lfe query: the per-project archive-notes `.sh` (e.g. CaSSIS:
-  `~/projects/cassis_asp/cassis_cleanup_plan.sh`) and the general `~/projects/lfe_archive.sh`. **RULE for an
+  so we never depend on a live lfe query: the per-project archive-notes `.sh` (for example CaSSIS:
+  `~/projects/cassis_asp/cassis_cleanup_plan.sh`). **RULE for an
   archive-gated wipe: only wipe a dir as "already archived" when the LOG positively records its `.tar` on
   lfe (named tarball + size/date). If the log is silent or ambiguous, do NOT wipe** - leave the dir, or only
   trim regenerable intermediates in place; archiving-then-wiping an unlogged dir needs an explicit, verified
@@ -86,7 +88,7 @@ to the lfe-visible `/nobackupp19/oalexan1/projects/` before running).
   stage-6 dense rebuild, which needs the cubs, which were gone - forcing a from-scratch PSA
   re-fetch per site. Rule: keep `.cub` + camera `.json` + raw input data through EVERY
   consolidation and cleanup, on disk or on tape, full stop.
-- **Archive/wipe hygiene (paper trail; see `~/projects/lfe_archive.sh`):** LOG EVERY
+- **Archive/wipe hygiene (paper trail):** LOG EVERY
   archive AND every wipe in that project's own notes (what, when, and where it is
   recoverable - lfe tar path, or public source + re-fetch recipe). Per-project
   archive/cleanup scripts live IN the project dir (git-added+pushed), never loose at
@@ -114,7 +116,7 @@ to the lfe-visible `/nobackupp19/oalexan1/projects/` before running).
   in one local dir reassembles a single `<proj>/` tree with each part at its correct
   relative place. NEVER tar from inside a subdir (that drops the `<proj>/` prefix and
   the parts no longer reassemble). `archive_to_lfe.sh <proj> <proj>_<part> --subdir <rel>`
-  does this; see [[sfs-results-verification]] / lfe_archive.sh.
+  does this; see [[sfs-results-verification]].
 - **Per-project ARCHIVE LOG (a dedicated, cross-linked notes file):** keep a timestamped
   running inventory of every tape archive in a project archive-notes file (e.g.
   `<proj>_archive_notes.sh`) cross-linked to the main project notes, with one row per
@@ -140,3 +142,43 @@ to the lfe-visible `/nobackupp19/oalexan1/projects/` before running).
   `chmod go-rwx` / `700` the pfe project dir). Lists and notes may still be git-added if the owner
   says so, but metadata with coordinates never is.
 - **Staging a file off tape (`dmget`): launch it DETACHED, decoupled from the poll - burned TWICE (2026-08-20).** A large file (tens of GB) can take many minutes to stage. If `dmget` runs foreground inside a backgrounded Bash task or a poll/Monitor loop, and that task is later killed (session lifecycle, TaskStop, context compaction, a killed monitor), the `dmget` process dies with it and the file stalls half-staged at `(UNM)` - you then have to re-issue and wait all over again from scratch. RULE: on lfe, FIRST launch `dmget` as a detached `nohup ... &` writing to a log (so it survives everything), THEN poll `dmls -l` for `(DUL)`/`(REG)` in a SEPARATE task; killing the poller never touches the stage. E.g. `ssh lfe 'cd /u/oalexan1 && nohup dmget projects/foo.tgz > dmget_foo.log 2>&1 & echo pid $!'`, then in its own loop poll `dmls -l projects/foo.tgz` until it shows `(DUL)`/`(REG)`. If a poll finds it still `(UNM)` with no `dmget` running (`ps -u oalexan1 | grep -c dmget` == 0), the stage was orphaned - relaunch the detached `dmget`. (States: `OFL`/`DUL` = on tape, `UNM` = unmigrating/mid-stage, `REG`/`MIG` = on lfe disk / migrating.) READ-TRIGGERS-STAGE shortcut (often simplest): any READ of an `(OFL)` file auto-triggers DMF staging - so `scp lfe:/u/.../file.zip .` (pfx pulling to /nobackup) or starting the `unzip`/`tar xf` of the archive will itself block-then-stage, no explicit `dmget` needed. Do that pull/untar INSIDE a backgrounded Bash task (or nohup on lfe); if it dies mid-stage nothing is orphaned - just re-run the read and DMF resumes. For MANY/large files still prefer the explicit detached `dmget` above so the stage survives independently of the copy. Do NOT unzip in place on lfe (writes to tape space) - `scp` the archive to `/nobackupp19` first, then unzip there. Burned before by running `dmget` foreground in a killable task (2026-08-22): background it.
+
+## Keep / archive / log / wipe - the fixed order
+
+After an ASP stereo / BA / jitter experiment is written up, shrink it to the reviewable
+essentials, archive those to tape, then wipe the bulk. The ORDER IS FIXED, never reorder:
+(1) pick the ONE experiment to keep - the LAST full end-to-end run, not merely the newest;
+(2) make the on-disk copy SELF-CONTAINED - resolve every symlink to a real file, verify with
+`find <dir> -type l` empty; (3) ARCHIVE to tape and VERIFY (below); (4) LOG the archive in the
+project notes (tar path, size, contents, extract root); (5) ONLY THEN wipe the regenerable
+bulk. Measure six or seven times, wipe once - tape writes and disk wipes are both irreversible.
+
+- **KEEP (archive, and the last to wipe):** all INPUTS (`.cub`, DIMAP `.dim`/`.tif`, reference
+  DEMs, GCP, the whole `data/`), all CAMERAS (`adjusted_state.json`/`.tsai`/`.adjust` from each
+  pass plus the pc_align `run-transform.txt`), MATCH files (`*.match`/`*-clean.match`), LOGS +
+  BA/jitter REPORTS (small), and the FINAL-STAGE rasters only (`-DEM.tif`, `-IntersectionErr.tif`
+  tri-error, `-DRG.tif`/ortho, hillshades, the geodiff/dz products) - the cub/json rule above is
+  the non-negotiable core of this list.
+- **STRIP before the tar (regenerable bulk):** per-tile `run-XXXX_YYYY/` working subdirs;
+  point clouds, disparities, masks (`*-PC.tif`, `*-F.tif`, `*-RD.tif`, `*-D.tif`, `*-D_sub.tif`,
+  `*-B.tif`, `*-L.tif`, `*-R.tif`, `*-*Mask*.tif`, `*-GoodPixelMap.tif`, `*-L_sub.tif`,
+  `*-R_sub.tif`); intermediate-stage rasters of superseded stages (keep only the LAST stage's
+  DEM/err); previews (`*_sub*.tif`, `*.aux.xml`); and `build/`/`install/`. A kept item that is
+  unexpectedly huge may be wiped too - note it. This matches [[pfe-nas]] deletion safety and the
+  stereo-cleanup file-type prune.
+
+## The tar recipe
+
+- **Plain `tar cf`, NOT `tar -z`.** lfe tape handles large files; gzip adds CPU and defeats the
+  tape index / random access. (shiftc would also work for large transfers, but plain tar over the
+  lfe-mounted `/u` path is the proven pattern.)
+- **Single-tar (total < ~100 GB): use the tool** `~/bin/archive_to_lfe.sh <proj> [<basename>]`
+  (deploy to the nobackup `projects/` root, run detached on lfe). It tars from the `projects` root
+  so the archive extracts back into `<proj>/...` per the parent-dir-prefix packing policy above.
+- **Multi-tar split (> ~100 GB or a rarely-restored part):** separate named tars - a core bundle
+  (results, scripts, small files), bulky bundle(s) (per-tile mapprojected images), and a rarely-
+  restored IMAGES tar (raw cubs) - each carrying the `<proj>/` prefix so they reassemble. The
+  worked example is `~/projects/sfs_mons_mouton/archive_to_lfe.sh`.
+- **VERIFY before any wipe:** `tar tf <tar> | wc -l`, `tar tf <tar> | head`, spot-extract ONE
+  member and diff it, and grep the member list for a couple of must-haves (a DEM, a camera). Only
+  after verify -> wipe.

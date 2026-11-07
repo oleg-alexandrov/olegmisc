@@ -72,10 +72,11 @@ ssh pfx "ssh lfe 'dmls -l /u/oalexan1/projects/<proj>.tar'"
 
 ## Where extraction runs, and what it must NOT touch
 
-- `/u` (lfe home) is mounted ONLY on lfe, so `tar` that READS `/u/...` must run
-  ON lfe. `/nobackupp19` is mounted on both lfe and pfe, so extract TO it from
-  lfe. The tar only READS `/u`; never write extracted output into `/u` (tape
-  space) - always `-C /nobackupp19/...`. NEVER wipe/clobber anything on `/u`.
+- `/u` (lfe home) is mounted ONLY on lfe and `/nobackupp19` is mounted on both
+  lfe and pfe. So a MODEST tar (a few GB) can be untarred directly on lfe with
+  `-C /nobackupp19/...` - it reads `/u`, writes nobackup. The tar only READS `/u`;
+  never write extracted output into `/u` (tape space), and NEVER wipe/clobber
+  anything on `/u`. For a LARGE restore do NOT untar on lfe - see the next section.
 - Double-hop quoting (Mac -> pfx -> lfe): outer double quotes, inner single
   quotes, ONE simple command, no `===` markers, no `$VAR`, no `awk $N`, no
   `;`-chains inside (pfe-nas "Double-hop ssh quoting"). A char-class grep like
@@ -88,6 +89,25 @@ ssh pfx "ssh lfe 'dmls -l /u/oalexan1/projects/<proj>.tar'"
 - After any copy of a produced file, confirm the LOCAL size == the remote size
   (a mismatch means a partial - re-copy). Only read/crop a file after its writer
   (the rsync/extract) has fully finished.
+
+## Large or slow restore: direct I/O, shiftc, and untar OFF lfe
+
+Two hard lessons for anything bigger than a few GB (learned 2026-06-17, the hard way):
+
+- **A plain `tar`/`cp`/`dd` read on lfe crawls at kB/s - that is NOT a broken lfe or a
+  tape/dmget problem, it is the WRONG TOOL.** Buffered reads on Lou's CXFS are
+  catastrophically slow while DIRECT I/O is ~12,000x faster (same 838 GB disk-resident
+  file on lfe5: buffered `dd` ~2.9 kB/s vs `dd ... iflag=direct` ~37 MB/s). Do not "wait it
+  out" or file a ticket. Confirm a node is healthy with a direct-I/O probe (expect 10s-100s
+  of MB/s): `ssh lfe 'dd if=/u/oalexan1/projects/<f>.tar of=/dev/null bs=1M count=4 iflag=direct'`.
+- **Lou kills any process over ~1 GB RAM on the lfe front ends (it runs query_wms there),
+  so a big untar/analysis is not permitted ON lfe.** The correct large-restore recipe:
+  COPY the tar `/u` -> `/nobackupp19` with a direct-I/O, multi-thread, restartable tool,
+  THEN untar on a pfe COMPUTE node (reading from nobackup, which is mounted there). Tools,
+  best first: `shiftc` (/usr/local/bin/shiftc, the NAS Shift tool - retries, restarts, runs
+  detached, auto-onlines from tape, monitor with `ssh lfe 'shiftc --status'`); `cxfscp`
+  (CXFS-aware, large direct I/Os, e.g. `cxfscp -rp --bo /u/... /nobackup/...`); `mcp`
+  (multi-threaded cp). NEVER plain `cp`/`dd`/`tar` for a large lfe read.
 
 ## Logging
 
