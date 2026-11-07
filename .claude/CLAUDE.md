@@ -84,6 +84,10 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
 - **Project work notes go in `~/projects/` as comment-only `.sh` files** (tracked by the
   projects repo), NOT in `.claude/` memory. `.claude/` memory is only for cross-project
   patterns and preferences.
+- **Three distinct reporting/todo files, never conflate them.** "mpr todo" means
+  `~/projects/mpr_todo.sh` (its OWN file, NOT `todo.sh`): EXTERNAL corporate monthly
+  progress reporting (MPR). `~/projects/ostfl_2026_notes.sh` is PROPOSAL/funding
+  reporting (OSTFL grant deliverables). `~/projects/todo.sh` is our OWN internal todo.
 - **Project data, scratch, and outputs go in that project's own `~/projects/<subdir>/`**,
   never loose in `~` or at the `projects/` root. Every project is a self-contained dir.
 - **Mac and pfe mirror a project at the SAME home-relative path** `~/projects/<proj>/...`
