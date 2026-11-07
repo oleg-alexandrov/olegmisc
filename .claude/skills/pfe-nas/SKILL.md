@@ -1,6 +1,6 @@
 ---
 name: pfe-nas
-description: NASA Pleiades (pfe) and Athena supercomputer work - qsub/PBS job submission, head-node compute limits, node models, monitoring and watching jobs to completion, job effectiveness, lfe access and safety, the ssh/pfx tunnel and double-hop quoting, deletion safety, and the ASP dev build on pfe. Load before ANY pfe/Athena/lfe work, NO trivial exception - including a single ssh probe (ldd/ls/find/objdump/which), locating or inspecting the ASP build on pfe, checking glibc or an env on pfe, submitting a qsub job, or setting up a PBS watcher. Touching pfe at all is pfe work. For WRITING a project to lfe tape load the tape-archive skill, for RESTORING from tape load tape-extract. The working ASP build is at ~/projects/BinaryBuilder/StereoPipeline (tools in libexec/, reached via a symlink a bare find will not descend).
+description: NASA Pleiades (pfe) and Athena supercomputer work - qsub/PBS job submission, head-node compute limits, node models, monitoring and watching jobs to completion, job effectiveness, lfe access and safety, the ssh/pfx tunnel and double-hop quoting, and deletion safety. Load before ANY pfe/Athena/lfe work, NO trivial exception - including a single ssh probe (ldd/ls/find/objdump/which), checking glibc or an env on pfe, submitting a qsub job, or setting up a PBS watcher. Touching pfe at all is pfe work. For RUNNING or UPDATING the ASP build on pfe load pfe-asp-build; for WRITING a project to lfe tape load tape-archive, for RESTORING from tape load tape-extract.
 ---
 
 ## #1 RULE - HEAD NODE = 1 THREAD / 1 PROCESS, ALWAYS (read this first)
@@ -34,7 +34,9 @@ one-at-a-time and prefer qsub for anything beyond a single quick mosaic.
 - `~/projects/pleiades_notes.sh` - machine map, storage, ASP build layout, lfe access/safety, symlink-wipe procedure
 - `~/projects/qsub_rules.sh` - qsub arg rules, dry-run, umask, error codes
 - `~/projects/qsub_convention.sh` - allocations (e2305 ours, s3319 off-limits), checklist, runner template
-- `~/projects/lfe_archive.sh` - lfe tape archive AND restore procedure (DMF dmls/dmget: stage off tape before any tar/read)
+
+For lfe TAPE work load the dedicated skill instead - [[tape-archive]] to WRITE a project
+to tape, [[tape-extract]] to RESTORE - each owns its own deep notes.
 
 **Allocations (`-W group_list=`), FY2026 (verify live with `acct_ytd | grep <gid>`, lags ~24h):**
 | gid | Owner / purpose | Notes |
@@ -48,17 +50,10 @@ one-at-a-time and prefer qsub for anything beyond a single quick mosaic.
 
 Rule of thumb: **SDB work -> `s3319`; everything else of Oleg's -> `e2305`.** Never charge s3319 for non-SDB. `acct_ytd` on pfe prints the live table (the `<gid> hecc <FY> used %used total remaining` rows).
 
-**Working ASP runtime env on pfe (the dev BinaryBuilder build).** A bare `export PATH=.../StereoPipeline/bin` is NOT enough - the binaries link ISIS/CSM and die with `libusgscsm.so.1: cannot open shared object` then `IsisPreferences not found`. There is **no `asp_deps` env on pfe anymore** (only `asp_deps_stale_nfs`); the live ISIS env is **`isis10asp`**. The env that works (source a file like `asp_env.sh`):
-```
-SP=$HOME/projects/BinaryBuilder/StereoPipeline
-export ISISROOT=/swbuild/oalexan1/miniconda3/envs/isis10asp
-export PATH=$SP/bin:$SP/libexec:$PATH
-export LD_LIBRARY_PATH=$ISISROOT/lib:$SP/lib:$SP/lib/csmplugins:$LD_LIBRARY_PATH
-export GDAL_DATA=$SP/share/gdal PROJ_DATA=$SP/share/proj PROJ_LIB=$SP/share/proj
-```
-**ISIS on pfe needs `ISISROOT` AND `ISISDATA` set MANUALLY every session - `conda activate isis10`/`isis10asp` does NOT set them in a non-interactive ssh (both come back EMPTY). This keeps getting rediscovered (2026-10-29): always `export` them explicitly.** For ISIS tools (`tgocassis2isis`, `spiceinit`, `isd_generate`) also set `export ISISDATA=/nobackupnfs1/oalexan1/projects/isis3data` and `ALESPICEROOT=$ISISDATA`. The ISIS data + SPICE kernel tree lives on **`/nobackupnfs1`**, NOT `/nobackupp19` or `/swbuild` - a blind search of those finds nothing and wrongly concludes "no kernels on pfe" (burned 2026-10-29). TGO/CaSSIS kernels ARE present: `$ISISDATA/tgo/kernels/{ck,fk,ik,lsk,mk,pck,sclk,spk}`. ALE auto-discovers the ESA `em16_cassis.tm` metakernel from `ALESPICEROOT`, so no per-orbit metakernel is needed. **For standalone ISIS CLI apps (`tgocassis2isis`, `editlab`, `spiceinit`) ACTIVATE the `isis10` env, NOT `isis10asp` - isis10asp is MISSING `libLinearMath-float64.so.3.25` (not in its `lib/`), so ISIS apps die with `error while loading shared libraries: libLinearMath-float64.so.3.25` (burned 2026-10-29). isis10asp is only for use as `ISISROOT` when running ASP tools; isis10 is the complete ISIS env for ISIS commands.**
-
-Setting `LD_LIBRARY_PATH` here is belt-and-suspenders, NOT required for tools run THROUGH the `$SP/bin/` WRAPPER. Verified 2026-10-28 on pfe: with only `ASPROOT`/`ISISROOT`/`ISISDATA` exported and `LD_LIBRARY_PATH` UNSET, `bin/mapproject` (loads the CSM plugin), `bin/bundle_adjust`/`parallel_bundle_adjust`, `bin/sfs --query`, and `bin/dem_mosaic` all ran clean on a compute node - the `bin/` wrapper sets `LD_LIBRARY_PATH`/`CSM_PLUGIN_PATH` itself before exec'ing `libexec/<tool>` (see the "VERIFY the patched tool through the bin/ WRAPPER" note below). So `$ISISROOT/lib` on `LD_LIBRARY_PATH` matters ONLY if you call a bare `libexec/` ELF binary directly (bypassing the wrapper); a wrapped call does not need it. The old claim that `mapproject`/`stereo`/`point2dem` "need it" held for direct-libexec calls, not wrapped ones. This is why `SfsPipeline/bin/sfs_env.sh` deliberately does NOT set `LD_LIBRARY_PATH` and still works.
+**The working ASP build is at `~/projects/BinaryBuilder/StereoPipeline` (tools in `libexec/`,
+reached via a symlink a bare find will not descend). To set the runtime env to RUN its tools
+(isis10asp vs isis10, ISISROOT/ISISDATA, the bin/ wrapper and LD_LIBRARY_PATH), or to PATCH/UPDATE
+the dev build from l1, load [[pfe-asp-build]].**
 
 **NEVER walk `..` ABOVE the BinaryBuilder symlink - it silently points at the wrong tree (burned 2026-10-25: a qsub exec path gave PBS Exit 254 in seconds with NO .o log).** `$HOME/projects/BinaryBuilder` is a SYMLINK (`-> /vast_swbuild/swbuild/oalexan1/projects/BinaryBuilder`); StereoPipeline is a plain dir inside the target. Going DEEPER through the symlink (`$SP/bin/...`) is fine. The trap is `..` that climbs back ABOVE a symlinked component: the kernel (and `ls`, and PBS `execve`) resolve `..` PHYSICALLY against the symlink TARGET's parent, so `$SP/../..` = `/vast_swbuild/swbuild/oalexan1/projects` (NOT `/home6/oalexan1/projects`), and a sibling like `$SP/../../SfsPipeline/bin/parallel_sfs.sh` resolves to a path that does not exist -> the exec fails. The shell's lexical `cd -L` view and the kernel's physical view DISAGREE, so the path "looks" right but is not. RULE: never build a path by appending `..` off `$SP` (or any symlinked dir) to reach a sibling repo. Write the clean ABSOLUTE path directly (`/home6/oalexan1/projects/SfsPipeline/bin/parallel_sfs.sh`), or canonicalize the base first with `realpath`/`readlink -f` so no symlink remains before you append `..`. A qsub `--` exec that cannot be started dies 254 in seconds with an EMPTY log - that signature means a bad/unresolvable exec path (or a chmod-stripped script), NOT a node flake.
 
@@ -220,7 +215,8 @@ Bare minimum to remember without reading:
   (never concurrent `archive_to_lfe.sh` writes - it is a real robotic tape library); and the
   SOURCE OF TRUTH for what is on tape is the project's own archive-notes log, NEVER a flaky
   live lfe query (an empty double-hop result is NO information and must never greenlight a
-  wipe). lfe access: direct `ssh lfe` works from the Mac (and from pfe). Deep ref: `~/projects/lfe_archive.sh`.
+  wipe). lfe access: direct `ssh lfe` works from the Mac (and from pfe). Everything else about
+  tape - the recipe, the per-project archive log, the deep notes - lives in [[tape-archive]].
 - **Double-hop ssh quoting (Mac -> pfx -> lfe/athfe01): use OUTER double quotes, INNER single quotes, and ONE trivial pipeline** - `ssh pfx "ssh lfe 'tar tzf f | head'"`. This keeps recurring: `ssh pfx 'ssh lfe "..."'` with `===` markers, `$VAR`, `awk` using `$N`, or multiple `;`-separated echoes INSIDE gets eaten by the outer Mac shell and the command breaks ("=== not found"). So on a double hop: no `===`, no `$`, no `awk $N`, no `;`-chains inside; just a single simple command. For anything with quotes/vars/multiple statements, write a small script and run it by ABSOLUTE path (`/home6` is shared across pfe + Athena, so a script there runs on athfe01 too; for lfe, `scp` the script to lfe first). Keep the inner command dumb. (Fixed 2026-08-20 after breaking it twice in one session.)
 - **`/home6` data MUST live on `/nobackup*` with a `/home6` SYMLINK pointing to it (Oleg's
   long-standing convention).** `/home6/oalexan1` is small + backed-up; real project data goes
@@ -335,27 +331,8 @@ Bare minimum to remember without reading:
 
 ## ASP Dev Build on pfe
 
-Working ASP on pfe: `pfx:~/projects/BinaryBuilder/StereoPipeline/` - a packaged
-release (wrappers in `bin/`, ELF in `libexec/`, libs in `lib/`). Patch it from
-l1: build the FULL current source on l1 (`make -C ~/projects/StereoPipeline/build
--j16 && make install`; rsync the Mac working-tree changes to l1 first so l1 = the
-code under test - a changed header like BaBaseOptions.h triggers a wide recompile,
-give it time), then overlay the dev build onto the pfe package:
-`install/lib/` -> `lib/`, `install/bin/` -> `libexec/`, `install/bin/*.py` -> `bin/`.
-- **PREFER `scp` over `rsync` for this overlay (NFS gotcha).** rsync l1->pfe can
-  SILENTLY fail `mkstemp ... Permission denied` on the package `lib/` and `libexec/`
-  NFS dirs (documented in pleiades_notes.sh); scp does not use mkstemp and always
-  works. rsync MAY succeed (it did 2026-10-17, landing fresh libs+binary), so if you
-  do use rsync, you MUST verify (below) - do not trust its exit code alone.
-- **VERIFY the patched tool through the `bin/` WRAPPER, never a bare `libexec/` call.**
-  `bin/<tool>` sets LD_LIBRARY_PATH/CSM_PLUGIN_PATH then execs `libexec/<tool>`; calling
-  `libexec/<tool>` directly finds no libs and errors (looks like "flag missing / tool
-  broken"). Confirm with a behavior check, e.g. `bin/jitter_solve --help | grep <new-flag>`.
-- **`--version` build DATE is STALE after an incremental make** - the version string is
-  generated at cmake-configure time, not per compile, so a freshly rebuilt binary can
-  still print an older "Build date". Confirm freshness by the binary's MTIME or a
-  new-flag/behavior check, NOT the `--version` date.
-- `libusgscsm` lives in `lib/csmplugins/`; sync it only if usgscsm changed (the dev
-  `install/` may not even have a `lib/csmplugins/` - a harmless rsync/scp miss otherwise).
-Full recipe + the NFS gotcha detail: `~/projects/pleiades_notes.sh` section
-"Syncing dev build to pfe".
+Locating the build, the runtime env to RUN its tools, and PATCHING/UPDATING the dev build
+from l1 (build on l1, overlay `lib/`/`libexec/`/`bin/*.py` onto the pfe package, the
+scp-over-rsync NFS gotcha, verify through the `bin/` wrapper, the stale `--version` date) all
+moved to [[pfe-asp-build]]. Deep recipe: `~/projects/pleiades_notes.sh` section "Syncing dev
+build to pfe".
