@@ -342,6 +342,10 @@ Co-Authored-By: Antigravity <noreply@google.com>
   Mapping tools (masks, correlation, mapproject, pc_align) silently produce junk. For
   each product: state the HYPOTHESIS, then colorize/hillshade -> PNG -> LOOK before the
   next step. Run `gdalinfo` on every output the moment it exists. Detail: visual-inspection.
+- **Keep code/config comments to two or three lines.** A comment is declarative: say
+  what the code does and why. Do not fully elaborate every consequence or spell out the
+  mechanism the reader can see. Past three lines is the tell I could not stop elaborating.
+  Soft rule, not hard.
 - **Report shortcuts explicitly**: name the shortcut, the honest path, and why you did
   not take it. Never let a shortcut pass silently as "it works", even in autonomous runs.
 - **NEVER edit a script while a job is running it** (Bash re-reads it from disk; shifting
