@@ -286,3 +286,12 @@ pass clean there, then do not pass `skip_tests`.
   foreign path (e.g. a dev home dir) should point at shipped data or become a small token
   test with tolerance that passes on mac arm, intel mac, and linux arm. Full campaign log:
   `~/projects/code_refactoring_notes.sh`.
+- ISIS camera unit tests abort on BOTH Mac platforms (not Linux). The `TestIsisCameraModel`
+  tests construct an ISIS camera, which pulls in an embedded Python through ALE. In the bare
+  `make ..._runtest` harness on macOS there is no PYTHONHOME, so the interpreter aborts with
+  a fatal `No module named 'encodings'` that NO C++ try/catch can trap - it fails gtest_all
+  and reddens the build (not a test-drift Fail). The `asp::IsisEnv()` guard only checks that
+  ISISROOT/ISISDATA are SET, and the Mac CI sets both, so the test runs and crashes; the Linux
+  cloud runners leave ISISDATA unset so these same tests already skip there. Fix: an
+  `#ifdef __APPLE__` early-return (helper `skipIsisUnitTestOnMac()`) BEFORE any ISIS call, so
+  they skip on macOS and still run on Linux. (2026-11-08, after commit enabling these tests.)
