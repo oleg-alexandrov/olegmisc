@@ -83,8 +83,11 @@ MAC_TO_PFX=${MAC_TO_PFX:-3102}
 # pfx = our specific pfe node. All tunnels go here. Don't use generic "pfe".
 PFX_HOST=pfe21.nas.nasa.gov
 
-# Keep tunnels alive and detect dead connections quickly
-SSH_ALIVE="-o ServerAliveInterval=30 -o ServerAliveCountMax=3"
+# Keep tunnels alive. ServerAliveInterval 60 + CountMax 120 tolerates ~2h of network
+# disruption before giving up (the old CountMax 3 tore the tunnel down after only ~90s, so a
+# brief blip killed it with nothing to restart it). TCPKeepAlive adds OS-level dead-peer
+# detection; ExitOnForwardFailure makes ssh exit cleanly if a forward port cannot bind.
+SSH_ALIVE="-o ServerAliveInterval=60 -o ServerAliveCountMax=120 -o TCPKeepAlive=yes -o ExitOnForwardFailure=yes"
 
 HOST=$(hostname)
 
