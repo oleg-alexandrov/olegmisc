@@ -159,6 +159,11 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
 - **"triangulation error"**, not "ray intersection error" (the point2dem `--errorimage`
   band). Fine to write both once, then use "triangulation error" throughout.
 - Write **"after jitter correction"**, not bare "after jitter"; name the operation.
+- **A parameter assigned a value is "set to" it, never "raised to" or "floored to".**
+  Also avoid **"floor"/"floored"** for a minimum applied to a parameter (e.g. do not write
+  "applies no floor" / "a distortion floor"); describe plainly what the value does. And
+  avoid the awkward **"the solve conditions poorly"** / "conditions poorly" phrasing; say
+  plainly what can go wrong (e.g. "if the solver does not adequately optimize a parameter").
 - **Plain text paths (NEVER use clickable markdown links)**: NEVER return
   clickable paths or markdown links (`[text](file://...)`). Always return
   explicit file paths (full or relative as requested) in plain text so they can

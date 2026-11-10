@@ -5,6 +5,17 @@ Durable engineering rules and workflows belong in skills (~/.claude/skills/)
 and CLAUDE.md per the auto-memory lifecycle policy.
 
 ## Immediate Reminders
+- KH-9 FY27 additive-intrinsics cleanup (2026-11-09): converted bundle_adjust
+  intrinsics from multiplicative scale factors to direct additive values, removed the
+  distortion hacks, unified them under --min-distortion (default 0). 9 StereoPipeline
+  commits + 3 new StereoPipelineTest tests, ALL LOCAL ON MAC, NOT PUSHED. This clears
+  the slate before the real KH-9 optical bar work. DEFERRED, DO SOON (remind Oleg) per
+  ~/projects/kh9_fy27/kh9_fy27_notes.sh section 15: (1) build the optical-bar
+  velocity/MCF float-from-ZERO regression test (needs a new velocity-mode optical bar
+  camera+image; the KH-9 headline capability; CSM analog already covered by
+  ss_bundle_adjust_csm_radtan), (2) plumb --min-distortion onto cam_gen/aster/spot,
+  (3) regold on l1 after push (11 intrinsic-float BA tests + ss_cam_test_spot +
+  ss_cam_test_aster_csm), (4) push on Oleg's go, (5) write the issue 495 update.
 - sfs_south RE-REGISTRATION + TILED SfS LIVE (2026-10-27). Pushed SfsPipeline fixes to
   origin/main (790b39f): launch_sfs_tiles.sh silent-submit fix (unset IMAGE_DIR/IMAGE_SUFFIX
   in a qsub -v list -> PBS rejects job silently; now defaulted + exit-status check),
