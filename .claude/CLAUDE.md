@@ -358,6 +358,13 @@ Co-Authored-By: Antigravity <noreply@google.com>
   what the code does and why. Do not fully elaborate every consequence or spell out the
   mechanism the reader can see. Past three lines is the tell I could not stop elaborating.
   Soft rule, not hard.
+- **Code comments are ASSERTIVE: state what the code does, never track state, history,
+  or relocation.** The code IS where it is. NEVER write "now lives in X", "moved from Y",
+  "this used to be", "now here/there", or any comment narrating that something changed
+  location or was refactored. No before/after, no "formerly". Just describe the current
+  behavior plainly, as if the code had always been this way.
+- **NEVER add a comment explaining WHY a header is included** (no `#include <foo> // for
+  Bar`). Includes stand on their own.
 - **Report shortcuts explicitly**: name the shortcut, the honest path, and why you did
   not take it. Never let a shortcut pass silently as "it works", even in autonomous runs.
 - **NEVER edit a script while a job is running it** (Bash re-reads it from disk; shifting
