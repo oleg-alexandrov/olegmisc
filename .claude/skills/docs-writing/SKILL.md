@@ -107,9 +107,19 @@ anchor is `.. _bathy_intro:` (section "Shallow-water bathymetry"), NOT `bathymet
   first line, then EACH `--option value` on its own continuation line, backslash-
   continued. Do NOT pack several options onto one line (`mapproject -t csm --tr 0.5
   --t_srs "$proj"` should be three lines). Positional args (dem, image, camera,
-  output) also go one per line. Align the trailing backslashes to one column just
-  past the longest line for readability. This makes the command easy to read, diff,
-  and copy edit. Still obey the ~66-char line cap above.
+  output) also go one per line. Align the trailing backslashes to ONE column
+  exactly one space past the SINGLE longest line - NOT a guessed far column
+  (over-padding reads as the backslashes drifting way out to the right, Oleg
+  2026-11-10). Run `~/bin/align_backslashes.py <file> <start> <end> --inplace` to
+  get this right - it aligns the indented shell inside a `::` block too. Still
+  obey the ~66-char line cap above.
+- **Prose paragraphs in RST are HARD-WRAPPED at ~78 chars, one newline per source
+  line (Oleg 2026-11-10).** This is the OPPOSITE of GitHub prose (which flows as
+  one long unwrapped line and lets the renderer wrap - see github-issues). RST doc
+  source wraps each paragraph line at about 78 characters, matching the surrounding
+  text. Do not write a paragraph as one long line, and do not leave a line much
+  shorter than its neighbors unless a long inline ``literal`` forces an early
+  break. Re-wrap after editing so the block fills evenly.
 - **`:ref:` vs `:numref:` - name tools with `:ref:`, not `:numref:` (I keep getting this
   wrong).** `:numref:`geodiff`` renders "Section 16.26" (a NUMBER); `:ref:`geodiff``
   renders "geodiff" (the NAME). So to name a tool inline, use `:ref:` - "made with

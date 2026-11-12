@@ -149,6 +149,7 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
   finishing.
 - Say **"fails"**, never "chokes" (or "errors out", "rejects", "throws").
 - Never say **"beware"** (too alarmist): say **"note"**, or just state the caveat plainly.
+- Avoid **"gotcha"** (too informal): say **"issue"**, **"complication"**, or **"thing to watch for"**.
 - Avoid **"gate"/"gated"**: say a mode **"selects"** (e.g. "selects pixels by support"),
   or use "uses"/"depends on"/"keys on".
 - Avoid informal jargon: **"reaped"/"reap"**, **"culled"/"cull"**, **"wedged"**. Use
@@ -169,7 +170,9 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
   explicit file paths (full or relative as requested) in plain text so they can
   be copied and pasted in the terminal without being truncated, hidden, or
   collapsed to basenames.
-- Do NOT ALL-CAPS words for emphasis (real identifiers like PATH are fine).
+- In external/shipped output (GitHub, docs, deliverables, email) do not all-caps words for
+  emphasis (real identifiers like PATH are fine). In internal skills/notes/CLAUDE.md/MEMORY.md,
+  caps for emphasis are fine.
 - **Shell command blocks: NEVER put a comment to the right of a `\` continuation line**
   - the trailing backslash stops escaping the newline and the command silently breaks.
   Put comments above, or in a note below. Detail: shell-scripts.

@@ -634,6 +634,52 @@ Planning takeaways:
 
 ---
 
+## Hillshading a far-south SfS DEM: large occlusions can read as black
+
+Hillshading terrain this far south can leave large occluded regions, where a slope faces away
+from the light and renders black. A finished SfS DEM then looks like a smooth, featureless
+brightness image and is easily mistaken for a failed run, when it is actually fine. The effect
+is in the rendering, not the DEM. A single-direction low-sun hillshade whose azimuth faces into
+the site's dominant slope shadows a large fraction of the terrain, erasing the relief. (Seen
+2026-11-11 on BDS0912 Nobile NW rim: the step-9 `sfs_dem.tif` read as a smooth brightness image,
+yet the DEM was sound. The geodiff of SfS minus LOLA was +0.06 m mean and 0.64 m std, so real
+sub-meter SfS detail was present, just unlit by the default hillshade.)
+
+Measured black-area fraction (hillshade value at or below 30 of 255) of that SfS DEM:
+
+| elevation | az0 | az90 | az135 | az180 | az225 | az300 | az315 | multidir |
+| :-- | --: | --: | --: | --: | --: | --: | --: | --: |
+| 20 (grazing) | 34% | 3.5% | 2.8% | 2.4% | 1.3% | 34% | 36% | 33% |
+| 45 (high) | 0% | 0% | 0.1% | 0.1% | 0% | 0% | 1.7% | 0% |
+
+What this says:
+- ASP `hillshade` defaults to `-a 300 -e 20`, and gdaldem's single-azimuth default is 315. On a
+  site whose dominant slope faces away from the northwest, as this one does, both shadow about a
+  third of the terrain. That default is the trap.
+- Elevation is the larger lever, azimuth the second. At a high sun (elevation 45) every azimuth
+  is lit, but the relief washes out. At a grazing sun (elevation about 20) the azimuth decides
+  everything, so here 180 and 225 give one to two percent black while 300 and 315 give about a
+  third. The good azimuth is wherever the dominant slope faces, which is site specific, so `-a 180`
+  is this site's answer and not a universal value.
+- `-multidirectional` does not rescue a low sun. Its azimuth set is centered on the northwest, the
+  same dark directions here, so at elevation 20 it is still a third black. It only looks clean at a
+  high elevation, where the relief also washes out.
+
+So a large black patch in an SfS hillshade is a rendering effect until shown otherwise, not a bad
+DEM. Eyeball with a grazing sun, but do not trust the default azimuth. If the shade blacks out,
+rotate the azimuth (try 90, 135, 180, 225) until the terrain lights, keeping the same azimuth and
+elevation on the DEM and its LOLA reference when comparing.
+
+For the correlator (`hillshade_correlator.sh`, dh/dv versus LOLA) the same applies with a twist.
+The correlator wants a grazing sun for strong relief texture, since a washed-out high sun gives
+few valid matches, but a grazing sun at azimuth 300 shadows a third of the site, and a black
+region has no texture, so no disparity is found there. Both ASP `hillshade` and gdaldem write
+8-bit, so the subpixel optimizer reads a quantized image, and a grazing well-lit azimuth spreads
+values across the full range while a washed-out shade crams them into a few levels. So pick the
+azimuth that lights the terrain best at a grazing elevation, the same on both DEMs. The script
+takes `HS_AZIMUTH` (default `auto`, which picks the best-lit azimuth on the reference DEM) and
+`HS_ELEV` for this.
+
 ## Canonical SfS Toolkit Reference (`~/projects/SfsPipeline/bin/`)
 
 The `~/projects/SfsPipeline/bin/` directory contains the core pipeline scripts developed for photoclinometry on Pleiades and Athena:
