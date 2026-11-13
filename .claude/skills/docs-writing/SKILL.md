@@ -34,17 +34,16 @@ binary directly: `~/anaconda3/envs/sphinx/bin/sphinx-build -b html . _build/html
 from within `docs/`. Create it (once) per `building_asp.rst`:
 `conda create -n sphinx -c conda-forge sphinx sphinxcontrib-bibtex`.
 
-**Any `.rst` file in the ASP repo BASE dir (outside `docs/`) is also part of the documentation.**
-Do NOT assume documentation is confined to `docs/`. The Sphinx build pulls in all `.rst` files
-that physically live at the repository root via `.. include:: ../<FILE>` stubs in `docs/`:
-`installation.rst` includes `../INSTALLGUIDE.rst`, `news.rst` includes `../NEWS.rst`,
-`contributing.rst` includes `../CONTRIBUTING.rst`, `acknowledgements.rst` includes
-`../AUTHORS.rst`, `thirdparty.rst` includes `../THIRDPARTYLICENSES.rst`.
-Therefore, any `.rst` file in the base directory of the ASP repo (outside `docs/`) is an integral
-part of the documentation. When searching, auditing, consulting, or editing the documentation,
-you MUST search both `docs/` and the repo base directory. Grepping only under `docs/` for
-installation instructions, release notes, or cross-reference targets will miss them. To edit
-those topics, edit the base-dir file (`INSTALLGUIDE.rst`, `NEWS.rst`, etc.), NOT the `docs/` stub.
+**Documentation is NOT confined to `docs/`, and the content-vs-stub split runs BOTH ways
+depending on the file.** For some topics the real content is a root-level `.rst` and `docs/`
+holds a one-line `.. include:: ../<FILE>` stub: `CONTRIBUTING.rst` (via docs/contributing.rst),
+`AUTHORS.rst` (via docs/acknowledgements.rst), `THIRDPARTYLICENSES.rst` (via docs/thirdparty.rst).
+For INSTALLGUIDE and NEWS it is now the OPPOSITE: the root `INSTALLGUIDE.rst` and `NEWS.rst` are
+tiny stubs that just link to readthedocs, and the real content lives in `docs/installation.rst`
+and `docs/news.rst`. So do NOT assume a fixed direction. Edit wherever the actual CONTENT is (the
+large file), never the tiny readthedocs-pointer stub. A root file that is a few hundred bytes and
+contains a readthedocs link is the stub. When searching, auditing, or editing, grep BOTH `docs/`
+and the repo base directory.
 
 **Checking a build for real problems.** Grepping the build log for `error` gives
 false positives - many ASP page/image names contain "error"
@@ -56,13 +55,13 @@ found" | grep -viE "RemovedInSphinx|deprecated"`. Empty output = clean. A bad
 
 ## RST Documentation Formatting
 
-**Documentation file locations:** check both `docs/` subdirectories and repository root level.
-Any `.rst` file in the ASP repo base directory (outside `docs/`) is part of the doc.
-Cross-reference labels (`.. _foo:` targeted by `:numref:`foo``) OFTEN live in root-level
-`.rst` files (ASP: `INSTALLGUIDE.rst`, `NEWS.rst`, `README.rst`, `install/INSTALLGUIDE.rst`),
-NOT under `docs/`. So before calling a `:numref:` broken, grep the WHOLE repo for its label
-(`git grep '^.. _foo:'`), not just `docs/`. Example: `:numref:`release`` resolves to
-`INSTALLGUIDE.rst` at the repo root - it is NOT missing.
+**Documentation file locations:** check both `docs/` and the repository root. Content lives in
+both places (root: `CONTRIBUTING.rst`, `AUTHORS.rst`, `THIRDPARTYLICENSES.rst`, `README.rst`;
+under docs/: `docs/installation.rst`, `docs/news.rst`), so a cross-reference label
+(`.. _foo:` targeted by `:numref:`foo``) can be in either. Before calling a `:numref:` broken,
+grep the WHOLE repo for its label (`git grep '^.. _foo:'`), not just `docs/`. Example:
+`:numref:`release`` resolves to `docs/installation.rst` and `:numref:`news`` to `docs/news.rst` -
+neither is missing.
 
 **ALWAYS verify a label EXISTS before you write `:numref:`foo`` - do NOT invent or
 guess the anchor name (CRITICAL, Oleg 2026-08-27).** The moment you add a cross

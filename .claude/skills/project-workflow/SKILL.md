@@ -38,7 +38,7 @@ what exists. A sub-notes file with no inbound or outbound link is a bug - fix it
 when you notice it.
 
 **Prompt to log done items to the progress trackers.** When a notable task
-finishes - especially if it landed in `NEWS.rst` or as a PR to ISIS, ALE,
+finishes - especially if it landed in the news/changelog or as a PR to ISIS, ALE,
 SpiceQL, USGSCSM, or other USGS repos - SUGGEST recording it in the right
 progress/done log: `mpr_todo.sh` (Monthly Progress Report, all projects),
 `csm_todo.sh` (CSM/ISIS work - the USGS PRs go here), `ostfl_2026_notes.sh` (OSTFL),

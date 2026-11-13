@@ -65,8 +65,9 @@ from the whitelist is silently dropped from the release.
   `docs/tools.rst` - no toctree edit needed. Match a sibling for style and
   terseness (`otsu_threshold.rst`, `bathy_threshold_calc.rst`, `orbit_plot.rst`).
   Load the docs-writing skill for `:ref:` vs `:numref:`, underline lengths, etc.
-- NEWS: add one bullet under "New features:" in the FIRST section of the root
-  `NEWS.rst`, a brief claim plus `(:numref:`<tool>`)`.
+- NEWS: add one bullet under "New features:" in the FIRST section of
+  `docs/news.rst` (the real content; the root `NEWS.rst` is just a readthedocs
+  stub, do NOT edit it), a brief claim plus `(:numref:`<tool>`)`.
 - Citations: BibTeX entry in `docs/bibliography.bib`, cite with `:cite:`key``.
 - Build to verify: `~/anaconda3/envs/sphinx/bin/sphinx-build -b html . _build/html`
   from `docs/`, then grep the log for `WARNING|undefined label|citation not found`.
