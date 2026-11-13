@@ -46,6 +46,22 @@ Patch the pfe package from l1: build the FULL current source on l1 (`make -C ~/p
 code under test - a changed header like BaBaseOptions.h triggers a wide recompile,
 give it time), then overlay the dev build onto the pfe package:
 `install/lib/` -> `lib/`, `install/bin/` -> `libexec/`, `install/bin/*.py` -> `bin/`.
+- **ALWAYS overlay BOTH the VW and the ASP libs together - NO EXCEPTIONS, even for a
+  one-file ASP-only edit.** l1's `install/lib/` holds both `libVw*.so` (11) and
+  `libAsp*.so` (12), all built against l1's current VW, which drifts AHEAD of the pfe
+  package's bundled VW. A fresh `libAspCore.so` routinely references a VW symbol the
+  OLDER packaged `libVw*.so` does not export, so overlaying only the ASP libs makes the
+  tool die at runtime with `symbol lookup error: .../libAspCore.so: undefined symbol`
+  (burned 2026-11-13: l1's `libVwMath.so` had `vw::gesdd` (a LAPACK SVD wrapper), the
+  pfe `libVwMath.so` did not -> jitter_solve exited 127). FIX/RULE: scp the FULL set
+  `install/lib/libVw*.so` AND `install/lib/libAsp*.so` (~31 MB, 23 files) every time,
+  plus the rebuilt `libexec/` binaries. Tar the pfe `libVw*.so libAsp*.so` to a backup
+  first so you can revert. This is the same lesson as [[mac-asp-build]]'s "Check VW
+  FIRST", applied to the pfe overlay: VW and ASP ship together or not at all.
+- **l1 CANNOT ssh/scp to pfe directly** (the l1->pfe connection times out). Route the
+  overlay l1 -> Mac -> pfe: `rsync` the libs/binaries l1 -> a Mac staging dir, then `scp`
+  Mac -> pfx into `lib/` and `libexec/`. (Mac reaches both l1 and pfx; l1 and pfe do not
+  see each other.)
 - **PREFER `scp` over `rsync` for this overlay (NFS gotcha).** rsync l1->pfe can
   SILENTLY fail `mkstemp ... Permission denied` on the package `lib/` and `libexec/`
   NFS dirs (documented in pleiades_notes.sh); scp does not use mkstemp and always
