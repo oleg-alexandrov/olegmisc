@@ -157,3 +157,25 @@ or python:
 ssh l1 'source ~/.bashenv && <cmd>' 2>/dev/null
 ```
 Combining with `2>/dev/null` drops the login banner while keeping stdout clean.
+
+## l1's login shell is zsh - it does NOT word-split unquoted `$var` (CRITICAL)
+
+`ssh l1 '<cmd>'` runs `<cmd>` under oalexan1's login shell, which is **zsh**
+(`$0` is `-/bin/zsh`, `$BASH_VERSION` empty). Unlike bash, **zsh does not
+word-split an unquoted parameter expansion** - `NEW="a b c"; for t in $NEW` and
+`tool $NEW` both pass the WHOLE string "a b c" as ONE word (IFS is irrelevant;
+this is zsh default behavior, no `SH_WORD_SPLIT`). This silently feeds a
+space-joined list to a program as a single argument. It burned us 2026-11-13:
+`runs_to_golds.py $NEW` got one arg = all test names joined, the script built
+`rm -rf <name1> <name2> .../gold`, and it deleted seven whole test directories
+(recovered from git). MULTI-STAGE DEFENSE, use all of it:
+  - **Run remote scripting under bash explicitly**, never the login zsh: either
+    `ssh l1 'bash -c "..."'`, or scp a `#!/bin/bash` script and run it by path
+    (`ssh l1 'bash /tmp/foo.sh'`). Do not rely on the interactive shell's
+    splitting rules.
+  - **Never pass a plain `$var` to a destructive or batch command.** Use LITERAL
+    arguments (`tool ss_a ss_b ss_c`), or iterate with `"$@"` (which splits by
+    element in both shells), or zsh's explicit `${=var}`.
+  - A tool that builds a remove/copy from its argument must take ONE path per
+    call and reject names with spaces/slashes (runs_to_golds.py now does, via
+    pure-Python shutil ops - see asp-regressions).

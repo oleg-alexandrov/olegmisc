@@ -419,7 +419,12 @@ Co-Authored-By: Antigravity <noreply@google.com>
   inputs to lfe first, VERIFY the keepers exist first, use a DEAD-SIMPLE
   `ssh host 'rm -rf /full/literal/path'` (no inner `bash -lc`, no `$var`, no `$(...)`),
   then read back state. For remote logic needing variables/loops, rsync a real script
-  file and run it by path. Treat an empty/odd remote result as "probably didn't run".
+  file and run it by path, invoked via bash (`ssh host 'bash /path/script.sh'`).
+  A further reason to never feed a remote command a plain `$var`: the remote
+  login shell may be zsh (l1 IS zsh), which does NOT word-split an unquoted
+  `$var`, so it reaches a tool as ONE joined argument (this deleted 7 test dirs
+  via a mis-built `rm` on 2026-11-13). Pass LITERAL args or iterate with `"$@"`,
+  never an unquoted `$var`. Detail: machines-tools. Treat an empty/odd remote result as "probably didn't run".
   Detail: pfe-nas, `~/projects/file_cleanup_notes.sh`.
 - **Tape archive (lfe): LOG EVERY ARCHIVE AND EVERY WIPE** in that project's own notes
   (a running inventory at the top). Verify keepers are on tape before deleting. Policy +

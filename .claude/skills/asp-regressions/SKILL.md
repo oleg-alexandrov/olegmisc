@@ -347,7 +347,11 @@ bit-identical). (Done 2026-08-23: local `aspIsCsmIsd` in CsmModel.cc.)
 ## Regold, relaunch, iterate
 
 - Regold benign failures: `python2 ~/projects/StereoPipelineTest/bin/runs_to_golds.py
-  <names>` (does `rm -rf gold; cp -r run gold`). Then re-run each `validate.sh` and
+  <names>` (replaces each test's gold/ with its run/ via pure-Python shutil). Pass
+  LITERAL test names, never a shell `$var` - on l1 the login shell is zsh, which
+  does not word-split an unquoted `$var`, so it arrives as one joined argument.
+  The script now refuses a name with spaces/slashes rather than acting on it (the
+  old shell `rm -rf $joined` once deleted 7 test dirs), but still pass clean names. Then re-run each `validate.sh` and
   confirm it passes. **gold/ and run/ (all test data) are NEVER committed to any
   repo - IRONCLAD policy, do NOT even ask.** Regolding writes gold/ on l1 disk only
   (gitignored, ~40 GB); it never enters git. Commits carry source + docs only (the
