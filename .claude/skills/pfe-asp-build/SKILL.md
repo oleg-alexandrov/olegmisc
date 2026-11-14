@@ -17,6 +17,19 @@ ssh/pfx tunnel, deletion safety) see [[pfe-nas]]; for deps, packaging, and the
 nightly see [[build-env]]. Deep recipe + the NFS gotcha detail: `~/projects/pleiades_notes.sh`
 section "Syncing dev build to pfe".
 
+## #1 RULE - l1 -> pfe COPY IS ALWAYS FULL, NEVER SELECTIVE (read this first)
+
+**When copying a dev build from l1 to pfe, copy ALL of it, every time, with NO exceptions:
+ALL of VW and ALL of ASP. That means every `install/lib/libVw*.so` AND every
+`install/lib/libAsp*.so` into `lib/`, AND every binary in l1 `install/bin/` into
+`libexec/` (plus `install/bin/*.py` into `bin/`). NEVER copy only the library or only the
+tool you just edited.** Libs and binaries must all come from ONE l1 build. A new VW lib
+changes the C++ ABI, so ANY binary left over from an older build dies with
+`symbol lookup error ... undefined symbol _ZN2vw...`. Burned 2026-11-13: a selective
+overlay (new libs + only `bundle_adjust`/`jitter_solve`) silently broke `stereo_parse`,
+`point2dem`, `mapproject` and every other pfe stereo tool for everyone. Back up the old
+`lib/` and `libexec/` files with a tar first, then do the full copy, then verify (below).
+
 ## Where the build lives
 
 The working ASP on pfe is a packaged release at `pfx:~/projects/BinaryBuilder/StereoPipeline/`
@@ -58,6 +71,16 @@ give it time), then overlay the dev build onto the pfe package:
   plus the rebuilt `libexec/` binaries. Tar the pfe `libVw*.so libAsp*.so` to a backup
   first so you can revert. This is the same lesson as [[mac-asp-build]]'s "Check VW
   FIRST", applied to the pfe overlay: VW and ASP ship together or not at all.
+- **And the converse: once the new libs land, overlay ALL of l1 `install/bin/` into
+  `libexec/`, never only the tool you edited.** New `libVw*.so` change C++ ABI (a template
+  signature), so every OLD `libexec/` binary that links them breaks with `symbol lookup
+  error ... undefined symbol _ZN2vw...` (burned 2026-11-13: an overlay that refreshed the libs
+  plus only `bundle_adjust`/`jitter_solve` left `stereo_parse`, `point2dem`, `mapproject` etc.
+  broken, so every pfe stereo failed). Libs + all binaries from ONE l1 build, always. Back up
+  the old binaries with a tar first. After the overlay, sweep `libexec/` for leftovers:
+  `ldd -r <elf> | grep -c 'undefined symbol.*_ZN2vw'` on each ELF older than the overlay
+  (with `LD_LIBRARY_PATH=$SP/lib:$ISISROOT/lib`); tools absent from l1's tree (e.g.
+  `rpc_gen`, `tif_mosaic`) stay broken until rebuilt.
 - **l1 CANNOT ssh/scp to pfe directly** (the l1->pfe connection times out). Route the
   overlay l1 -> Mac -> pfe: `rsync` the libs/binaries l1 -> a Mac staging dir, then `scp`
   Mac -> pfx into `lib/` and `libexec/`. (Mac reaches both l1 and pfx; l1 and pfe do not
