@@ -66,6 +66,23 @@ keep the two mirrored (edit on the Mac, rsync to pfe home6 before every launch).
 `CassisPipeline_main` on nobackup) is pure confusion about which is current and was removed 2026-11-02. If
 one reappears, wipe it and use the home6 clone. (l1 may also hold a clone; same rule - one per machine.)
 
+## THE OPTIMIZED LENS GOES IN FIRST, EVERYWHERE (refitBeforeLinescan=yes, burned 2026-11-14)
+
+The whole point of the optimized transverse lens is to use the good lens as EARLY as possible: the linescan
+must be built from the refit (lens-corrected) framelet cameras, so the linescan, its CTX alignment and the
+stage-7 GCP derived from it use the SAME lens as every framelet camera. Oleg decided this 2026-11-05, but the
+repo default stayed `no` and every site rerun reused a shared linescan built 2026-10-30 with the vendor lens.
+Result: the stage-7 GCP came from a ~1.00 across-track scale while the framelet start cams carry the lens
+x-scale 0.98 -> a ~2% across-track dh ramp vs CTX, 37% of GCP points fighting the dense ties, torn framelets.
+Now `refitBeforeLinescan=yes` is the default and `cassis_process.sh` fails before stages 2 and 7 if the
+linescan states (`<linescan>/linescan_dem/ba/run-*_linescan.adjusted_state.json`) lack the optimized
+coefficients (`bin/cassis_check_lens.py`). RULES: (1) never reuse a linescan dir across runs without that
+check passing; (2) when a run starts at stage 6/7 with `linescanDem=`/`startCamDir=` overrides pointing at a
+SHARED older build, verify the lens first; (3) note `registered_cassis_cams` (stage 4 = the stage-6 dense cams)
+carry only a near-identity transverse fit, the optimized lens lands in `startCamDir` (stage 5), so check the
+right file. Also: per-framelet ISD jsons next to the cubs can be missing after cleanups (stage 1 then dies in
+`assemble_pushframe_gen.py` with an IndexError) - rerun the documented `cassis_make_cameras.sh <inputCassisDir>`.
+
 ## VENDOR-FREE NEW SITE (no prior CaSSIS DEM) - the README "Processing a new site from scratch"
 
 The repo can process a brand-new stereo pair with NO vendor DEM. The pieces (all repo):
@@ -129,6 +146,26 @@ middle vs bottom), not a whole-strip median. A healthy strip is seamless with a 
 everywhere. Neither the lens (refit/reorder) nor a GCP-noise filter fixes wild END framelets - that is
 under-constrained single-look geometry (trim the ends, or lean on stage 8 / pc_align), distinct from the
 mid-strip seams that a softer GCP (float + robust threshold) can heal.
+
+**SEAMS FROM A FREE GAUGE, NOT THE LENS (c2rf4, 2026-11-15, shipped).** A bundle adjustment with only L-R
+ties leaves the pair plus its points free to rotate/slide/scale as a rigid body at zero cost. A position
+uncertainty alone did NOT stop it (the stage-1 linescan BA rotated 0.88 deg, tilting the ground, which a
+translation-only CTX align cannot undo). Fix: `--fixed-camera-indices 0` plus the position bound. Also the
+framelet pose = its refit pose + (aligned node - injected node), never the node pose outright. With lens
+first + bounded dense matcher (±8 px) these gave every one of 19 sites at or better than c2seed (005494 dz
+NMAD 8.55 -> 2.85 m). Lesson: check every BA for an unconstrained gauge before blaming intrinsics.
+
+**GAPS vs SEAMS HAVE DIFFERENT CAUSES (bad-sites study, 2026-11-14, now the recipe defaults).** GAPS in the
+framelet DEM = CORRELATION: on thin/streaky/low-texture overlaps the interest points give a wrong search
+range, so a stage-6 L-R pair gets no dense match (and stage 7 then never stereos it) or a stage-7 pair
+WRONG-LOCKS (smooth disparity ramp along streaks, tri-err ~50 m, removed by the 8 m cut). Fix = seed from
+geometry: --corr-seed-mode 2 with --disparity-estimation-dem (knobs denseDemSeed, demSeed). SEAMS = the TIC
+BA: a residual lens error leaves overlap loops unclosed; fix = float the shared distortion (ticIntrFloat).
+NEVER rescue failed pairs by lowering --min-matches or forcing --corr-search: on zero-overlap candidates that
+manufactures JUNK matches (burned 2026-11-13). Always verify rescued pairs with a true valid-pixel overlap check.
+Measure with bin/cassis_eval_continuity.py (coverage, gaps, seam steps, wild by thirds) + hillshade.
+Open: per-framelet sawtooth on very low texture (004038 top), 005150 cross-track bowl. Orbital groups and a
+tight camPosUnc were tested and NOT adopted (wild blocks).
 
 **HUNT FOR DISCONTINUITIES RELENTLESSLY - MEDIANS LIE, LOOK AT THE IMAGE AND THE RESIDUAL MAP (reinforced
 2026-11-05, Oleg caught this repeatedly in one session).** A seamless strip is the ENTIRE deliverable, so

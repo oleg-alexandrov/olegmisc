@@ -113,6 +113,21 @@ such as sigma=10. etc. Have rationale. Log all this rationale, var names and val
 precise stage actual script invocation including the qsub cmd for reproductibilty later.
 So basically a premable with all defined followed by precise invocation you will launch.
 
+## Resolve Args and Defaults Up Front, in One Place
+
+Resolve every argument and optional knob ONCE, at the top of the script, in one block
+(with a short comment per knob saying what it is and its default). The commands below
+then read a plain variable. Never bury a default expansion inside a tool invocation.
+Example (CassisPipeline `bin/cassis_ba.sh`, Oleg 2026-11-15):
+```
+# baMaxPairMatches - matches kept per image pair (default 2000)
+baMaxPairMatches=${baMaxPairMatches:-2000}
+...
+  --max-pairwise-matches "$baMaxPairMatches"         \
+```
+NOT `--max-pairwise-matches "${baMaxPairMatches:-2000}"` inside the bundle_adjust call.
+One place to read every setting, and the command stays clean.
+
 ## Readable Shell Script Style - `~/projects/shell_style.sh`
 
 The pure formatting rules (<=90-char lines measured with `awk
