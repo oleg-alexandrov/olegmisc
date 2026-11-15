@@ -385,8 +385,12 @@ Co-Authored-By: Antigravity <noreply@google.com>
   any Bash command whose delete is not one literal absolute path**: `rm`/`rmdir`/`unlink`/`git
   rm` (except `--cached`) with a `$`, backtick, glob, `~`, brace or relative path, `find`
   `-delete`/`-exec rm` on a non-literal root, `xargs rm`, and Python deletions run from the
-  shell, also inside ssh quotes and heredoc scripts. **A block from it is a HARD STOP: never
-  retry a reworded variant or route around it, report it to Oleg.** Added 2026-11-14 after
+  shell, also inside ssh quotes and heredoc scripts. **The hook exists ONLY to stop the dumb
+  delete (variable/glob/relative path). If it blocks a sloppy delete, never reword to slip
+  past it: rewrite as literal absolute paths, or drop the delete. If it blocks a LEGIT delete
+  (a false positive, e.g. it once read `2>&1` as a path), do not stall: fix `rm_guard.py`,
+  add the case to its tests, tell Oleg, and proceed.** Text that merely mentions rm (test
+  strings, heredocs) also trips it; put such text in a file via Write. Added 2026-11-14 after
   `rm -f $O/*_tmp.tif` was appended to a render command despite the rule below.
 - **NEVER put a `$VAR`, `${...}`, glob (`*`), `~`, or `cd &&` in an `rm`/destructive
   path. Write ONE literal absolute path per `rm -rf`, one per line.** This BANS even a
