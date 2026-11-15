@@ -287,6 +287,12 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
   - always the `oleg` remote; changes reach USGS only via PRs they merge.
 - **`git rm --cached`, never bare `git rm`** to untrack a file (bare `git rm` deletes the
   working file, which once wiped `~/.ssh/config`). Never add `.ssh/` to git.
+- **Remind Oleg of ANYTHING left unpushed, every time you notice it, even incidentally.**
+  At the end of any task that touched a repo, and whenever you happen to see it in ANY repo
+  (even unrelated to the task), name plainly what is local only: local commits ahead of the
+  remote, and uncommitted source/doc/style edits. Say the repo, what it is, and "not pushed".
+  Oleg has assumed work was pushed while code and style edits still sat locally. Never let a
+  local-only change pass silently.
 - **Commit real fixes before continuing debug cycles** (so "discard debug changes" is
   always safe). When told to discard, verify each change is actually debug before
   `git checkout --` a mixed file.
