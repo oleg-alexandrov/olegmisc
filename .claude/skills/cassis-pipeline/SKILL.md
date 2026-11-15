@@ -66,6 +66,19 @@ keep the two mirrored (edit on the Mac, rsync to pfe home6 before every launch).
 `CassisPipeline_main` on nobackup) is pure confusion about which is current and was removed 2026-11-02. If
 one reappears, wipe it and use the home6 clone. (l1 may also hold a clone; same rule - one per machine.)
 
+## STORAGE WIPES: NEVER DELETE THE INPUTS (ref/, ctx/, data/), AND NEVER WIPE WITHOUT LOOKING (2026-11-15)
+
+Every site's CTX reference (`ref/` or `ctx/`, prefer the name `ref/`) and its cubes and cameras (`data/`) are
+INPUTS. A wipe never touches them, in any site, whatever the layout. Sites do not share one layout (the
+named sites keep CTX under `ref/`, the numbered ones under `ctx/`), so never infer keepers from one site:
+read each site's run config (`refDem`, `mapprojDem`, `inputCassisDir`) and keep those dirs. Burned
+2026-11-15: a plan that keyed on `ctx/` would have deleted 5 whole example sites; caught only in review.
+Procedure: (1) a PLAN script that deletes nothing and writes one literal absolute `rm -rf` per line plus a
+size report; (2) LOOK at it: per-site keep summary, largest removals, and a grep for keepers (input dirs,
+final cameras, final DEM, dh/dv/dz, configs) that must return nothing; (3) only then run it. Keep per site:
+inputs, the latest run's config and logs, final cameras, GCP, linescan cameras and alignment, final DEM,
+tri err, orthos, dh/dv/dz. Tools: `cassis_asp/scripts/plan_wipe.py`, `check_wipe_list.sh`.
+
 ## THE OPTIMIZED LENS GOES IN FIRST, EVERYWHERE (refitBeforeLinescan=yes, burned 2026-11-14)
 
 The whole point of the optimized transverse lens is to use the good lens as EARLY as possible: the linescan
