@@ -375,6 +375,13 @@ Co-Authored-By: Antigravity <noreply@google.com>
 
 ## Deletion and remote-op safety (CRITICAL)
 
+- **ENFORCED BY A HOOK: `~/.claude/hooks/rm-guard.sh` (logic in `rm_guard.py`) denies at once
+  any Bash command whose delete is not one literal absolute path**: `rm`/`rmdir`/`unlink`/`git
+  rm` (except `--cached`) with a `$`, backtick, glob, `~`, brace or relative path, `find`
+  `-delete`/`-exec rm` on a non-literal root, `xargs rm`, and Python deletions run from the
+  shell, also inside ssh quotes and heredoc scripts. **A block from it is a HARD STOP: never
+  retry a reworded variant or route around it, report it to Oleg.** Added 2026-11-14 after
+  `rm -f $O/*_tmp.tif` was appended to a render command despite the rule below.
 - **NEVER put a `$VAR`, `${...}`, glob (`*`), `~`, or `cd &&` in an `rm`/destructive
   path. Write ONE literal absolute path per `rm -rf`, one per line.** This BANS even a
   path with a LITERAL PREFIX plus a variable - `rm -rf /full/path/to/$b` and
@@ -394,8 +401,9 @@ Co-Authored-By: Antigravity <noreply@google.com>
   glob/`$VAR`/`cd &&` also trips the harness gate and stalls the session. If a throwaway
   test wants a clean output dir, do NOT pre-clean at all (the writer overwrites its own
   output, and the scratchpad starts fresh - just omit the `rm`); if a wipe is genuinely
-  needed, do it in python (`shutil.rmtree`/`os.remove`), which the Bash gate does not
-  match. A single literal absolute path (or no `rm` at all) is both safe and prompt-free.
+  needed, hand a subagent the literal absolute paths (never a Python `shutil.rmtree`
+  workaround, the hook blocks that too). A single literal absolute path (or no `rm` at
+  all) is both safe and prompt-free.
 - **Prefer NOT deleting.** Temp files auto-clean in the scratchpad; to refresh stats
   re-read the data (don't delete `.aux.xml`). Pre-cleaning a scratch dir in a loop is
   pointless (writers overwrite their outputs) and stalls the run - just delete that
