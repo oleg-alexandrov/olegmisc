@@ -5,40 +5,21 @@ Durable engineering rules and workflows belong in skills (~/.claude/skills/)
 and CLAUDE.md per the auto-memory lifecycle policy.
 
 ## Immediate Reminders
-- KH-9 FY27 sprint (2026-11-16): Tasks 1, 2, 3, 4 (position uncertainty power,
-  a8e9716bd) and 6 are pushed and green on l1. Open: Task 5 (waiting on Shean's spec),
-  Task 7 (DSI-21 slide, only if the review is Nov 17-18), the per-anchor GSD question
-  (still TBD in the doc), plumbing --min-distortion onto cam_gen/aster/spot (deferred
-  since 11-09), and the Task 3 deeper VW block-cache fix. Live status:
+- KH-9 FY27 sprint (2026-11-16): Tasks 1, 2, 3, 4 (a8e9716bd) and 6 plus the
+  per-anchor GSD (f34989d90) are pushed and regolded on l1. Waiting on Shean: Task 7
+  (DSI-21 slide, no word on the review), Task 5 spec, his tests on the 11/17 and 11/20
+  builds. Dropped until he asks: per-camera optical bar model print. Dropped:
+  --min-distortion plumbing. Deferred: the VW block-cache work. Live status:
   ~/projects/kh9_fy27/kh9_fy27_notes.sh (end of file).
-- sfs_south RE-REGISTRATION + TILED SfS LIVE (2026-10-27). Pushed SfsPipeline fixes to
-  origin/main (790b39f): launch_sfs_tiles.sh silent-submit fix (unset IMAGE_DIR/IMAGE_SUFFIX
-  in a qsub -v list -> PBS rejects job silently; now defaulted + exit-status check),
-  GCP_ROBUST_THRESHOLD knob in bundle_adjust_dem_gcp.sh, WORKFLOW.md tiling (5km domain tiles
-  at ~2500 px, exposures reused across a re-run). **NOT YET SYNCED TO PFE** (stale copy there).
-  **REMIND OLEG: next time we do SfS work, rsync ~/projects/SfsPipeline/bin/ to pfe BEFORE
-  using launch_sfs_tiles there.** Live jobs on pfe: site3 stronger-GCP bundle 25314941
-  (gcp-sigma 0.25 + robust 40) + 12 tiled SfS jobs (sites 1/2/4, 4 tiles each). 3-hour
-  CronCreate monitor armed (tag sfssouth). Live notes + NEXT steps:
-  ~/projects/sfs_south/overnight_plan.sh (re-read it top-to-bottom on resume).
-- jitter pixel-reprojection speedup: DONE and PUSHED (god + origin, 2026-10-20). The
-  analytic-Jacobian path (97c3d7f58) was ABANDONED and collapsed out of history. The
-  winner is the trimmed local linescan model (commit 2c805a87e, with e428d5aba find-match
-  stat removal and a58aec1ac phase timers): now the ONLY path, no env gate, out-of-window
-  points fall back to the full model, byte-stable to ~1e-9 with no cross-iteration drift,
-  validated at full scale (jitsafe2 25290765, 978 cams, reproj 0.5408 matching baseline, no
-  crash). The old unsafe-scratch build warning is MOOT. Two genuine follow-ups remain, both
-  needing Oleg's "peek at the VW impl" (NOT unattended): (a) make pfe/l1 production builds
-  current from clean master before any production jitter run. (b) the real at-scale cost is
-  VW-bound (build-control-network match load+triangulate ~23m, reporting ~12m, serial anchor
-  ~11m) blocked by the VW block-cache exploding under concurrent DEM reads. See
-  `~/projects/sfs_BCU2314-BDU1224-MM/jitter_analytic_eval_notes.sh`.
-- jitter_solve reporting re-read: fixed, COMMITTED LOCALLY (ASP 0614a722e, NOT pushed).
-  matchFilesProcessing now skips re-reading match files when no clean matches are written
-  (jitter_solve), rebuilding per-pair pixels from the control network. Verified byte-
-  identical stats baseline-vs-fix; bundle_adjust path untouched. Remaining idea (bundle_adjust,
-  which needs the IP scale to write clean matches): save the scale on first read in
-  build_control_network so files are not read twice. Follow-up in `~/projects/todo.sh`.
+- sfs_south: SfsPipeline/bin synced Mac -> pfe on 2026-11-16, so the pending sync
+  reminder is done (the pfe checkout is behind its files, harmless). Notes:
+  ~/projects/sfs_south/overnight_plan.sh.
+- jitter_solve at-scale speed: all app-level wins are pushed (trimmed linescan model,
+  parallel match read, no second read). The one open item is VW-bound: anchor placement
+  and the reporting mapproject are slow on DEM reads through the VW block cache. Needs a
+  bounded per-camera DEM crop or thread-safe DEM access in VW (Oleg's look). Same
+  bottleneck as KH-9 Task 3's deferred fix. Notes:
+  ~/projects/sfs_BCU2314-BDU1224-MM/jitter_analytic_eval_notes.sh (end).
 
 ## Feedback / Lessons
 - [Load product skill before shipping](feedback-load-product-skill-before-shipping.md) — writing to a delivery/results dir means load the delivery skill first (alt-10 hillshade slip, 2026-10-14).
