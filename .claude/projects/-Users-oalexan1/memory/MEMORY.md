@@ -42,6 +42,7 @@ and CLAUDE.md per the auto-memory lifecycle policy.
 
 ## Feedback / Lessons
 - [Load product skill before shipping](feedback-load-product-skill-before-shipping.md) — writing to a delivery/results dir means load the delivery skill first (alt-10 hillshade slip, 2026-10-14).
+- [Push authorization is per change](feedback-push-authorization-per-change.md) — a "push" covers only the change it was given for (per-anchor GSD slip, 2026-11-16).
 
 ## Active Projects
 - `~/projects/sfs_BCT0717-BCT2124-MM/sfs_bct0717_bct2124_mm_notes.sh`: Artemis Quad
