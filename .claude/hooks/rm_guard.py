@@ -7,6 +7,7 @@
 # removes the wrong tree, and a reviewer cannot verify such a command at a glance.
 import json
 import re
+import shlex
 import sys
 
 cmd = json.load(sys.stdin).get("tool_input", {}).get("command", "") or ""
@@ -29,10 +30,13 @@ if re.search(r"\|[ \t]*xargs\b[^;&|\n]*\b(rm|rmdir|unlink)\b", cmd):
 # rm / rmdir / unlink, or git [-C dir] rm, as a command word.
 for m in re.finditer(word_start + r"(?:git[ \t]+(?:-C[ \t]+\S+[ \t]+)?)?(rm|rmdir|unlink)(?=\s)", cmd):
   seg = sep.split(cmd[m.start(1):], maxsplit=1)[0]
-  seg = seg.replace("'", " ").replace('"', " ")
   # Drop redirections (2>, >/dev/null, 2>&1): they are not delete targets.
   seg = re.sub(r"(?:^|(?<=\s))\d*[<>]+\S*", " ", seg)
-  toks = seg.split()
+  # Quote-aware split, so a quoted path with spaces stays one token.
+  try:
+    toks = shlex.split(seg)
+  except ValueError:
+    toks = seg.replace("'", " ").replace('"', " ").split()
   if "git" in cmd[m.start():m.start(1)] and "--cached" in toks:
     continue
   if bad_chars.search(seg):
