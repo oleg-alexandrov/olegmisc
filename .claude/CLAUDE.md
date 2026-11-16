@@ -75,6 +75,9 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
   `MEMORY.md` (in-flight reminders, active-project pointers) and its sibling `.md` files
   in the same dir. `MEMORY.md` itself is TRANSITORY. Trickle matured lessons out of it
   into the relevant skill or `CLAUDE.md`, then prune.
+- **Keep `MEMORY.md`'s in-flight list current, unprompted.** Peek at it now and then,
+  add a short line for work in flight (what, where its notes are, what is open), and
+  update or drop lines that landed or went stale.
 - **Convention: knowledge, record, and tool are three distinct things with three homes.**
   (1) REUSABLE KNOW-HOW (rules, recipes, scars, how to do X anywhere) lives in a SKILL, and
   ONLY in a skill - if it is big, split into a HIERARCHY of skills (hub + specialists),
