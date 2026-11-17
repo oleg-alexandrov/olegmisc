@@ -27,7 +27,11 @@ and CLAUDE.md per the auto-memory lifecycle policy.
   (maxlit_cmp/delivered_no_offenders.tif). Oleg decides drop vs SfS rerun. Staged cubs
   tar wiped from pfe. HELD, not committed: ASP sfs_blend.cc smooth-min change, and
   SfsPipeline bin/ edits (GCP_ONLY, KEEP_IP, LOW_LIGHT, exposures "none"). REMIND Oleg:
-  re-blend each WHOLE site once the smooth-min change lands. Notes: end of
+  re-blend each WHOLE site once the smooth-min change lands. REMIND Oleg (2026-11-17, he
+  asked, "not now"): walk him through what changed in those two HELD sets before any
+  commit (git -C ~/projects/StereoPipeline diff src/asp/Tools/sfs_blend.cc, and
+  git -C ~/projects/SfsPipeline diff bin/). Hold both until he understands and says push.
+  The pfe SfsPipeline copy already runs the edits. Notes: end of
   ~/projects/sfs_BCU2314-BDU1224-MM/sfs_bcu2314_bdu1224_mm_notes.sh.
 
 ## Feedback / Lessons
