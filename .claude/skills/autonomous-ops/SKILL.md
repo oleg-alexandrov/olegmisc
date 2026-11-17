@@ -39,6 +39,11 @@ Lesson: completion of the WORK is the trigger to teardown - do not leave a watch
 "standing by for the user's return," and if you wake up and there is nothing to do, that
 is your cue to disarm, not to sleep again.
 
+**Initiative has a cost ceiling.** "Keep playing" or "do what you can" licenses cheap
+experiments within the approved scope, never a big new compute run (a full-site SfS rerun,
+a whole-site stereo or jitter burn). Stop at the recommendation with a cost estimate and ask.
+Burned 2026-11-17: [[sfs-run-align]].
+
 ## Overnight / Autonomous Runs and Self-Wakeup
 
 ## TOP POLICY - TOKEN FRUGALITY, CRONS ARE EXPENSIVE (set 2026-10-06, Oleg, OVERRIDES the

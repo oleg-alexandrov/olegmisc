@@ -105,3 +105,8 @@ tools default to many threads and must be qsub'd or forced to `--threads 1`.
   then take the FIRST parenthesis (`sed -E 's/^[^(]*\(([^)]+)\).*/\1/'`).
 - Refresh stale stats without deleting the sidecar: just re-run with `-stats`
   (do NOT `rm` the `.aux.xml`; per CLAUDE.md, avoid variable-path rm).
+- **Python multiprocessing + GDAL: open datasets INSIDE each worker, never before the fork.** A
+  `gdal.Open` handle created in the parent and used by forked `multiprocessing.Pool` workers gives
+  corrupt concurrent reads (`TIFFReadEncodedTile() failed`, "Using code not yet in table") on
+  compressed tiled GeoTIFFs. A 1-process dry test cannot show it. Read only sizes/geotransform in the
+  parent, drop the handle, and `gdal.Open` per task in the worker (burned 2026-11-16, BCU shift scan).

@@ -21,6 +21,15 @@ and CLAUDE.md per the auto-memory lifecycle policy.
   bottleneck as KH-9 Task 3's deferred fix. Notes:
   ~/projects/sfs_BCU2314-BDU1224-MM/jitter_analytic_eval_notes.sh (end).
 
+- Ross reviews of the two Mons Mouton SfS sites (2026-11-16): BCT0717 = other bot,
+  BCU2314 = this bot. BCU ghosting study done 2026-11-17: a few-images problem, not
+  global. Joint jitter with GCPs does not visibly help, dropping 10 offenders does
+  (maxlit_cmp/delivered_no_offenders.tif). Oleg decides drop vs SfS rerun. Staged cubs
+  tar wiped from pfe. HELD, not committed: ASP sfs_blend.cc smooth-min change, and
+  SfsPipeline bin/ edits (GCP_ONLY, KEEP_IP, LOW_LIGHT, exposures "none"). REMIND Oleg:
+  re-blend each WHOLE site once the smooth-min change lands. Notes: end of
+  ~/projects/sfs_BCU2314-BDU1224-MM/sfs_bcu2314_bdu1224_mm_notes.sh.
+
 ## Feedback / Lessons
 - [Load product skill before shipping](feedback-load-product-skill-before-shipping.md) — writing to a delivery/results dir means load the delivery skill first (alt-10 hillshade slip, 2026-10-14).
 - [Push authorization is per change](feedback-push-authorization-per-change.md) — a "push" covers only the change it was given for (per-anchor GSD slip, 2026-11-16).

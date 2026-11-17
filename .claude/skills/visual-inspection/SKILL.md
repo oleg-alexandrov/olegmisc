@@ -151,6 +151,21 @@ sg --grid-cols 2                          \
   dy_cmap.tif &
 ```
 
+## Many locations to visit: spot crops + stereo_gui click-to-zoom (Oleg's standing ask)
+
+When there is a LIST of areas of interest (review flags, fid polygons, boxes Oleg gave, my
+own suspects) on a big mosaic, do not make him hunt by coordinates. Cut a small crop
+(default 300 x 300 px) centered on each spot and open the big mosaic(s) plus all crops in
+ONE stereo_gui window (`sg -w`, single-window mode). Clicking a crop's NAME in the layer
+list zooms to it and puts it on top (keys `n`/`p` cycle). Steps:
+1. A spots CSV `name,x,y` (projected coords of the mosaic), names that say the source
+   (`ross_fid17`, `oleg_fid18`, `north_edge`). Long strips: one crop every ~300 m.
+2. `~/bin/spot_crops.py <mosaic.tif> spots.csv 300 <outDir>` writes `<outDir>/<name>.tif`
+   (crops near the raster edge shift inward so they stay inside).
+3. Hand ONE block: `cd <work dir>` then `sg -w mosaicA.tif mosaicB.tif <outDir>/*.tif &`.
+   Uncheck a crop's box to see the mosaics under it, toggle mosaic A/B to compare.
+Example: BCU, review_clips/sg_spots.csv (2026-11-17).
+
 ## Visual Raster Inspection - "Claude has eyes"
 
 Claude can SEE images - use vision to verify rasters (orthos, DEMs, geodiffs,

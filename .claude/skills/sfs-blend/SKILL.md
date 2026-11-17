@@ -54,6 +54,27 @@ LOLA by the heights-from-dem prior), so `lola-curved` keeps it where wanted.
 Doc: sfs_usage.rst and the sfs_blend tool page (shadow fill modes). Full
 development story: `~/projects/sfs_BCU2314-BDU1224-MM/sfs_hole_fill_notes.sh`.
 
+## Newer (2026-11-16, Ross review of BCT0717/BCU2314): pits, crater-in-crater, blobs
+
+The lola-curved fill continues the bowl curvature downward and can dig a pit far below BOTH
+the SfS and LOLA (27 m at BCT fid 106, 15.7 m at an unflagged BCU crater). Ross reads it as
+"crater-in-crater, 8-10 m offset to LOLA". The fix is `--shadow-fill-max-depth d` (local Mac
+build, uncommitted as of 2026-11-16). The Poisson fill is linear in its forcing, so it is
+solved again with zero forcing, and per blob the forcing part is scaled by the largest s in
+[0,1] keeping the fill >= LOLA - d. That stays smooth. A height CLAMP at LOLA - d instead made
+a new crisp crease (a few m of height on a steep wall is only a few px across). Default 0 is
+bit-identical to the old blend.
+
+Recipe that both sites converged on: lola-curved, max-diam 300, lit 60, shadow 60, sigma 20,
+`--shadow-fill-max-depth 3`, plus `--min-blend-size` 10 at BCT (removes SfS mounds on shadowed
+floors of ~25 m craters, whose holes were under 25 px) but 25 at BCU (10 added bumps there).
+That per-site difference is an open decision. Tried and DROPPED: `--shadow-fill-smooth-min k`
+(polynomial smooth min of curved/SfS/LOLA). It lowers the fill by up to k/4 per pairing
+wherever the surfaces nearly coincide (flat low-light ground, every hole edge), giving steps
+and a broad 0.5-0.8 m bias, and it gained little over the wider band. Also dropped: a soft
+clamp of the blend to [min, max] of the inputs (snaps shadowed floors back to the fabricated
+SfS mound). Harness: `~/projects/sfs_BCT0717-BCT2124-MM/review_clips/blend_experiments.py`.
+
 The rest of this skill (the legacy LOLA fill, the band smear, and the per-crater
 babysitting below) is the fallback and the touch-up workflow.
 

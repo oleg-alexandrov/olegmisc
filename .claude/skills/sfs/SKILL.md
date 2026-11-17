@@ -36,6 +36,10 @@ current copy (`rsync -a ~/projects/SfsPipeline/bin/<script> pfe:projects/SfsPipe
 failure by `bash -x`-tracing the ACTUAL command it builds, then checking the pfe binary accepts
 those flags (`<tool> --help`) - the Mac script being correct does NOT mean pfe is.
 
+**A full-site SfS run or rerun needs Oleg's EXPLICIT go for that run.** It costs about 200
+node-hours per site. Approval for clip reruns or a "keep playing" does not cover it. Detail:
+[[sfs-run-align]].
+
 ## Do Not Reinvent the Wheel: Use the Standard Batch Mapproject Scripts
 
 When preparing mapprojected images for SfS, bundle adjustment, GCP generation, or mosaic building across many images (from 10 to 1300+ images on large grids like 20k x 20k pixels):
@@ -128,6 +132,17 @@ refined/pruned = minus the wild cameras). Two rules, both learned the hard way:
   `SfsPipeline/bin/batch_mosaic.sh <run> <workDir>` (qsub it to a compute node, multi-thread
   there is fine) which builds the full and pruned max-lit for a run and verifies each. If you
   must build on the head node, strictly one at a time, `--threads 1`. See [[pfe-nas]].
+- **Review work (clips, fuzz/shift scans, HTML reports) is ALSO head-node load.** A
+  python scan with a worker pool, a "dry test" left running, or a `dem_mosaic` over
+  hundreds of full-site maps (even at `--threads 1`, and even for a small `--t_projwin`)
+  holds the head node for minutes and draws a NAS note. This happened on pfe21 on
+  2026-11-17: a dry shift scan with 28 workers ran 70 min, and a dry dem_mosaic ran 35 min.
+  Rules: a pool-based scan goes to qsub, never to the head node, and the same holds for a
+  dry test with more than 1 worker. Right after any head-node test, run
+  `ps -u $USER -o pid,etime,nlwp,rss,pcpu,args` and confirm nothing of yours is left. For
+  ASSEMBLY of the comparison products (fuzz metrics over full max-lits, clip cutting, HTML
+  with base64 images), prefer pulling the max-lits (~750 MB each) to the Mac and working
+  there. Only a single small one-process step belongs on the head node.
 - **ALWAYS verify VALID_PERCENT before using or copying a max-lit.** A `dem_mosaic` that reads
   partial/empty inputs (e.g. chunk mosaics still mid-write) silently writes a 100%-nodata
   raster of the right size, which then masquerades as done. After every max-lit run

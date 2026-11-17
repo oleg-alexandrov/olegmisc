@@ -23,6 +23,16 @@ tools are `bin/` wrappers that self-wire the env, and these scripts honor
 `normal` caps at 8 h, `long` allows 120 h (e2305/s2764 are in its ACL). qsub over ssh is
 `/PBS/bin/qsub`.
 
+## A FULL-SITE SfS RUN NEEDS OLEG'S EXPLICIT GO (read first)
+
+A full-site SfS run or rerun (all tiles of a site) is extremely expensive: about 200 node-hours
+and SBU for one Mons Mouton site, plus a day of wall time. Never launch one without Oleg's
+explicit authorization for THAT run. General encouragement ("keep playing", "do what you can",
+"iterate", "the more you get done the less for me to do") does not count, nor does approval
+for clip reruns. When clips point to a site-wide fix, stop at the recommendation: give the
+cause, the proposed settings, and the cost estimate, then ask. Burned 2026-11-17 (BCT0717): an
+overnight run read ambiguous instructions as license and ran a 45-tile full-site rerun.
+
 ## Phase 0 - global exposures (do FIRST, it gates everything)
 
 One exposures file, reused by every SfS tile and every sim render. Without it, dark images
@@ -37,6 +47,19 @@ runs `sfs --compute-exposures-only` (single process) and writes `<sfsDir>/run-ex
 Gate: job F + `run-exposures.txt` has one nonzero value per image. ~335 images took ~15 min
 single-process; ~978 took ~42 min. A few zero exposures = all-shadow frames (fine, they just
 won't contribute).
+
+**GLOBAL vs LOCAL exposures (BCT0717, 2026-11-16, measured).** One site-wide exposure per
+image can be off by 30-40% locally (the reflectance model does not fit equally well across a
+site), and SfS turns that brightness mismatch into down-sun streaks and sinuous ridges in low
+light. Clip reruns with the SAME settings but exposures computed over the clip removed the
+streaks, ridges and a dip; putting the site-wide exposures back into a clean clip brought the
+streaks back. Smoothness 0.12 or other shadow thresholds did nothing. A fresh site-wide recompute
+does NOT help (it matched the old values within 3-9%). So for a full-site run prefer PER-TILE
+exposures on ~2 km tiles: `launch_sfs_tiles.sh ... none ...` (exposuresFile `none` = each tile
+computes its own). The tile seams then need checking. At BCU2314 the same global-vs-local
+difference was mild, so it is site dependent: test with a clip pair (local vs global) first.
+Also `launch_sfs_tiles.sh` did not forward `--low-light-threshold` before 2026-11-16. Set
+`LOW_LIGHT=0.03` now.
 
 ## Phase 1 - SfS per tile, then assemble
 
@@ -72,6 +95,17 @@ MODEL=bro_ele NCPUS=28 QSUB_BIN=/PBS/bin/qsub \
    pattern = bad blend), flips, or dropouts. BCU2314: mean dz -0.0008 m, std 0.69 m, no
    seams.
 
+**Dropping a bad image AFTER the site SfS is done: patch, do not rerun the site** (BCU2314,
+2026-11-17). SfS tiles are independent, so rerunning only the tiles under the image's footprint
+equals a full rerun there. Recipe: footprint of the image on the DEM grid -> padded tiles (150 m
+pad) covering it -> SfS per tile without the image, with the SAME global exposures as the shipped
+DEM (per-tile exposures made no visible difference at BCU and would risk a seam against the
+untouched surroundings) -> crop each patch to core + 50 m -> `dem_mosaic
+--priority-blending-length 50 patch1.tif patch2.tif sfs_dem.tif` (patches first = priority).
+Verify: diff vs shipped is exactly 0 outside the patches, no NaN changes, no visible seam. Then
+re-blend the whole site, with the sfs_blend shadow mask = the PLAIN max-lit minus the same images.
+10 tiles of ~2x2 km took 3-4.5 h each on 1 bro_ele (vs ~350 SBU for the whole site).
+
 ## Phase 2 - per-image sim-align: shift measurement + GCP
 
 For EVERY image with a camera (including the whacky-pruned ones - the point is to MEASURE
@@ -91,7 +125,13 @@ IMAGE_DIR unused here; env: EXPOSURES_PREFIX (REQUIRED), SHADOW_THRESHOLD, ALIGN
     lronac_all ba_htdem sim_eval $W
 ```
 CRITICAL GOTCHAS:
-- **`ALIGN_THRESH=0` to get a GCP for EVERY image.** The default `ALIGN_THRESH=2.0` exits
+- **For a whole-site measurement use `GCP_ONLY=1`** (env, forwarded by batch_sfs_sim.sh since
+  2026-11-16): gcp_gen for EVERY image, then stop. No per-image bundle_adjust and no second
+  mapproject. That full path, run on every image with `ALIGN_THRESH=0`, is what blew up disk
+  before: four image-sized rasters per image plus 2500-ip/tile `.vwip`/`.match` files, whose
+  cleanup trap was commented out. The trap is now ON by default (`KEEP_IP=1` keeps the files).
+  The image_align output `<id>_align.tif` is still written and unused.
+- **`ALIGN_THRESH=0` to get a GCP for EVERY image** (only matters without GCP_ONLY). The default `ALIGN_THRESH=2.0` exits
   after image_align (recording the shift) WITHOUT a GCP when the shift is < 2 px, so a
   default run emits GCPs only for the few misaligned frames. For a joint re-solve / trans_gcp
   you want ALL of them (a "stay put" GCP is still a constraint, and the solver benefits from
