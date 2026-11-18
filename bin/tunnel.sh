@@ -57,6 +57,11 @@
 #   6078 - pfx's sshd exposed on l1 (forward tunnel from l1)
 #   3102 - pfx's sshd exposed on Mac (forward tunnel from Mac)
 #   3079 - Mac's sshd exposed on pfx (reverse tunnel from Mac)
+#   5009 - nasa_mac's sshd exposed on l1 (reverse tunnel from nasa_mac)
+#
+# NASA work Mac (nasa_mac, hostname neon): it is on the NASA VPN, so it
+# connects to l1 directly, not through pfx. From l1 use "ssh nasa_mac"
+# (localhost:5009). From mac_arm use "ssh nasa_mac" with "ProxyJump l1".
 #
 # SSH config note for l1:
 #   mac_arm lives on pfx (port 3079), not on l1. So l1's ~/.ssh/config
@@ -79,6 +84,8 @@ L1_SSHD_ON_PFX=${L1_SSHD_ON_PFX:-5955}
 L1_TO_PFX=${L1_TO_PFX:-6078}
 MAC_SSHD_ON_PFX=${MAC_SSHD_ON_PFX:-3079}
 MAC_TO_PFX=${MAC_TO_PFX:-3102}
+NASA_MAC_SSHD_ON_L1=${NASA_MAC_SSHD_ON_L1:-5009}
+L1_HOST=lunokhod1.ndc.nasa.gov
 
 # pfx = our specific pfe node. All tunnels go here. Don't use generic "pfe".
 PFX_HOST=pfe21.nas.nasa.gov
@@ -209,9 +216,29 @@ case "$HOST" in
     echo "  ssh l1"
     ;;
 
+  *neon*)
+    echo "NASA work Mac: setting up reverse tunnel to l1 (needs the NASA VPN)"
+
+    # The l1-side listener belongs to the previous tunnel process, if any.
+    pkill -f "R ${NASA_MAC_SSHD_ON_L1}:" 2>/dev/null && sleep 1
+
+    echo "  Reverse: l1:$NASA_MAC_SSHD_ON_L1 -> nasa_mac:22"
+    ssh $L1_HOST -N -f $SSH_ALIVE \
+      -R ${NASA_MAC_SSHD_ON_L1}:127.0.0.1:22
+
+    if [ $? -ne 0 ]; then
+      echo "ERROR: Failed to connect to l1. Is the VPN up?"
+      exit 1
+    fi
+
+    echo ""
+    echo "Done. From l1: ssh nasa_mac. From mac_arm: ssh nasa_mac (via l1)."
+    echo "From here: ssh l1, ssh pfx and ssh mac_arm go through l1."
+    ;;
+
   *)
     echo "Unknown host: $HOST"
-    echo "Expected hostname containing: Mac-mini or lunokhod1"
+    echo "Expected hostname containing: Mac-mini, lunokhod1 or neon"
     echo "If this is a new machine, add a case for it in tunnel.sh."
     exit 1
     ;;
