@@ -67,6 +67,7 @@
 !/.claude/settings.json
 !/.claude/hooks/
 !/.claude/skills/
+/.claude/skills/synced/
 !/.claude/projects/
 /.claude/projects/*
 !/.claude/projects/-Users-oalexan1/
