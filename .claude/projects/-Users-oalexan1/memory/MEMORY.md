@@ -31,7 +31,9 @@ and CLAUDE.md per the auto-memory lifecycle policy.
   asked, "not now"): walk him through what changed in those two HELD sets before any
   commit (git -C ~/projects/StereoPipeline diff src/asp/Tools/sfs_blend.cc, and
   git -C ~/projects/SfsPipeline diff bin/). Hold both until he understands and says push.
-  The pfe SfsPipeline copy already runs the edits. Notes: end of
+  The pfe SfsPipeline copy already runs the edits. His view: wipe the .vwip by default
+  (worst for storage), matches are less bad. The held edit wipes BOTH by default
+  (KEEP_IP=1 keeps both), so split it to wipe only vwip. Notes: end of
   ~/projects/sfs_BCU2314-BDU1224-MM/sfs_bcu2314_bdu1224_mm_notes.sh.
 
 ## Feedback / Lessons
@@ -47,6 +49,15 @@ and CLAUDE.md per the auto-memory lifecycle policy.
   BCU2314-BDU1224 (Mons Mouton north) SfS DEM. At delivery stage. dh/dv done 2026-10-15
   (dh -0.043 / MAD 0.918, dv -0.034 / MAD 0.948, well registered), results + pfe synced.
   Keep hcorr_redo/ until accepted.
+- Scott McMichael's three M2M SfS sites (Oleg reviews, Scott runs, pfe user smcmich1,
+  work in /nobackupp18/smcmich1/data/<site>). One Mac dir + notes per site:
+  BIG `~/projects/BDS0912-BDS1819-Nobile_NW_Rim/bds0912_bds1819_nobile_nw_rim_notes.sh`
+  (ba_gcp done 2026-11-16, but SfS NOT rerun on those cameras, so sfs_dem and the blend
+  are still ~4.6 m off LOLA, blurry areas open). SMALL, both with bad bundle adjust:
+  `~/projects/AYN1112-AYN1516-de_Gerlache_NE_Rim/ayn1112_ayn1516_de_gerlache_ne_rim_notes.sh`
+  (we can read it) and `~/projects/AXN2014-AYN0018-de_Gerlache_NW_Rim/axn2014_ayn0018_de_gerlache_nw_rim_notes.sh`
+  (locked to us, Scott must chmod). NE root cause found 2026-11-17: plain SPICE cameras
+  held fixed instead of usgs_south ones (WORKFLOW.md 5b doc trap, fix not yet OK'd). Scott stops end of Nov 2026, then KH-9 for Shean.
 - `~/projects/sdb/`: SDB (shallow depth bathymetry), FY26 USGS task.
 - [ostfl](ostfl.md): OSTFL24, the grant to maintain and expand ASP (FY27 funded). Live
   notes `~/projects/ostfl_2026_notes.sh`. Full FY27 project list is in CLAUDE.md.
