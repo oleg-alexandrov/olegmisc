@@ -25,16 +25,19 @@ and CLAUDE.md per the auto-memory lifecycle policy.
   BCU2314 = this bot. BCU ghosting study done 2026-11-17: a few-images problem, not
   global. Joint jitter with GCPs does not visibly help, dropping 10 offenders does
   (maxlit_cmp/delivered_no_offenders.tif). Oleg decides drop vs SfS rerun. Staged cubs
-  tar wiped from pfe. HELD, not committed: ASP sfs_blend.cc smooth-min change, and
-  SfsPipeline bin/ edits (GCP_ONLY, KEEP_IP, LOW_LIGHT, exposures "none"). REMIND Oleg:
-  re-blend each WHOLE site once the smooth-min change lands. REMIND Oleg (2026-11-17, he
-  asked, "not now"): walk him through what changed in those two HELD sets before any
-  commit (git -C ~/projects/StereoPipeline diff src/asp/Tools/sfs_blend.cc, and
-  git -C ~/projects/SfsPipeline diff bin/). Hold both until he understands and says push.
-  The pfe SfsPipeline copy already runs the edits. His view: wipe the .vwip by default
-  (worst for storage), matches are less bad. The held edit wipes BOTH by default
-  (KEEP_IP=1 keeps both), so split it to wipe only vwip. Notes: end of
+  tar wiped from pfe. HELD, not committed: ASP sfs_blend.cc smooth-min change (walk Oleg
+  through it before any commit: git -C ~/projects/StereoPipeline diff
+  src/asp/Tools/sfs_blend.cc). REMIND Oleg: re-blend each WHOLE site once it lands.
+  SfsPipeline 0711091 PUSHED 2026-11-17: fixed-camera trap doc + ba_fixed_check.py,
+  vwip-only cleanup, LOW_LIGHT 0.03 now ON by default in launch_sfs_tiles.sh (shipped
+  BCU/BCT SfS ran without it, readmes say 0.03). pfe SfsPipeline copy NOT synced yet.
+  Notes: end of
   ~/projects/sfs_BCU2314-BDU1224-MM/sfs_bcu2314_bdu1224_mm_notes.sh.
+
+- BCT max-lit (2026-11-17): recommended C4s maxlit_cmp/cascade_ext_le1.0_le1.2_le1.3_fix9b_426_f0.75_1.0.tif,
+  gallery https://claude.ai/artifact/GZkogVwHBuvSSwUtELTTqA, waiting on Oleg's look. HELD, not committed:
+  ASP jitter_solve --fixed-image-list (Mac + l1 trees, deployed on pfe). Notes: end of
+  ~/projects/sfs_BCT0717-BCT2124-MM/sfs_bct0717_bct2124_mm_notes.sh.
 
 ## Feedback / Lessons
 - [Load product skill before shipping](feedback-load-product-skill-before-shipping.md) — writing to a delivery/results dir means load the delivery skill first (alt-10 hillshade slip, 2026-10-14).

@@ -153,8 +153,9 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
 - Say **"fails"**, never "chokes" (or "errors out", "rejects", "throws").
 - Never say **"beware"** (too alarmist): say **"note"**, or just state the caveat plainly.
 - Avoid **"gotcha"** (too informal): say **"issue"**, **"complication"**, or **"thing to watch for"**.
-- Avoid **"gate"/"gated"**: say a mode **"selects"** (e.g. "selects pixels by support"),
-  or use "uses"/"depends on"/"keys on".
+- Avoid **"gate"/"gated"** (also "go/no-go gate", "gate on X"): say a mode **"selects"**
+  (e.g. "selects pixels by support"), or use "uses"/"depends on"/"check"/"start only after".
+- Avoid **"straggler(s)"**: say **"outlier(s)"**.
 - Avoid informal jargon: **"reaped"/"reap"**, **"culled"/"cull"**, **"wedged"**. Use
   plain formal words: a process is **"terminated"** (or "killed by the node limits"),
   images/frames are **"removed"/"filtered out"**, a stuck node/job is **"stuck"**. This
