@@ -237,6 +237,11 @@
     "when": "editorTextFocus"
   },
   {
+    "key": "alt+q",
+    "command": "rewrap.rewrapComment",
+    "when": "editorTextFocus"
+  },
+  {
     "key": "ctrl+b",
     "command": "workbench.action.toggleSidebarVisibility"
   },
