@@ -30,7 +30,7 @@ and CLAUDE.md per the auto-memory lifecycle policy.
   src/asp/Tools/sfs_blend.cc). REMIND Oleg: re-blend each WHOLE site once it lands.
   SfsPipeline 0711091 PUSHED 2026-11-17: fixed-camera trap doc + ba_fixed_check.py,
   vwip-only cleanup, LOW_LIGHT 0.03 now ON by default in launch_sfs_tiles.sh (shipped
-  BCU/BCT SfS ran without it, readmes say 0.03). pfe SfsPipeline copy NOT synced yet.
+  BCU/BCT SfS ran without it, readmes say 0.03). pfe SfsPipeline copy synced 2026-11-17.
   Notes: end of
   ~/projects/sfs_BCU2314-BDU1224-MM/sfs_bcu2314_bdu1224_mm_notes.sh.
 
@@ -38,6 +38,9 @@ and CLAUDE.md per the auto-memory lifecycle policy.
   gallery https://claude.ai/artifact/GZkogVwHBuvSSwUtELTTqA, waiting on Oleg's look. HELD, not committed:
   ASP jitter_solve --fixed-image-list (Mac + l1 trees, deployed on pfe). Notes: end of
   ~/projects/sfs_BCT0717-BCT2124-MM/sfs_bct0717_bct2124_mm_notes.sh.
+- NEXT SfS (any site): MUST use --low-light-threshold (Oleg 2026-11-17). launch_sfs_tiles.sh
+  passes 0.03 by default since SfsPipeline 0711091; never set LOW_LIGHT=none. Also HELD by Oleg,
+  do not push yet: jitter_solve --fixed-image-list and sfs_blend.cc.
 
 ## Feedback / Lessons
 - [Load product skill before shipping](feedback-load-product-skill-before-shipping.md) — writing to a delivery/results dir means load the delivery skill first (alt-10 hillshade slip, 2026-10-14).

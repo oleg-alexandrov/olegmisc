@@ -85,6 +85,14 @@ give it time), then overlay the dev build onto the pfe package:
   overlay l1 -> Mac -> pfe: `rsync` the libs/binaries l1 -> a Mac staging dir, then `scp`
   Mac -> pfx into `lib/` and `libexec/`. (Mac reaches both l1 and pfx; l1 and pfe do not
   see each other.)
+- **NEVER overlay while ANY job of the user runs (`qstat -u oalexan1` must show none of
+  ours, including the other bot's).** The package sits on NFS. A lib or binary replaced
+  (scp in place, or even an atomic `mv` over it) while a compute node has it mapped makes
+  that node's next page-in fail with SIGBUS (burned 2026-11-17: three overlays killed the
+  other bot's running `dem_mosaic --max` with a Bus error in its last step). Wait for the
+  queue to drain, or install into a NEW versioned dir and point only your own jobs at it.
+  The project tools `push_asp_build_pfe.sh` / `deploy_l1_build_pfe.sh` in
+  `~/projects/sfs_BCT0717-BCT2124-MM/` do the full stage + backup + overlay.
 - **PREFER `scp` over `rsync` for this overlay (NFS gotcha).** rsync l1->pfe can
   SILENTLY fail `mkstemp ... Permission denied` on the package `lib/` and `libexec/`
   NFS dirs (documented in pleiades_notes.sh); scp does not use mkstemp and always
