@@ -58,8 +58,10 @@ does NOT help (it matched the old values within 3-9%). So for a full-site run pr
 exposures on ~2 km tiles: `launch_sfs_tiles.sh ... none ...` (exposuresFile `none` = each tile
 computes its own). The tile seams then need checking. At BCU2314 the same global-vs-local
 difference was mild, so it is site dependent: test with a clip pair (local vs global) first.
-Also `launch_sfs_tiles.sh` did not forward `--low-light-threshold` before 2026-11-16. Set
-`LOW_LIGHT=0.03` now.
+**Low-light threshold is REQUIRED for every SfS run (Oleg, 2026-11-17).** Since SfsPipeline
+commit 0711091, `launch_sfs_tiles.sh` passes `--low-light-threshold 0.03` by default
+(`LOW_LIGHT=<v>` to change, `LOW_LIGHT=none` turns it off, which you should not do). Runs
+before 2026-11-16 (the shipped BCT and BCU SfS) had it off.
 
 ## Phase 1 - SfS per tile, then assemble
 
@@ -83,8 +85,8 @@ MODEL=bro_ele NCPUS=28 QSUB_BIN=/PBS/bin/qsub \
    recompute), and each tile writes `sfs/clip<id>/run-DEM-final.tif`. Reflectance-type 1
    (Lunar-Lambert), smoothness 0.08, initial-dem-constraint 0.0025, inner tile-size 200 /
    pad 50 are baked in. MEASURED: 4000 tile on 2 bro_ele nodes ~6.5-9.6 h; 20 tiles ~350
-   node-hours (~350 SBU). NB `launch_sfs_tiles.sh` does NOT forward `--low-light-threshold`
-   (parallel_sfs default is used); set it explicitly if low-light regions look wrong.
+   node-hours (~350 SBU). The launcher passes `--low-light-threshold 0.03` by default (see
+   Phase 0). Keep it on.
 3. **Assemble**: BLENDED `dem_mosaic` (NO `--max`, so tile seams smooth) of all
    `sfs/clip*/run-DEM-final.tif` -> one SfS DEM, via `dem_mosaic_list.sh` (qsub, THREADS=28).
    Output lands at exactly `sfs_dem.tif`: dem_mosaic writes the given name directly when

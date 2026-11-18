@@ -22,7 +22,9 @@ and CLAUDE.md per the auto-memory lifecycle policy.
   ~/projects/sfs_BCU2314-BDU1224-MM/jitter_analytic_eval_notes.sh (end).
 
 - Ross reviews of the two Mons Mouton SfS sites (2026-11-16): BCT0717 = other bot,
-  BCU2314 = this bot. BCU ghosting study done 2026-11-17: a few-images problem, not
+  BCU2314 = this bot. BCU max-lit 2026-11-18: recommended C8
+  maxlit_cmp/cascade_c8_xclean08_le0.8_le1.0_c7T2_c7T3_c8T6_all334_f0.7_0.95.tif, gallery
+  https://claude.ai/artifact/CwZyV7dek9FzgjcPdqiTtx v8, waiting on Oleg's look. BCU ghosting study done 2026-11-17: a few-images problem, not
   global. Joint jitter with GCPs does not visibly help, dropping 10 offenders does
   (maxlit_cmp/delivered_no_offenders.tif). Oleg decides drop vs SfS rerun. Staged cubs
   tar wiped from pfe. HELD, not committed: ASP sfs_blend.cc smooth-min change (walk Oleg
@@ -34,7 +36,7 @@ and CLAUDE.md per the auto-memory lifecycle policy.
   Notes: end of
   ~/projects/sfs_BCU2314-BDU1224-MM/sfs_bcu2314_bdu1224_mm_notes.sh.
 
-- BCT max-lit (2026-11-17): recommended C4s maxlit_cmp/cascade_ext_le1.0_le1.2_le1.3_fix9b_426_f0.75_1.0.tif,
+- BCT max-lit (2026-11-17): recommended C4s_kd maxlit_cmp/cascade_ext_le1.0_le1.2_le1.3_fix9b_426_f0.75_1.0_kd.tif,
   gallery https://claude.ai/artifact/GZkogVwHBuvSSwUtELTTqA, waiting on Oleg's look. HELD, not committed:
   ASP jitter_solve --fixed-image-list (Mac + l1 trees, deployed on pfe). Notes: end of
   ~/projects/sfs_BCT0717-BCT2124-MM/sfs_bct0717_bct2124_mm_notes.sh.
