@@ -1,7 +1,21 @@
 ---
 name: cpp-editing
-description: C++ and VisionWorkbench code editing conventions - header include ordering, comment preservation, code movement, brace/colon/forward-declaration style, ASP/VW library and namespace naming, output parameters, variable initialization, paired-list validation, and the clean_style tool. Load before editing any .cc/.h file in ASP, VW, or ISIS.
+description: C++ and VisionWorkbench code editing conventions - fix and build the unit tests after any API change, header include ordering, comment preservation, code movement, brace/colon/forward-declaration style, ASP/VW library and namespace naming, output parameters, variable initialization, paired-list validation, and the clean_style tool. Load before editing any .cc/.h file in ASP, VW, or ISIS.
 ---
+
+## API Change -> Fix and Build the Unit Tests (CRITICAL)
+
+Any change to a public signature (constructor, method, free function, member type) in
+VW or ASP must also update every caller in the unit tests, `src/**/tests/Test*.cxx`, in
+BOTH repos (an ASP test can construct a VW class). Those tests are EXCLUDE_FROM_ALL, so a
+plain `make` never compiles them and the break goes unseen until the nightly runs `make
+gtest_all`. One test that fails to compile there fails the build on all four platforms.
+Before pushing:
+- `grep -rn "<Symbol>(" src` in VW and ASP, test files included, and fix every caller.
+- Build and run the affected test (`make <lib>_<TestName>_runtest`), then `make gtest_all`
+  in the touched repo.
+(Burned 2026-11-18: OpticalBarModel took a Vector2 pixel pitch, the VW test still passed
+a double, and the nightly failed on every platform.)
 
 ## Header Include Ordering (CRITICAL)
 
