@@ -5,10 +5,11 @@ Durable engineering rules and workflows belong in skills (~/.claude/skills/)
 and CLAUDE.md per the auto-memory lifecycle policy.
 
 ## Immediate Reminders
-- KH-9 FY27 sprint (2026-11-16): Tasks 1, 2, 3, 4 (a8e9716bd) and 6 plus the
-  per-anchor GSD (f34989d90) are pushed and regolded on l1. Waiting on Shean: Task 7
-  (DSI-21 slide, no word on the review), Task 5 spec, his tests on the 11/17 and 11/20
-  builds. Dropped until he asks: per-camera optical bar model print. Dropped:
+- KH-9 FY27 sprint (2026-11-18): Shean approved Task 3 (3.7x, closed), per-anchor GSD
+  (warning back in 042c10cae), and the model print. Rigid rotation + x/y pitch approved,
+  his re-test on 11/18 pending. Task 4 NEW ASK: orbit constraint (--orbital-group-list
+  for OpticalBar + jitter_solve), Oleg promised to look into it. Waiting: Task 7
+  (DSI-21 slide), Task 5 spec. Roll-up at the end of kh9_fy27_notes.sh. Dropped until he asks: per-camera optical bar model print. Dropped:
   --min-distortion plumbing. Deferred: the VW block-cache work. Live status:
   ~/projects/kh9_fy27/kh9_fy27_notes.sh (end of file).
 - sfs_south: SfsPipeline/bin synced Mac -> pfe on 2026-11-16, so the pending sync
