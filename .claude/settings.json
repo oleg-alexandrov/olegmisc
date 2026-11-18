@@ -15,7 +15,8 @@
   },
   "disableAgentView": true,
   "enabledPlugins": {
-    "clangd-lsp@claude-plugins-official": true
+    "clangd-lsp@claude-plugins-official": true,
+    "cc-plugin-privacy@builtin": false
   },
   "feedbackSurveyRate": 0,
   "tui": "default",
