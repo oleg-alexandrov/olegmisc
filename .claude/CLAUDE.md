@@ -459,6 +459,10 @@ Co-Authored-By: Antigravity <noreply@google.com>
 
 ## Compute placement (CRITICAL)
 
+- **Oleg's machines**: `l1` (lunokhod1, main dev/build box), `ssh mac_arm` (home Mac
+  mini), `ssh nasa_mac` (NASA work MacBook `neon`, from l1 only, via a reverse tunnel
+  Oleg opens by hand, NOT admin), pfe/Athena. All three of l1/mac_arm/nasa_mac carry
+  the olegmisc (`~`) and projects (`~/projects`) repos. Detail: machines-tools.
 - **Before the FIRST `ssh` to pfe/pfx/any `pfeNN`/athena/lfe OR any `qsub` in a session,
   LOAD the [[pfe-nas]] skill - even for a "quick" ldd/ls/find/objdump probe.** Touching pfe
   at ALL is pfe work, there is no trivial exception. The skill hands you what you would

@@ -1,6 +1,6 @@
 ---
 name: machines-tools
-description: Machine map and local tooling - the l1/Mac mini/pfe/Athena boxes with their build commands, ssh aliases and quirks, the common stereo_gui aliases (sg/sw/swa/sgm), and how to send email to Oleg via msmtp. Load when choosing a machine to run work on, using a viewing alias, or emailing Oleg.
+description: Machine map and local tooling - the l1/Mac mini (mac_arm)/NASA work Mac (nasa_mac)/pfe/Athena boxes with their build commands, ssh aliases and quirks, the common stereo_gui aliases (sg/sw/swa/sgm), and how to send email to Oleg via msmtp. Load when choosing a machine to run work on, using a viewing alias, or emailing Oleg.
 ---
 
 ## Machines
@@ -38,6 +38,24 @@ description: Machine map and local tooling - the l1/Mac mini/pfe/Athena boxes wi
   couldn't reach github, 2026-08-10). Put any `timeout` on the l1 SIDE, wrapping
   the whole `ssh` (`timeout N ssh mac_arm '<cmd>'`), never inside the remote
   command. Same for any Mac-run script.**
+
+- **NASA work MacBook Pro** (`ssh nasa_mac`, hostname `neon`, Apple M5, 24 GB, macOS
+  26, set up 2026-11-18). On the NASA VPN, so it connects to l1 DIRECTLY (not via
+  pfx): `bash ~/bin/tunnel.sh` on neon opens the reverse tunnel l1:5009 -> neon:22.
+  l1 alias: `HostName localhost`, `Port 5009`. mac_arm alias: same plus `ProxyJump
+  l1` and `HostKeyAlias nasa_mac` (neon offers its ECDSA host key on that route).
+  neon's own `~/.ssh/config` has `l1` (direct), `pfx` (l1's 6078 forward, `ProxyJump
+  l1`) and `mac_arm` (`ProxyJump pfx`). neon's key is in l1, pfx and mac_arm
+  `authorized_keys`, and mac_arm's key is in neon's. The tunnel dies on reboot,
+  sleep, VPN drop or network change, so a refused connection means "ask Oleg to
+  rerun tunnel.sh on neon", not a dead Mac. Jamf-managed (jamf.arc.nasa.gov) and Oleg is NOT admin: installs into
+  `/Applications` and any "PIN" (PIV badge) admin prompt fail. Use Self Service, or
+  put apps in `~/Applications` and clear quarantine (`xattr -dr com.apple.quarantine
+  <app>`) so they do not run translocated. GUI scripting over ssh fails ("osascript
+  is not allowed assistive access"), and `pbcopy` over ssh does not reach the GUI
+  clipboard. `~` is an olegmisc checkout and `~/projects` a projects clone, same
+  layout as mac_arm. GitHub ssh uses `~/.ssh/id_rsa` (`oalexan1@neon`). Light
+  work only, same rule as the Mac mini.
 
 - **Reach pfe with `ssh pfx`, NOT `ssh pfe`.** `pfx` is the ssh-config alias that
   hops through the sfe secure front end onto a pfe node (lands on e.g. pfe21) and
