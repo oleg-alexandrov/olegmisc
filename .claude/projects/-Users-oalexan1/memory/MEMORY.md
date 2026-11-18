@@ -5,6 +5,8 @@ Durable engineering rules and workflows belong in skills (~/.claude/skills/)
 and CLAUDE.md per the auto-memory lifecycle policy.
 
 ## Immediate Reminders
+- [nasa-mac-todo](nasa-mac-todo.md): OPEN nasa_mac leftovers (wipe the Miniforge installer,
+  confirm claude/gh auth, first test of tunnel.sh on neon) once the tunnel is back.
 - KH-9 FY27 sprint (2026-11-18): Shean approved Task 3 (3.7x, closed), per-anchor GSD
   (warning back in 042c10cae), and the model print. Rigid rotation + x/y pitch approved,
   his re-test on 11/18 pending. Task 4 NEW ASK: orbit constraint (--orbital-group-list
