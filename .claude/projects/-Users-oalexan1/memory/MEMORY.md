@@ -30,9 +30,8 @@ and CLAUDE.md per the auto-memory lifecycle policy.
   https://claude.ai/artifact/CwZyV7dek9FzgjcPdqiTtx v8, waiting on Oleg's look. BCU ghosting study done 2026-11-17: a few-images problem, not
   global. Joint jitter with GCPs does not visibly help, dropping 10 offenders does
   (maxlit_cmp/delivered_no_offenders.tif). Oleg decides drop vs SfS rerun. Staged cubs
-  tar wiped from pfe. HELD, not committed: ASP sfs_blend.cc smooth-min change (walk Oleg
-  through it before any commit: git -C ~/projects/StereoPipeline diff
-  src/asp/Tools/sfs_blend.cc). REMIND Oleg: re-blend each WHOLE site once it lands.
+  tar wiped from pfe. ASP sfs_blend.cc smooth-min change COMMITTED LOCALLY 149951a5f
+  (2026-11-18, Oleg's call), NOT pushed. REMIND Oleg: re-blend each WHOLE site once it lands.
   SfsPipeline 0711091 PUSHED 2026-11-17: fixed-camera trap doc + ba_fixed_check.py,
   vwip-only cleanup, LOW_LIGHT 0.03 now ON by default in launch_sfs_tiles.sh (shipped
   BCU/BCT SfS ran without it, readmes say 0.03). pfe SfsPipeline copy synced 2026-11-17.
