@@ -56,6 +56,9 @@ description: Machine map and local tooling - the l1/Mac mini (mac_arm)/NASA work
   clipboard. `~` is an olegmisc checkout and `~/projects` a projects clone, same
   layout as mac_arm. Conda is Miniforge (conda-forge only) in `~/miniconda3`,
   loaded by `.zshrc` with no env activated, and `gh` is `~/miniconda3/envs/gh/bin/gh`.
+  Homebrew (no admin) is a git clone in `~/homebrew` (put on PATH by `.zshrc` before
+  conda), and cmake comes from it. `~/homebrew` MUST keep its own `.git`: without one,
+  `brew update` runs git against the enclosing olegmisc repo.
   Claude Code is the native install at `~/.local/bin/claude`. GitHub ssh uses `~/.ssh/id_rsa` (`oalexan1@neon`). Light
   work only, same rule as the Mac mini.
 
