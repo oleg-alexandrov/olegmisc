@@ -54,7 +54,9 @@ description: Machine map and local tooling - the l1/Mac mini (mac_arm)/NASA work
   <app>`) so they do not run translocated. GUI scripting over ssh fails ("osascript
   is not allowed assistive access"), and `pbcopy` over ssh does not reach the GUI
   clipboard. `~` is an olegmisc checkout and `~/projects` a projects clone, same
-  layout as mac_arm. GitHub ssh uses `~/.ssh/id_rsa` (`oalexan1@neon`). Light
+  layout as mac_arm. Conda is Miniforge (conda-forge only) in `~/miniconda3`,
+  loaded by `.zshrc` with no env activated, and `gh` is `~/miniconda3/envs/gh/bin/gh`.
+  Claude Code is the native install at `~/.local/bin/claude`. GitHub ssh uses `~/.ssh/id_rsa` (`oalexan1@neon`). Light
   work only, same rule as the Mac mini.
 
 - **Reach pfe with `ssh pfx`, NOT `ssh pfe`.** `pfx` is the ssh-config alias that

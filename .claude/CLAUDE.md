@@ -208,8 +208,8 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
 - The em-dash ban, flowing-paragraph rule, and backtick ban are the always-on GitHub prose
   rules. Writing any GitHub text (before any `gh pr`/`gh issue`/`gh api` write) is itself
   the trigger to load github-issues for the rest of its rules.
-- **`gh` CLI and GraphQL breakage**: `gh` lives in `~/anaconda3/envs/gh/bin/gh` (Mac) or
-  `~/miniconda3/envs/gh/bin/gh` (l1), never bare `gh`. NEVER run `gh issue view`, `gh pr view`,
+- **`gh` CLI and GraphQL breakage**: `gh` lives in `~/anaconda3/envs/gh/bin/gh` (mac_arm) or
+  `~/miniconda3/envs/gh/bin/gh` (l1, nasa_mac), never bare `gh`. NEVER run `gh issue view`, `gh pr view`,
   or `gh pr edit` (they fail on a deprecated Projects-classic GraphQL query). ALWAYS use the
   REST API (`gh api repos/OWNER/REPO/issues/NUM`) to fetch, view, edit, comment, or close
   issues and PRs. Detail: github-issues and `~/projects/github_notes.sh`.

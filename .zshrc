@@ -172,6 +172,9 @@ if [[ "$(hostname)" == *"Mac-mini"* ]]; then
     init_conda_zsh
     conda activate asp_deps
     export PATH=~/projects/StereoPipeline/install/bin:$HOME/anaconda3/envs/asp_deps/bin:$PATH
+elif [[ "$(hostname)" == "neon"* ]]; then
+    # NASA work Mac: Miniforge in ~/miniconda3, no env auto-activated
+    init_conda_zsh
 fi
 
 
