@@ -7,12 +7,12 @@ description: >-
   overlay lib/libexec/bin onto the pfe package, scp-over-rsync NFS gotcha, verify
   through the wrapper, stale --version date). Load before running an ASP tool on
   pfe, setting the pfe ASP env, or sending/updating a build to pfe. The pfe sibling
-  of mac-asp-build; companion to pfe-nas (qsub, head-node limits, ssh/tunnel) and
+  of asp-dev-build, companion to pfe-nas (qsub, head-node limits, ssh/tunnel) and
   build-env (deps, packaging, nightly). Deep recipe: ~/projects/pleiades_notes.sh.
 ---
 
 The ASP build on pfe - how to RUN it and how to UPDATE it. This is the pfe sibling
-of [[mac-asp-build]]. For pfe COMPUTE mechanics (qsub, head-node 1-thread limit,
+of [[asp-dev-build]]. For pfe COMPUTE mechanics (qsub, head-node 1-thread limit,
 ssh/pfx tunnel, deletion safety) see [[pfe-nas]]; for deps, packaging, and the
 nightly see [[build-env]]. Deep recipe + the NFS gotcha detail: `~/projects/pleiades_notes.sh`
 section "Syncing dev build to pfe".
@@ -69,7 +69,7 @@ give it time), then overlay the dev build onto the pfe package:
   pfe `libVwMath.so` did not -> jitter_solve exited 127). FIX/RULE: scp the FULL set
   `install/lib/libVw*.so` AND `install/lib/libAsp*.so` (~31 MB, 23 files) every time,
   plus the rebuilt `libexec/` binaries. Tar the pfe `libVw*.so libAsp*.so` to a backup
-  first so you can revert. This is the same lesson as [[mac-asp-build]]'s "Check VW
+  first so you can revert. This is the same lesson as [[asp-dev-build]]'s "Check VW
   FIRST", applied to the pfe overlay: VW and ASP ship together or not at all.
 - **And the converse: once the new libs land, overlay ALL of l1 `install/bin/` into
   `libexec/`, never only the tool you edited.** New `libVw*.so` change C++ ABI (a template

@@ -15,7 +15,7 @@ description: >-
 VW is the C++ library layer under ASP. ASP links against VW's INSTALLED libs
 (libVw*.dylib / .so), so a VW source change needs a VW build and install
 BEFORE the ASP build sees it. Repo at `~/projects/visionworkbench`, installs
-into its own `install/`. Build mechanics are in the [[mac-asp-build]] skill
+into `~/projects/StereoPipeline/install` (shared with ASP). Build mechanics are in the [[asp-dev-build]] skill
 (check VW first, build and install it, then ASP).
 
 Key lesson that keeps biting: several things that feel like ASP features are

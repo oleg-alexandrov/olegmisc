@@ -6,8 +6,10 @@ description: Machine map and local tooling - the l1/Mac mini (mac_arm)/NASA work
 ## Machines
 
 - **lunokhod1** (`l1`) - primary dev/build/git box (g++ 12.4 in `asp_deps`, 16
-  cores). Build: `make -C ~/projects/StereoPipeline/build -j16`. Remotes:
-  `origin`=fork, `god`=org.
+  cores). Build: `make -C ~/projects/StereoPipeline/build -j16` then `make -C
+  ~/projects/StereoPipeline/build install` (always install). Same layout as the
+  Macs, recipe and per-box table in [[asp-dev-build]]. Remotes: `origin`=fork,
+  `god`=org.
 - **Mac mini** (`ssh mac_arm`) - notes/docs machine + secondary build. The alias
   is defined in `~/.ssh/config` as `HostName localhost`, `Port 3079`,
   `ProxyJump pfx`, and works non-interactively - just use `ssh mac_arm '<cmd>'`
@@ -63,7 +65,9 @@ description: Machine map and local tooling - the l1/Mac mini (mac_arm)/NASA work
   conda), and cmake comes from it. `~/homebrew` MUST keep its own `.git`: without one,
   `brew update` runs git against the enclosing olegmisc repo.
   Claude Code is the native install at `~/.local/bin/claude`. GitHub ssh uses `~/.ssh/id_rsa` (`oalexan1@neon`). Light
-  work only, same rule as the Mac mini.
+  work only, same rule as the Mac mini. ASP dev build (2026-11-18): `asp_deps` in
+  `~/miniconda3/envs` from the published deps tarball, VW + ASP built into
+  `~/projects/StereoPipeline/install`, like on mac_arm. Recipe: [[asp-dev-build]].
 
 - **Reach pfe with `ssh pfx`, NOT `ssh pfe`.** `pfx` is the ssh-config alias that
   hops through the sfe secure front end onto a pfe node (lands on e.g. pfe21) and

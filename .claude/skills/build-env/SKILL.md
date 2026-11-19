@@ -6,11 +6,11 @@ description: Building and packaging ASP and its deps - nightly build/regression,
 ## ASP/VW C++ build - Mac AND l1 both work (do not assume C++ is l1-only)
 
 `cd <repo>/build && make -jN && make install` builds ASP or VW against `asp_deps`,
-on the Mac mini just as on l1. The Mac has a full working dev build at
-`~/projects/StereoPipeline/build` (and `~/projects/visionworkbench/build`); its
-`install/bin` holds the C++ tools you run. So compile and test C++ locally on
+on our Macs (mac_arm, neon) just as on l1. So compile and test C++ locally on
 whichever box you are on. l1 is the box for regolding and heavy runs, not the only
-one that compiles. Per-box build commands: [[machines-tools]].
+one that compiles. The local Mac dev build, including setting up a fresh Mac from
+the deps tarball, is owned by **[[asp-dev-build]]**. Per-box build commands:
+[[machines-tools]]. This skill owns the deps tarballs, packaging and the nightly.
 
 ## Build/install ale and usgscsm from source into asp_deps, NOT isis_dev
 
