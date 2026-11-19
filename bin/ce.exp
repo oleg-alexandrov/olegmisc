@@ -1,0 +1,22 @@
+#!/usr/bin/expect -f
+# Launch Claude Code in bypass mode and auto-accept the home-dir trust prompt.
+# The tty is handed to claude at once (so terminal query replies reach it),
+# and claude's output is watched for the prompt.
+set answered 0
+trap {
+  set rows [stty rows]
+  set cols [stty columns]
+  stty rows $rows columns $cols < $spawn_out(slave,name)
+} WINCH
+spawn -noecho claude --dangerously-skip-permissions --allowedTools default --add-dir $env(HOME) {*}$argv
+interact {
+  -o -echo "confirm" {
+    if {!$answered} {
+      set answered 1
+      sleep 0.4
+      send "\033\[B"
+      sleep 0.3
+      send "\r"
+    }
+  }
+}
