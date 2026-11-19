@@ -45,7 +45,10 @@ description: Machine map and local tooling - the l1/Mac mini (mac_arm)/NASA work
   l1 alias: `HostName localhost`, `Port 5009`. mac_arm alias: same plus `ProxyJump
   l1` and `HostKeyAlias nasa_mac` (neon offers its ECDSA host key on that route).
   neon's own `~/.ssh/config` has `l1` (direct), `pfx` (l1's 6078 forward, `ProxyJump
-  l1`) and `mac_arm` (`ProxyJump pfx`). neon's key is in l1, pfx and mac_arm
+  l1`) and `mac_arm` (`ProxyJump pfx`). Jamf's `/etc/ssh/ssh_config.d/0-asani-gssapi.conf`
+  sets a global `PKCS11Provider` (PIV badge), which makes an interactive ssh ask for the
+  badge PIN. Each of the three blocks therefore carries `PKCS11Provider none`,
+  `IdentityFile ~/.ssh/id_rsa`, `IdentitiesOnly yes` (2026-11-18). neon's key is in l1, pfx and mac_arm
   `authorized_keys`, and mac_arm's key is in neon's. The tunnel dies on reboot,
   sleep, VPN drop or network change, so a refused connection means "ask Oleg to
   rerun tunnel.sh on neon", not a dead Mac. Jamf-managed (jamf.arc.nasa.gov) and Oleg is NOT admin: installs into
