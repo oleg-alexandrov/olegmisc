@@ -10,12 +10,12 @@ trap {
 } WINCH
 spawn -noecho claude --dangerously-skip-permissions --allowedTools default --add-dir $env(HOME) {*}$argv
 interact {
-  -o -echo "confirm" {
+  -o "confirm" {
     if {!$answered} {
       set answered 1
-      sleep 0.4
-      send "\033\[B"
       sleep 0.3
+      send "\033\[B"
+      sleep 0.1
       send "\r"
     }
   }
