@@ -68,6 +68,13 @@ description: Machine map and local tooling - the l1/Mac mini (mac_arm)/NASA work
   work only, same rule as the Mac mini. ASP dev build (2026-11-18): `asp_deps` in
   `~/miniconda3/envs` from the published deps tarball, VW + ASP built into
   `~/projects/StereoPipeline/install`, like on mac_arm. Recipe: [[asp-dev-build]].
+  Keyboard (no Karabiner, no Accessibility grants under Jamf, so AeroSpace cannot
+  run): do NOT swap Option/Cmd in System Settings > Modifier Keys. That swap made Alt
+  send Cmd and broke iTerm's Option+Left/Right tab switching (2026-11-18). Instead
+  each behavior is per-app or a macOS shortcut: iTerm Option+arrows = prev/next tab,
+  Chrome App Shortcuts (NSUserKeyEquivalents) give Ctrl+C/V/X/T/W..., and macOS
+  hotkey 30 (area screenshot) is Option+Shift+4. Native Spaces use Ctrl+arrows and
+  Ctrl+1..4.
 
 - **Reach pfe with `ssh pfx`, NOT `ssh pfe`.** `pfx` is the ssh-config alias that
   hops through the sfe secure front end onto a pfe node (lands on e.g. pfe21) and
