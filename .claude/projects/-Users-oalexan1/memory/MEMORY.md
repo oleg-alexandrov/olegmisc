@@ -67,7 +67,10 @@ and CLAUDE.md per the auto-memory lifecycle policy.
   `~/projects/AYN1112-AYN1516-de_Gerlache_NE_Rim/ayn1112_ayn1516_de_gerlache_ne_rim_notes.sh`
   (we can read it) and `~/projects/AXN2014-AYN0018-de_Gerlache_NW_Rim/axn2014_ayn0018_de_gerlache_nw_rim_notes.sh`
   (locked to us, Scott must chmod). NE root cause found 2026-11-17: plain SPICE cameras
-  held fixed instead of usgs_south ones (WORKFLOW.md 5b doc trap, fix not yet OK'd). Scott stops end of Nov 2026, then KH-9 for Shean.
+  held fixed instead of usgs_south ones (WORKFLOW.md 5b doc trap, since fixed).
+  2026-11-18: second doc bug, section 7 mapproject passed a camera list that replaced the
+  ba_htdem cameras (fixed, SfsPipeline 15c830c). Waiting on Scott: did he rerun step 7
+  without it? NE notes end. Scott stops end of Nov 2026, then KH-9 for Shean.
 - `~/projects/sdb/`: SDB (shallow depth bathymetry), FY26 USGS task.
 - [ostfl](ostfl.md): OSTFL24, the grant to maintain and expand ASP (FY27 funded). Live
   notes `~/projects/ostfl_2026_notes.sh`. Full FY27 project list is in CLAUDE.md.
