@@ -183,6 +183,9 @@ fi
 
 # Disable Claude Code periodic feedback survey prompts
 export CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY=1
+# A claude typed by hand always saves its transcript, even in a terminal
+# inherited from a Claude session. Scripted child sessions are unaffected.
+alias claude='env -u CLAUDE_CODE_CHILD_SESSION claude'
 
 
 # Added by Antigravity CLI installer
