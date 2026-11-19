@@ -461,9 +461,16 @@
         "python": true
     },
     "workbench.colorCustomizations": {
-        "editorGhostText.foreground": "#888888"
+        "editorGhostText.foreground": "#888888",
+        "editor.background": "#000000",
+        "editorGutter.background": "#000000",
+        "terminal.background": "#000000",
+        "panel.background": "#000000",
+        "sideBar.background": "#000000",
+        "editorGroupHeader.tabsBackground": "#000000",
+        "tab.activeBackground": "#000000",
+        "tab.inactiveBackground": "#000000"
     },
-    "workbench.colorTheme": "Default High Contrast",
     "editor.renderLineHighlight": "none",
     "editor.guides.indentation": false,
     "editor.guides.highlightActiveIndentation": false,
@@ -525,7 +532,7 @@
     "editor.suggest.showConstructors": true,
     "editor.suggest.showInterfaces": true,
     "editor.inlayHints.enabled": "on",
-    "editor.hover.enabled": true,
+    "editor.hover.enabled": "on",
     "workbench.editor.empty.hint": "hidden",
     "cmake.showOptionsMovedNotification": false,
     "chat.editor.fontSize": 10,
