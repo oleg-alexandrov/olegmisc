@@ -83,7 +83,18 @@ EOF
 ln -sf "${GEMINI_CONFIG}/GEMINI.md" "${GEMINI_CONFIG}/AGENTS.md"
 
 echo "Validating YAML frontmatter for all skills..."
-python3 -c '
+# Non-interactive ssh often finds /usr/bin/python3 first, which lacks PyYAML,
+# so use the first python3 that can import yaml.
+PY=""
+for p in "$(command -v python3)" ~/anaconda3/bin/python3 ~/miniconda3/bin/python3 \
+         ~/miniforge3/bin/python3; do
+  if [ -x "$p" ] && "$p" -c "import yaml" 2>/dev/null; then PY="$p"; break; fi
+done
+if [ -z "$PY" ]; then
+  echo "Error: no python3 with PyYAML found, cannot validate the frontmatter."
+  exit 1
+fi
+"$PY" -c '
 import glob, os, yaml
 
 skills = glob.glob(os.path.expanduser("~/.claude/skills/*/SKILL.md"))
