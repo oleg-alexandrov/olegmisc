@@ -74,7 +74,7 @@ MAIN:{
       $destDir =~ s/ /\\ /g;
       
       # Stop complaining about untrusted host
-      my $cmd = "rsync -P -avz $opts -e 'ssh $from -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' :$file $destDir 2>/dev/null";
+      my $cmd = "rsync -P -avz $opts -e 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' $from:$file $destDir 2>/dev/null";
       print "$cmd\n";
       system($cmd);
     }
@@ -106,10 +106,10 @@ MAIN:{
       }
 
       # Stop complaining about untrusted host. Added $rsync_mkdir_opt to the command.
-      my $cmd = "rsync -P -avz $opts $rsync_mkdir_opt $file  -e 'ssh $to -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' :~/$subDir 2>/dev/null";
+      my $cmd = "rsync -P -avz $opts $rsync_mkdir_opt $file -e 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no' $to:~/$subDir 2>/dev/null";
 
       if ($remoteDir ne ""){
-        $cmd =~ s/$to:~\//$to:/g;
+        $cmd =~ s/\Q$to\E:~\//$to:/g;
       }
 
       print "$cmd\n";
