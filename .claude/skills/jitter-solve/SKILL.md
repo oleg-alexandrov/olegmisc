@@ -9,6 +9,12 @@ description: >-
 
 # jitter_solve: refining linescan per-line poses (jitter / twist)
 
+**AFTER EVERY jitter_solve: LOAD [[sfs-post-bundle-eval]] and run its section 2a checks** (cam_test
+pre vs post, the per-image MAX in `run-orientation_offsets.txt`, map-vs-map NCC) and eyeball the
+max-lit for wild-jitter streaks BEFORE reporting the set as good. Free padding knots past the image
+ends can swing km and drag the image ends. A ~100 m `--orientation-uncertainty` guards that, 20 m
+fought legit center moves and stalled convergence (BCU, 2026-11-20).
+
 `jitter_solve` resamples a CSM linescan's position and orientation samples and
 optimizes them against tie points, a reference DEM (`--heights-from-dem`), anchor
 points, and optionally GCP. Use it to remove jitter, a low-order twist, or a

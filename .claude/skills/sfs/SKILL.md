@@ -7,6 +7,19 @@ description: Shape-from-Shading (SfS) and the canonical batch mapprojection fram
 
 This skill documents the Ames Stereo Pipeline Shape-from-Shading (SfS) photoclinometry toolset and the batch mapprojection framework.
 
+**MUST LOAD [[sfs-post-bundle-eval]] the moment you build or judge a max-lit from new cameras**
+(after any bundle or jitter solve, before calling a camera set good). It holds the mandatory
+cam_test screen and the wild-jitter signature (streaks, beaded lines, spillover bands, vanished lit
+wedges). Skipping it once let a wild jitter set reach Oleg's review (BCU, 2026-11-20).
+
+**WATCH DISK USE ON pfe /nobackupp19 during camera experiments.** Every camera set re-mapprojects the
+SfS maps (~1.2 GB per 1 m map, ~400 GB per 334-map set) plus max-lit tiers (~1.2 GB each), match
+regens (100k+ files) and solve dirs. BCU 2026-11-20 pushed the allocation to 12.6 TB of 15 TB with a
+dozen map sets. Rules: check `lfs quota -h -u oalexan1 /nobackupp19` before each new map set; keep at
+most the CURRENT best plus the baseline map sets; log every superseded set as a deferred wipe (literal
+paths) in the project notes and wipe via a subagent at a checkpoint; never leave dry-run dirs, staged
+tars or core files behind.
+
 **REFERENCE IMPLEMENTATION HAS MOVED (2026-10).** The canonical scripts now live in
 `~/projects/SfsPipeline/bin/` (Andrew Annex's NeoGeographyToolkit/SfsPipeline repo), NOT
 `~/projects/sfs/`. All NEW work goes into `SfsPipeline/bin`, and every example below invokes
@@ -591,6 +604,22 @@ rollover (Oct 1): the allocation can change sharply (e2305 was 25000 SBU in FY20
 1250 in FY2027), so "% of budget" must use the CURRENT-FY allocation from acct_ytd, not a
 remembered number. Rule of thumb: a 20-tile lunar SfS run is ~350 node-hours (~350 SBU on
 bro_ele) - budget the next run against the live acct_ytd remaining.
+
+## Disk watch - check nobackup use PERIODICALLY, not after it blows up
+
+Experiment loops (camera re-solves, per-variant mapprojected sets, max-lits) eat nobackup fast:
+each mapprojected set of a few hundred NAC images at 1 m is tens to hundreds of GB, each max-lit
+~0.75 GB, and a match regen writes 100k+ files. BCT grew from ~4 TB to 12 TB in a few days of
+variants (Oleg 2026-11-20, "insane", quota 15 TB). Rules:
+- On EVERY heartbeat / at least daily during experiments, run `lfs quota -h -u oalexan1 /nobackupp19`
+  (cheap, no stat storm) and log the used figure in the notes. Over ~60% of quota, stop adding
+  variants and propose a cleanup.
+- Keep only the map sets of live candidates. When a variant loses, write its dir on a cleanup list in
+  the notes at once (what, size, why it lost, what replaces it), so the wipe plan is ready.
+- Size per dir with ONE targeted background `du -sk --max-depth=1 <projDir>/` (nohup, nice), never
+  a blanket recursive du in the foreground (Lustre). See [[pfe-nas]].
+- Wipes need Oleg's go: propose the plan (dir, size, reason, keepers), then hand a subagent the
+  literal absolute paths. Never wipe what the shipped delivery or the notes say to keep.
 
 ## qsub and Autonomous Orchestration (sanity checks, do not blunder)
 

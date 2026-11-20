@@ -56,6 +56,12 @@ hosted URL, use `SendUserFile ... display:render`. See also
 `~/projects/visual_raster_inspection.sh` (colorbar/preview recipe) and
 `~/projects/html_for_google_docs.sh` (base64-embedded HTML for Google Docs).
 
+**Big image galleries (hundreds of crops) are LOCAL HTML, not an Artifact** (Oleg 2026-11-20,
+"too big"): write `index.html` + `img/` in the project dir and `open` it. **When reusing an old
+page's header, cut at the `</style>` line by marker (`grep -n '^</style>'`), never a guessed line
+number.** A cut short of `</style>` leaves the whole body inside the stylesheet, so the page
+renders blank (BCU gallery, 2026-11-20). Check `grep -c '</style>'` before opening.
+
 ## The Python/GDAL env (don't fight `ModuleNotFoundError`)
 
 The Mac system `python3` has NEITHER `osgeo` (GDAL) NOR `PIL`. Do not waste calls

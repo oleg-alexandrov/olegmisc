@@ -6,7 +6,9 @@ description: >-
   name, counts match the id lists, no stray files remain (sub-resolution pyramids, gdal
   .aux.xml, run logs, temp previews), all rasters share the delivery grid, the whole
   directory tree is world-readable with a traversable permission chain from / down, and
-  the key products pass a quick visual sanity check. Load before handing off or
+  the key products pass a quick visual sanity check, and the max-lit/average mosaic inputs
+  were mapprojected with the SfS cameras (checked from each ortho's CAMERA_FILE GeoTIFF
+  header). Load before handing off or
   submitting an SfS results directory, or when asked to verify, QC, or bulletproof a
   delivery. The stage AFTER sfs-delivery (which assembles the package). Complements
   [[sfs]], [[sfs-delivery]], [[visual-inspection]].
@@ -88,6 +90,28 @@ Building with `umask 022` gives `o+r`/`o+rx` for free. If a parent dir (often th
 `chmod` a private parent (it exposes everything under it) - flag it and resolve via the
 intended sharing path (a group, or a copy to a shared delivery location). Fix the
 delivery subtree itself with `chmod -R o+rX` if any file is not readable.
+
+## 4b. Camera provenance: max-lit and SfS must share one camera set
+
+The max-lit and average mosaics MUST be built from orthos mapprojected with the SAME
+cameras the SfS DEM was solved with. A mosaic made with an older set (e.g. pre-GCP
+`ba_htdem`, or the initial `maps/` orthos) is misregistered against the DEM, which
+shows up as smears and a wrong shadow mask in the blend. Never trust a dir name
+(`maps_final2`) or a script default for this. Reconstruct it from the files:
+
+- The mosaic's own dem_mosaic log (`<mosaic>.tif-log-dem_mosaic-*.txt`) lists every
+  input in `Loading:` lines. Use that when the input list file is unreadable.
+- Each mapprojected input stores its provenance in its GeoTIFF header metadata:
+  `CAMERA_FILE`, `BUNDLE_ADJUST_PREFIX`, `INPUT_IMAGE_FILE`, `DEM_FILE`. Run
+  `gdalinfo` on every input, one at a time (head-node legal), and tally them.
+- The SfS camera set is in `<sfs_dir>/clip*/run-camera-list.txt`.
+
+Pass: every input's `CAMERA_FILE` dir is the SfS camera dir, its id matches its image,
+and the camera set equals the SfS set (`comm` of the two basename lists). Note that
+the metadata order is `BUNDLE_ADJUST_PREFIX` before `CAMERA_FILE`, so parse by key,
+not by column. Do the same check for each SfS rerun, since reruns can quietly switch
+the camera set (seen on the Nobile site, 2026-11-20: of three reruns with identical
+options, one used pre-GCP cameras).
 
 ## 5. Visual sanity of the key products
 

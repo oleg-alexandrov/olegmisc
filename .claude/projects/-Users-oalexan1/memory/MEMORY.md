@@ -12,11 +12,14 @@ and CLAUDE.md per the auto-memory lifecycle policy.
   ss_bundle_adjust_per_sensor_share pushed + gold seeded on l1, reply posted to
   Shean). Option C effectively closed (no gain at 1/16). NEXT: orbit constraint
   prep (Task 4, Oleg promised). Waiting: shared-velocity DEM comparison, build
-  tests, Task 5 spec, Task 7 slide. Unpushed (other bot): f759dc9a9, 5e06259ff.
+  tests, Task 5 spec, Task 7 slide. PUSHED 2026-11-20: cost print 8d5983188 + orbit 816c431e5
+  (god + origin). sfs_blend 0f9a5cca9 local, the SfS bot's, held by Oleg.
+  THIS BOT OWNS ALL KH-9 WORK (Oleg 2026-11-19), only sfs_blend is not ours. REMIND
+  Doc posts DONE by Oleg 2026-11-20 (cost print + orbit blurb), await Shean.
   2026-11-19: Shean confirmed 8 items in the doc, 4 resolved, no blockers, no reply
   owed. ORBIT CONSTRAINT (option B, jitter_solve --orbital-group-list) IMPLEMENTED,
   UNCOMMITTED in Mac ASP (JitterSolveOrbit.{h,cc}, test, docs, news). Casa Grande
-  sigma sweep on pfe via a private pkg StereoPipeline_orbit (l1 build in a separate
+  eval DONE 2026-11-19 (works as designed, does not fix heights, ECEF = stereographic, commit the ECEF version). Ran on pfe via a private pkg StereoPipeline_orbit (l1 build in a separate
   clone StereoPipeline_orbit). Resume from "CASA GRANDE ORBIT EVAL ON pfe" at the
   end of ~/projects/kh9_fy27/kh9_fy27_notes.sh.
 - sfs_south: SfsPipeline/bin synced Mac -> pfe on 2026-11-16, so the pending sync
@@ -46,15 +49,16 @@ and CLAUDE.md per the auto-memory lifecycle policy.
 - BCT max-lit (2026-11-19 late): jitter vs bundle per-image scan done (jitter better overall, 12 images bent
   by jitter). Conservative core max-lits (293/339) building. Dense-control jitter re-solve bctjdense 25411511
   (2M tri, 358k GCP, 1M anchors, max-pairwise 1000, from ba_htdem) -> jitter_ba_dense/, then remap + scan +
-  nuke/replace. HELD, not pushed: ASP jitter_solve --fixed-image-list. Notes: sections 29-30 of
+  nuke/replace. jitter_solve --fixed-image-list is IN god/master (0de185333). Notes: sections 29-30 of
   ~/projects/sfs_BCT0717-BCT2124-MM/sfs_bct0717_bct2124_mm_notes.sh.
 - NEXT SfS (any site): MUST use --low-light-threshold (Oleg 2026-11-17). launch_sfs_tiles.sh
-  passes 0.03 by default since SfsPipeline 0711091; never set LOW_LIGHT=none. Also HELD by Oleg,
-  do not push yet: jitter_solve --fixed-image-list and sfs_blend.cc.
+  passes 0.03 by default since SfsPipeline 0711091; never set LOW_LIGHT=none. HELD by Oleg,
+  do not push yet: sfs_blend.cc (5e06259ff). --fixed-image-list already pushed (0de185333).
 
 ## Feedback / Lessons
 - [Load product skill before shipping](feedback-load-product-skill-before-shipping.md) — writing to a delivery/results dir means load the delivery skill first (alt-10 hillshade slip, 2026-10-14).
 - [Push authorization is per change](feedback-push-authorization-per-change.md) — a "push" covers only the change it was given for (per-anchor GSD slip, 2026-11-16).
+- [Galleries are local HTML](feedback-galleries-local-html.md) — image galleries open locally in the browser, never as an Artifact (too big, 2026-11-20).
 
 ## Active Projects
 - `~/projects/sfs_BCT0717-BCT2124-MM/sfs_bct0717_bct2124_mm_notes.sh`: Artemis Quad
