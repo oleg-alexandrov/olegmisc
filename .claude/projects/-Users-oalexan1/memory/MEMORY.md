@@ -7,13 +7,18 @@ and CLAUDE.md per the auto-memory lifecycle policy.
 ## Immediate Reminders
 - [nasa-mac-todo](nasa-mac-todo.md): OPEN nasa_mac leftovers (wipe the Miniforge installer,
   confirm claude/gh auth, first test of tunnel.sh on neon) once the tunnel is back.
-- KH-9 FY27 sprint (2026-11-18): Shean approved Task 3 (3.7x, closed), per-anchor GSD
-  (warning back in 042c10cae), and the model print. Rigid rotation + x/y pitch approved,
-  his re-test on 11/18 pending. Task 4 NEW ASK: orbit constraint (--orbital-group-list
-  for OpticalBar + jitter_solve), Oleg promised to look into it. Waiting: Task 7
-  (DSI-21 slide), Task 5 spec. Roll-up at the end of kh9_fy27_notes.sh. Dropped until he asks: per-camera optical bar model print. Dropped:
-  --min-distortion plumbing. Deferred: the VW block-cache work. Live status:
-  ~/projects/kh9_fy27/kh9_fy27_notes.sh (end of file).
+- KH-9 FY27 sprint (2026-11-18 late): per-sensor --intrinsics-to-share DONE (ASP
+  a353801d1 + docs 515be374e/4873d1335 pushed, new nightly test
+  ss_bundle_adjust_per_sensor_share pushed + gold seeded on l1, reply posted to
+  Shean). Option C effectively closed (no gain at 1/16). NEXT: orbit constraint
+  prep (Task 4, Oleg promised). Waiting: shared-velocity DEM comparison, build
+  tests, Task 5 spec, Task 7 slide. Unpushed (other bot): f759dc9a9, 5e06259ff.
+  2026-11-19: Shean confirmed 8 items in the doc, 4 resolved, no blockers, no reply
+  owed. ORBIT CONSTRAINT (option B, jitter_solve --orbital-group-list) IMPLEMENTED,
+  UNCOMMITTED in Mac ASP (JitterSolveOrbit.{h,cc}, test, docs, news). Casa Grande
+  sigma sweep on pfe via a private pkg StereoPipeline_orbit (l1 build in a separate
+  clone StereoPipeline_orbit). Resume from "CASA GRANDE ORBIT EVAL ON pfe" at the
+  end of ~/projects/kh9_fy27/kh9_fy27_notes.sh.
 - sfs_south: SfsPipeline/bin synced Mac -> pfe on 2026-11-16, so the pending sync
   reminder is done (the pfe checkout is behind its files, harmless). Notes:
   ~/projects/sfs_south/overnight_plan.sh.
@@ -38,9 +43,10 @@ and CLAUDE.md per the auto-memory lifecycle policy.
   Notes: end of
   ~/projects/sfs_BCU2314-BDU1224-MM/sfs_bcu2314_bdu1224_mm_notes.sh.
 
-- BCT max-lit (2026-11-17): recommended C4s_kd maxlit_cmp/cascade_ext_le1.0_le1.2_le1.3_fix9b_426_f0.75_1.0_kd.tif,
-  gallery https://claude.ai/artifact/GZkogVwHBuvSSwUtELTTqA, waiting on Oleg's look. HELD, not committed:
-  ASP jitter_solve --fixed-image-list (Mac + l1 trees, deployed on pfe). Notes: end of
+- BCT max-lit (2026-11-19 late): jitter vs bundle per-image scan done (jitter better overall, 12 images bent
+  by jitter). Conservative core max-lits (293/339) building. Dense-control jitter re-solve bctjdense 25411511
+  (2M tri, 358k GCP, 1M anchors, max-pairwise 1000, from ba_htdem) -> jitter_ba_dense/, then remap + scan +
+  nuke/replace. HELD, not pushed: ASP jitter_solve --fixed-image-list. Notes: sections 29-30 of
   ~/projects/sfs_BCT0717-BCT2124-MM/sfs_bct0717_bct2124_mm_notes.sh.
 - NEXT SfS (any site): MUST use --low-light-threshold (Oleg 2026-11-17). launch_sfs_tiles.sh
   passes 0.03 by default since SfsPipeline 0711091; never set LOW_LIGHT=none. Also HELD by Oleg,

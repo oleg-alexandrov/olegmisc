@@ -24,10 +24,12 @@ fi
 # Explicitly targeted and therefore safe:
 #   git -C /absolute ...            (git names the repo itself)
 #   cd /absolute ... && / ; git ... (an absolute cwd is set first)
-if printf '%s' "$cmd" | grep -Eq 'git[[:space:]]+-C[[:space:]]+/'; then
+# An absolute path may also be written as ~, $HOME or ${HOME} (bare or with /...)
+abs='["'"'"']?(/|(~|\$HOME|\$\{HOME\})(/|["'"'"'[:space:]]|$))'
+if printf '%s' "$cmd" | grep -Eq "git[[:space:]]+-C[[:space:]]+$abs"; then
   exit 0
 fi
-if printf '%s' "$cmd" | grep -Eq '(^|[;&|[:space:]])cd[[:space:]]+/[^;&|]*(&&|;)'; then
+if printf '%s' "$cmd" | grep -Eq "(^|[;&|[:space:]])cd[[:space:]]+$abs[^;&|]*(&&|;)"; then
   exit 0
 fi
 

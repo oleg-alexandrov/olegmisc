@@ -262,8 +262,9 @@ plan on Google Drive. Names are what Oleg calls them in conversation.
   over from a prior tool call, even one seconds ago. A PreToolUse Bash hook
   (`~/.claude/hooks/git-cd-guard.sh`) BLOCKS ANY git command - reads too
   (status/log/fetch/tag), since a wrong-repo read returns a confident wrong answer -
-  unless it has a literal `cd /abs &&` or `git -C /abs` (only `git --version`, `git
-  help`, `git config --global/--system` are exempt). **A denial is a HARD STOP: the very
+  unless it has a literal `cd /abs &&` or `git -C /abs`, where `~` and `$HOME` count
+  as absolute (only `git --version`, `git help`, `git config --global/--system` are
+  exempt). **A denial is a HARD STOP: the very
   next command MUST differ by adding `git -C /abs` - NEVER resend the identical blocked
   text** (resending the same bare command burned a long retry loop, 2026-10-14). The hook
   matches the word "git" ANYWHERE in the command, including inside an argument, so a
