@@ -18,7 +18,11 @@ regens (100k+ files) and solve dirs. BCU 2026-11-20 pushed the allocation to 12.
 dozen map sets. Rules: check `lfs quota -h -u oalexan1 /nobackupp19` before each new map set; keep at
 most the CURRENT best plus the baseline map sets; log every superseded set as a deferred wipe (literal
 paths) in the project notes and wipe via a subagent at a checkpoint; never leave dry-run dirs, staged
-tars or core files behind.
+tars or core files behind. Consecutive passes of map sets are what fill the disk: after EACH camera
+pass, evaluate, and once a new map set is confirmed better, nuke the superseded map sets and solve
+dirs (Oleg 2026-11-20). Keep the interest-point matches (e.g. ba_htdem, ba_regen) for future jitter
+work. Normally do not wipe aggressively, but near the quota take drastic measures. NEVER wipe anything
+on lfe tape; a staged copy of a tape tar on nobackup is fine to wipe.
 
 **REFERENCE IMPLEMENTATION HAS MOVED (2026-10).** The canonical scripts now live in
 `~/projects/SfsPipeline/bin/` (Andrew Annex's NeoGeographyToolkit/SfsPipeline repo), NOT
@@ -614,8 +618,9 @@ variants (Oleg 2026-11-20, "insane", quota 15 TB). Rules:
 - On EVERY heartbeat / at least daily during experiments, run `lfs quota -h -u oalexan1 /nobackupp19`
   (cheap, no stat storm) and log the used figure in the notes. Over ~60% of quota, stop adding
   variants and propose a cleanup.
-- Keep only the map sets of live candidates. When a variant loses, write its dir on a cleanup list in
-  the notes at once (what, size, why it lost, what replaces it), so the wipe plan is ready.
+- Keep only the map sets of live candidates. AFTER EACH PASS (solve + maps + eval), judge what lost
+  and propose its wipe right then (dir, size, why it lost, what replaces it), or disk cannot keep up
+  (Oleg 2026-11-20). A full mapprojected set of ~430 NAC images at 1 m is ~300 GB.
 - Size per dir with ONE targeted background `du -sk --max-depth=1 <projDir>/` (nohup, nice), never
   a blanket recursive du in the foreground (Lustre). See [[pfe-nas]].
 - Wipes need Oleg's go: propose the plan (dir, size, reason, keepers), then hand a subagent the
