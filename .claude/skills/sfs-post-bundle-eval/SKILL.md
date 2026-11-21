@@ -167,12 +167,25 @@ a beaded loop inside a dark crater), sometimes speckle across a shadow, or a lit
 image can paint many spots (BCU: M1251936181LE made streaks at 4 review spots). Mechanism: free
 orientation knots, mostly the padding knots past the image ends, swing km (BCU jreg: 787 of 971
 images had a knot > 1 km in `run-orientation_offsets.txt`, max column), and CSM interpolation drags
-the image-end lines with them. Checks, all three: (1) `cam_test` max pixel diff pre vs post jitter;
+the image-end lines with them. Checks, all three: (1) `cam_test` pre vs post jitter. With padding
+knots, every image's MAX is huge (BCU jreg 334: p50 3654 px, p99 35k, from the image-end lines), so
+the 250 px max rule above does not hold there. Read the MEDIAN of the cam1->cam2 "pixel diff" block
+(a sane image is 1 to 5 px, wild ones were 94 and 1812 px). cam_test prints 4 stat blocks with
+the numbers on the lines below each header, so parse only the two "pixel diff" blocks;
 (2) the per-image MAX in `<out>/run-orientation_offsets.txt` (median sub-meter, max km = wild ends);
 (3) per-tile NCC of each re-solved map vs its pre-jitter map (BCU `review_clips/wild_scan.py`).
 Fix: a guard `--orientation-uncertainty` of ~100 m (20 m stalled convergence: it charges rotation
 only, so it fights legit camera-center moves of tens of m), drop the image, or fall back per image to
-the camera set where it scans clean. Pair-scan stats HIDE these maps (a streaky map does not
+the camera set where it scans clean. A guard ALONE is not enough. At 100 m it removed every wild knot
+on both BCU and BCT, but it bent a few images (BCU M1164783437RE ~3 px), and pairwise it lost to the
+free solve (BCU 0.67% vs 0.03% max-lit share from maps > 1.5 px off). The winning BCU recipe
+(2026-11-21) is a SAME-FRAME HYBRID. Run the free solve and the 100 m guarded solve from the same
+start, no GCP. Take the free solve's maps, and swap in the guarded map for each image whose free map
+fails its bundle map on >= 15% of 256 m tiles (14 of 334). The result matched the free solve pairwise
+(0.03%) and had no wild maps. It works only when the base set is already pairwise clean and the swaps
+are few: on BCT no no-GCP run was clean, and 67 bundle swaps into one only went 1.17% -> 0.65%, since
+swapped maps become offenders against their new neighbors. Never mix frames (a delivered LOLA-frame map beside bundle-frame maps
+doubles craters). Pair-scan stats HIDE these maps (a streaky map does not
 correlate, so it drops out instead of scoring a big offset).
 
 ## 2b. GSD vs mapproj-offset vs sim-shift: what each metric REALLY measures (and role matters)

@@ -625,6 +625,13 @@ variants (Oleg 2026-11-20, "insane", quota 15 TB). Rules:
   a blanket recursive du in the foreground (Lustre). See [[pfe-nas]].
 - Wipes need Oleg's go: propose the plan (dir, size, reason, keepers), then hand a subagent the
   literal absolute paths. Never wipe what the shipped delivery or the notes say to keep.
+- STANDING ORDER for an inferior mapprojected run (Oleg 2026-11-20, no fresh go needed each time):
+  once its spot thumbnails exist (gallery crops at the problem spots) and the eval says it lost,
+  keep TRACES and nuke the full map set. Traces = the gallery crops, the eval/offender logs and
+  CSVs, the max-lit (~0.75 GB), the exact solve params and the numbers logged in the notes, and
+  the CAMERAS (jitter/bundle dir, ~5-10 GB, so it can be remapped later). Then wipe only the
+  `map_<run>/` dir (~300 GB) via a subagent with the literal path, and log the wipe. Do this on
+  every iteration, especially when a better run is on the way.
 
 ## qsub and Autonomous Orchestration (sanity checks, do not blunder)
 

@@ -5,6 +5,9 @@ Durable engineering rules and workflows belong in skills (~/.claude/skills/)
 and CLAUDE.md per the auto-memory lifecycle policy.
 
 ## Immediate Reminders
+- ASP nightly with 816c431e5 (orbit + cost print) SHIPPED as 2026-11-21-daily-build
+  (23:05 cron after the l1 power outage, all 4 pass). Tell Shean the build is out if not
+  done. Drop this line after.
 - [nasa-mac-todo](nasa-mac-todo.md): OPEN nasa_mac leftovers (wipe the Miniforge installer,
   confirm claude/gh auth, first test of tunnel.sh on neon) once the tunnel is back.
 - KH-9 FY27 sprint (2026-11-18 late): per-sensor --intrinsics-to-share DONE (ASP
@@ -54,6 +57,12 @@ and CLAUDE.md per the auto-memory lifecycle policy.
 - NEXT SfS (any site): MUST use --low-light-threshold (Oleg 2026-11-17). launch_sfs_tiles.sh
   passes 0.03 by default since SfsPipeline 0711091; never set LOW_LIGHT=none. HELD by Oleg,
   do not push yet: sfs_blend.cc (5e06259ff). --fixed-image-list already pushed (0de185333).
+
+- BCU camera work (2026-11-21 00:45): BEST SET = hyb1, the free no-GCP re-solve jreg (jit_regen_nogcp) with 14
+  wild images swapped for the 100 m guarded re-solve (jit_regen_nogcp_o100). Site misreg 0.03% (jreg 0.03%,
+  shipped 0.15%), no wild streaks. SfS cam list lists/sfs334_cams_hyb1.txt on pfe. Local gallery
+  review_clips/gallery_hyb/index.html. Waiting on Oleg: extras for coverage (~530 GB, 15 chunks held),
+  SfS on hyb1, LOLA frame shift (2.2 m). Notes end of ~/projects/sfs_BCU2314-BDU1224-MM/sfs_bcu2314_bdu1224_mm_notes.sh.
 
 ## Feedback / Lessons
 - [Load product skill before shipping](feedback-load-product-skill-before-shipping.md) — writing to a delivery/results dir means load the delivery skill first (alt-10 hillshade slip, 2026-10-14).
