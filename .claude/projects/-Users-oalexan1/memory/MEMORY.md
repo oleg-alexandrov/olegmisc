@@ -49,10 +49,10 @@ and CLAUDE.md per the auto-memory lifecycle policy.
   Notes: end of
   ~/projects/sfs_BCU2314-BDU1224-MM/sfs_bcu2314_bdu1224_mm_notes.sh.
 
-- BCT max-lit (2026-11-19 late): jitter vs bundle per-image scan done (jitter better overall, 12 images bent
-  by jitter). Conservative core max-lits (293/339) building. Dense-control jitter re-solve bctjdense 25411511
-  (2M tri, 358k GCP, 1M anchors, max-pairwise 1000, from ba_htdem) -> jitter_ba_dense/, then remap + scan +
-  nuke/replace. jitter_solve --fixed-image-list is IN god/master (0de185333). Notes: sections 29-30 of
+- BCT max-lit (2026-11-21): PICK = H2, maxlit_u80ref_drop3_423.tif (shipped minus M1124754913RE,
+  M1435428752LE, M1130366062LE), 0.24% site misreg > 1.5 px vs shipped 0.44%. Jitter re-solves E5/s10/E8 all
+  lost and their map sets were wiped (traces kept). s10 sits 2.3 px off the LOLA frame. Nothing running,
+  heartbeat stopped. Waiting on Oleg: accept H2, or a new solve within the shipped frame. Notes: end of
   ~/projects/sfs_BCT0717-BCT2124-MM/sfs_bct0717_bct2124_mm_notes.sh.
 - NEXT SfS (any site): MUST use --low-light-threshold (Oleg 2026-11-17). launch_sfs_tiles.sh
   passes 0.03 by default since SfsPipeline 0711091; never set LOW_LIGHT=none. HELD by Oleg,
